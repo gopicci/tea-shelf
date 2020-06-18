@@ -1,0 +1,9 @@
+__pycache__
+env
+*.sqlite3
+notes
+.coverage
+.env*
+static
+media
+.idea
