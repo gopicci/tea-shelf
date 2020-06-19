@@ -15,11 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import ping
+from catalog.views import RegisterView, LoginView, UserView
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('ping/', ping, name="ping"),
+    path("admin/", admin.site.urls),
+    path("ping/", ping, name="ping"),
+    path("api/register/", RegisterView.as_view(), name="register"),
+    path("api/login/", LoginView.as_view(), name="login"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/user/", UserView.as_view(), name="user"),
 ]
