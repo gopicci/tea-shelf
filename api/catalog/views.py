@@ -1,14 +1,16 @@
 from django.contrib.auth import get_user_model
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework import generics, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import LoginSerializer, UserSerializer
+from .serializers import LoginSerializer, UserSerializer, GongfuBrewingSerializer, WesternBrewingSerializer, \
+    CategorySerializer, SubcategorySerializer, OriginSerializer
+from .models import Category, GongfuBrewing, WesternBrewing, Origin
 
 
-class RegisterView(CreateAPIView):
+class RegisterView(generics.CreateAPIView):
     """
-    Register view
+    Register view.
     """
 
     queryset = get_user_model().objects.all()
@@ -23,7 +25,7 @@ class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
 
 
-class UserView(RetrieveAPIView):
+class UserView(generics.RetrieveAPIView):
     """
     Logged in user detail view.
     """
@@ -34,3 +36,50 @@ class UserView(RetrieveAPIView):
 
     def get_object(self, *args, **kwargs):
         return self.request.user
+
+
+class GongfuBrewingCreateView(generics.CreateAPIView):
+    """
+    Create gongfu brewing details
+    """
+    serializer_class = GongfuBrewingSerializer
+
+
+class GongfuBrewingDetailView(generics.RetrieveAPIView):
+    """
+    Retrieve gongfu brewing details
+    """
+    lookup_field = 'pk'
+    queryset = GongfuBrewing.objects.all()
+    serializer_class = GongfuBrewingSerializer
+
+
+class WesternBrewingCreateView(generics.CreateAPIView):
+    """
+    Create western brewing details
+    """
+    serializer_class = WesternBrewingSerializer
+
+
+class WesternBrewingDetailView(generics.RetrieveAPIView):
+    """
+    Retrieve western brewing details
+    """
+    lookup_field = 'pk'
+    queryset = WesternBrewing.objects.all()
+    serializer_class = WesternBrewingSerializer
+
+
+class OriginDetailView(generics.RetrieveAPIView):
+    lookup_field = 'pk'
+    queryset = Origin.objects.all()
+    serializer_class = OriginSerializer
+
+
+class CategoryView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class SubcategoryView(generics.ListCreateAPIView):
+    serializer_class = SubcategorySerializer
