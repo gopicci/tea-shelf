@@ -134,3 +134,99 @@ def test_user_can_create_and_view_subcategory(client, token):
     assert resp.data[0]["name"] == "Test"
     assert resp.data[0]["translated_name"] == "Still test"
     assert resp.data[0]["category"] == category.id
+
+
+@override_settings(REST_FRAMEWORK=auth_override)
+@pytest.mark.django_db
+def test_user_can_crud_tea(client, token):
+    resp = client.post(
+        "/api/tea/",
+        {"name": "Test tea"},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+
+    resp = client.get("/api/tea/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+    assert len(resp.data) > 0
+    _id = resp.data[0]['id']
+    resp = client.get(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+    assert resp.data['name'] == 'Test tea'
+
+    resp = client.put(f"/api/tea/{_id}/",
+                      {"name": "Updated tea"},
+                      content_type="application/json",
+                      HTTP_AUTHORIZATION=f"Bearer {token}",
+                      )
+    assert resp.status_code == 200
+    assert resp.data['name'] == 'Updated tea'
+
+    resp = client.delete(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 204
+
+    resp = client.get(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 404
+
+
+@override_settings(REST_FRAMEWORK=auth_override)
+@pytest.mark.django_db
+def test_users_cannot_view_others_teas(client, token):
+    resp = client.post(
+        "/api/tea/",
+        {"name": "Test tea"},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+
+    resp = client.get("/api/tea/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+    assert len(resp.data) > 0
+    _id = resp.data[0]['id']
+    resp = client.get(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+    assert resp.data['name'] == 'Test tea'
+
+    resp = client.post(
+        "/api/register/",
+        {
+            "username": "test2",
+            "email": "test2@test.com",
+            "password1": "pAzzw0rd!",
+            "password2": "pAzzw0rd!",
+        },
+        content_type="application/json",
+    )
+    resp = client.post(
+        "/api/login/",
+        {"email": "test2@test.com", "password": "pAzzw0rd!"},
+        content_type="application/json",
+    )
+    token2 = resp.data["access"]
+
+    resp = client.get("/api/tea/", HTTP_AUTHORIZATION=f"Bearer {token2}")
+    assert resp.status_code == 200
+    assert len(resp.data) == 0
+    resp = client.get(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token2}")
+    assert resp.status_code == 404
+
+    resp = client.post(
+        "/api/tea/",
+        {"name": "Test tea"},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token2}",
+    )
+    assert resp.status_code == 201
+
+    resp = client.get("/api/tea/", HTTP_AUTHORIZATION=f"Bearer {token2}")
+    assert resp.status_code == 200
+    assert len(resp.data) > 0
+    _id2 = resp.data[0]['id']
+    resp = client.get(f"/api/tea/{_id2}/", HTTP_AUTHORIZATION=f"Bearer {token2}")
+    assert resp.status_code == 200
+    assert resp.data['name'] == 'Test tea'
+
+    resp = client.get(f"/api/tea/{_id2}/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 404

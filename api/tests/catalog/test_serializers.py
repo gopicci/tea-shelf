@@ -9,6 +9,7 @@ from catalog.serializers import (
     CategorySerializer,
     SubcategorySerializer,
     SubcategoryNameSerializer,
+    TeaSerializer,
 )
 from catalog.models import Category, Subcategory, CustomUser, GongfuBrewing, WesternBrewing
 
@@ -171,3 +172,21 @@ def test_invalid_subcategoryname_serializer(client):
     assert not serializer.is_valid()
     assert serializer.data == invalid_serializer_data
     assert serializer.errors == {"subcategory": ["This field is required."]}
+
+
+@pytest.mark.django_db
+def test_valid_tea_serializer(client):
+    valid_serializer_data = {"name": "test"}
+    serializer = TeaSerializer(data=valid_serializer_data)
+    assert serializer.is_valid()
+    assert serializer.validated_data == valid_serializer_data
+    assert serializer.errors == {}
+
+
+@pytest.mark.django_db
+def test_invalid_tea_serializer(client):
+    invalid_serializer_data = {"year": 1980}
+    serializer = TeaSerializer(data=invalid_serializer_data)
+    assert not serializer.is_valid()
+    assert serializer.data == invalid_serializer_data
+    assert serializer.errors == {'name': ['This field is required.']}
