@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework import generics, mixins
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, permissions
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import LoginSerializer, UserSerializer, GongfuBrewingSerializer, WesternBrewingSerializer, \
@@ -15,6 +14,7 @@ class RegisterView(generics.CreateAPIView):
 
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.AllowAny, )
 
 
 class LoginView(TokenObtainPairView):
@@ -23,6 +23,7 @@ class LoginView(TokenObtainPairView):
     """
 
     serializer_class = LoginSerializer
+    permission_classes = (permissions.AllowAny, )
 
 
 class UserView(generics.RetrieveAPIView):
@@ -31,7 +32,6 @@ class UserView(generics.RetrieveAPIView):
     """
 
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
     lookup_field = "pk"
 
     def get_object(self, *args, **kwargs):
@@ -69,6 +69,12 @@ class WesternBrewingDetailView(generics.RetrieveAPIView):
     queryset = WesternBrewing.objects.all()
     serializer_class = WesternBrewingSerializer
 
+
+class OriginCreateView(generics.CreateAPIView):
+    serializer_class = OriginSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class OriginDetailView(generics.RetrieveAPIView):
     lookup_field = 'pk'

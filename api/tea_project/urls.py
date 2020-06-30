@@ -19,7 +19,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import ping
 from catalog.views import RegisterView, LoginView, UserView, GongfuBrewingCreateView, GongfuBrewingDetailView, \
-    WesternBrewingCreateView, WesternBrewingDetailView, OriginDetailView, CategoryView
+    WesternBrewingCreateView, WesternBrewingDetailView, OriginCreateView, OriginDetailView, CategoryView
 
 
 urlpatterns = [
@@ -33,6 +33,7 @@ urlpatterns = [
     path("api/brewings/gongfu/<int:pk>/", GongfuBrewingDetailView.as_view(), name="gongfu_brewing_detail"),
     path("api/brewings/western/", WesternBrewingCreateView.as_view(), name="western_brewing_create"),
     path("api/brewings/western/<int:pk>/", WesternBrewingDetailView.as_view(), name="western_brewing_detail"),
+    path("api/origin/", OriginCreateView.as_view(), name="origin_create"),
     path("api/origin/<int:pk>/", OriginDetailView.as_view(), name="origin_detail"),
     path("api/categories/", CategoryView.as_view(), name="categories"),
 ]

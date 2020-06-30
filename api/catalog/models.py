@@ -169,28 +169,29 @@ class Origin(models.Model):
     Model defining a geographic indication.
     """
     country = models.CharField(max_length=30)
-    area = models.CharField(max_length=50, blank=True)
-    city = models.CharField(max_length=50, blank=True)
+    region = models.CharField(max_length=50, blank=True)
+    locality = models.CharField(max_length=50, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['country', 'area', 'city']
+        ordering = ['country', 'region', 'locality']
         constraints = [
-            models.UniqueConstraint(fields=['country', 'area', 'city'],
+            models.UniqueConstraint(fields=['country', 'region', 'locality'],
                                     name='unique_origin'),
-            models.UniqueConstraint(fields=['country', 'area'],
-                                    condition=models.Q(city=None),
-                                    name='unique_area_origin'),
-            models.UniqueConstraint(fields=['country', 'city'],
-                                    condition=models.Q(area=None),
-                                    name='unique_city_origin')
+            models.UniqueConstraint(fields=['country', 'region'],
+                                    condition=models.Q(locality=None),
+                                    name='unique_region_origin'),
+            models.UniqueConstraint(fields=['country', 'locality'],
+                                    condition=models.Q(region=None),
+                                    name='unique_locality_origin')
         ]
 
     def __str__(self):
         origin_name = ''
-        if self.city:
-            origin_name += str(self.city) + ', '
-        if self.area:
-            origin_name += str(self.area) + ', '
+        if self.locality:
+            origin_name += str(self.locality) + ', '
+        if self.region:
+            origin_name += str(self.region) + ', '
         origin_name += str(self.country)
         return origin_name
 

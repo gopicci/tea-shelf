@@ -133,22 +133,29 @@ def test_westernbrewingg_model_validators():
 
 @pytest.mark.django_db
 def test_origin_model():
+    user = CustomUser(email="test@test.com", username="test")
+    user.save()
     origin = Origin(country='Germany',
-                    area='Yunnan',
-                    city='Paris'
+                    region='Yunnan',
+                    locality='Paris',
+                    user=user
                     )
     origin.save()
     assert origin.country == 'Germany'
-    assert origin.area == 'Yunnan'
-    assert origin.city == 'Paris'
+    assert origin.region == 'Yunnan'
+    assert origin.locality == 'Paris'
+    assert origin.user.username == 'test'
     assert str(origin) == 'Paris, Yunnan, Germany'
 
 
 @pytest.mark.django_db
 def test_origin_model_validators():
+    user = CustomUser(email="test@test.com", username="test")
+    user.save()
     origin1 = Origin(country='Germany',
-                     area='Yunnan',
-                     city='Paris'
+                     region='Yunnan',
+                     locality='Paris',
+                     user=user
                      )
     origin1.save()
 
@@ -156,7 +163,8 @@ def test_origin_model_validators():
     assert len(origins) == 1
 
     origin2 = Origin(country='Germany',
-                     city='Paris'
+                     locality='Paris',
+                     user=user
                      )
     origin2.save()
 
@@ -164,7 +172,8 @@ def test_origin_model_validators():
     assert len(origins) == 2
 
     origin3 = Origin(country='Germany',
-                     city='Paris'
+                     locality='Paris',
+                     user=user
                      )
     with pytest.raises(IntegrityError):
         origin3.save()
@@ -201,8 +210,9 @@ def test_subcategory_subcategoryname_model():
     category = Category(name='OOLONG')
     category.save()
     origin = Origin(country='Germany',
-                    area='Yunnan',
-                    city='Paris'
+                    region='Yunnan',
+                    locality='Paris',
+                    user=user
                     )
     origin.save()
     gongfu = GongfuBrewing(temperature=99,
@@ -226,7 +236,7 @@ def test_subcategory_subcategoryname_model():
     assert subcategory.name == 'Da Hong Pao'
     assert subcategory.category.name == 'OOLONG'
     assert subcategory.translated_name == 'Big Red Robe'
-    assert subcategory.origin.city == 'Paris'
+    assert subcategory.origin.locality == 'Paris'
     assert subcategory.user.username == 'test'
     assert subcategory.gongfu_brewing.temperature == 99
     assert subcategory.western_brewing.weight == Decimal(0.8)
@@ -244,8 +254,9 @@ def test_vendor_vendortrademark_model():
     user = CustomUser(email="test@test.com", username="test")
     user.save()
     origin = Origin(country='Germany',
-                    area='Yunnan',
-                    city='Paris'
+                    region='Yunnan',
+                    locality='Paris',
+                    user=user
                     )
     origin.save()
     vendor = Vendor(name='vendor name',

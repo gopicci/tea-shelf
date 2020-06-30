@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import GongfuBrewing, WesternBrewing, Origin, Category, Subcategory
+from .models import GongfuBrewing, WesternBrewing, Origin, Category, Subcategory, SubcategoryName
 from .validators import validate_username
 
 
@@ -108,17 +108,20 @@ class WesternBrewingSerializer(serializers.ModelSerializer):
 
 class OriginSerializer(serializers.ModelSerializer):
 
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Origin
         fields = '__all__'
-        read_only_fields = ('id', 'country', 'area', 'city', )
+        read_only_fields = ('user', )
 
 
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('id', 'name', 'gongfu_brewing', 'western_brewing', )
+        read_only_fields = ('id', 'name', 'gongfu_brewing', 'western_brewing', )
 
 
 class SubcategorySerializer(serializers.ModelSerializer):
@@ -126,3 +129,11 @@ class SubcategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Subcategory
         fields = '__all__'
+        read_only_fields = ('user', )
+
+
+class SubcategoryNameSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SubcategoryName
+        fields = ('name', 'subcategory', )
