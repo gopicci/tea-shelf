@@ -63,6 +63,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(TokenObtainPairSerializer):
+    """
+    JWT login serializer, returns refresh and access tokens.
+    """
 
     email = serializers.EmailField()
     password = serializers.CharField()
@@ -93,6 +96,9 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 
 class GongfuBrewingSerializer(serializers.ModelSerializer):
+    """
+    GongfuBrewing serializer returns instance if existing or creates a new one.
+    """
     class Meta:
         model = GongfuBrewing
         fields = "__all__"
@@ -103,6 +109,9 @@ class GongfuBrewingSerializer(serializers.ModelSerializer):
 
 
 class WesternBrewingSerializer(serializers.ModelSerializer):
+    """
+    WesternBrewing serializer returns instance if existing or creates a new one.
+    """
     class Meta:
         model = WesternBrewing
         fields = "__all__"
@@ -113,6 +122,9 @@ class WesternBrewingSerializer(serializers.ModelSerializer):
 
 
 class OriginSerializer(serializers.ModelSerializer):
+    """
+    Origin serializer, passes request user on creation.
+    """
     user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:
@@ -122,6 +134,9 @@ class OriginSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """
+    Category serializer with nested brewings.
+    """
     gongfu_brewing = GongfuBrewingSerializer()
     western_brewing = WesternBrewingSerializer()
 
@@ -137,6 +152,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class SubcategorySerializer(serializers.ModelSerializer):
+    """
+    Subcategory serializer, passes request user on creation.
+    """
     user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:
@@ -146,12 +164,18 @@ class SubcategorySerializer(serializers.ModelSerializer):
 
 
 class SubcategoryNameSerializer(serializers.ModelSerializer):
+    """
+    SubcategoryName serializer.
+    """
     class Meta:
         model = SubcategoryName
         fields = "__all__"
 
 
 class TeaSerializer(serializers.ModelSerializer):
+    """
+    Tea serializer, passes request user on creation.
+    """
     user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:

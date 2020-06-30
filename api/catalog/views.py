@@ -49,7 +49,7 @@ class UserView(generics.RetrieveAPIView):
 
 class GongfuBrewingCreateView(generics.CreateAPIView):
     """
-    Create gongfu brewing details
+    Create gongfu brewing details.
     """
 
     serializer_class = GongfuBrewingSerializer
@@ -57,7 +57,7 @@ class GongfuBrewingCreateView(generics.CreateAPIView):
 
 class GongfuBrewingDetailView(generics.RetrieveAPIView):
     """
-    Retrieve gongfu brewing details
+    Retrieve gongfu brewing details.
     """
 
     lookup_field = "pk"
@@ -67,7 +67,7 @@ class GongfuBrewingDetailView(generics.RetrieveAPIView):
 
 class WesternBrewingCreateView(generics.CreateAPIView):
     """
-    Create western brewing details
+    Create western brewing details.
     """
 
     serializer_class = WesternBrewingSerializer
@@ -75,7 +75,7 @@ class WesternBrewingCreateView(generics.CreateAPIView):
 
 class WesternBrewingDetailView(generics.RetrieveAPIView):
     """
-    Retrieve western brewing details
+    Retrieve western brewing details.
     """
 
     lookup_field = "pk"
@@ -84,6 +84,10 @@ class WesternBrewingDetailView(generics.RetrieveAPIView):
 
 
 class OriginCreateView(generics.CreateAPIView):
+    """
+    Create origin passing current user.
+    """
+
     serializer_class = OriginSerializer
 
     def perform_create(self, serializer):
@@ -91,20 +95,32 @@ class OriginCreateView(generics.CreateAPIView):
 
 
 class OriginDetailView(generics.RetrieveAPIView):
+    """
+    Retrieve origin details.
+    """
     lookup_field = "pk"
     queryset = Origin.objects.all()
     serializer_class = OriginSerializer
 
 
 class CategoryView(generics.ListAPIView):
+    """
+    List categories.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
 class SubcategoryView(generics.ListCreateAPIView):
+    """
+    List and create subcategories.
+    """
     serializer_class = SubcategorySerializer
 
     def get_queryset(self):
+        """
+        Lists only user owned and pre-saved subcategories.
+        """
         return Subcategory.objects.filter(Q(user=self.request.user) | Q(user=1))
 
     def perform_create(self, serializer):
@@ -112,10 +128,16 @@ class SubcategoryView(generics.ListCreateAPIView):
 
 
 class TeaViewSet(viewsets.ModelViewSet):
+    """
+    Tea view set.
+    """
     lookup_field = "id"
     serializer_class = TeaSerializer
 
     def get_queryset(self):
+        """
+        Allow access only to user instances.
+        """
         return Tea.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):

@@ -108,6 +108,9 @@ class GongfuBrewing(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        """
+        Truncates weight to 1 decimal.
+        """
         self.weight = float("%.1f" % self.weight)
         super().save(*args, **kwargs)
 
@@ -149,6 +152,9 @@ class WesternBrewing(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        """
+        Truncates weight to 1 decimal.
+        """
         self.weight = float("%.1f" % self.weight)
         super().save(*args, **kwargs)
 
@@ -233,6 +239,9 @@ class Category(models.Model):
 
 
 class Subcategory(models.Model):
+    """
+    Model defining a tea subcategory.
+    """
     name = models.CharField(max_length=50)
     translated_name = models.CharField(max_length=50, blank=True)
     origin = models.ForeignKey(Origin, on_delete=models.SET_NULL, null=True, blank=True)
@@ -250,6 +259,9 @@ class Subcategory(models.Model):
 
 
 class SubcategoryName(models.Model):
+    """
+    Model defining a subcategory alternative names.
+    """
     name = models.CharField(max_length=50)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
 
@@ -258,6 +270,9 @@ class SubcategoryName(models.Model):
 
 
 class Vendor(models.Model):
+    """
+    Model defining a vendor.
+    """
     name = models.CharField(max_length=50)
     website = models.CharField(max_length=50, blank=True)
     origin = models.ForeignKey(Origin, on_delete=models.SET_NULL, null=True, blank=True)
@@ -271,6 +286,9 @@ class Vendor(models.Model):
 
 
 class VendorTrademark(models.Model):
+    """
+    Model defining common vendors trademarks to help with text from image parsing.
+    """
     name = models.CharField(max_length=50)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
 
@@ -279,6 +297,9 @@ class VendorTrademark(models.Model):
 
 
 class Tea(models.Model):
+    """
+    Model defining a tea entry.
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_archived = models.BooleanField(default=False)
