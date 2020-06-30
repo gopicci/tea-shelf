@@ -1,3 +1,4 @@
+import os
 import pytest
 from datetime import timedelta
 
@@ -122,9 +123,7 @@ def test_westernbrewingg_model_validators():
         brewing.full_clean()
         brewing.save()
 
-    brewing = WesternBrewing(
-        temperature=85, weight=-2, initial=timedelta(seconds=180)
-    )
+    brewing = WesternBrewing(temperature=85, weight=-2, initial=timedelta(seconds=180))
 
     with pytest.raises(ValidationError):
         brewing.full_clean()
@@ -133,17 +132,13 @@ def test_westernbrewingg_model_validators():
     brewings = WesternBrewing.objects.all()
     assert len(brewings) == 0
 
-    brewing1 = WesternBrewing(
-        temperature=85, weight=2, initial=timedelta(seconds=180)
-    )
+    brewing1 = WesternBrewing(temperature=85, weight=2, initial=timedelta(seconds=180))
     brewing1.save()
 
     brewings = WesternBrewing.objects.all()
     assert len(brewings) == 1
 
-    brewing2 = WesternBrewing(
-        temperature=85, weight=2, initial=timedelta(seconds=180)
-    )
+    brewing2 = WesternBrewing(temperature=85, weight=2, initial=timedelta(seconds=180))
     with pytest.raises(IntegrityError):
         brewing2.save()
 
@@ -199,9 +194,7 @@ def test_category_model():
         increments=timedelta(seconds=3),
     )
     gongfu.save()
-    western = WesternBrewing(
-        temperature=85, weight=0.8, initial=timedelta(seconds=180)
-    )
+    western = WesternBrewing(temperature=85, weight=0.8, initial=timedelta(seconds=180))
     western.save()
     category = Category(name="OOLONG", gongfu_brewing=gongfu, western_brewing=western)
     category.save()
@@ -225,9 +218,7 @@ def test_subcategory_subcategoryname_model():
         increments=timedelta(seconds=3),
     )
     gongfu.save()
-    western = WesternBrewing(
-        temperature=85, weight=0.8, initial=timedelta(seconds=180)
-    )
+    western = WesternBrewing(temperature=85, weight=0.8, initial=timedelta(seconds=180))
     western.save()
     subcategory = Subcategory(
         category=category,
@@ -295,9 +286,7 @@ def test_tea_model():
         increments=timedelta(seconds=3),
     )
     gongfu.save()
-    western = WesternBrewing(
-        temperature=85, weight=0.8, initial=timedelta(seconds=180)
-    )
+    western = WesternBrewing(temperature=85, weight=0.8, initial=timedelta(seconds=180))
     western.save()
     subcategory = Subcategory(
         category=category,
@@ -320,7 +309,7 @@ def test_tea_model():
     tea = Tea(
         user=user,
         is_archived=True,
-        name='Da Hong Pao',
+        name="Da Hong Pao",
         year=1980,
         category=category,
         subcategory=subcategory,
@@ -330,64 +319,71 @@ def test_tea_model():
         price=109.52,
         weight_left=80,
         rating=8,
-        notes='many notes',
+        notes="many notes",
     )
-    tea.image = SimpleUploadedFile(name='image.jpg',
-                                   content=open('tests/catalog/media/test_image.jpg', 'rb').read())
+    tea.image = SimpleUploadedFile(
+        name="image.jpg",
+        content=open("tests/test_media/test_image.jpg", "rb").read(),
+    )
     tea.save()
-    assert tea.name == 'Da Hong Pao'
+    assert tea.name == "Da Hong Pao"
     assert tea.year == 1980
-    assert tea.user.email == 'test@test.com'
+    assert tea.user.email == "test@test.com"
     assert tea.is_archived
-    assert tea.category.name == 'OOLONG'
-    assert tea.subcategory.translated_name == 'Big Red Robe'
-    assert tea.vendor.website == 'www.vendor.com'
+    assert tea.category.name == "OOLONG"
+    assert tea.subcategory.translated_name == "Big Red Robe"
+    assert tea.vendor.website == "www.vendor.com"
     assert tea.gongfu_preferred
     assert tea.gongfu_brewing.temperature == 99
     assert tea.western_brewing.weight == 0.8
     assert tea.price == 109.52
     assert tea.weight_left == 80
     assert tea.rating == 8
-    assert tea.notes == 'many notes'
+    assert tea.notes == "many notes"
     assert tea.created_on
-    assert tea.image.size == 558
+    assert tea.last_consumed_on
+
+    path = tea.image.name
+    assert os.path.isfile(path)
+    tea.image.delete()
+    assert not os.path.isfile(path)
 
 
 @pytest.mark.django_db
 def test_tea_model_validators():
     user = CustomUser(email="test@test.com", username="test")
     user.save()
-    tea = Tea(user=user, name='test', year=1800)
+    tea = Tea(user=user, name="test", year=1800)
     with pytest.raises(ValidationError):
         tea.full_clean()
         tea.save()
     assert len(Tea.objects.all()) == 0
 
-    tea = Tea(user=user, name='test', year=2200)
+    tea = Tea(user=user, name="test", year=2200)
     with pytest.raises(ValidationError):
         tea.full_clean()
         tea.save()
     assert len(Tea.objects.all()) == 0
 
-    tea = Tea(user=user, name='test', price=-1)
+    tea = Tea(user=user, name="test", price=-1)
     with pytest.raises(ValidationError):
         tea.full_clean()
         tea.save()
     assert len(Tea.objects.all()) == 0
 
-    tea = Tea(user=user, name='test', weight_left=-1)
+    tea = Tea(user=user, name="test", weight_left=-1)
     with pytest.raises(ValidationError):
         tea.full_clean()
         tea.save()
     assert len(Tea.objects.all()) == 0
 
-    tea = Tea(user=user, name='test', weight_consumed=-1)
+    tea = Tea(user=user, name="test", weight_consumed=-1)
     with pytest.raises(ValidationError):
         tea.full_clean()
         tea.save()
     assert len(Tea.objects.all()) == 0
 
-    tea = Tea(user=user, name='test', rating=-1)
+    tea = Tea(user=user, name="test", rating=-1)
     with pytest.raises(ValidationError):
         tea.full_clean()
         tea.save()

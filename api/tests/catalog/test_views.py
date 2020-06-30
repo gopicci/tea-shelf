@@ -150,18 +150,19 @@ def test_user_can_crud_tea(client, token):
     resp = client.get("/api/tea/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 200
     assert len(resp.data) > 0
-    _id = resp.data[0]['id']
+    _id = resp.data[0]["id"]
     resp = client.get(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 200
-    assert resp.data['name'] == 'Test tea'
+    assert resp.data["name"] == "Test tea"
 
-    resp = client.put(f"/api/tea/{_id}/",
-                      {"name": "Updated tea"},
-                      content_type="application/json",
-                      HTTP_AUTHORIZATION=f"Bearer {token}",
-                      )
+    resp = client.put(
+        f"/api/tea/{_id}/",
+        {"name": "Updated tea"},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
     assert resp.status_code == 200
-    assert resp.data['name'] == 'Updated tea'
+    assert resp.data["name"] == "Updated tea"
 
     resp = client.delete(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 204
@@ -184,10 +185,10 @@ def test_users_cannot_view_others_teas(client, token):
     resp = client.get("/api/tea/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 200
     assert len(resp.data) > 0
-    _id = resp.data[0]['id']
+    _id = resp.data[0]["id"]
     resp = client.get(f"/api/tea/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 200
-    assert resp.data['name'] == 'Test tea'
+    assert resp.data["name"] == "Test tea"
 
     resp = client.post(
         "/api/register/",
@@ -223,10 +224,10 @@ def test_users_cannot_view_others_teas(client, token):
     resp = client.get("/api/tea/", HTTP_AUTHORIZATION=f"Bearer {token2}")
     assert resp.status_code == 200
     assert len(resp.data) > 0
-    _id2 = resp.data[0]['id']
+    _id2 = resp.data[0]["id"]
     resp = client.get(f"/api/tea/{_id2}/", HTTP_AUTHORIZATION=f"Bearer {token2}")
     assert resp.status_code == 200
-    assert resp.data['name'] == 'Test tea'
+    assert resp.data["name"] == "Test tea"
 
     resp = client.get(f"/api/tea/{_id2}/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 404
