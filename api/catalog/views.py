@@ -98,6 +98,7 @@ class OriginDetailView(generics.RetrieveAPIView):
     """
     Retrieve origin details.
     """
+
     lookup_field = "pk"
     queryset = Origin.objects.all()
     serializer_class = OriginSerializer
@@ -107,6 +108,7 @@ class CategoryView(generics.ListAPIView):
     """
     List categories.
     """
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
@@ -115,6 +117,7 @@ class SubcategoryView(generics.ListCreateAPIView):
     """
     List and create subcategories.
     """
+
     serializer_class = SubcategorySerializer
 
     def get_queryset(self):
@@ -131,6 +134,7 @@ class TeaViewSet(viewsets.ModelViewSet):
     """
     Tea view set.
     """
+
     lookup_field = "id"
     serializer_class = TeaSerializer
 

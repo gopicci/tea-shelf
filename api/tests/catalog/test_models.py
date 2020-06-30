@@ -322,8 +322,7 @@ def test_tea_model():
         notes="many notes",
     )
     tea.image = SimpleUploadedFile(
-        name="image.jpg",
-        content=open("tests/test_media/test_image.jpg", "rb").read(),
+        name="image.jpg", content=open("tests/test_media/test_image.jpg", "rb").read(),
     )
     tea.save()
     assert tea.name == "Da Hong Pao"

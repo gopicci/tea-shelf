@@ -99,6 +99,7 @@ class GongfuBrewingSerializer(serializers.ModelSerializer):
     """
     GongfuBrewing serializer returns instance if existing or creates a new one.
     """
+
     class Meta:
         model = GongfuBrewing
         fields = "__all__"
@@ -112,6 +113,7 @@ class WesternBrewingSerializer(serializers.ModelSerializer):
     """
     WesternBrewing serializer returns instance if existing or creates a new one.
     """
+
     class Meta:
         model = WesternBrewing
         fields = "__all__"
@@ -125,6 +127,7 @@ class OriginSerializer(serializers.ModelSerializer):
     """
     Origin serializer, passes request user on creation.
     """
+
     user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:
@@ -137,6 +140,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     Category serializer with nested brewings.
     """
+
     gongfu_brewing = GongfuBrewingSerializer()
     western_brewing = WesternBrewingSerializer()
 
@@ -155,6 +159,7 @@ class SubcategorySerializer(serializers.ModelSerializer):
     """
     Subcategory serializer, passes request user on creation.
     """
+
     user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:
@@ -167,6 +172,7 @@ class SubcategoryNameSerializer(serializers.ModelSerializer):
     """
     SubcategoryName serializer.
     """
+
     class Meta:
         model = SubcategoryName
         fields = "__all__"
@@ -176,6 +182,7 @@ class TeaSerializer(serializers.ModelSerializer):
     """
     Tea serializer, passes request user on creation.
     """
+
     user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:
