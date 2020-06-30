@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import (
@@ -11,8 +11,9 @@ from .serializers import (
     CategorySerializer,
     SubcategorySerializer,
     OriginSerializer,
+    TeaSerializer,
 )
-from .models import Category, GongfuBrewing, WesternBrewing, Origin, Subcategory
+from .models import Category, GongfuBrewing, WesternBrewing, Origin, Subcategory, Tea
 
 
 class RegisterView(generics.CreateAPIView):
@@ -105,6 +106,17 @@ class SubcategoryView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return Subcategory.objects.filter(Q(user=self.request.user) | Q(user=1))
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class TeaViewSet(viewsets.ModelViewSet):
+    lookup_field = "id"
+    serializer_class = TeaSerializer
+
+    def get_queryset(self):
+        return Tea.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

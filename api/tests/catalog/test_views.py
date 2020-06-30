@@ -37,13 +37,13 @@ def token(client):
 def test_anon_cannot_reach_views(client):
     resp = client.get("/api/category/")
     assert resp.status_code == 401
-    resp = client.get("/api/brewings/gongfu/")
+    resp = client.get("/api/brewing/gongfu/")
     assert resp.status_code == 401
-    resp = client.get("/api/brewings/gongfu/0/")
+    resp = client.get("/api/brewing/gongfu/0/")
     assert resp.status_code == 401
-    resp = client.get("/api/brewings/western/")
+    resp = client.get("/api/brewing/western/")
     assert resp.status_code == 401
-    resp = client.get("/api/brewings/western/0/")
+    resp = client.get("/api/brewing/western/0/")
     assert resp.status_code == 401
     resp = client.get("/api/origin/0/")
     assert resp.status_code == 401
@@ -60,16 +60,16 @@ def test_user_can_list_category(client, token):
 @pytest.mark.django_db
 def test_user_can_create_and_view_gongfu_brewing_instructions(client, token):
     resp = client.post(
-        "/api/brewings/gongfu/",
+        "/api/brewing/gongfu/",
         {"temperature": 99, "weight": 3.5, "initial": 20, "increments": 5},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {token}",
     )
     assert resp.status_code == 201
-    assert resp.data["weight"] == "3.5"
+    assert resp.data["weight"] == 3.5
     _id = resp.data["id"]
     resp = client.get(
-        f"/api/brewings/gongfu/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
+        f"/api/brewing/gongfu/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
     )
     assert resp.status_code == 200
     assert resp.data["temperature"] == 99
@@ -81,16 +81,16 @@ def test_user_can_create_and_view_gongfu_brewing_instructions(client, token):
 @pytest.mark.django_db
 def test_user_can_create_and_view_western_brewing_instructions(client, token):
     resp = client.post(
-        "/api/brewings/western/",
+        "/api/brewing/western/",
         {"temperature": 85, "weight": 0.8, "initial": 185},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {token}",
     )
     assert resp.status_code == 201
-    assert resp.data["weight"] == "0.8"
+    assert resp.data["weight"] == 0.8
     _id = resp.data["id"]
     resp = client.get(
-        f"/api/brewings/western/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
+        f"/api/brewing/western/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
     )
     assert resp.status_code == 200
     assert resp.data["temperature"] == 85

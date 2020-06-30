@@ -10,6 +10,7 @@ from .models import (
     Category,
     Subcategory,
     SubcategoryName,
+    Tea,
 )
 from .validators import validate_username
 
@@ -148,3 +149,12 @@ class SubcategoryNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubcategoryName
         fields = "__all__"
+
+
+class TeaSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source="user.pk")
+
+    class Meta:
+        model = Tea
+        fields = "__all__"
+        read_only_fields = ("user",)

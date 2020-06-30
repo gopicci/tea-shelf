@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import timedelta
 
 from django.contrib.auth.models import (
@@ -90,14 +91,7 @@ class GongfuBrewing(models.Model):
     temperature = models.PositiveSmallIntegerField(
         default=99, validators=[MaxValueValidator(100)], null=True, blank=True
     )
-    weight = models.DecimalField(
-        default=5,
-        validators=[MinValueValidator(0)],
-        max_digits=3,
-        decimal_places=1,
-        null=True,
-        blank=True,
-    )
+    weight = models.FloatField(default=5, validators=[MinValueValidator(0)], null=True, blank=True)
     initial = models.DurationField(default=timedelta(seconds=20), null=True, blank=True)
     increments = models.DurationField(
         default=timedelta(seconds=5), null=True, blank=True
@@ -111,15 +105,17 @@ class GongfuBrewing(models.Model):
             )
         ]
 
+    def save(self, *args, **kwargs):
+        self.weight = float("%.1f" % self.weight)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         """
         Returns weight, temperature, initial brewing time, brewing time increments
         in standard gongfu brewing style, ie: 5g 99°c 20s +5
         """
-        iw = self.weight.to_integral_value()
-
         return (
-            str(iw if iw == self.weight else "%.1f" % self.weight)
+            str(int(self.weight) if self.weight.is_integer() else "%.1f" % self.weight)
             + "g "
             + str(self.temperature)
             + "°c "
@@ -138,14 +134,7 @@ class WesternBrewing(models.Model):
     temperature = models.PositiveSmallIntegerField(
         default=99, validators=[MaxValueValidator(100)], null=True, blank=True
     )
-    weight = models.DecimalField(
-        default=1,
-        validators=[MinValueValidator(0)],
-        max_digits=3,
-        decimal_places=1,
-        null=True,
-        blank=True,
-    )
+    weight = models.FloatField(default=1, validators=[MinValueValidator(0)], null=True, blank=True)
     initial = models.DurationField(default=timedelta(minutes=2), null=True, blank=True)
 
     class Meta:
@@ -155,15 +144,17 @@ class WesternBrewing(models.Model):
             )
         ]
 
+    def save(self, *args, **kwargs):
+        self.weight = float("%.1f" % self.weight)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         """
         Returns weight, temperature, brewing time
         in standard western brewing style, ie: 1g 99°c 2m
         """
-        iw = self.weight.to_integral_value()
-
         return (
-            str(iw if iw == self.weight else "%.1f" % self.weight)
+            str(int(self.weight) if self.weight.is_integer() else "%.1f" % self.weight)
             + "g "
             + str(self.temperature)
             + "°c "
@@ -281,3 +272,37 @@ class VendorTrademark(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Tea(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    is_archived = models.BooleanField(default=False)
+    name = models.CharField(max_length=50)
+    image = models.ImageField(null=True, blank=True)
+    year = models.SmallIntegerField(validators=[MinValueValidator(1900), MaxValueValidator(2100)],
+                                    null=True,
+                                    blank=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.SET_NULL, null=True, blank=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
+
+    gongfu_preferred = models.BooleanField(default=True)
+    gongfu_brewing = models.ForeignKey(GongfuBrewing, on_delete=models.SET_NULL, null=True, blank=True)
+    western_brewing = models.ForeignKey(WesternBrewing, on_delete=models.SET_NULL, null=True, blank=True)
+
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_consumed_on = models.DateTimeField(auto_now=True)
+
+    price = models.FloatField(default=0, validators=[MinValueValidator(0)], null=True, blank=True)
+
+    weight_left = models.FloatField(default=0, validators=[MinValueValidator(0)], null=True, blank=True)
+    weight_consumed = models.FloatField(default=0, validators=[MinValueValidator(0)], null=True, blank=True)
+
+    rating = models.SmallIntegerField(default=0,
+                                      validators=[MinValueValidator(0),
+                                                  MaxValueValidator(10)],
+                                      null=True,
+                                      blank=True,
+                                      )
+    notes = models.TextField(max_length=10000, null=True, blank=True)

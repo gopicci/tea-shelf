@@ -1,6 +1,5 @@
 import pytest
 from datetime import timedelta
-from decimal import Decimal
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
@@ -35,13 +34,13 @@ def test_custom_user_model():
 def test_gongfubrewing_model():
     brewing = GongfuBrewing(
         temperature=99,
-        weight=Decimal(5),
+        weight=5.0076865,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
     brewing.save()
     assert brewing.temperature == 99
-    assert brewing.weight.to_integral_value() == 5
+    assert brewing.weight == 5
     assert brewing.initial.total_seconds() == 10
     assert brewing.increments.total_seconds() == 3
     assert str(brewing) == "5g 99°c 10s + 3s"
@@ -51,7 +50,7 @@ def test_gongfubrewing_model():
 def test_gongfubrewing_model_validators():
     brewing = GongfuBrewing(
         temperature=101,
-        weight=Decimal(5),
+        weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
@@ -62,7 +61,7 @@ def test_gongfubrewing_model_validators():
 
     brewing = GongfuBrewing(
         temperature=99,
-        weight=Decimal(-1),
+        weight=-1,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
@@ -76,7 +75,7 @@ def test_gongfubrewing_model_validators():
 
     brewing1 = GongfuBrewing(
         temperature=99,
-        weight=Decimal(5),
+        weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
@@ -87,7 +86,7 @@ def test_gongfubrewing_model_validators():
 
     brewing2 = GongfuBrewing(
         temperature=99,
-        weight=Decimal(5),
+        weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
@@ -102,11 +101,11 @@ def test_gongfubrewing_model_validators():
 @pytest.mark.django_db
 def test_westernbrewing_model():
     brewing = WesternBrewing(
-        temperature=85, weight=Decimal(0.8), initial=timedelta(seconds=180)
+        temperature=85, weight=0.82464, initial=timedelta(seconds=180)
     )
     brewing.save()
     assert brewing.temperature == 85
-    assert brewing.weight == Decimal(0.8)
+    assert brewing.weight == 0.8
     assert brewing.initial.total_seconds() == 180
     assert str(brewing) == "0.8g 85°c 3m"
 
@@ -114,7 +113,7 @@ def test_westernbrewing_model():
 @pytest.mark.django_db
 def test_westernbrewingg_model_validators():
     brewing = WesternBrewing(
-        temperature=101, weight=Decimal(0.8), initial=timedelta(seconds=180)
+        temperature=101, weight=0.8, initial=timedelta(seconds=180)
     )
 
     with pytest.raises(ValidationError):
@@ -122,7 +121,7 @@ def test_westernbrewingg_model_validators():
         brewing.save()
 
     brewing = WesternBrewing(
-        temperature=85, weight=Decimal(-2), initial=timedelta(seconds=180)
+        temperature=85, weight=-2, initial=timedelta(seconds=180)
     )
 
     with pytest.raises(ValidationError):
@@ -133,7 +132,7 @@ def test_westernbrewingg_model_validators():
     assert len(brewings) == 0
 
     brewing1 = WesternBrewing(
-        temperature=85, weight=Decimal(2), initial=timedelta(seconds=180)
+        temperature=85, weight=2, initial=timedelta(seconds=180)
     )
     brewing1.save()
 
@@ -141,7 +140,7 @@ def test_westernbrewingg_model_validators():
     assert len(brewings) == 1
 
     brewing2 = WesternBrewing(
-        temperature=85, weight=Decimal(2), initial=timedelta(seconds=180)
+        temperature=85, weight=2, initial=timedelta(seconds=180)
     )
     with pytest.raises(IntegrityError):
         brewing2.save()
@@ -193,13 +192,13 @@ def test_origin_model_validators():
 def test_category_model():
     gongfu = GongfuBrewing(
         temperature=99,
-        weight=Decimal(5),
+        weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
     gongfu.save()
     western = WesternBrewing(
-        temperature=85, weight=Decimal(0.8), initial=timedelta(seconds=180)
+        temperature=85, weight=0.8, initial=timedelta(seconds=180)
     )
     western.save()
     category = Category(name="OOLONG", gongfu_brewing=gongfu, western_brewing=western)
@@ -219,13 +218,13 @@ def test_subcategory_subcategoryname_model():
     origin.save()
     gongfu = GongfuBrewing(
         temperature=99,
-        weight=Decimal(5),
+        weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
     gongfu.save()
     western = WesternBrewing(
-        temperature=85, weight=Decimal(0.8), initial=timedelta(seconds=180)
+        temperature=85, weight=0.8, initial=timedelta(seconds=180)
     )
     western.save()
     subcategory = Subcategory(
@@ -244,7 +243,7 @@ def test_subcategory_subcategoryname_model():
     assert subcategory.origin.locality == "Paris"
     assert subcategory.user.username == "test"
     assert subcategory.gongfu_brewing.temperature == 99
-    assert subcategory.western_brewing.weight == Decimal(0.8)
+    assert subcategory.western_brewing.weight == 0.8
 
     assert str(subcategory) == "Da Hong Pao"
 

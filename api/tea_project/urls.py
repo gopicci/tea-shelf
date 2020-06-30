@@ -14,8 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework import routers
 
 from .views import ping
 from catalog.views import (
@@ -30,8 +31,11 @@ from catalog.views import (
     OriginDetailView,
     CategoryView,
     SubcategoryView,
+    TeaViewSet,
 )
 
+router = routers.SimpleRouter()
+router.register(r"tea", TeaViewSet, basename="tea")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -41,22 +45,22 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/user/", UserView.as_view(), name="user_detail"),
     path(
-        "api/brewings/gongfu/",
+        "api/brewing/gongfu/",
         GongfuBrewingCreateView.as_view(),
         name="gongfu_brewing_create",
     ),
     path(
-        "api/brewings/gongfu/<int:pk>/",
+        "api/brewing/gongfu/<int:pk>/",
         GongfuBrewingDetailView.as_view(),
         name="gongfu_brewing_detail",
     ),
     path(
-        "api/brewings/western/",
+        "api/brewing/western/",
         WesternBrewingCreateView.as_view(),
         name="western_brewing_create",
     ),
     path(
-        "api/brewings/western/<int:pk>/",
+        "api/brewing/western/<int:pk>/",
         WesternBrewingDetailView.as_view(),
         name="western_brewing_detail",
     ),
@@ -64,4 +68,5 @@ urlpatterns = [
     path("api/origin/<int:pk>/", OriginDetailView.as_view(), name="origin_detail"),
     path("api/category/", CategoryView.as_view(), name="category_list"),
     path("api/subcategory/", SubcategoryView.as_view(), name="subcategory_list_create"),
+    path("api/", include(router.urls)),
 ]

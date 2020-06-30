@@ -1,7 +1,6 @@
 import pytest
 
 from datetime import timedelta
-from decimal import Decimal
 
 from catalog.serializers import (
     GongfuBrewingSerializer,
@@ -11,14 +10,14 @@ from catalog.serializers import (
     SubcategorySerializer,
     SubcategoryNameSerializer,
 )
-from catalog.models import Category, Subcategory, CustomUser
+from catalog.models import Category, Subcategory, CustomUser, GongfuBrewing, WesternBrewing
 
 
 @pytest.mark.django_db
 def test_valid_gongfu_brewing_serializer(client):
     valid_serializer_data = {
         "temperature": 99,
-        "weight": Decimal(3.5),
+        "weight": 3.5,
         "initial": timedelta(seconds=20),
         "increments": timedelta(seconds=5),
     }
@@ -32,7 +31,7 @@ def test_valid_gongfu_brewing_serializer(client):
 def test_invalid_gongfu_brewing_serializer(client):
     invalid_serializer_data = {
         "temperature": 101,
-        "weight": Decimal(3.5),
+        "weight": 3.5,
         "initial": timedelta(seconds=20),
         "increments": timedelta(seconds=5),
     }
@@ -48,7 +47,7 @@ def test_invalid_gongfu_brewing_serializer(client):
 def test_valid_western_brewing_serializer(client):
     valid_serializer_data = {
         "temperature": 99,
-        "weight": Decimal(1),
+        "weight": 1,
         "initial": timedelta(seconds=180),
     }
     serializer = WesternBrewingSerializer(data=valid_serializer_data)
@@ -61,7 +60,7 @@ def test_valid_western_brewing_serializer(client):
 def test_invalid_western_brewing_serializer(client):
     invalid_serializer_data = {
         "temperature": 99,
-        "weight": Decimal(-1),
+        "weight": -1,
         "initial": timedelta(seconds=180),
     }
     serializer = WesternBrewingSerializer(data=invalid_serializer_data)
@@ -96,10 +95,35 @@ def test_invalid_origin_serializer(client):
 
 @pytest.mark.django_db
 def test_valid_category_serializer(client):
-    valid_serializer_data = {"name": "OOLONG"}
+    gongfu_data = {
+        "temperature": 99,
+        "weight": 3.5,
+        "initial": timedelta(seconds=20),
+        "increments": timedelta(seconds=5),
+    }
+    gongfu_serializer = GongfuBrewingSerializer(data=gongfu_data)
+    assert gongfu_serializer.is_valid()
+    western_data = {
+        "temperature": 99,
+        "weight": 1,
+        "initial": timedelta(seconds=180),
+    }
+    western_serializer = GongfuBrewingSerializer(data=western_data)
+    assert western_serializer.is_valid()
+    valid_serializer_data = {"name": "OOLONG",
+                             "gongfu_brewing": gongfu_serializer.validated_data,
+                             "western_brewing": western_serializer.validated_data}
     serializer = CategorySerializer(data=valid_serializer_data)
     assert serializer.is_valid()
     assert serializer.errors == {}
+
+
+@pytest.mark.django_db
+def test_invalid_category_serializer(client):
+    valid_serializer_data = {"name": "OOLONG"}
+    serializer = CategorySerializer(data=valid_serializer_data)
+    assert not serializer.is_valid()
+    assert serializer.errors != {}
 
 
 @pytest.mark.django_db

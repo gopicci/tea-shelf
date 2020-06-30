@@ -9,3 +9,4 @@ media
 .idea
 entrypoint-dev.sh
 fixtures
+.dev*

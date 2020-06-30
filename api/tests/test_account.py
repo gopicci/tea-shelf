@@ -56,7 +56,7 @@ def test_user_can_login(client):
 def test_can_visit_user_info_page_when_login(client):
     user = create_user()
     client.login(email=user.email, password=PASSWORD)
-    response = client.get(reverse("user"))
+    response = client.get(reverse("user_detail"))
     assert status.HTTP_200_OK == response.status_code
     assert response.data["email"] == user.email
     assert response.data["username"] == user.username
@@ -64,5 +64,5 @@ def test_can_visit_user_info_page_when_login(client):
 
 @pytest.mark.django_db
 def test_cannot_visit_user_info_page_without_login(client):
-    response = client.get(reverse("user"))
+    response = client.get(reverse("user_detail"))
     assert status.HTTP_401_UNAUTHORIZED == response.status_code

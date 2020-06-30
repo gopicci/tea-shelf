@@ -10,6 +10,7 @@ from .models import (
     Vendor,
     VendorTrademark,
     Origin,
+    Tea,
 )
 
 
@@ -56,3 +57,8 @@ class VendorNameInline(admin.TabularInline):
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
     inlines = [VendorNameInline]
+
+
+@admin.register(Tea)
+class TeaAdmin(admin.ModelAdmin):
+    pass
