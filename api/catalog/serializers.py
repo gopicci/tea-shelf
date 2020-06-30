@@ -3,7 +3,14 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import GongfuBrewing, WesternBrewing, Origin, Category, Subcategory, SubcategoryName
+from .models import (
+    GongfuBrewing,
+    WesternBrewing,
+    Origin,
+    Category,
+    Subcategory,
+    SubcategoryName,
+)
 from .validators import validate_username
 
 
@@ -85,10 +92,9 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 
 class GongfuBrewingSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = GongfuBrewing
-        fields = '__all__'
+        fields = "__all__"
 
     def create(self, validated_data):
         instance, _ = GongfuBrewing.objects.get_or_create(**validated_data)
@@ -96,10 +102,9 @@ class GongfuBrewingSerializer(serializers.ModelSerializer):
 
 
 class WesternBrewingSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = WesternBrewing
-        fields = '__all__'
+        fields = "__all__"
 
     def create(self, validated_data):
         instance, _ = WesternBrewing.objects.get_or_create(**validated_data)
@@ -107,33 +112,39 @@ class WesternBrewingSerializer(serializers.ModelSerializer):
 
 
 class OriginSerializer(serializers.ModelSerializer):
-
-    user = serializers.ReadOnlyField(source='user.username')
+    user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:
         model = Origin
-        fields = '__all__'
-        read_only_fields = ('user', )
+        fields = "__all__"
+        read_only_fields = ("user",)
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    gongfu_brewing = GongfuBrewingSerializer()
+    western_brewing = WesternBrewingSerializer()
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'gongfu_brewing', 'western_brewing', )
-        read_only_fields = ('id', 'name', 'gongfu_brewing', 'western_brewing', )
+        fields = "__all__"
+        read_only_fields = (
+            "id",
+            "name",
+            "gongfu_brewing",
+            "western_brewing",
+        )
 
 
 class SubcategorySerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source="user.pk")
 
     class Meta:
         model = Subcategory
-        fields = '__all__'
-        read_only_fields = ('user', )
+        fields = "__all__"
+        read_only_fields = ("user",)
 
 
 class SubcategoryNameSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SubcategoryName
-        fields = ('name', 'subcategory', )
+        fields = "__all__"

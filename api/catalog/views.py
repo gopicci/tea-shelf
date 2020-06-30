@@ -1,10 +1,18 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from rest_framework import generics, permissions
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import LoginSerializer, UserSerializer, GongfuBrewingSerializer, WesternBrewingSerializer, \
-    CategorySerializer, SubcategorySerializer, OriginSerializer
-from .models import Category, GongfuBrewing, WesternBrewing, Origin
+from .serializers import (
+    LoginSerializer,
+    UserSerializer,
+    GongfuBrewingSerializer,
+    WesternBrewingSerializer,
+    CategorySerializer,
+    SubcategorySerializer,
+    OriginSerializer,
+)
+from .models import Category, GongfuBrewing, WesternBrewing, Origin, Subcategory
 
 
 class RegisterView(generics.CreateAPIView):
@@ -14,7 +22,7 @@ class RegisterView(generics.CreateAPIView):
 
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
 
 
 class LoginView(TokenObtainPairView):
@@ -23,7 +31,7 @@ class LoginView(TokenObtainPairView):
     """
 
     serializer_class = LoginSerializer
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
 
 
 class UserView(generics.RetrieveAPIView):
@@ -42,6 +50,7 @@ class GongfuBrewingCreateView(generics.CreateAPIView):
     """
     Create gongfu brewing details
     """
+
     serializer_class = GongfuBrewingSerializer
 
 
@@ -49,7 +58,8 @@ class GongfuBrewingDetailView(generics.RetrieveAPIView):
     """
     Retrieve gongfu brewing details
     """
-    lookup_field = 'pk'
+
+    lookup_field = "pk"
     queryset = GongfuBrewing.objects.all()
     serializer_class = GongfuBrewingSerializer
 
@@ -58,6 +68,7 @@ class WesternBrewingCreateView(generics.CreateAPIView):
     """
     Create western brewing details
     """
+
     serializer_class = WesternBrewingSerializer
 
 
@@ -65,7 +76,8 @@ class WesternBrewingDetailView(generics.RetrieveAPIView):
     """
     Retrieve western brewing details
     """
-    lookup_field = 'pk'
+
+    lookup_field = "pk"
     queryset = WesternBrewing.objects.all()
     serializer_class = WesternBrewingSerializer
 
@@ -76,8 +88,9 @@ class OriginCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
 class OriginDetailView(generics.RetrieveAPIView):
-    lookup_field = 'pk'
+    lookup_field = "pk"
     queryset = Origin.objects.all()
     serializer_class = OriginSerializer
 
@@ -89,3 +102,9 @@ class CategoryView(generics.ListAPIView):
 
 class SubcategoryView(generics.ListCreateAPIView):
     serializer_class = SubcategorySerializer
+
+    def get_queryset(self):
+        return Subcategory.objects.filter(Q(user=self.request.user) | Q(user=1))
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

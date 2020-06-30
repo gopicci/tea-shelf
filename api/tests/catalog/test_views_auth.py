@@ -138,8 +138,7 @@ def test_logged_in_can_access_user_page(client):
     )
     assert resp.status_code == 200
     assert resp.data["access"]
-    resp = client.get("/api/user/",
-                      HTTP_AUTHORIZATION=f'Bearer {resp.data["access"]}')
+    resp = client.get("/api/user/", HTTP_AUTHORIZATION=f'Bearer {resp.data["access"]}')
     assert resp.status_code == 200
     assert resp.data["username"] == "test"
 
@@ -176,21 +175,20 @@ def test_token_refresh(client):
     access_token = resp.data["access"]
     refresh_token = resp.data["refresh"]
 
-    resp = client.get("/api/user/",
-                      HTTP_AUTHORIZATION=f'Bearer {access_token}')
+    resp = client.get("/api/user/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
     assert resp.status_code == 200
     assert resp.data["username"] == "test"
 
-    resp = client.post("/api/token/refresh/",
-                       {'refresh': refresh_token},
-                       content_type="application/json"
-                       )
+    resp = client.post(
+        "/api/token/refresh/",
+        {"refresh": refresh_token},
+        content_type="application/json",
+    )
     assert resp.data["access"]
     new_access_token = resp.data["access"]
     assert new_access_token != access_token
 
-    resp = client.get("/api/user/",
-                      HTTP_AUTHORIZATION=f'Bearer {new_access_token}')
+    resp = client.get("/api/user/", HTTP_AUTHORIZATION=f"Bearer {new_access_token}")
     assert resp.status_code == 200
     assert resp.data["username"] == "test"
 

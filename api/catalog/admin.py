@@ -1,6 +1,16 @@
 from django.contrib import admin
 
-from .models import CustomUser, GongfuBrewing, WesternBrewing, Category, Subcategory, SubcategoryName, Vendor, VendorTrademark, Origin
+from .models import (
+    CustomUser,
+    GongfuBrewing,
+    WesternBrewing,
+    Category,
+    Subcategory,
+    SubcategoryName,
+    Vendor,
+    VendorTrademark,
+    Origin,
+)
 
 
 @admin.register(CustomUser)
