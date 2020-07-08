@@ -4,6 +4,9 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import { Add, Menu, Search } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
   menuButton: {
     marginRight: theme.spacing(2),
     display: 'block',
@@ -40,9 +43,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
   },
   inputRoot: {
     color: 'inherit',

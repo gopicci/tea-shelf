@@ -1,58 +1,59 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer } from 'react';
 
-const categoriesInput = ['White', 'Yellow', 'Black', 'Oolong', 'Post fermented', 'Herbal', 'Other']
-  .reduce((obj, item) => {
+import { categories, subcategories, origins, sorting } from '../../dev/DevData';
+
+const categoriesFilter = categories.reduce((obj, item) => {
     obj[item] = false;
     return obj;
   }, {})
 
-const subcategoriesInput = ['Da Hong Pao', 'Jin Jun Mei', 'Dan Cong', 'Dien Hong', 'Darjeeling']
-  .reduce((obj, item) => {
+const subcategoriesFilter = subcategories.reduce((obj, item) => {
     obj[item] = false;
     return obj;
   }, {})
 
-const originInput = [
-  {
-    china: ['Yunnan', 'Bulang', 'Yiwu Mountain']
-  },
-  {
-    india: ['Assam', 'Darjeeling']
-  },
-  {
-    taiwan: []
-  },
-]
+const sortingFilter = sorting.reduce((obj, item) => {
+    obj[item] = false;
+    return obj;
+  }, {})
 
 const initialState = {
-  Categories: categoriesInput,
-  Subcategories: subcategoriesInput,
+  sorting: sortingFilter,
+  filters: {
+    active: 0,
+    Categories: categoriesFilter,
+    Subcategories: subcategoriesFilter,
+  }
 }
 
-
-export const FilterDispatch = React.createContext(null);
 export const FilterState = React.createContext(initialState)
-
-
-console.log(initialState)
+export const FilterDispatch = React.createContext(null);
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "CHECK":
-      return {
-      ...state,
-      [action.data.entry]: {
-        ...state[action.data.entry],
-        [action.data.item]: !state[action.data.entry][action.data.item]
+      let activeUpdate = state.active;
+      const checked = !state.filters[action.data.entry][action.data.item]
+      if (checked){
+        activeUpdate += 1;
+      } else {
+        activeUpdate -= 1;
       }
-    }
+      return {
+        active: activeUpdate,
+        filters: {
+          ...state.filters,
+          [action.data.entry]: {
+            ...state.filters[action.data.entry],
+            [action.data.item]: checked
+          }
+        }
+      }
     case "CLEAR":
-      return {
-        ...state,
-        [action.data.entry]: initialState[action.data.entry]
-      }
+      return initialState
+    default:
+      return action
   }
-  return action
 }
 
 export default function FilterStateContainer(props) {

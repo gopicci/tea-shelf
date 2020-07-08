@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {Collapse, FormGroup, FormLabel, Link, List, ListItem, Typography,} from '@material-ui/core';
 import {fade, makeStyles} from '@material-ui/core/styles';
 
@@ -44,14 +44,7 @@ export default function FilterList({ entry, list }) {
     });
   };
 
-  const handleClearClick = () => {
-    dispatch({
-      type: "CLEAR",
-      data: { entry: entry }
-    });
-  };
-
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleShowAllClick = () => {
     setOpen(!open);
@@ -61,26 +54,25 @@ export default function FilterList({ entry, list }) {
         <FormGroup className={classes.root}>
           <FormLabel className={classes.formLabel}>
             <Typography  className={classes.entryName}>{entry}:</Typography>
-            <Link className={classes.linkSmall} onClick={handleClearClick}>Clear</Link>
           </FormLabel>
           <List dense={true}>
             {
               Object.entries(list).slice(0,3).map(([item, checked]) => (
-                <FilterItem name={item} checked={checked} handleChange={handleChange} />
+                <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
               ))
             }
             {
               !open &&
-                <ListItem className={classes.listItem}>
+                <ListItem key='ShowAll' className={classes.listItem}>
                   <Link className={classes.linkSmall} onClick={handleShowAllClick}>Show all</Link>
                 </ListItem>
             }
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              {
-                Object.entries(list).slice(3).map(([item, checked]) => (
-                  <FilterItem name={item} checked={checked} handleChange={handleChange} />
-                ))
-              }
+            <Collapse in={open} timeout="auto">
+                {
+                  Object.entries(list).slice(3).map(([item, checked]) => (
+                    <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
+                  ))
+                }
             </Collapse>
           </List>
         </FormGroup>

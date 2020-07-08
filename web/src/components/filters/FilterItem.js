@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Checkbox, FormControlLabel, ListItem, Toolbar, Typography} from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { Check } from '@material-ui/icons';
@@ -33,7 +33,7 @@ export default function FilterItem({ name, checked, handleChange }) {
   const classes = useStyles();
 
 return (
-  <ListItem className={classes.root} button>
+  <ListItem className={classes.root} key={name} button>
     <FormControlLabel
       labelPlacement="start"
       className={classes.label}

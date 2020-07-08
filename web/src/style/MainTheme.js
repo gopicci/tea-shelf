@@ -4,10 +4,13 @@ import { purple } from '@material-ui/core/colors';
 export const mainTheme = createMuiTheme({
   palette: {
     primary: {
-      light: '#5b9166',
-      main: '#2e633b',
-      dark: '#003814',
+      light: '#577889',
+      main: '#2e5263',
+      dark: '#002838',
     },
+    background: {
+      main: '#dadfe5'
+    }
   },
   typography:{
     h5: {

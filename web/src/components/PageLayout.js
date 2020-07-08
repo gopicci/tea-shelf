@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SearchAppBar from './appbar/SearchAppBar';
 import DrawerLayout from './drawer/DrawerLayout';
 import GridLayout from './grid/GridLayout';
-import FilterChips from './chips/FilterChips';
+import FilterLayout from './filters/FilterLayout';
 
 import FilterStateContainer from './containers/FilterStateContainer';
 
@@ -14,10 +14,11 @@ import FilterStateContainer from './containers/FilterStateContainer';
 const useStyles = makeStyles((theme) => ({
   page: {
     display: 'flex',
+    minHeight: '100vh',
+    backgroundColor: theme.palette.background.main,
   },
   center: {
-    display: 'block ',
-    paddingTop: theme.spacing(2),
+    display: 'block',
   },
 }));
 
@@ -28,11 +29,12 @@ export default function PageLayout() {
   return (
     <>
       <SearchAppBar />
-      <Box my={4} className={ classes.page }>
+      <Toolbar />
+      <Box className={ classes.page }>
         <FilterStateContainer>
           <DrawerLayout />
-          <Box my={4} className={ classes.center }>
-            <FilterChips />
+          <Box className={ classes.center }>
+            <FilterLayout />
             <GridLayout />
           </Box>
         </FilterStateContainer>

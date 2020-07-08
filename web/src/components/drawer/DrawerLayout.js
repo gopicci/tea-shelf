@@ -1,5 +1,4 @@
-import { Button, Divider, Drawer, Toolbar } from '@material-ui/core';
-import FilterList from './FilterList';
+import { Divider, Drawer, Toolbar, Typography } from '@material-ui/core';
 import React, { useContext } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -41,15 +40,21 @@ export default function DrawerLayout() {
         paper: classes.drawerPaper,
       }}
     >
-      <Toolbar/>
-      <Button variant="contained" disableElevation>Disable filters</Button>
-      <Divider />
       <div className={classes.drawerContainer}>
-        {
-          Object.entries(state).map(([entry, list]) => (
-          <FilterList entry={entry} list={list}/>
-          ))
-        }
+      <Toolbar/>
+      <Typography variant='h5'>
+        Add tea
+        <Divider />
+        Cellar
+        <Divider />
+        Archive
+        <Divider />
+        Sessions
+        <Divider />
+        Sessions
+        <Divider />
+      </Typography>
+
       </div>
     </Drawer>
   )
