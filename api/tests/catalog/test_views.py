@@ -67,7 +67,20 @@ def test_user_can_create_and_view_gongfu_brewing_instructions(client, token):
     )
     assert resp.status_code == 201
     assert resp.data["weight"] == 3.5
+    first_id = resp.data["id"]
+
+    resp = client.post(
+        "/api/brewing/gongfu/",
+        {"temperature": 99, "weight": 3.5, "initial": 20, "increments": 5},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+    assert resp.data["weight"] == 3.5
+
     _id = resp.data["id"]
+    assert first_id == _id
+
     resp = client.get(
         f"/api/brewing/gongfu/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
     )
@@ -88,7 +101,20 @@ def test_user_can_create_and_view_western_brewing_instructions(client, token):
     )
     assert resp.status_code == 201
     assert resp.data["weight"] == 0.8
+    first_id = resp.data["id"]
+
+    resp = client.post(
+        "/api/brewing/western/",
+        {"temperature": 85, "weight": 0.8, "initial": 185},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+    assert resp.data["weight"] == 0.8
+
     _id = resp.data["id"]
+    assert first_id == _id
+
     resp = client.get(
         f"/api/brewing/western/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
     )
@@ -107,7 +133,19 @@ def test_user_can_create_and_view_origin(client, token):
         HTTP_AUTHORIZATION=f"Bearer {token}",
     )
     assert resp.status_code == 201
+    first_id = resp.data["id"]
+
+    resp = client.post(
+        "/api/origin/",
+        {"country": "France", "region": "Oregon", "locality": "Taipei"},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+
     _id = resp.data["id"]
+    assert first_id == _id
+
     resp = client.get(f"/api/origin/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 200
     assert resp.data["user"]

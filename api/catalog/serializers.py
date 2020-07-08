@@ -135,6 +135,10 @@ class OriginSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("user",)
 
+    def create(self, validated_data):
+        instance, _ = Origin.objects.get_or_create(**validated_data)
+        return instance
+
 
 class CategorySerializer(serializers.ModelSerializer):
     """

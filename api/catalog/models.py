@@ -177,10 +177,12 @@ class Origin(models.Model):
     Model defining a geographic indication.
     """
 
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=False)
+
     country = models.CharField(max_length=30)
     region = models.CharField(max_length=50, blank=True)
     locality = models.CharField(max_length=50, blank=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["country", "region", "locality"]
@@ -243,11 +245,14 @@ class Subcategory(models.Model):
     Model defining a tea subcategory.
     """
 
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=False)
+
     name = models.CharField(max_length=50)
     translated_name = models.CharField(max_length=50, blank=True)
     origin = models.ForeignKey(Origin, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
     gongfu_brewing = models.ForeignKey(
         GongfuBrewing, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -256,6 +261,8 @@ class Subcategory(models.Model):
     )
 
     def __str__(self):
+        if self.translated_name:
+            return f"{self.name} ({self.translated_name})"
         return self.name
 
 
@@ -276,10 +283,13 @@ class Vendor(models.Model):
     Model defining a vendor.
     """
 
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=False)
+
     name = models.CharField(max_length=50)
     website = models.CharField(max_length=50, blank=True)
     origin = models.ForeignKey(Origin, on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
     popularity = models.PositiveSmallIntegerField(
         default=5, validators=[MaxValueValidator(10)], null=True, blank=True
     )

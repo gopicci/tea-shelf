@@ -124,7 +124,7 @@ class SubcategoryView(generics.ListCreateAPIView):
         """
         Lists only user owned and pre-saved subcategories.
         """
-        return Subcategory.objects.filter(Q(user=self.request.user) | Q(user=1))
+        return Subcategory.objects.filter(Q(user=self.request.user) | Q(is_public=True))
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

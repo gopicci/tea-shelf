@@ -153,6 +153,7 @@ def test_origin_model():
     user.save()
     origin = Origin(country="Germany", region="Yunnan", locality="Paris", user=user)
     origin.save()
+    assert not origin.is_public
     assert origin.country == "Germany"
     assert origin.region == "Yunnan"
     assert origin.locality == "Paris"
@@ -230,6 +231,7 @@ def test_subcategory_subcategoryname_model():
         western_brewing=western,
     )
     subcategory.save()
+    assert not subcategory.is_public
     assert subcategory.name == "Da Hong Pao"
     assert subcategory.category.name == "OOLONG"
     assert subcategory.translated_name == "Big Red Robe"
@@ -238,7 +240,7 @@ def test_subcategory_subcategoryname_model():
     assert subcategory.gongfu_brewing.temperature == 99
     assert subcategory.western_brewing.weight == 0.8
 
-    assert str(subcategory) == "Da Hong Pao"
+    assert str(subcategory) == "Da Hong Pao (Big Red Robe)"
 
     subcategoryname = SubcategoryName(subcategory=subcategory, name="dhp")
     subcategoryname.save()
@@ -259,6 +261,7 @@ def test_vendor_vendortrademark_model():
         popularity=7,
     )
     vendor.save()
+    assert not vendor.is_public
     assert str(vendor) == "vendor name"
     assert vendor.website == "www.vendor.com"
     assert vendor.origin.country == "Germany"
