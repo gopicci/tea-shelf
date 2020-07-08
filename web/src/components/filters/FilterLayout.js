@@ -50,7 +50,7 @@ export default function FilterLayout() {
         </AccordionSummary>
         <AccordionDetails>
           {
-            Object.entries(state.filters).map(([entry, list]) => (
+            Object.entries(state).map(([entry, list]) => (
               <FilterList key={entry} entry={entry} list={list}/>
             ))
           }

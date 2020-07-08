@@ -32,22 +32,22 @@ export default function FilterChips() {
   const handleReset = (event, entry, item) => {
     event.stopPropagation();
     dispatch({
-      type: "CLEAR"
+      type: "RESET"
     });
   };
 
   return (
     <Box className={classes.root}>
       {
-        !state.filters.active &&
+        !state.active &&
           <Typography className={classes.heading}>Sort & filter</Typography>
       }
       {
-        state.filters.active > 0 &&
+        state.active > 0 &&
           <Button size='small' color='primary' disableElevation onClick={handleReset}>Clear</Button>
       }
       {
-        Object.entries(state.filters).map(([entry, list]) => (
+        Object.entries(state).map(([entry, list]) => (
           Object.entries(list).map(([item, checked]) => (
             checked &&
              <Chip
