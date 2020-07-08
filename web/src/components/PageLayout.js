@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
   center: {
     display: 'block',
+    flexGrow: 1,
   },
 }));
 

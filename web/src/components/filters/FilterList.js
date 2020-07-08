@@ -70,10 +70,11 @@ export default function FilterList({ entry, list }) {
               ))
             }
             {
-              !open &&
-                <ListItem key='ShowAll' className={classes.listItem}>
-                  <Link className={classes.linkSmall} onClick={handleShowAllClick}>Show all</Link>
-                </ListItem>
+              Object.entries(list).length > 3 &&
+                !open &&
+                  <ListItem key='ShowAll' className={classes.listItem}>
+                    <Link className={classes.linkSmall} onClick={handleShowAllClick}>Show all</Link>
+                  </ListItem>
             }
             <Collapse in={open} timeout="auto">
                 {

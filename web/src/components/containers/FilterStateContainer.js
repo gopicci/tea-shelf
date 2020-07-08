@@ -1,19 +1,31 @@
 import React, { useReducer } from 'react';
 
-import { categories, subcategories, origins, sorting } from '../../dev/DevData';
+import { categories, subcategories, countries, regions, sorting } from '../../dev/DevData';
 
 const categoriesFilter = categories.reduce((obj, item) => {
-    obj[item] = false;
+    obj[item.toLowerCase()] = false;
     return obj;
   }, {})
 
 const subcategoriesFilter = subcategories.reduce((obj, item) => {
-    obj[item] = false;
+    obj[item.toLowerCase()] = false;
     return obj;
   }, {})
 
+
+const countriesFilter = countries.reduce((obj, item) => {
+    obj[item.toLowerCase()] = false;
+    return obj;
+  }, {})
+
+const regionsFilter = regions.reduce((obj, item) => {
+    obj[item.toLowerCase()] = false;
+    return obj;
+  }, {})
+
+
 const sortingFilter = sorting.reduce((obj, item) => {
-    obj[item] = false;
+    obj[item.toLowerCase()] = false;
     return obj;
   }, {})
 
@@ -21,8 +33,10 @@ const initialState = {
     sorting: sortingFilter,
     active: 0,
     filters: {
-      Categories: categoriesFilter,
-      Subcategories: subcategoriesFilter,
+      categories: categoriesFilter,
+      subcategories: subcategoriesFilter,
+      countries: countriesFilter,
+      regions: regionsFilter,
     }
 }
 
