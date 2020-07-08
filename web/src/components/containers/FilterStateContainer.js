@@ -18,10 +18,12 @@ const sortingFilter = sorting.reduce((obj, item) => {
   }, {})
 
 const initialState = {
+    sorting: sortingFilter,
     active: 0,
-    Categories: categoriesFilter,
-    Subcategories: subcategoriesFilter,
-
+    filters: {
+      Categories: categoriesFilter,
+      Subcategories: subcategoriesFilter,
+    }
 }
 
 export const FilterState = React.createContext(initialState)
@@ -29,18 +31,23 @@ export const FilterDispatch = React.createContext(null);
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "CHECK":
+    case "CHECK_FILTER":
       let activeUpdate = state.active;
-      const checked = !state[action.data.entry][action.data.item]
+      const checked = !state.filters[action.data.entry][action.data.item]
       if (checked){
         activeUpdate += 1;
       } else {
         activeUpdate -= 1;
       }
-      const newState = JSON.parse(JSON.stringify(state))
-      newState.active = activeUpdate
-      newState[action.data.entry][action.data.item] = checked
-      return newState
+      const newFilterState = JSON.parse(JSON.stringify(state))
+      newFilterState.active = activeUpdate
+      newFilterState.filters[action.data.entry][action.data.item] = checked
+      return newFilterState
+    case "CHECK_SORT":
+      const newSort = JSON.parse(JSON.stringify(state))
+      newSort.sorting = {...initialState.sorting}
+      newSort.sorting[action.data.item] = true;
+      return newSort
     case "RESET":
       return initialState
     default:

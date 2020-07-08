@@ -24,7 +24,7 @@ export default function FilterChips() {
 
   const handleDelete = (event, entry, item) => {
     dispatch({
-      type: "CHECK",
+      type: "CHECK_FILTER",
       data: { entry: entry, item: item }
     });
   };
@@ -47,7 +47,7 @@ export default function FilterChips() {
           <Button size='small' color='primary' disableElevation onClick={handleReset}>Clear</Button>
       }
       {
-        Object.entries(state).map(([entry, list]) => (
+        Object.entries(state.filters).map(([entry, list]) => (
           Object.entries(list).map(([item, checked]) => (
             checked &&
              <Chip

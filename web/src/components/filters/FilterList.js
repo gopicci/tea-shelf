@@ -4,7 +4,7 @@ import {fade, makeStyles} from '@material-ui/core/styles';
 
 import FilterItem from './FilterItem';
 
-import {FilterDispatch, FilterState} from '../containers/FilterStateContainer'
+import { FilterDispatch } from '../containers/FilterStateContainer'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,10 +38,16 @@ export default function FilterList({ entry, list }) {
   const dispatch = useContext(FilterDispatch)
 
   const handleChange = (event) => {
-    dispatch({
-      type: "CHECK",
-      data: { entry: entry, item: event.target.name }
-    });
+    if (entry === 'sorting')
+      dispatch({
+        type: "CHECK_SORT",
+        data: { item: event.target.name }
+      })
+    else
+      dispatch({
+        type: "CHECK_FILTER",
+        data: { entry: entry, item: event.target.name }
+      });
   };
 
   const [open, setOpen] = useState(false);
@@ -53,7 +59,9 @@ export default function FilterList({ entry, list }) {
   return (
         <FormGroup className={classes.root}>
           <FormLabel className={classes.formLabel}>
-            <Typography  className={classes.entryName}>{entry}:</Typography>
+            <Typography  className={classes.entryName}>
+              {entry === 'sorting' ? 'Sort by' : entry}:
+            </Typography>
           </FormLabel>
           <List dense={true}>
             {

@@ -8,6 +8,7 @@ import FilterChips from './FilterChips';
 import { FilterState } from '../containers/FilterStateContainer';
 import FilterList from './FilterList';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: 'auto',
@@ -49,8 +50,9 @@ export default function FilterLayout() {
           <FilterChips />
         </AccordionSummary>
         <AccordionDetails>
+          <FilterList key='sortList' entry='sorting' list={state.sorting} />
           {
-            Object.entries(state).map(([entry, list]) => (
+            Object.entries(state.filters).map(([entry, list]) => (
               <FilterList key={entry} entry={entry} list={list}/>
             ))
           }
