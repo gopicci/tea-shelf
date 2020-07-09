@@ -1,18 +1,47 @@
 import React, {useContext, useEffect, useState} from 'react';
-import { Grid } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import TeaCard from './TeaCard';
 
 import { teas } from '../../dev/DevData'
 import { FilterState } from '../containers/FilterStateContainer';
+import {GridViewState} from '../containers/GridViewStateContainer';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    margin: 0,
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
+  gridRoot: {
+    margin: 'auto',
+    padding: theme.spacing(2),
+    maxWidth: '100%',
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
+  },
+  listRoot: {
+    margin: 'auto',
+    maxWidth: 600,
+    padding: theme.spacing(2),
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
+  },
+  gridItem: {
+    width: 200,
+    padding: theme.spacing(2),
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
+  },
+  listItem: {
     width: '100%',
+    padding: theme.spacing(1),
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
   },
 }));
 
@@ -20,9 +49,9 @@ const useStyles = makeStyles((theme) => ({
 export default function GridLayout() {
   const classes = useStyles();
 
-  const state = useContext(FilterState)
+  const state = useContext(FilterState);
 
-  const [filteredTeas, setFilteredTeas] = useState(teas)
+  const [filteredTeas, setFilteredTeas] = useState(teas);
 
   useEffect(() => {
     if (state.active > 0)
@@ -34,13 +63,18 @@ export default function GridLayout() {
       setFilteredTeas(teas);
   }, [state]);
 
+  const gridView = useContext(GridViewState);
+
+
   return (
-    <Grid container justify="center" spacing={4} className={classes.root}>
-      {
-          filteredTeas.map(tea =>
-            <Grid item><TeaCard tea={tea}/></Grid>
-        )
-      }
-    </Grid>
+      <Grid container justify="center" className={gridView ? classes.gridRoot : classes.listRoot}>
+        {
+            filteredTeas.map(tea =>
+              <Grid item className={gridView ? classes.gridItem : classes.listItem}>
+                <TeaCard tea={tea} gridView={gridView} />
+              </Grid>
+          )
+        }
+      </Grid>
   )
 }

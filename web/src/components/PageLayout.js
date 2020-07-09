@@ -9,7 +9,7 @@ import GridLayout from './grid/GridLayout';
 import FilterLayout from './filters/FilterLayout';
 
 import FilterStateContainer from './containers/FilterStateContainer';
-
+import GridViewStateContainer from './containers/GridViewStateContainer';
 
 const useStyles = makeStyles((theme) => ({
   page: {
@@ -28,7 +28,7 @@ export default function PageLayout() {
   const classes = useStyles();
 
   return (
-    <>
+    <GridViewStateContainer>
       <SearchAppBar />
       <Toolbar />
       <Box className={ classes.page }>
@@ -40,6 +40,6 @@ export default function PageLayout() {
           </Box>
         </FilterStateContainer>
       </Box>
-    </>
+    </GridViewStateContainer>
   )
 }

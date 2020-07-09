@@ -1,42 +1,81 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Container, Grid, Typography } from '@material-ui/core';
+import { Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from '@material-ui/core';
 
-const useStyles = makeStyles({
-  root: {
-    width: 180,
+const useStyles = makeStyles((theme) => ({
+  gridCard: {
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
   },
-  category: {
+  listCard: {
+    display: 'flex',
+    justifyContent: 'left',
+    alignItems: 'stretch',
+    height: 200,
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
+  },
+  gridImage: {
+    height: 120,
+    width: '100%',
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
+  },
+  listImage: {
+    width: `calc(200px - ${theme.spacing(4)}px)`,
+    height: `calc(200px - ${theme.spacing(4)}px)`,
+    margin: theme.spacing(2),
+    borderRadius: 4,
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
+  },
+  content: {
+    minHeight: 100,
     flexGrow: 1,
-    textAlign: 'right',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  infoBox: {
+    flexGrow: 1,
   },
   subcategory: {
     fontStyle: 'italic',
-  }
-});
+  },
+  category: {
+    marginTop: theme.spacing(4),
+    textAlign: 'right',
+  },
+}));
 
-export default function TeaCard({ tea }) {
+export default function TeaCard({ tea, gridView }) {
   const classes = useStyles();
 
   return (
     <Card className={classes.root}>
-      <CardActionArea>
+      <CardActionArea className={gridView ? classes.gridCard : classes.listCard }>
         <CardMedia
-          component="img"
+          className={gridView ? classes.gridImage : classes.listImage }
           alt="Tea image"
-          height="120"
           image={tea.image}
           title="Tea image"
         />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {tea.name}
-          </Typography>
-          <Typography className={classes.subcategory} gutterBottom variant="subtitle1" component="h5">
-            {tea.year} {tea.subcategory}
-          </Typography>
-        </CardContent>
-        <CardContent>
+        <CardContent className={classes.content}>
+          <Box className={classes.infoBox}>
+            <Typography gutterBottom variant="h5" component="h2">
+              {tea.name}
+            </Typography>
+            <Typography className={classes.subcategory} gutterBottom variant="subtitle1" component="h5">
+              {tea.year} {tea.subcategory}
+            </Typography>
+          </Box>
           <Box className={classes.category}>
             <Typography variant="body2" component="span">
               {tea.category}

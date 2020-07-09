@@ -7,9 +7,6 @@ import FilterItem from './FilterItem';
 import { FilterDispatch } from '../containers/FilterStateContainer'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
   formLabel: {
     display: 'flex',
     padding: theme.spacing(1),
@@ -58,33 +55,33 @@ export default function FilterList({ entry, list }) {
   };
 
   return (
-        <FormGroup className={classes.root}>
-          <FormLabel className={classes.formLabel}>
-            <Typography  className={classes.entryName}>
-              {entry === 'sorting' ? 'Sort by' : entry}:
-            </Typography>
-          </FormLabel>
-          <List dense={true}>
+    <FormGroup>
+      <FormLabel className={classes.formLabel}>
+        <Typography  className={classes.entryName}>
+          {entry === 'sorting' ? 'Sort by' : entry}:
+        </Typography>
+      </FormLabel>
+      <List dense={true}>
+        {
+          Object.entries(list).slice(0,3).map(([item, checked]) => (
+            <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
+          ))
+        }
+        {
+          Object.entries(list).length > 3 &&
+            !open &&
+              <ListItem key='ShowAll' className={classes.listItem}>
+                <Link className={classes.linkSmall} onClick={handleShowAllClick}>Show all</Link>
+              </ListItem>
+        }
+        <Collapse in={open} timeout="auto">
             {
-              Object.entries(list).slice(0,3).map(([item, checked]) => (
+              Object.entries(list).slice(3).map(([item, checked]) => (
                 <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
               ))
             }
-            {
-              Object.entries(list).length > 3 &&
-                !open &&
-                  <ListItem key='ShowAll' className={classes.listItem}>
-                    <Link className={classes.linkSmall} onClick={handleShowAllClick}>Show all</Link>
-                  </ListItem>
-            }
-            <Collapse in={open} timeout="auto">
-                {
-                  Object.entries(list).slice(3).map(([item, checked]) => (
-                    <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
-                  ))
-                }
-            </Collapse>
-          </List>
-        </FormGroup>
+        </Collapse>
+      </List>
+    </FormGroup>
   );
 }

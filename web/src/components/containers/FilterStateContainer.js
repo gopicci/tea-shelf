@@ -83,7 +83,7 @@ export default function FilterStateContainer(props) {
   return (
     <FilterDispatch.Provider value={dispatch}>
       <FilterState.Provider value={state}>
-      {props.children}
+        {props.children}
       </FilterState.Provider>
     </FilterDispatch.Provider>
 

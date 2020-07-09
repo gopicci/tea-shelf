@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Accordion, AccordionSummary, AccordionDetails, AccordionActions, Box, Button } from '@material-ui/core';
+import {Accordion, AccordionSummary, AccordionDetails, AccordionActions, Box, Button, Grid} from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { fade, makeStyles } from '@material-ui/core/styles';
 
@@ -11,11 +11,24 @@ import FilterList from './FilterList';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '80%',
+    [theme.breakpoints.up('sm')]: {
+      width: '80%',
+    },
     margin: 'auto',
     marginTop: -theme.spacing(1),
     padding: 'auto',
 
+  },
+  listGrid: {
+    display: 'flex',
+    flexGrow: 1,
+  },
+  listItem: {
+    minWidth: 220,
+    flexGrow: 1,
+    [theme.breakpoints.up('sm')]: {
+      width: 200,
+    },
   },
   actions: {
     display: 'flex',
@@ -58,12 +71,18 @@ export default function FilterLayout() {
           <FilterChips />
         </AccordionSummary>
         <AccordionDetails>
-          <FilterList key='sortList' entry='sorting' list={state.sorting} />
-          {
-            Object.entries(state.filters).map(([entry, list]) => (
-              <FilterList key={entry} entry={entry} list={list}/>
-            ))
-          }
+          <Grid container justify="center" className={classes.listGrid}>
+            <Grid item className={classes.listItem}>
+              <FilterList key='sortList' entry='sorting' list={state.sorting} />
+            </Grid>
+            {
+              Object.entries(state.filters).map(([entry, list]) => (
+                <Grid item className={classes.listItem}>
+                  <FilterList key={entry} entry={entry} list={list}/>
+                </Grid>
+              ))
+            }
+          </Grid>
         </AccordionDetails>
         <AccordionActions className={classes.actions}>
           <Button size="small" color="primary" onClick={handleReset}>

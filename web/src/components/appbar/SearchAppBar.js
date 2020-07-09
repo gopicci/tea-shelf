@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {AppBar, Box, Toolbar, Typography, InputBase, IconButton } from  '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import { Add, Menu, Search } from '@material-ui/icons';
+import { AccountCircle, Menu, Refresh, Search, ViewStream, ViewModule } from '@material-ui/icons';
+
+import { GridViewState, GridViewDispatch } from '../containers/GridViewStateContainer';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -10,13 +12,13 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
     display: 'block',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
   },
   title: {
     display: 'none',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('sm')]: {
       display: 'block',
       width: '25%',
     },
@@ -30,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     marginLeft: 0,
     width: '100%',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(1),
       width: '50%',
     },
@@ -69,6 +71,15 @@ const useStyles = makeStyles((theme) => ({
 export default function SearchAppBar() {
   const classes = useStyles();
 
+  const state = useContext(GridViewState);
+  const dispatch = useContext(GridViewDispatch);
+
+  const handleGridViewChange = () => {
+    dispatch({
+      type: "SWITCH_VIEW"
+    });
+  };
+
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
@@ -97,7 +108,27 @@ export default function SearchAppBar() {
           />
         </Box>
         <Box className={classes.user}>
-          <Add />
+          <IconButton
+            color="inherit"
+            aria-label="refresh"
+          >
+            <Refresh />
+          </IconButton>
+          <IconButton
+            onClick={handleGridViewChange}
+            color="inherit"
+            aria-label="switch view"
+          >
+            {
+              state ? <ViewStream /> : <ViewModule />
+            }
+          </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label="account"
+          >
+            <AccountCircle />
+          </IconButton>
         </Box>
       </Toolbar>
     </AppBar>
