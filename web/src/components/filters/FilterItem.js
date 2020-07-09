@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 15,
     flexGrow: 1,
     color: '#666',
+    textTransform: 'capitalize',
   },
   checkIcon: {
     width: theme.spacing(2),

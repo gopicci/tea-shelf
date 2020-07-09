@@ -1,25 +1,25 @@
 import React, { useContext, useState } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails, AccordionActions, Box, Button } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 
 import FilterChips from './FilterChips';
 
-import { FilterState } from '../containers/FilterStateContainer';
+import {FilterDispatch, FilterState} from '../containers/FilterStateContainer';
 import FilterList from './FilterList';
 
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    width: '80%',
     margin: 'auto',
     marginTop: -theme.spacing(1),
     padding: 'auto',
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-  },
-  details: {
 
+  },
+  actions: {
+    display: 'flex',
+    justifyContent: 'space-between',
   }
 }));
 
@@ -28,10 +28,18 @@ export default function FilterLayout() {
   const classes = useStyles();
 
   const state = useContext(FilterState)
+  const dispatch = useContext(FilterDispatch)
 
   const [open, setOpen] = useState(false);
 
   const handleExpansion = () => {
+    setOpen(!open);
+  };
+
+  const handleReset = () => {
+    dispatch({
+      type: "RESET"
+    });
     setOpen(!open);
   };
 
@@ -57,7 +65,10 @@ export default function FilterLayout() {
             ))
           }
         </AccordionDetails>
-        <AccordionActions>
+        <AccordionActions className={classes.actions}>
+          <Button size="small" color="primary" onClick={handleReset}>
+            Reset
+          </Button>
           <Button size="small" color="primary" onClick={handleExpansion}>
             Close
           </Button>

@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
   entryName: {
     flexGrow: 1,
+    textTransform: 'capitalize'
   }
 }));
 

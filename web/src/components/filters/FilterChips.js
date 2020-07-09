@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(0.5),
     },
   },
+  title: {
+    fontSize: theme.typography.pxToRem(15),
+  },
 }));
 
 export default function FilterChips() {
@@ -32,7 +35,7 @@ export default function FilterChips() {
   const handleReset = (event, entry, item) => {
     event.stopPropagation();
     dispatch({
-      type: "RESET"
+      type: "CLEAR"
     });
   };
 
@@ -40,7 +43,7 @@ export default function FilterChips() {
     <Box className={classes.root}>
       {
         !state.active &&
-          <Typography className={classes.heading}>Sort & filter</Typography>
+        <Typography className={classes.title}>Sort & Filter</Typography>
       }
       {
         state.active > 0 &&

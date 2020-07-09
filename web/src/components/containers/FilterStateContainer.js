@@ -30,7 +30,7 @@ const sortingFilter = sorting.reduce((obj, item) => {
   }, {})
 
 const initialState = {
-    sorting: sortingFilter,
+    sorting: {...sortingFilter, 'latest (default)': true },
     active: 0,
     filters: {
       categories: categoriesFilter,
@@ -39,6 +39,7 @@ const initialState = {
       regions: regionsFilter,
     }
 }
+console.log(initialState)
 
 export const FilterState = React.createContext(initialState)
 export const FilterDispatch = React.createContext(null);
@@ -60,8 +61,14 @@ const reducer = (state, action) => {
     case "CHECK_SORT":
       const newSort = JSON.parse(JSON.stringify(state))
       newSort.sorting = {...initialState.sorting}
+      newSort.sorting['latest (default)'] = false;
       newSort.sorting[action.data.item] = true;
       return newSort
+    case "CLEAR":
+      return {
+        ...initialState,
+        sorting: state.sorting,
+      }
     case "RESET":
       return initialState
     default:
