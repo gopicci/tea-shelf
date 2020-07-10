@@ -13,6 +13,8 @@ import { APIRequest, getUser } from './services/AuthService';
 import { mainTheme } from './style/MainTheme';
 import './App.css';
 
+
+
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(() => {
     return window.localStorage.getItem('user.auth') !== null;
