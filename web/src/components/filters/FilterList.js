@@ -1,37 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useState} from 'react';
 import {Collapse, FormGroup, FormLabel, Link, List, ListItem, Typography,} from '@material-ui/core';
-import {fade, makeStyles} from '@material-ui/core/styles';
+
+import {formListStyles} from '../../style/FormListStyles'
 
 import FilterItem from './FilterItem';
 
-import { FilterDispatch } from '../containers/FilterStateContainer'
+import {FilterDispatch} from '../containers/FilterStateContainer'
 
-const useStyles = makeStyles((theme) => ({
-  formLabel: {
-    display: 'flex',
-    padding: theme.spacing(1),
-    background: fade(theme.palette.primary.light, 0.15),
-  },
-  listItem: {
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-  linkSmall: {
-    marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(1),
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: `${theme.palette.primary.main}`,
-    cursor: 'pointer',
-  },
-  entryName: {
-    flexGrow: 1,
-    textTransform: 'capitalize'
-  }
-}));
 
 export default function FilterList({ entry, list }) {
-  const classes = useStyles();
+  const classes = formListStyles();
 
   const dispatch = useContext(FilterDispatch)
 
@@ -44,7 +22,7 @@ export default function FilterList({ entry, list }) {
     else
       dispatch({
         type: "CHECK_FILTER",
-        data: { entry: entry, item: event.target.name }
+        data: { entry: entry, item: event }
       });
   };
 

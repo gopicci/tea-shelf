@@ -6,38 +6,48 @@ import Webcam from 'react-webcam';
 
 
 const useStyles = makeStyles((theme) => ({
-  imageArea: {
-    width: 500,
-    height: 500,
+  root: {
+    width: '100%',
+    height: '100vh',
+    display: 'flex',
+    margin: 0,
+    flexDirection: 'column',
+    backgroundColor: theme.palette.primary.main,
+  },
+  imageBox: {
+    height: '70%',
     overflow: 'hidden',
   },
-  controls: {
+  controlsBox: {
     display: 'flex',
     justifyContent: 'center',
-    flexGrow: 1,
+    margin: 'auto',
+
+  },
+  control: {
+    margin: theme.spacing(4),
   },
 }));
 
-export default function CaptureImage( { handleClose } ) {
+export default function CaptureImage(props) {
   const classes = useStyles();
 
   const webcamRef = useRef(null);
-  const [imgSrc, setImgSrc] = useState(null);
 
   const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setImgSrc(imageSrc);
-  }, [webcamRef, setImgSrc]);
+    const screenshot = webcamRef.current.getScreenshot();
+    props.setImageData(screenshot);
+  }, [webcamRef, props.setImageData]);
 
   const replay = () => {
-    setImgSrc(null);
+    props.setImageData(null);
   };
 
   return (
-    <>
-      <Box className={classes.imageArea}>
+    <Box className={classes.root}>
+      <Box className={classes.imageBox}>
       {
-        !imgSrc ?
+        !props.imageData ?
           <Webcam
             height={500}
             audio={false}
@@ -45,21 +55,23 @@ export default function CaptureImage( { handleClose } ) {
             screenshotFormat="image/jpeg"
           />
           :
-          <img src={imgSrc} />
+          <img src={props.imageData} />
       }
       </Box>
-      <Box className={classes.controls}>
+      <Box className={classes.controlsBox}>
         <IconButton
-          onClick={handleClose}
+          className={classes.control}
+          onClick={props.handleClose}
           color="inherit"
           aria-label="cancel"
         >
           <Close />
         </IconButton>
         {
-          !imgSrc ?
+          !props.imageData ?
             <>
               <IconButton
+                className={classes.control}
                 onClick={capture}
                 color="inherit"
                 aria-label="capture"
@@ -67,6 +79,8 @@ export default function CaptureImage( { handleClose } ) {
                 <CameraAlt fontSize='large'/>
               </IconButton>
               <IconButton
+                className={classes.control}
+                onClick={props.handleNext}
                 color="inherit"
                 aria-label="skip"
               >
@@ -76,6 +90,7 @@ export default function CaptureImage( { handleClose } ) {
             :
             <>
               <IconButton
+                className={classes.control}
                 onClick={replay}
                 color="inherit"
                 aria-label="capture"
@@ -83,6 +98,8 @@ export default function CaptureImage( { handleClose } ) {
                 <Replay fontSize='large'/>
               </IconButton>
               <IconButton
+                className={classes.control}
+                onClick={props.handleNext}
                 color="inherit"
                 aria-label="capture"
               >
@@ -90,8 +107,7 @@ export default function CaptureImage( { handleClose } ) {
               </IconButton>
             </>
         }
-
       </Box>
-    </>
+    </Box>
   );
 };

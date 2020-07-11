@@ -7,6 +7,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 
 import PageLayout from './components/PageLayout';
+import Create from './components/Create';
 
 import { APIRequest, getUser } from './services/AuthService';
 
@@ -27,13 +28,26 @@ function App() {
     setLoggedIn(false);
   };
 
-  APIRequest('/category/', 'GET').then(res => console.log(res))
+  // APIRequest('/category/', 'GET').then(res => console.log(res))
 
-  console.log(getUser())
+  // console.log(getUser())
+
+  const [route, setRoute] = useState('CREATE');
+
+  function getRoute(route) {
+    switch (route) {
+      case "MAIN":
+        return <PageLayout setRoute={setRoute} />
+      case "CREATE":
+        return <Create  setRoute={setRoute} />
+      default:
+        return <PageLayout  setRoute={setRoute} />
+    }
+  }
 
   return (
     <ThemeProvider theme={mainTheme}>
-      <PageLayout />
+      {getRoute(route)}
     </ThemeProvider>
   );
 }

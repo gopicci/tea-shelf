@@ -11,9 +11,6 @@ import FilterLayout from './filters/FilterLayout';
 import FilterStateContainer from './containers/FilterStateContainer';
 import GridViewStateContainer from './containers/GridViewStateContainer';
 
-import CreateLayout from './create/CreateLayout';
-
-
 const useStyles = makeStyles((theme) => ({
   page: {
     display: 'flex',
@@ -27,45 +24,32 @@ const useStyles = makeStyles((theme) => ({
   addButton: {
     color: theme.palette.common.white,
     backgroundColor: theme.palette.primary.main,
-    position: 'absolute',
+    position: 'fixed',
     bottom: theme.spacing(4),
     right: theme.spacing(4),
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 2,
-    color: '#fff',
   },
 }));
 
 
-export default function PageLayout() {
+export default function PageLayout({setRoute}) {
   const classes = useStyles();
 
-  const [open, setOpen] = useState(false);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
-  }
+  const handleCreate = () => setRoute('CREATE');
 
   return (
     <GridViewStateContainer>
       <SearchAppBar />
       <Toolbar />
-      <Box className={ classes.page }>
+      <Box className={classes.page}>
         <FilterStateContainer>
           <DrawerLayout />
-          <Box className={ classes.center }>
+          <Box className={classes.center}>
             <FilterLayout />
             <GridLayout />
           </Box>
         </FilterStateContainer>
-        <Fab className={ classes.addButton } onClick={handleOpen}><CameraAlt /></Fab>
-        { open ? <CreateLayout open={open} handleClose={handleClose} /> : ''}
+        <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
       </Box>
     </GridViewStateContainer>
-  )
-}
+  );
+};

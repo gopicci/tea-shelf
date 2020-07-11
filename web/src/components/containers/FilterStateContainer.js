@@ -39,7 +39,6 @@ const initialState = {
       regions: regionsFilter,
     }
 }
-console.log(initialState)
 
 export const FilterState = React.createContext(initialState)
 export const FilterDispatch = React.createContext(null);
