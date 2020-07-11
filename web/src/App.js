@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ThemeProvider } from '@material-ui/styles';
 import localforage from 'localforage';
-import Map from './components/Map'
 
 import Register from './components/Register';
 import Login from './components/Login';

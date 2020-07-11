@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import CaptureImage from './create/CaptureImage';
-import InputLayout from './create/InputLayout';
+import InputRouter from './create/InputRouter';
 
 
 export default function Create({setRoute}) {
@@ -26,7 +26,7 @@ export default function Create({setRoute}) {
       case 1:
         return <CaptureImage {...props} />
       case 2:
-        return <InputLayout handlePrevious={handlePrevious} />
+        return <InputRouter handlePrevious={handlePrevious} />
       default:
         return <CaptureImage {...props} />
     }
