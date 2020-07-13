@@ -1,21 +1,28 @@
-import React from 'react';
-import { Grid, InputAdornment, TextField, Typography, AppBar, Box, Button, IconButton, Toolbar } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import {ArrowBack, LocationOn} from '@material-ui/icons';
-import parse from 'autosuggest-highlight/parse';
-import { parse as himalaya } from 'himalaya'
-import throttle from 'lodash/throttle';
-import {fade, makeStyles} from '@material-ui/core/styles';
-
+import React from "react";
+import {
+  Grid,
+  InputAdornment,
+  TextField,
+  Typography,
+  Box,
+  Button,
+  IconButton,
+} from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { ArrowBack, LocationOn } from "@material-ui/icons";
+import parse from "autosuggest-highlight/parse";
+import { parse as himalaya } from "himalaya";
+import throttle from "lodash/throttle";
+import { fade, makeStyles } from "@material-ui/core/styles";
 
 function loadScript(src, position, id) {
   if (!position) {
     return;
   }
 
-  const script = document.createElement('script');
-  script.setAttribute('async', '');
-  script.setAttribute('id', id);
+  const script = document.createElement("script");
+  script.setAttribute("async", "");
+  script.setAttribute("id", id);
   script.src = src;
   position.appendChild(script);
 }
@@ -52,16 +59,16 @@ export default function EditOrigin(props) {
   const classes = useStyles();
 
   const [value, setValue] = React.useState(null);
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const loaded = React.useRef(false);
 
-  if (typeof window !== 'undefined' && !loaded.current) {
-    if (!document.querySelector('#google-maps')) {
+  if (typeof window !== "undefined" && !loaded.current) {
+    if (!document.querySelector("#google-maps")) {
       loadScript(
-        'https://maps.googleapis.com/maps/api/js?key=AIzaSyBWHwNvZIqK7IY5nRy_DVUiqioz0CV0K1k&libraries=places',
-        document.querySelector('head'),
-        'google-maps',
+        "https://maps.googleapis.com/maps/api/js?key=AIzaSyBWHwNvZIqK7IY5nRy_DVUiqioz0CV0K1k&libraries=places",
+        document.querySelector("head"),
+        "google-maps"
       );
     }
 
@@ -73,7 +80,7 @@ export default function EditOrigin(props) {
       throttle((request, callback) => {
         autocompleteService.current.getPlacePredictions(request, callback);
       }, 200),
-    [],
+    []
   );
 
   React.useEffect(() => {
@@ -86,13 +93,12 @@ export default function EditOrigin(props) {
       return undefined;
     }
 
-    if (inputValue === '') {
+    if (inputValue === "") {
       setOptions(value ? [value] : []);
       return undefined;
     }
 
-
-    fetch({ input: inputValue, types: ['(regions)'] }, (results) => {
+    fetch({ input: inputValue, types: ["(regions)"] }, (results) => {
       if (active) {
         let newOptions = [];
 
@@ -115,30 +121,35 @@ export default function EditOrigin(props) {
 
   React.useEffect(() => {
     if (!placesService.current && window.google) {
-      placesService.current = new window.google.maps.places.PlacesService(window.document.createElement('div'));
+      placesService.current = new window.google.maps.places.PlacesService(
+        window.document.createElement("div")
+      );
     }
     if (!placesService.current || !value) {
       return undefined;
     }
 
-    placesService.current.getDetails({
-      placeId: value.place_id,
-      fields: ['adr_address']
-    }, function(place, status) {
-      if (status === 'OK') {
-        const json = himalaya(place.adr_address);
-        const origin = {}
+    placesService.current.getDetails(
+      {
+        placeId: value.place_id,
+        fields: ["adr_address"],
+      },
+      function (place, status) {
+        if (status === "OK") {
+          const json = himalaya(place.adr_address);
+          const origin = {};
 
-        for (const entry of Object.entries(json))
-          if (entry[1].type === 'element'){
+          for (const entry of Object.entries(json))
+            if (entry[1].type === "element") {
+              origin[entry[1].attributes[0].value] =
+                entry[1].children[0].content;
+            }
 
-            origin[entry[1].attributes[0].value] = entry[1].children[0].content};
-
-        props.setData({ ...props.data, origin: origin });
-        props.handleBackToLayout();
+          props.setData({ ...props.data, origin: origin });
+          props.handleBackToLayout();
+        }
       }
-    });
-
+    );
   }, [value]);
 
   return (
@@ -146,7 +157,9 @@ export default function EditOrigin(props) {
       <Autocomplete
         id="google-map-demo"
         className={classes.autocomplete}
-        getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
+        getOptionLabel={(option) =>
+          typeof option === "string" ? option : option.description
+        }
         filterOptions={(x) => x}
         options={options}
         autoComplete
@@ -160,38 +173,39 @@ export default function EditOrigin(props) {
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
         }}
-        ListboxProps={{style:{ maxHeight: '60vh' }}}
-        PaperComponent={({children}) => (<Box>{children}</Box>)}
+        ListboxProps={{ style: { maxHeight: "60vh" } }}
+        PaperComponent={({ children }) => <Box>{children}</Box>}
         renderInput={(params) => (
-            <TextField
-              {...params}
-              className={classes.textField}
-              variant='outlined'
-              placeholder='Select origin'
-              fullWidth
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconButton
-                      onClick={props.handleBackToLayout}
-                      edge="start"
-                      className={classes.menuButton}
-                      color="inherit"
-                      aria-label="back"
-                    >
-                      <ArrowBack />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+          <TextField
+            {...params}
+            className={classes.textField}
+            variant="outlined"
+            placeholder="Search origin"
+            fullWidth
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IconButton
+                    onClick={props.handleBackToLayout}
+                    edge="start"
+                    className={classes.menuButton}
+                    color="inherit"
+                    aria-label="back"
+                  >
+                    <ArrowBack />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
         )}
         renderOption={(option) => {
-          const matches = option.structured_formatting.main_text_matched_substrings;
+          const matches =
+            option.structured_formatting.main_text_matched_substrings;
           const parts = parse(
             option.structured_formatting.main_text,
-            matches.map((match) => [match.offset, match.offset + match.length]),
+            matches.map((match) => [match.offset, match.offset + match.length])
           );
 
           return (
@@ -201,7 +215,10 @@ export default function EditOrigin(props) {
               </Grid>
               <Grid item xs className={classes.listItem}>
                 {parts.map((part, index) => (
-                  <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                  <span
+                    key={index}
+                    style={{ fontWeight: part.highlight ? 700 : 400 }}
+                  >
                     {part.text}
                   </span>
                 ))}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   AppBar,
   Box,
@@ -7,7 +7,6 @@ import {
   FormLabel,
   IconButton,
   List,
-  ListItem,
   Toolbar,
   Typography,
 } from "@material-ui/core";
@@ -18,7 +17,6 @@ import { formListStyles } from "../../style/FormListStyles";
 import InputItem from "./InputItem";
 
 import { categories } from "../../dev/DevData";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,13 +38,14 @@ export default function InputLayout(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
-  const years = [...Array(100)].map((_, b)=> String(new Date().getFullYear() - b));
-  years.push('Unknown');
+  const years = [...Array(100)].map((_, b) =>
+    String(new Date().getFullYear() - b)
+  );
+  years.push("Unknown");
 
   function handleClick(event) {
     switch (event.currentTarget.id) {
       case "name":
-      case "subcategory":
         props.setEditRoute({
           route: "EDIT_TEXT",
           field: event.currentTarget.id,
@@ -70,6 +69,13 @@ export default function InputLayout(props) {
       case "origin":
         props.setEditRoute({
           route: "EDIT_ORIGIN",
+          field: event.currentTarget.id,
+          data: null,
+        });
+        break;
+      case "subcategory":
+        props.setEditRoute({
+          route: "EDIT_SUBCATEGORY",
           field: event.currentTarget.id,
           data: null,
         });
@@ -127,17 +133,23 @@ export default function InputLayout(props) {
         </FormLabel>
         <List className={formListClasses.list}>
           <InputItem
+            key="subcategory"
+            name="subcategory"
+            value={props.data.subcategory}
+            handleClick={handleClick}
+          />
+          <InputItem
             key="origin"
             name="origin"
             value={
               props.data.origin &&
-                Object.values(props.data.origin).join(', ').replace('&#39;', "\'")
+              Object.values(props.data.origin).join(", ").replace("&#39;", "'")
             }
             handleClick={handleClick}
           />
           {Object.entries(props.data).map(
             ([key, value]) =>
-              !["name", "category", "origin"].includes(key) && (
+              !["name", "category", "subcategory", "origin"].includes(key) && (
                 <InputItem
                   key={key}
                   name={key}
