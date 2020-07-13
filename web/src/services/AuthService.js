@@ -40,7 +40,9 @@ export const APIRequest = (endpoint, method, body=null) => {
 
   return fetch(`${process.env.REACT_APP_API}${endpoint}`, {
     method: method,
-    headers: {"Authorization": `Bearer ${token}`,},
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      Accept: "application/json, text/plain, */*",},
     body: body,
   }).then(res => res.json())
     .then(res => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from 'react';
 import {
   AppBar,
   Box,
@@ -15,8 +15,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
-
-import { categories } from "../../dev/DevData";
+import {CategoriesState} from '../containers/CategoriesStateContainer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,10 +37,17 @@ export default function InputLayout(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
+  const categories = useContext(CategoriesState);
+
   const years = [...Array(100)].map((_, b) =>
     String(new Date().getFullYear() - b)
   );
   years.push("Unknown");
+
+  function handleAdd() {
+    props.handleCreate();
+    props.handleClose();
+  }
 
   function handleClick(event) {
     switch (event.currentTarget.id) {
@@ -54,9 +60,9 @@ export default function InputLayout(props) {
         break;
       case "category":
         props.setEditRoute({
-          route: "EDIT_LIST",
+          route: "EDIT_CATEGORY",
           field: event.currentTarget.id,
-          data: categories,
+          data: null,
         });
         break;
       case "year":
@@ -101,7 +107,11 @@ export default function InputLayout(props) {
           <Typography variant="h6" className={classes.title}>
             Add Tea
           </Typography>
-          <Button color="inherit" disabled>
+          <Button
+            color="inherit"
+            disabled={!props.teaData.name || !props.teaData.category}
+            onClick={handleAdd}
+          >
             ADD
           </Button>
         </Toolbar>
@@ -116,13 +126,17 @@ export default function InputLayout(props) {
           <InputItem
             key="name"
             name="name"
-            value={props.data.name}
+            value={props.teaData.name}
             handleClick={handleClick}
           />
           <InputItem
             key="category"
             name="category"
-            value={props.data.category}
+            value={categories &&
+                    props.teaData.category &&
+                      Object.entries(categories).find(
+                        (entry) => entry[1].id === props.teaData.category
+                      )[1].name.toLowerCase()}
             handleClick={handleClick}
           />
         </List>
@@ -135,19 +149,19 @@ export default function InputLayout(props) {
           <InputItem
             key="subcategory"
             name="subcategory"
-            value={props.data.subcategory}
+            value={props.teaData.subcategory}
             handleClick={handleClick}
           />
           <InputItem
             key="origin"
             name="origin"
             value={
-              props.data.origin &&
-              Object.values(props.data.origin).join(", ").replace("&#39;", "'")
+              props.teaData.origin &&
+              Object.values(props.teaData.origin).join(", ").replace("&#39;", "'")
             }
             handleClick={handleClick}
           />
-          {Object.entries(props.data).map(
+          {Object.entries(props.teaData).map(
             ([key, value]) =>
               !["name", "category", "subcategory", "origin"].includes(key) && (
                 <InputItem

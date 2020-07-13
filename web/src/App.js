@@ -12,6 +12,8 @@ import { APIRequest, getUser } from './services/AuthService';
 
 import { mainTheme } from './style/MainTheme';
 import './App.css';
+import CategoriesStateContainer from './components/containers/CategoriesStateContainer';
+import {Box} from '@material-ui/core';
 
 
 
@@ -31,9 +33,12 @@ function App() {
 
   // console.log(getUser())
 
-  const [route, setRoute] = useState('CREATE');
+  const [route, setRoute] = useState('MAIN');
 
   function getRoute(route) {
+    if (!isLoggedIn)
+      return <Login />
+
     switch (route) {
       case "MAIN":
         return <PageLayout setRoute={setRoute} />
@@ -46,7 +51,9 @@ function App() {
 
   return (
     <ThemeProvider theme={mainTheme}>
-      {getRoute(route)}
+      <CategoriesStateContainer>
+        {getRoute(route)}
+      </CategoriesStateContainer>
     </ThemeProvider>
   );
 }

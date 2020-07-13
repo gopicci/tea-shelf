@@ -1,11 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
-import { Button, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {Button, Grid} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
 
 import TeaCard from './TeaCard';
 
-import { teas } from '../../dev/DevData'
-import { FilterState } from '../containers/FilterStateContainer';
+import  {APIRequest} from '../../services/AuthService';
+
+import {teas} from '../../dev/DevData'
+import {FilterState} from '../containers/FilterStateContainer';
 import {GridViewState} from '../containers/GridViewStateContainer';
 
 const useStyles = makeStyles((theme) => ({
@@ -65,11 +67,21 @@ export default function GridLayout() {
 
   const gridView = useContext(GridViewState);
 
+  const [testTeas, setTestTeas] = useState(null);
+
+  useEffect(() => {
+    APIRequest('/tea/', 'GET')
+      .then(res => {
+        setTestTeas(res);
+        console.log(res);
+      })
+  }, [])
 
   return (
       <Grid container justify="center" className={gridView ? classes.gridRoot : classes.listRoot}>
         {
-            filteredTeas.map(tea =>
+          testTeas &&
+            testTeas.map(tea =>
               <Grid item className={gridView ? classes.gridItem : classes.listItem}>
                 <TeaCard tea={tea} gridView={gridView} />
               </Grid>

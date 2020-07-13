@@ -9,11 +9,11 @@ import {
   IconButton,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { ArrowBack, LocationOn } from "@material-ui/icons";
+import {ArrowBack, LocationOn} from "@material-ui/icons";
 import parse from "autosuggest-highlight/parse";
-import { parse as himalaya } from "himalaya";
+import {parse as himalaya} from "himalaya";
 import throttle from "lodash/throttle";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import {fade, makeStyles} from "@material-ui/core/styles";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -145,7 +145,7 @@ export default function EditOrigin(props) {
                 entry[1].children[0].content;
             }
 
-          props.setData({ ...props.data, origin: origin });
+          props.setTeaData({ ...props.teaData, origin: origin });
           props.handleBackToLayout();
         }
       }

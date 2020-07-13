@@ -1,16 +1,14 @@
 import React, {useState, useEffect} from "react";
 import {
-  Grid,
   InputAdornment,
   TextField,
   Typography,
   Box,
-  Button,
   IconButton, FormGroup, FormLabel, List, ListItem,
 } from '@material-ui/core';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { ArrowBack, LocationOn } from "@material-ui/icons";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import {ArrowBack} from "@material-ui/icons";
+import {fade, makeStyles} from "@material-ui/core/styles";
 import {formListStyles} from '../../style/FormListStyles';
 
 import {subcategories} from '../../dev/DevData';
@@ -47,13 +45,13 @@ export default function EditSubcategory(props) {
   const [inputValue, setInputValue] = useState('');
 
   function handleListSelect(event) {
-    props.setData({ ...props.data, [props.field]: event.currentTarget.id });
+    props.setTeaData({ ...props.teaData, [props.field]: event.currentTarget.id });
     props.handleBackToLayout();
   }
 
   useEffect(() => {
     if (value) {
-      props.setData({ ...props.data, [props.field]: value });
+      props.setTeaData({ ...props.teaData, [props.field]: value });
       props.handleBackToLayout();
     }
   }, [value])

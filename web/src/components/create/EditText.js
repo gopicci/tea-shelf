@@ -38,12 +38,12 @@ const useStyles = makeStyles((theme) => ({
 export default function EditText(props) {
   const classes = useStyles();
 
-  const [text, setText] = useState(props.data[props.field]);
+  const [text, setText] = useState(props.teaData[props.field]);
 
   const handleChange = (event) => setText(event.target.value);
 
   function handleAdd() {
-    props.setData({ ...props.data, [props.field]: text.replace(/\n/g, " ") });
+    props.setTeaData({ ...props.teaData, [props.field]: text.replace(/\n/g, " ") });
     props.handleBackToLayout();
   }
 

@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '100vh',
     backgroundColor: theme.palette.background.main,
   },
-  center: {
+  mainBox: {
     display: 'block',
     flexGrow: 1,
   },
@@ -40,16 +40,17 @@ export default function PageLayout({setRoute}) {
     <GridViewStateContainer>
       <SearchAppBar />
       <Toolbar />
-      <Box className={classes.page}>
-        <FilterStateContainer>
-          <DrawerLayout />
-          <Box className={classes.center}>
-            <FilterLayout />
-            <GridLayout />
-          </Box>
-        </FilterStateContainer>
-        <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
-      </Box>
+        <Box className={classes.page}>
+          <FilterStateContainer>
+            <DrawerLayout />
+            <Box className={classes.mainBox}>
+              <FilterLayout />
+              <GridLayout />
+            </Box>
+          </FilterStateContainer>
+          <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
+        </Box>
+
     </GridViewStateContainer>
   );
 };

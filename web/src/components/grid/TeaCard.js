@@ -1,6 +1,15 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from '@material-ui/core';
+import React, { useContext } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@material-ui/core";
+
+import {CategoriesState} from "../containers/CategoriesStateContainer";
 
 const useStyles = makeStyles((theme) => ({
   gridCard: {
@@ -10,9 +19,9 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   listCard: {
-    display: 'flex',
-    justifyContent: 'left',
-    alignItems: 'stretch',
+    display: "flex",
+    justifyContent: "left",
+    alignItems: "stretch",
     height: 200,
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
@@ -21,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridImage: {
     height: 120,
-    width: '100%',
+    width: "100%",
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.complex,
@@ -40,29 +49,33 @@ const useStyles = makeStyles((theme) => ({
   content: {
     minHeight: 100,
     flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
   },
   infoBox: {
     flexGrow: 1,
   },
   subcategory: {
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   category: {
     marginTop: theme.spacing(4),
-    textAlign: 'right',
+    textAlign: "right",
   },
 }));
 
 export default function TeaCard({ tea, gridView }) {
   const classes = useStyles();
 
+  const categories = useContext(CategoriesState);
+
   return (
     <Card className={classes.root}>
-      <CardActionArea className={gridView ? classes.gridCard : classes.listCard }>
+      <CardActionArea
+        className={gridView ? classes.gridCard : classes.listCard}
+      >
         <CardMedia
-          className={gridView ? classes.gridImage : classes.listImage }
+          className={gridView ? classes.gridImage : classes.listImage}
           alt="Tea image"
           image={tea.image}
           title="Tea image"
@@ -72,13 +85,21 @@ export default function TeaCard({ tea, gridView }) {
             <Typography gutterBottom variant="h5" component="h2">
               {tea.name}
             </Typography>
-            <Typography className={classes.subcategory} gutterBottom variant="subtitle1" component="h5">
+            <Typography
+              className={classes.subcategory}
+              gutterBottom
+              variant="subtitle1"
+              component="h5"
+            >
               {tea.year} {tea.subcategory}
             </Typography>
           </Box>
           <Box className={classes.category}>
             <Typography variant="body2" component="span">
-              {tea.category}
+              {categories &&
+                Object.entries(categories).find(
+                  (entry) => entry[1].id === tea.category
+                )[1].name}
             </Typography>
           </Box>
         </CardContent>

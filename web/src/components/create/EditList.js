@@ -45,7 +45,7 @@ export default function EditList(props) {
   }, {});
 
   function handleChange(event) {
-    props.setData({ ...props.data, [props.field]: event.target.name });
+    props.setTeaData({ ...props.teaData, [props.field]: event.target.name });
     props.handleBackToLayout();
   }
 

@@ -2,13 +2,46 @@ import React, {useState} from 'react';
 
 import CaptureImage from './create/CaptureImage';
 import InputRouter from './create/InputRouter';
-
+import {APIRequest} from '../services/AuthService';
 
 export default function Create({setRoute}) {
 
   const [imageData, setImageData] = useState(null);
 
-  const [step, setStep] = useState(2);
+  const [teaData, setTeaData] = useState({
+    name: '',
+    category: null,
+    subcategory: '',
+    origin: null,
+    year: '',
+    vendor: '',
+    price: '',
+    weight: '',
+    brewing: '',
+    notes: '',
+  });
+
+
+  function handleCreate() {
+    fetch(imageData)
+      .then(res => res.arrayBuffer())
+      .then(buf => new File([buf], 'capture.jpg', {type: 'image/jpeg'}))
+      .then(file => {
+        let formData = new FormData()
+        if (imageData)
+          formData.append('image', file)
+        formData.append('name', teaData.name)
+        formData.append('category', teaData.category)
+        //for (const key in teaData)
+        //  formData.append(key, teaData[key])
+        APIRequest('/tea/', 'POST', formData)
+          .then(res => {
+            console.log(res);
+          })
+      })
+  }
+
+  const [step, setStep] = useState(1);
 
   const handleNext = () => setStep(step + 1);
 
@@ -19,14 +52,14 @@ export default function Create({setRoute}) {
     setRoute('MAIN')
   }
 
-  const props = {imageData, setImageData, handleNext, handlePrevious, handleClose}
+  const props = {imageData, setImageData, teaData, setTeaData, handleNext, handlePrevious, handleClose, handleCreate}
 
   function renderSwitch(step) {
     switch (step) {
       case 1:
         return <CaptureImage {...props} />
       case 2:
-        return <InputRouter handlePrevious={handlePrevious} />
+        return <InputRouter {...props} />
       default:
         return <CaptureImage {...props} />
     }
