@@ -1,13 +1,12 @@
 import React from 'react';
-import { Popper, TextField, Typography, AppBar, Box, Button, IconButton, Toolbar } from '@material-ui/core';
+import { Grid, InputAdornment, TextField, Typography, AppBar, Box, Button, IconButton, Toolbar } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import {ArrowBack, LocationOn} from '@material-ui/icons';
 import parse from 'autosuggest-highlight/parse';
+import { parse as himalaya } from 'himalaya'
 import throttle from 'lodash/throttle';
-import {ArrowBack} from '@material-ui/icons';
-import CheckboxList from '../generics/CheckboxList';
+import {fade, makeStyles} from '@material-ui/core/styles';
+
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -22,6 +21,7 @@ function loadScript(src, position, id) {
 }
 
 const autocompleteService = { current: null };
+const placesService = { current: null };
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,10 +42,15 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     flexGrow: 1,
   },
+  listItem: {
+    paddingBottom: theme.spacing(1),
+    borderBottom: `solid 1px ${fade(theme.palette.common.black, 0.15)}`,
+  },
 }));
 
 export default function EditOrigin(props) {
   const classes = useStyles();
+
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
@@ -86,7 +91,8 @@ export default function EditOrigin(props) {
       return undefined;
     }
 
-    fetch({ input: inputValue }, (results) => {
+
+    fetch({ input: inputValue, types: ['(regions)'] }, (results) => {
       if (active) {
         let newOptions = [];
 
@@ -105,28 +111,38 @@ export default function EditOrigin(props) {
     return () => {
       active = false;
     };
-  }, [value, inputValue, fetch]);
+  }, [inputValue, fetch]);
+
+  React.useEffect(() => {
+    if (!placesService.current && window.google) {
+      placesService.current = new window.google.maps.places.PlacesService(window.document.createElement('div'));
+    }
+    if (!placesService.current || !value) {
+      return undefined;
+    }
+
+    placesService.current.getDetails({
+      placeId: value.place_id,
+      fields: ['adr_address']
+    }, function(place, status) {
+      if (status === 'OK') {
+        const json = himalaya(place.adr_address);
+        const origin = {}
+
+        for (const entry of Object.entries(json))
+          if (entry[1].type === 'element'){
+
+            origin[entry[1].attributes[0].value] = entry[1].children[0].content};
+
+        props.setData({ ...props.data, origin: origin });
+        props.handleBackToLayout();
+      }
+    });
+
+  }, [value]);
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Select Origin
-          </Typography>
-          <Button color="inherit" disabled>
-            ADD
-          </Button>
-        </Toolbar>
-      </AppBar>
       <Autocomplete
         id="google-map-demo"
         className={classes.autocomplete}
@@ -145,9 +161,31 @@ export default function EditOrigin(props) {
           setInputValue(newInputValue);
         }}
         ListboxProps={{style:{ maxHeight: '60vh' }}}
-        PaperComponent={'Box'}
+        PaperComponent={({children}) => (<Box>{children}</Box>)}
         renderInput={(params) => (
-            <TextField {...params} className={classes.textField} fullWidth  />
+            <TextField
+              {...params}
+              className={classes.textField}
+              variant='outlined'
+              placeholder='Select origin'
+              fullWidth
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton
+                      onClick={props.handleBackToLayout}
+                      edge="start"
+                      className={classes.menuButton}
+                      color="inherit"
+                      aria-label="back"
+                    >
+                      <ArrowBack />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
         )}
         renderOption={(option) => {
           const matches = option.structured_formatting.main_text_matched_substrings;
@@ -156,14 +194,12 @@ export default function EditOrigin(props) {
             matches.map((match) => [match.offset, match.offset + match.length]),
           );
 
-          console.log(parts)
-
           return (
             <Grid container alignItems="center">
               <Grid item>
-                <LocationOnIcon className={classes.icon} />
+                <LocationOn className={classes.icon} />
               </Grid>
-              <Grid item xs>
+              <Grid item xs className={classes.listItem}>
                 {parts.map((part, index) => (
                   <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                     {part.text}
@@ -178,6 +214,7 @@ export default function EditOrigin(props) {
           );
         }}
       />
+      <Button>Create new origin</Button>
     </Box>
   );
 }

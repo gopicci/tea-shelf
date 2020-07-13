@@ -11,7 +11,7 @@ export default function InputRouter(handlePrevious) {
     name: '',
     category: '',
     subcategory: '',
-    origin: '',
+    origin: null,
     year: '',
     vendor: '',
     price: '',
@@ -22,7 +22,10 @@ export default function InputRouter(handlePrevious) {
 
   const [editRoute, setEditRoute] = useState({route: 'INPUT_LIST', field: null, data: null});
 
-  const props = {data, setData, setEditRoute, ...handlePrevious};
+  const handleBackToLayout = () =>
+    setEditRoute({ route: "INPUT_LIST", field: null, data: null });
+
+  const props = {data, setData, setEditRoute, handleBackToLayout, ...handlePrevious};
 
   function renderSwitch(editRoute) {
     switch (editRoute.route) {

@@ -42,12 +42,9 @@ export default function EditText(props) {
 
   const handleChange = (event) => setText(event.target.value);
 
-  const handlePrevious = () =>
-    props.setEditRoute({ route: "INPUT_LIST", field: null, data: null });
-
   function handleAdd() {
     props.setData({ ...props.data, [props.field]: text.replace(/\n/g, " ") });
-    handlePrevious();
+    props.handleBackToLayout();
   }
 
   const handleFocus = (event) => event.target.select();
@@ -57,7 +54,7 @@ export default function EditText(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={handlePrevious}
+            onClick={props.handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"

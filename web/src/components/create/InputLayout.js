@@ -126,9 +126,18 @@ export default function InputLayout(props) {
           </Typography>
         </FormLabel>
         <List className={formListClasses.list}>
+          <InputItem
+            key="origin"
+            name="origin"
+            value={
+              props.data.origin &&
+                Object.values(props.data.origin).join(', ').replace('&#39;', "\'")
+            }
+            handleClick={handleClick}
+          />
           {Object.entries(props.data).map(
             ([key, value]) =>
-              !["name", "category"].includes(key) && (
+              !["name", "category", "origin"].includes(key) && (
                 <InputItem
                   key={key}
                   name={key}

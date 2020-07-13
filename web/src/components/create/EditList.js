@@ -44,11 +44,9 @@ export default function EditList(props) {
     return obj;
   }, {});
 
-  const handlePrevious = () => props.setEditRoute({route: 'INPUT_LIST', field: null, data: null})
-
   function handleChange(event) {
     props.setData({ ...props.data, [props.field]: event.target.name });
-    handlePrevious();
+    props.handleBackToLayout();
   }
 
   return (
@@ -56,7 +54,7 @@ export default function EditList(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={handlePrevious}
+            onClick={props.handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
