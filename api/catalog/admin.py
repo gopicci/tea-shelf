@@ -35,14 +35,13 @@ class CustomUserAdmin(admin.ModelAdmin):
 
     list_display = (
         "email",
-        "username",
         "joined_at",
         "is_staff",
         "is_active",
+        "id",
     )
     search_fields = (
         "email",
-        "username",
     )
 
 
@@ -320,6 +319,8 @@ class TeaAdmin(admin.ModelAdmin):
         """
         Vendor list entry links to foreignkey update page.
         """
+        if not obj.vendor:
+            return None
         link = reverse("admin:catalog_vendor_change", args=[obj.vendor.id])
         return format_html(f'<a href="{link}">{obj.vendor.name}</a>')
 
@@ -327,5 +328,7 @@ class TeaAdmin(admin.ModelAdmin):
         """
         Subcategory list entry links to foreignkey update page.
         """
+        if not obj.subcategory:
+            return None
         link = reverse("admin:catalog_subcategory_change", args=[obj.subcategory.id])
         return format_html(f'<a href="{link}">{obj.subcategory.name}</a>')

@@ -29,7 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
             "id",
             "last_login",
             "email",
-            "username",
             "is_active",
             "joined_at",
             "password1",
@@ -39,7 +38,6 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "password1": {"required": True, "write_only": True},
             "password2": {"required": True, "write_only": True},
-            "username": {"required": True},
         }
 
     @staticmethod

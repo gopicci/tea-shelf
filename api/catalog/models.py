@@ -39,9 +39,6 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def get_by_natural_key(self, username):
-        return self.get(**{"{}__iexact".format(self.model.USERNAME_FIELD): username})
-
     def create_user(self, email, password, **extra_fields):
         is_active = int(os.environ.get("DEBUG", default=0)) == 1
         return self._create_user(
@@ -56,9 +53,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     Model defining a custom user with email as identifier.
     """
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField("Email", max_length=255, unique=True)
-    username = models.CharField("Name", max_length=255, blank=False)
     is_staff = models.BooleanField("Is staff", default=False)
     is_active = models.BooleanField("Is active", default=True)
     joined_at = models.DateTimeField("Joined at", default=timezone.now)
@@ -74,12 +70,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
-
-    def get_full_name(self):
-        return self.username
-
-    def get_short_name(self):
-        return self.username
 
 
 class GongfuBrewing(models.Model):
@@ -310,6 +300,10 @@ class VendorTrademark(models.Model):
         return self.name
 
 
+def get_upload_path(instance, filename):
+    return f"{instance.user.id}/{filename}"
+
+
 class Tea(models.Model):
     """
     Model defining a tea entry.
@@ -319,7 +313,7 @@ class Tea(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_archived = models.BooleanField(default=False)
     name = models.CharField(max_length=50)
-    image = models.ImageField(null=True, blank=True)
+    image = models.ImageField(upload_to=get_upload_path, null=True, blank=True)
     year = models.SmallIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         null=True,
@@ -362,3 +356,5 @@ class Tea(models.Model):
         blank=True,
     )
     notes = models.TextField(max_length=10000, null=True, blank=True)
+
+
