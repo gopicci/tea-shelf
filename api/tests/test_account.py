@@ -5,14 +5,13 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.reverse import reverse
 
+
 PASSWORD = "pAssw0rd!"
 
 
 @pytest.mark.django_db
-def create_user(email="user@test.com", username="user", password=PASSWORD):
-    return get_user_model().objects.create_user(
-        email=email, username=username, password=password
-    )
+def create_user(email="user@test.com", password=PASSWORD):
+    return get_user_model().objects.create_user(email=email, password=password)
 
 
 @pytest.mark.django_db
@@ -21,16 +20,14 @@ def test_user_can_register(client):
         reverse("register"),
         data={
             "email": "user@example.com",
-            "username": "User",
             "password1": PASSWORD,
             "password2": PASSWORD,
         },
     )
     user = get_user_model().objects.last()
     assert status.HTTP_201_CREATED == response.status_code
-    assert response.data["id"] == user.id
+    assert response.data["id"] == str(user.id)
     assert response.data["email"] == user.email
-    assert response.data["username"] == user.username
 
 
 @pytest.mark.django_db
@@ -47,9 +44,8 @@ def test_user_can_login(client):
 
     assert status.HTTP_200_OK == response.status_code
     assert response.data["refresh"] is not None
-    assert payload_data["id"] == user.id
+    assert payload_data["id"] == str(user.id)
     assert payload_data["email"] == user.email
-    assert payload_data["username"] == user.username
 
 
 @pytest.mark.django_db
@@ -59,7 +55,6 @@ def test_can_visit_user_info_page_when_login(client):
     response = client.get(reverse("user_detail"))
     assert status.HTTP_200_OK == response.status_code
     assert response.data["email"] == user.email
-    assert response.data["username"] == user.username
 
 
 @pytest.mark.django_db

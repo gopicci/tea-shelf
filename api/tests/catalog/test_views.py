@@ -16,12 +16,7 @@ auth_override = {
 def token(client):
     resp = client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
     resp = client.post(
@@ -231,7 +226,6 @@ def test_users_cannot_view_others_teas(client, token):
     resp = client.post(
         "/api/register/",
         {
-            "username": "test2",
             "email": "test2@test.com",
             "password1": "pAzzw0rd!",
             "password2": "pAzzw0rd!",

@@ -131,9 +131,11 @@ def test_invalid_category_serializer(client):
 
 @pytest.mark.django_db
 def test_valid_subcategory_serializer(client):
+    user = CustomUser(email="test@test.com")
+    user.save()
     category = Category(name="OOLONG")
     category.save()
-    valid_serializer_data = {"name": "test", "category": category.id}
+    valid_serializer_data = {"user": user, "name": "test", "category": category.id}
     serializer = SubcategorySerializer(data=valid_serializer_data)
     assert serializer.is_valid()
     assert type(serializer.validated_data["category"]) == Category
@@ -153,7 +155,7 @@ def test_invalid_subcategory_serializer(client):
 
 @pytest.mark.django_db
 def test_valid_subcategoryname_serializer(client):
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     category = Category(name="OOLONG")
     category.save()

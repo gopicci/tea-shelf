@@ -2,9 +2,11 @@ import os
 import pytest
 from datetime import timedelta
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError, transaction
+
 
 from catalog.models import (
     CustomUser,
@@ -22,10 +24,9 @@ from catalog.models import (
 
 @pytest.mark.django_db
 def test_custom_user_model():
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     assert user.email == "test@test.com"
-    assert user.username == "test"
     assert user.joined_at
     assert user.is_active
     assert not user.is_staff
@@ -149,7 +150,7 @@ def test_westernbrewingg_model_validators():
 
 @pytest.mark.django_db
 def test_origin_model():
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     origin = Origin(country="Germany", region="Yunnan", locality="Paris", user=user)
     origin.save()
@@ -157,13 +158,12 @@ def test_origin_model():
     assert origin.country == "Germany"
     assert origin.region == "Yunnan"
     assert origin.locality == "Paris"
-    assert origin.user.username == "test"
     assert str(origin) == "Paris, Yunnan, Germany"
 
 
 @pytest.mark.django_db
 def test_origin_model_validators():
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     origin1 = Origin(country="Germany", region="Yunnan", locality="Paris", user=user)
     origin1.save()
@@ -206,7 +206,7 @@ def test_category_model():
 
 @pytest.mark.django_db
 def test_subcategory_subcategoryname_model():
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     category = Category(name="OOLONG")
     category.save()
@@ -236,7 +236,6 @@ def test_subcategory_subcategoryname_model():
     assert subcategory.category.name == "OOLONG"
     assert subcategory.translated_name == "Big Red Robe"
     assert subcategory.origin.locality == "Paris"
-    assert subcategory.user.username == "test"
     assert subcategory.gongfu_brewing.temperature == 99
     assert subcategory.western_brewing.weight == 0.8
 
@@ -249,7 +248,7 @@ def test_subcategory_subcategoryname_model():
 
 @pytest.mark.django_db
 def test_vendor_vendortrademark_model():
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     origin = Origin(country="Germany", region="Yunnan", locality="Paris", user=user)
     origin.save()
@@ -276,7 +275,7 @@ def test_vendor_vendortrademark_model():
 
 @pytest.mark.django_db
 def test_tea_model():
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     category = Category(name="OOLONG")
     category.save()
@@ -346,14 +345,15 @@ def test_tea_model():
     assert tea.last_consumed_on
 
     path = tea.image.name
-    assert os.path.isfile(path)
+    assert os.path.isfile(os.path.join(settings.MEDIA_ROOT, path))
     tea.image.delete()
+    os.rmdir(os.path.join(settings.MEDIA_ROOT, os.path.dirname(path)))
     assert not os.path.isfile(path)
 
 
 @pytest.mark.django_db
 def test_tea_model_validators():
-    user = CustomUser(email="test@test.com", username="test")
+    user = CustomUser(email="test@test.com")
     user.save()
     tea = Tea(user=user, name="test", year=1800)
     with pytest.raises(ValidationError):

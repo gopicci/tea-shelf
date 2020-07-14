@@ -163,8 +163,8 @@ class SubcategorySerializer(serializers.ModelSerializer):
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
-    gongfu_brewing = GongfuBrewingSerializer()
-    western_brewing = WesternBrewingSerializer()
+    gongfu_brewing = GongfuBrewingSerializer(required=False)
+    western_brewing = WesternBrewingSerializer(required=False)
 
     class Meta:
         model = Subcategory
@@ -188,8 +188,8 @@ class TeaSerializer(serializers.ModelSerializer):
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
-    gongfu_brewing = GongfuBrewingSerializer()
-    western_brewing = WesternBrewingSerializer()
+    gongfu_brewing = GongfuBrewingSerializer(required=False)
+    western_brewing = WesternBrewingSerializer(required=False)
 
     class Meta:
         model = Tea
@@ -201,10 +201,15 @@ class TeaSerializer(serializers.ModelSerializer):
         Nested create, removes null brewings entries and creates separate instances
         before feeding them to the tea instance.
         """
-        gongfu_data = validated_data.pop("gongfu_brewing")
-        western_data = validated_data.pop("western_brewing")
-        [gongfu_data.pop(k) for k, v in list(gongfu_data.items()) if v is None]
-        [western_data.pop(k) for k, v in list(western_data.items()) if v is None]
+        gongfu_data, western_data = {}, {}
+
+        if "gongfu_brewing" in validated_data:
+            gongfu_data = validated_data.pop("gongfu_brewing")
+            [gongfu_data.pop(k) for k, v in list(gongfu_data.items()) if v is None]
+
+        if "western_brewing" in validated_data:
+            western_data = validated_data.pop("western_brewing")
+            [western_data.pop(k) for k, v in list(western_data.items()) if v is None]
 
         tea_instance = Tea.objects.create(**validated_data)
 

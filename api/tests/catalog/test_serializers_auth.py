@@ -7,12 +7,7 @@ from catalog.serializers import LoginSerializer, UserSerializer
 def test_valid_login_serializer(client):
     client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
 
@@ -27,12 +22,7 @@ def test_valid_login_serializer(client):
 def test_invalid_login_serializer_missing_field(client):
     client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
 
@@ -55,12 +45,7 @@ def test_invalid_login_serializer_missing_field(client):
 def test_invalid_login_serializer_wrong_field(client):
     client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
 
@@ -83,7 +68,6 @@ def test_invalid_login_serializer_wrong_field(client):
 def test_valid_user_serializer(client):
 
     valid_serializer_data = {
-        "username": "test",
         "email": "test@test.com",
         "password1": "pAzzw0rd!",
         "password2": "pAzzw0rd!",
@@ -98,7 +82,6 @@ def test_valid_user_serializer(client):
 def test_invalid_user_serializer_password_mismatch(client):
 
     invalid_serializer_data = {
-        "username": "test",
         "email": "test@test.com",
         "password1": "pAzzw0rd!",
         "password2": "pAzzw0rd!wrong",
@@ -114,7 +97,6 @@ def test_invalid_user_serializer_password_mismatch(client):
 def test_invalid_user_serializer_wrong_email_format(client):
 
     invalid_serializer_data = {
-        "username": "test",
         "email": "test",
         "password1": "pAzzw0rd!",
         "password2": "pAzzw0rd!",
@@ -130,7 +112,6 @@ def test_invalid_user_serializer_wrong_email_format(client):
 def test_invalid_user_serializer_missing_field(client):
 
     invalid_serializer_data = {
-        "username": "test",
         "email": "test@test.com",
         "password1": "pAzzw0rd!",
     }
@@ -141,7 +122,6 @@ def test_invalid_user_serializer_missing_field(client):
     assert serializer.errors == {"password2": ["This field is required."]}
 
     invalid_serializer_data = {
-        "email": "test@test.com",
         "password1": "pAzzw0rd!",
         "password2": "pAzzw0rd!",
     }
@@ -149,4 +129,4 @@ def test_invalid_user_serializer_missing_field(client):
     assert not serializer.is_valid()
     assert serializer.validated_data == {}
     assert serializer.data == invalid_serializer_data
-    assert serializer.errors == {"username": ["This field is required."]}
+    assert serializer.errors == {"email": ["This field is required."]}

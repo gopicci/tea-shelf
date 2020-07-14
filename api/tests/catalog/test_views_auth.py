@@ -9,16 +9,11 @@ def test_register(client):
 
     resp = client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
     assert resp.status_code == 201
-    assert resp.data["username"] == "test"
+    assert resp.data["email"] == "test@test.com"
 
     users = CustomUser.objects.all()
     assert len(users) == 1
@@ -41,7 +36,7 @@ def test_register_bad_json(client):
 
     resp = client.post(
         "/api/register/",
-        {"username": "test", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
+        {"password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
     assert resp.status_code == 400
@@ -57,12 +52,7 @@ def test_register_different_passwords(client):
 
     resp = client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pizza",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pizza",},
         content_type="application/json",
     )
     assert resp.status_code == 400
@@ -78,16 +68,11 @@ def test_can_login(client):
 
     resp = client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
     assert resp.status_code == 201
-    assert resp.data["username"] == "test"
+    assert resp.data["email"] == "test@test.com"
 
     users = CustomUser.objects.all()
     assert len(users) == 1
@@ -117,16 +102,11 @@ def test_logged_in_can_access_user_page(client):
 
     resp = client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
     assert resp.status_code == 201
-    assert resp.data["username"] == "test"
+    assert resp.data["email"] == "test@test.com"
 
     users = CustomUser.objects.all()
     assert len(users) == 1
@@ -140,7 +120,7 @@ def test_logged_in_can_access_user_page(client):
     assert resp.data["access"]
     resp = client.get("/api/user/", HTTP_AUTHORIZATION=f'Bearer {resp.data["access"]}')
     assert resp.status_code == 200
-    assert resp.data["username"] == "test"
+    assert resp.data["email"] == "test@test.com"
 
 
 @pytest.mark.django_db
@@ -150,16 +130,11 @@ def test_token_refresh(client):
 
     resp = client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
     assert resp.status_code == 201
-    assert resp.data["username"] == "test"
+    assert resp.data["email"] == "test@test.com"
 
     users = CustomUser.objects.all()
     assert len(users) == 1
@@ -177,7 +152,7 @@ def test_token_refresh(client):
 
     resp = client.get("/api/user/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
     assert resp.status_code == 200
-    assert resp.data["username"] == "test"
+    assert resp.data["email"] == "test@test.com"
 
     resp = client.post(
         "/api/token/refresh/",
@@ -190,7 +165,7 @@ def test_token_refresh(client):
 
     resp = client.get("/api/user/", HTTP_AUTHORIZATION=f"Bearer {new_access_token}")
     assert resp.status_code == 200
-    assert resp.data["username"] == "test"
+    assert resp.data["email"] == "test@test.com"
 
 
 @pytest.mark.django_db
@@ -206,12 +181,7 @@ def test_logout(client):
 
     client.post(
         "/api/register/",
-        {
-            "username": "test",
-            "email": "test@test.com",
-            "password1": "pAzzw0rd!",
-            "password2": "pAzzw0rd!",
-        },
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
         content_type="application/json",
     )
     client.post(
