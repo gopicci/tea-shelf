@@ -163,6 +163,8 @@ class SubcategorySerializer(serializers.ModelSerializer):
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
+    gongfu_brewing = GongfuBrewingSerializer()
+    western_brewing = WesternBrewingSerializer()
 
     class Meta:
         model = Subcategory
@@ -182,12 +184,37 @@ class SubcategoryNameSerializer(serializers.ModelSerializer):
 
 class TeaSerializer(serializers.ModelSerializer):
     """
-    Tea serializer, passes request user on creation.
+    Tea serializer with nested brewings, passes request user on creation.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
+    gongfu_brewing = GongfuBrewingSerializer()
+    western_brewing = WesternBrewingSerializer()
 
     class Meta:
         model = Tea
         fields = "__all__"
         read_only_fields = ("user",)
+
+    def create(self, validated_data):
+        """
+        Nested create, removes null brewings entries and creates separate instances
+        before feeding them to the tea instance.
+        """
+        gongfu_data = validated_data.pop("gongfu_brewing")
+        western_data = validated_data.pop("western_brewing")
+        [gongfu_data.pop(k) for k, v in list(gongfu_data.items()) if v is None]
+        [western_data.pop(k) for k, v in list(western_data.items()) if v is None]
+
+        tea_instance = Tea.objects.create(**validated_data)
+
+        if gongfu_data:
+            gongfu_instance, _ = GongfuBrewing.objects.get_or_create(**gongfu_data)
+            tea_instance.gongfu_brewing = gongfu_instance
+
+        if western_data:
+            western_instance, _ = WesternBrewing.objects.get_or_create(**western_data)
+            tea_instance.western_brewing = western_instance
+
+        tea_instance.save()
+        return tea_instance

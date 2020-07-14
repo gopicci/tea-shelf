@@ -53,6 +53,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     Model defining a custom user with email as identifier.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField("Email", max_length=255, unique=True)
     is_staff = models.BooleanField("Is staff", default=False)
@@ -356,5 +357,3 @@ class Tea(models.Model):
         blank=True,
     )
     notes = models.TextField(max_length=10000, null=True, blank=True)
-
-

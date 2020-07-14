@@ -40,9 +40,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         "is_active",
         "id",
     )
-    search_fields = (
-        "email",
-    )
+    search_fields = ("email",)
 
 
 @admin.register(Category)
