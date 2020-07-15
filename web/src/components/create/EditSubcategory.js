@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from 'react';
 import {
   InputAdornment,
   TextField,
@@ -11,7 +11,9 @@ import {ArrowBack} from "@material-ui/icons";
 import {fade, makeStyles} from "@material-ui/core/styles";
 import {formListStyles} from '../../style/FormListStyles';
 
-import {subcategories} from '../../dev/DevData';
+import {getSubcategoryName} from '../../services/ParsingService';
+
+import {SubcategoriesState} from '../containers/SubcategoriesContainer';
 
 const filter = createFilterOptions();
 
@@ -41,23 +43,38 @@ export default function EditSubcategory(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
+  const subcategories = useContext(SubcategoriesState);
+
   const [value, setValue] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [options, setOptions] = useState(null);
+
+  useEffect(() => {
+    setOptions(Object.entries(subcategories).map(entry => {
+      return getSubcategoryName(entry[1])
+    }));
+  }, [subcategories])
 
   function handleListSelect(event) {
-    props.setTeaData({ ...props.teaData, [props.field]: event.currentTarget.id });
+    const item = Object.entries(subcategories).find(entry => getSubcategoryName(entry[1]) === event.currentTarget.id );
+    props.setTeaData({ ...props.teaData, [props.field]: item[1] });
     props.handleBackToLayout();
   }
 
   useEffect(() => {
     if (value) {
-      props.setTeaData({ ...props.teaData, [props.field]: value });
+      const item = Object.entries(subcategories).find(entry => getSubcategoryName(entry[1]) === value);
+      if (item)
+        props.setTeaData({ ...props.teaData, [props.field]: item[1] });
+      else
+        props.setTeaData({ ...props.teaData, [props.field]: {name: value} });
       props.handleBackToLayout();
     }
   }, [value])
 
   return (
     <Box className={classes.root}>
+      {options &&
       <Autocomplete
         value={value}
         onChange={(event, newValue) => {
@@ -91,7 +108,7 @@ export default function EditSubcategory(props) {
         clearOnBlur
         handleHomeEndKeys
         id="free-solo-with-text-demo"
-        options={subcategories}
+        options={options}
         getOptionLabel={(option) => {
           // Value selected with enter, right from the input
           if (typeof option === 'string') {
@@ -133,7 +150,7 @@ export default function EditSubcategory(props) {
             }}
           />
         )}
-      />
+      />}
       {!inputValue &&
       <FormGroup>
         <FormLabel className={formListClasses.formLabel}>
@@ -142,17 +159,17 @@ export default function EditSubcategory(props) {
           </Typography>
         </FormLabel>
         <List className={formListClasses.list}>
-        {
-          subcategories.map(subcategory => (
+        {options &&
+          options.map(option => (
             <ListItem
               button
               className={formListClasses.listItem}
-              key={subcategory}
-              id={subcategory}
+              key={option}
+              id={option}
               onClick={handleListSelect}
             >
               <Box className={formListClasses.listItemBox}>
-                  <Typography variant={"body2"}>{subcategory}</Typography>
+                  <Typography variant={"body2"}>{option}</Typography>
               </Box>
             </ListItem>
           ))

@@ -73,7 +73,7 @@ export default function GridLayout() {
     APIRequest('/tea/', 'GET')
       .then(res => {
         setTestTeas(res);
-        console.log(res);
+        console.log('/tea/', res);
       })
   }, [])
 
@@ -82,7 +82,7 @@ export default function GridLayout() {
         {
           testTeas &&
             testTeas.map(tea =>
-              <Grid item className={gridView ? classes.gridItem : classes.listItem}>
+              <Grid item className={gridView ? classes.gridItem : classes.listItem} key={tea.id}>
                 <TeaCard tea={tea} gridView={gridView} />
               </Grid>
           )

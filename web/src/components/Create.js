@@ -11,18 +11,21 @@ export default function Create({setRoute}) {
   const [teaData, setTeaData] = useState({
     name: '',
     category: null,
-    subcategory: '',
+    subcategory: null,
     origin: null,
-    year: '',
-    vendor: '',
-    price: '',
-    weight: '',
-    brewing: '',
+    year: null,
+    vendor: null,
+    price: null,
+    weight: null,
+    brewing: null,
     notes: '',
   });
 
 
   function handleCreate() {
+    // save local, then sync
+    // !subcategory.is_public ? add
+
     fetch(imageData)
       .then(res => res.arrayBuffer())
       .then(buf => new File([buf], 'capture.jpg', {type: 'image/jpeg'}))
@@ -30,10 +33,8 @@ export default function Create({setRoute}) {
         let formData = new FormData()
         if (imageData)
           formData.append('image', file)
-        formData.append('name', teaData.name)
-        formData.append('category', teaData.category)
-        //for (const key in teaData)
-        //  formData.append(key, teaData[key])
+        for (const key in teaData)
+          formData.append(key, teaData[key])
         APIRequest('/tea/', 'POST', formData)
           .then(res => {
             console.log(res);

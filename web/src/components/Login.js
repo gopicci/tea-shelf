@@ -68,6 +68,7 @@ export default function Login() {
           throw Error(res.body.statusText);
         } else {
           window.localStorage.setItem('user.auth', JSON.stringify(res.body));
+          window.location.reload(false);
         }
       })
       .catch(error => {

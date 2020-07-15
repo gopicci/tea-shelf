@@ -9,7 +9,6 @@ import GridLayout from './grid/GridLayout';
 import FilterLayout from './filters/FilterLayout';
 
 import FilterStateContainer from './containers/FilterStateContainer';
-import GridViewStateContainer from './containers/GridViewStateContainer';
 
 const useStyles = makeStyles((theme) => ({
   page: {
@@ -37,20 +36,19 @@ export default function PageLayout({setRoute}) {
   const handleCreate = () => setRoute('CREATE');
 
   return (
-    <GridViewStateContainer>
+    <>
       <SearchAppBar />
       <Toolbar />
-        <Box className={classes.page}>
-          <FilterStateContainer>
-            <DrawerLayout />
-            <Box className={classes.mainBox}>
-              <FilterLayout />
-              <GridLayout />
-            </Box>
-          </FilterStateContainer>
-          <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
-        </Box>
-
-    </GridViewStateContainer>
+      <Box className={classes.page}>
+        <FilterStateContainer>
+          <DrawerLayout />
+          <Box className={classes.mainBox}>
+            <FilterLayout />
+            <GridLayout />
+          </Box>
+        </FilterStateContainer>
+        <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
+      </Box>
+    </>
   );
 };

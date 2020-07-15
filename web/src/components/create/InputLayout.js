@@ -15,6 +15,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
+import {getSubcategoryName} from '../../services/ParsingService';
+
 import {CategoriesState} from '../containers/CategoriesStateContainer';
 
 const useStyles = makeStyles((theme) => ({
@@ -149,7 +151,7 @@ export default function InputLayout(props) {
           <InputItem
             key="subcategory"
             name="subcategory"
-            value={props.teaData.subcategory}
+            value={getSubcategoryName(props.teaData.subcategory)}
             handleClick={handleClick}
           />
           <InputItem

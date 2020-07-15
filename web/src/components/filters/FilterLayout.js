@@ -77,8 +77,8 @@ export default function FilterLayout() {
             </Grid>
             {
               Object.entries(state.filters).map(([entry, list]) => (
-                <Grid item className={classes.listItem}>
-                  <FilterList key={entry} entry={entry} list={list}/>
+                <Grid item className={classes.listItem} key={entry}>
+                  <FilterList entry={entry} list={list}/>
                 </Grid>
               ))
             }

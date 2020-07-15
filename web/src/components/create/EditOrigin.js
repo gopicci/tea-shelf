@@ -66,7 +66,7 @@ export default function EditOrigin(props) {
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
       loadScript(
-        "https://maps.googleapis.com/maps/api/js?key=AIzaSyBWHwNvZIqK7IY5nRy_DVUiqioz0CV0K1k&libraries=places",
+        `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GCLOUD_API_KEY}&libraries=places`,
         document.querySelector("head"),
         "google-maps"
       );

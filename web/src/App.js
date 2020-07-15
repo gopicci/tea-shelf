@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { ThemeProvider } from '@material-ui/styles';
-import localforage from 'localforage';
 
 import Register from './components/Register';
 import Login from './components/Login';
@@ -8,28 +7,18 @@ import Login from './components/Login';
 import PageLayout from './components/PageLayout';
 import Create from './components/Create';
 
-import { APIRequest, getUser } from './services/AuthService';
-
 import { mainTheme } from './style/MainTheme';
 import './App.css';
-import CategoriesStateContainer from './components/containers/CategoriesStateContainer';
-import {Box} from '@material-ui/core';
 
+import {LoggedInState} from './components/containers/LoggedInStateContainer';
+import MainStateContainer from './components/containers/MainStateContainer';
 
 
 function App() {
-  const [isLoggedIn, setLoggedIn] = useState(() => {
-    return window.localStorage.getItem('user.auth') !== null;
-  });
 
+  const isLoggedIn = useContext(LoggedInState);
 
-
-  const logout = () => {
-    window.localStorage.removeItem('user.auth');
-    setLoggedIn(false);
-  };
-
-  // APIRequest('/category/', 'GET').then(res => console.log(res))
+  // APIRequest('/subcategory/', 'GET').then(res => console.log(res))
 
   // console.log(getUser())
 
@@ -51,9 +40,9 @@ function App() {
 
   return (
     <ThemeProvider theme={mainTheme}>
-      <CategoriesStateContainer>
+      <MainStateContainer>
         {getRoute(route)}
-      </CategoriesStateContainer>
+      </MainStateContainer>
     </ThemeProvider>
   );
 }
