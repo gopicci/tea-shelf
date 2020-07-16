@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import localforage from 'localforage';
 
 import CaptureImage from './create/CaptureImage';
 import InputRouter from './create/InputRouter';
@@ -33,11 +34,18 @@ export default function Create({setRoute}) {
         let formData = new FormData()
         if (imageData)
           formData.append('image', file)
-        for (const key in teaData)
-          formData.append(key, teaData[key])
+        //formData.append('name', teaData.name)
+        formData.append('category', teaData.category)
+        //for (const key in teaData)
+        //  formData.append(key, teaData[key])
         APIRequest('/tea/', 'POST', formData)
           .then(res => {
-            console.log(res);
+            if (res.ok)
+              console.log('created', res);
+            else {
+              console.log('error, cache');
+              localforage.getItem('offline-teas').then(offlineTeas => console.log('got offline teas', offlineTeas))
+            }
           })
       })
   }

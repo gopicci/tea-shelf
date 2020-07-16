@@ -23,14 +23,15 @@ export default function CategoriesStateContainer(props) {
         } else {
           APIRequest('/category/', 'GET')
           .then(res => {
-            if (res) {
-              setState(res);
-              console.log('/category/', res);
-              localforage.setItem('categories', res)
-                .then(res => console.log('set local categories', res))
-            } else {
+            if (res.ok)
+              res.json().then(body => {
+                setState(body);
+                console.log('/category/', body);
+                localforage.setItem('categories', body)
+                  .then(cache => console.log('set local categories', cache))
+              })
+            else
               logout();
-            }
           });
         }
       })

@@ -21,12 +21,13 @@ export default function SubcategoriesStateContainer(props) {
 
     APIRequest('/subcategory/', 'GET')
     .then(res => {
-      if (res) {
-        setState(res);
-        console.log('/subcategory/', res);
-        localforage.setItem('subcategories', res)
-          .then(res => console.log('set local subcategories', res))
-      }
+      if (res.ok)
+        res.json().then(body => {
+          setState(body);
+          console.log('/subcategory/', body);
+          localforage.setItem('subcategories', body)
+            .then(cache => console.log('set local subcategories', cache))
+        })
     })
     .catch((e) => console.log(e));
 

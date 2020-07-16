@@ -9,6 +9,7 @@ import  {APIRequest} from '../../services/AuthService';
 import {teas} from '../../dev/DevData'
 import {FilterState} from '../containers/FilterStateContainer';
 import {GridViewState} from '../containers/GridViewStateContainer';
+import localforage from "localforage";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -72,8 +73,14 @@ export default function GridLayout() {
   useEffect(() => {
     APIRequest('/tea/', 'GET')
       .then(res => {
-        setTestTeas(res);
-        console.log('/tea/', res);
+        console.log('/tea/ rewsssss ', res)
+        if (res.ok)
+          res.json().then(body => {
+            setTestTeas(body);
+            console.log('/tea/', body);
+            localforage.setItem('teas', body)
+              .then(cache => console.log('set local teas', cache))
+          })
       })
   }, [])
 
