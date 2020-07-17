@@ -5,7 +5,7 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 
 import FilterChips from './FilterChips';
 
-import {FilterDispatch, FilterState} from '../containers/FilterStateContainer';
+import {FilterDispatch, FilterContext} from '../statecontainers/FilterContext';
 import FilterList from './FilterList';
 
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterLayout() {
   const classes = useStyles();
 
-  const state = useContext(FilterState)
+  const state = useContext(FilterContext)
   const dispatch = useContext(FilterDispatch)
 
   const [open, setOpen] = useState(false);

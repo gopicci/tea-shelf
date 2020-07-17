@@ -17,7 +17,7 @@ import { formListStyles } from "../../style/FormListStyles";
 import InputItem from "./InputItem";
 import {getSubcategoryName} from '../../services/ParsingService';
 
-import {CategoriesState} from '../containers/CategoriesStateContainer';
+import {CategoriesState} from '../statecontainers/CategoriesContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {

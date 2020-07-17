@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 
-import {CategoriesState} from "../containers/CategoriesStateContainer";
+import {CategoriesState} from "../statecontainers/CategoriesContext";
 
 const useStyles = makeStyles((theme) => ({
   gridCard: {

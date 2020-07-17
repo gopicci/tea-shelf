@@ -15,7 +15,7 @@ const reducer = (state, action) => {
   }
 }
 
-export default function GridViewStateContainer(props) {
+export default function GridViewContext(props) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 

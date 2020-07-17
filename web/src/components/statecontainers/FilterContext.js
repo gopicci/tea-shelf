@@ -40,7 +40,7 @@ const initialState = {
     }
 }
 
-export const FilterState = React.createContext(initialState)
+export const FilterContext = React.createContext(initialState)
 export const FilterDispatch = React.createContext(null);
 
 const reducer = (state, action) => {
@@ -75,15 +75,15 @@ const reducer = (state, action) => {
   }
 }
 
-export default function FilterStateContainer(props) {
+export default function FilterState(props) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
     <FilterDispatch.Provider value={dispatch}>
-      <FilterState.Provider value={state}>
+      <FilterContext.Provider value={state}>
         {props.children}
-      </FilterState.Provider>
+      </FilterContext.Provider>
     </FilterDispatch.Provider>
 
   )

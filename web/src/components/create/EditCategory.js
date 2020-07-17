@@ -13,7 +13,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import CheckboxList from "../generics/CheckboxList";
 
-import {CategoriesState} from '../containers/CategoriesStateContainer';
+import {CategoriesState} from '../statecontainers/CategoriesContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {

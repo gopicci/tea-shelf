@@ -4,6 +4,7 @@ import localforage from 'localforage';
 import CaptureImage from './create/CaptureImage';
 import InputRouter from './create/InputRouter';
 import {APIRequest} from '../services/AuthService';
+import {ImageDataToFile} from '../services/ImageService';
 
 export default function Create({setRoute}) {
 
@@ -27,27 +28,30 @@ export default function Create({setRoute}) {
     // save local, then sync
     // !subcategory.is_public ? add
 
-    fetch(imageData)
-      .then(res => res.arrayBuffer())
-      .then(buf => new File([buf], 'capture.jpg', {type: 'image/jpeg'}))
-      .then(file => {
-        let formData = new FormData()
-        if (imageData)
-          formData.append('image', file)
-        //formData.append('name', teaData.name)
-        formData.append('category', teaData.category)
-        //for (const key in teaData)
-        //  formData.append(key, teaData[key])
-        APIRequest('/tea/', 'POST', formData)
-          .then(res => {
-            if (res.ok)
-              console.log('created', res);
-            else {
-              console.log('error, cache');
-              localforage.getItem('offline-teas').then(offlineTeas => console.log('got offline teas', offlineTeas))
-            }
-          })
+    ImageDataToFile(imageData).then((file) => {
+
+      let formData = new FormData();
+      if (imageData) formData.append("image", file);
+
+      formData.append('name', teaData.name)
+      formData.append("category", teaData.category);
+      //for (const key in teaData)
+      //  formData.append(key, teaData[key])
+      APIRequest("/tea/", "POST", formData).then((res) => {
+        if (res.ok) console.log("Tea created", res);
+      }).catch(error => {
+        const msg = error.message.toLowerCase();
+        if (msg === 'request timed out' || msg.includes('network')) {
+          console.log(msg, 'cache locally')
+          localforage
+            .getItem("offline-teas")
+            .then((offlineTeas) => {
+              localforage.setItem("offline-teas", [...offlineTeas, Object.fromEntries(formData)])
+                .then(cache => console.log('offline teas:', cache));
+              });
+        }
       })
+    });
   }
 
   const [step, setStep] = useState(1);

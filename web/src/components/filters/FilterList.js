@@ -5,7 +5,7 @@ import {formListStyles} from '../../style/FormListStyles'
 
 import FilterItem from './FilterItem';
 
-import {FilterDispatch} from '../containers/FilterStateContainer'
+import {FilterDispatch} from '../statecontainers/FilterContext'
 
 
 export default function FilterList({ entry, list }) {

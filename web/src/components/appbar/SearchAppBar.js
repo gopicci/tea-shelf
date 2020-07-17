@@ -3,7 +3,7 @@ import {AppBar, Box, Toolbar, Typography, InputBase, IconButton } from  '@materi
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { AccountCircle, Menu, Refresh, Search, ViewStream, ViewModule } from '@material-ui/icons';
 
-import { GridViewState, GridViewDispatch } from '../containers/GridViewStateContainer';
+import { GridViewState, GridViewDispatch } from '../statecontainers/GridViewContext';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

@@ -5,10 +5,12 @@ import {makeStyles} from '@material-ui/core/styles';
 import TeaCard from './TeaCard';
 
 import  {APIRequest} from '../../services/AuthService';
+import {FileToBase64} from '../../services/ImageService';
 
-import {teas} from '../../dev/DevData'
-import {FilterState} from '../containers/FilterStateContainer';
-import {GridViewState} from '../containers/GridViewStateContainer';
+import {TeasState} from '../statecontainers/TeasContext';
+import {FilterContext} from '../statecontainers/FilterContext';
+import {GridViewState} from '../statecontainers/GridViewContext';
+
 import localforage from "localforage";
 
 const useStyles = makeStyles((theme) => ({
@@ -52,7 +54,8 @@ const useStyles = makeStyles((theme) => ({
 export default function GridLayout() {
   const classes = useStyles();
 
-  const state = useContext(FilterState);
+  const state = useContext(FilterContext);
+  const teas = useContext(TeasState)
 
   const [filteredTeas, setFilteredTeas] = useState(teas);
 
@@ -69,26 +72,39 @@ export default function GridLayout() {
   const gridView = useContext(GridViewState);
 
   const [testTeas, setTestTeas] = useState(null);
+  const [offlineTeas, setOfflineTeas] = useState(null)
 
   useEffect(() => {
     APIRequest('/tea/', 'GET')
       .then(res => {
-        console.log('/tea/ rewsssss ', res)
+        console.log('/tea/', res)
         if (res.ok)
           res.json().then(body => {
             setTestTeas(body);
-            console.log('/tea/', body);
             localforage.setItem('teas', body)
               .then(cache => console.log('set local teas', cache))
           })
       })
+
+    localforage.getItem('offline-teas').then(cache => {
+      if (cache)
+        Promise.all(cache.map(entry => FileToBase64(entry.image)
+            .then(img => {
+              entry.image = img;
+              entry.category = parseInt(entry.category);
+              return entry
+            })
+        ))
+          .then(teas => setOfflineTeas(teas));
+    })
+
   }, [])
 
   return (
       <Grid container justify="center" className={gridView ? classes.gridRoot : classes.listRoot}>
         {
-          testTeas &&
-            testTeas.map(tea =>
+          teas &&
+            teas.map(tea =>
               <Grid item className={gridView ? classes.gridItem : classes.listItem} key={tea.id}>
                 <TeaCard tea={tea} gridView={gridView} />
               </Grid>

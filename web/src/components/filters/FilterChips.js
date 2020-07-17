@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Button, Chip, Typography } from '@material-ui/core';
-import {FilterDispatch, FilterState} from '../containers/FilterStateContainer';
+import {FilterDispatch, FilterContext} from '../statecontainers/FilterContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FilterChips() {
   const classes = useStyles();
-  const state = useContext(FilterState)
+  const state = useContext(FilterContext)
   const dispatch = useContext(FilterDispatch)
 
   const handleDelete = (event, entry, item) => {

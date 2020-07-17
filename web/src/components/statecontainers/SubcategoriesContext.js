@@ -6,7 +6,7 @@ import localforage from 'localforage';
 export const SubcategoriesState = React.createContext(null)
 
 
-export default function SubcategoriesStateContainer(props) {
+export default function SubcategoriesContext(props) {
 
   const [state, setState] = useState(null);
 

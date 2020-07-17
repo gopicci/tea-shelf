@@ -8,7 +8,7 @@ import DrawerLayout from './drawer/DrawerLayout';
 import GridLayout from './grid/GridLayout';
 import FilterLayout from './filters/FilterLayout';
 
-import FilterStateContainer from './containers/FilterStateContainer';
+import FilterState from './statecontainers/FilterContext';
 
 const useStyles = makeStyles((theme) => ({
   page: {
@@ -40,13 +40,13 @@ export default function PageLayout({setRoute}) {
       <SearchAppBar />
       <Toolbar />
       <Box className={classes.page}>
-        <FilterStateContainer>
+        <FilterState>
           <DrawerLayout />
           <Box className={classes.mainBox}>
             <FilterLayout />
             <GridLayout />
           </Box>
-        </FilterStateContainer>
+        </FilterState>
         <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
       </Box>
     </>

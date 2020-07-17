@@ -3,24 +3,24 @@ import {APIRequest} from '../../services/AuthService';
 
 import localforage from 'localforage';
 
-import {LogoutDispatch} from './LoggedInStateContainer';
+import {logout} from '../../services/AuthService';
 
 export const CategoriesState = React.createContext(null)
 
 
-export default function CategoriesStateContainer(props) {
+export default function CategoriesContext(props) {
 
   const [state, setState] = useState(null);
 
-  const logout = useContext(LogoutDispatch);
-
   useEffect(() => {
+    console.log('1')
     localforage.getItem('categories')
       .then(value => {
         if (value){
           setState(value);
           console.log('get local categories', value);
         } else {
+          console.log('2')
           APIRequest('/category/', 'GET')
           .then(res => {
             if (res.ok)
@@ -30,13 +30,12 @@ export default function CategoriesStateContainer(props) {
                 localforage.setItem('categories', body)
                   .then(cache => console.log('set local categories', cache))
               })
-            else
+          }).catch((e) => {
+              console.log(e, 'logging out');
               logout();
-          });
-        }
-      })
-      .catch((e) => console.log(e))
-
+              })
+      }
+  })
   }, []);
 
   return (

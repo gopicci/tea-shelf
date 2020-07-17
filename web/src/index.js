@@ -6,14 +6,14 @@ import * as serviceWorker from './serviceWorker';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'fontsource-roboto';
 
-import LoggedInStateContainer from './components/containers/LoggedInStateContainer';
+import {getUser} from './services/AuthService';
+
+
 
 ReactDOM.render(
   <React.StrictMode>
     <CssBaseline />
-    <LoggedInStateContainer>
-      <App />
-    </LoggedInStateContainer>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

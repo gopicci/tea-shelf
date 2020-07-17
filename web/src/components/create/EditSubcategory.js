@@ -13,7 +13,7 @@ import {formListStyles} from '../../style/FormListStyles';
 
 import {getSubcategoryName} from '../../services/ParsingService';
 
-import {SubcategoriesState} from '../containers/SubcategoriesContainer';
+import {SubcategoriesState} from '../statecontainers/SubcategoriesContext';
 
 const filter = createFilterOptions();
 
