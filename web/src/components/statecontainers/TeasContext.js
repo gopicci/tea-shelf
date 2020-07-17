@@ -8,38 +8,61 @@ export const TeasState = React.createContext(null)
 
 
 export default function TeasContext(props) {
+  /**
+   * Defines overall tea entries context.
+   *
+   */
 
   const [state, setState] = useState(null);
 
-  useEffect(() => {
-    localforage.getItem('offline-teas')
+  async function getOfflineTeas() {
+    /**
+     * Gets offline teas (not uploaded yet) from storage and serializes
+     * the data to match an API response.
+     */
+    return localforage.getItem('offline-teas')
       .then(cache => {
         if (!cache)
-          localforage.setItem('offline-teas', [])
-            .then(cache => console.log('offline-teas initiated', cache))
+          // Create an empty array storage entry
+          return localforage.setItem('offline-teas', [])
         else
-          Promise.all(cache.map(entry => FileToBase64(entry.image)
+          // Serialize the data converting File blob to base64
+          return Promise.all(cache.map(entry => FileToBase64(entry.image)
             .then(img => {
               entry.image = img;
               entry.category = parseInt(entry.category);
               return entry
             })
-        ))
-          .then(offlineTeas => {
-            setState(offlineTeas);
+          ))
+      })
+  }
+
+  useEffect(() => {
+    // Get offline teas (not uploaded) first
+    getOfflineTeas()
+      .then(offlineTeas => {
+        // Get cached teas
+        localforage.getItem('teas')
+          .then(teas => {
+            if (!teas) teas = []
+            // Set initial state merging cached data
+            setState(offlineTeas.concat(teas));
+            // Launch an API request
             APIRequest('/tea/', 'GET')
               .then(res => {
                 console.log('/tea/', res)
                 if (res.ok)
                   res.json().then(body => {
+                    // Update the state
                     setState(offlineTeas.concat(body));
+                    // Update the cache
                     localforage.setItem('teas', body)
                       .then(cache => console.log('set local teas', cache))
-                  })
+                  });
               });
-          });
-        })
-      .catch((e) => console.log(e));
+            });
+      })
+  .catch((e) => console.log(e));
   }, []);
 
   return (

@@ -71,35 +71,6 @@ export default function GridLayout() {
 
   const gridView = useContext(GridViewState);
 
-  const [testTeas, setTestTeas] = useState(null);
-  const [offlineTeas, setOfflineTeas] = useState(null)
-
-  useEffect(() => {
-    APIRequest('/tea/', 'GET')
-      .then(res => {
-        console.log('/tea/', res)
-        if (res.ok)
-          res.json().then(body => {
-            setTestTeas(body);
-            localforage.setItem('teas', body)
-              .then(cache => console.log('set local teas', cache))
-          })
-      })
-
-    localforage.getItem('offline-teas').then(cache => {
-      if (cache)
-        Promise.all(cache.map(entry => FileToBase64(entry.image)
-            .then(img => {
-              entry.image = img;
-              entry.category = parseInt(entry.category);
-              return entry
-            })
-        ))
-          .then(teas => setOfflineTeas(teas));
-    })
-
-  }, [])
-
   return (
       <Grid container justify="center" className={gridView ? classes.gridRoot : classes.listRoot}>
         {
