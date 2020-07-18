@@ -1,7 +1,8 @@
 import React from 'react';
-import {Checkbox, FormControlLabel, ListItem, Toolbar, Typography} from '@material-ui/core';
+import {Box, Checkbox, FormControlLabel, ListItem, Toolbar, Typography} from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { Check } from '@material-ui/icons';
+import {formListStyles} from '../../style/FormListStyles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -10,11 +11,12 @@ const useStyles = makeStyles((theme) => ({
   },
   label: {
     flexGrow: 1,
-    borderBottom: `solid 1px ${fade(theme.palette.common.black, 0.15)}`,
   },
   checkbox: {
     flexGrow: 1,
     textAlign: 'right',
+    justifyContent: 'right',
+    paddingRight: theme.spacing(2),
   },
   labelTypography: {
     fontSize: 15,
@@ -32,24 +34,26 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FilterItem({ name, checked, handleChange }) {
   const classes = useStyles();
+  const formListClasses = formListStyles();
 
   return (
-    <ListItem className={classes.root} key={name} button>
+    <ListItem className={formListClasses.listItem} key={name} button>
+      <Box className={formListClasses.listItemBox}>
       <FormControlLabel
         labelPlacement="start"
         className={classes.label}
         control={
-          <div className={classes.checkbox}>
             <Checkbox
+              className={classes.checkbox}
               checked={checked}
               onChange={handleChange}
               name={name}
               checkedIcon={<Check className={classes.checkIcon} />}
               icon={<Check className={classes.checkIcon} visibility='hidden' />}
-            />
-          </div>}
+            />}
         label={<Typography className={classes.labelTypography}>{name}</Typography>}
       />
+      </Box>
     </ListItem>
   )
 }

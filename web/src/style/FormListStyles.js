@@ -23,7 +23,9 @@ export const formListStyles = makeStyles({
     paddingBottom: 0,
     display: "flex",
     minWidth: 0,
-    width: "100vw",
+    [theme.breakpoints.down('xs')]: {
+      width: "100vw",
+    },
     textTransform: "capitalize",
   },
   listItemBox: {
@@ -33,11 +35,17 @@ export const formListStyles = makeStyles({
     margin: 0,
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+    },
     borderBottom: `solid 1px ${fade(theme.palette.common.black, 0.15)}`,
   },
   linkSmall: {
-    marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(1),
+    flexGrow: 1,
+    textAlign: 'center',
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     fontSize: theme.typography.caption.fontSize,
     fontWeight: "bold",
     color: `${theme.palette.primary.main}`,

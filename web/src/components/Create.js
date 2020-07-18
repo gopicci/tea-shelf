@@ -40,17 +40,14 @@ export default function Create({setRoute}) {
       APIRequest("/tea/", "POST", formData).then((res) => {
         if (res.ok) console.log("Tea created", res);
       }).catch(error => {
-        const msg = error.message.toLowerCase();
-        if (msg === 'request timed out' || msg.includes('network')) {
-          console.log(msg, 'cache locally')
-          localforage
-            .getItem("offline-teas")
-            .then((offlineTeas) => {
-              localforage.setItem("offline-teas", [...offlineTeas, Object.fromEntries(formData)])
-                .then(cache => console.log('offline teas:', cache));
-              });
-        }
-      })
+        console.log(error.message, 'cache locally')
+        localforage
+          .getItem("offline-teas")
+          .then((offlineTeas) => {
+            localforage.setItem("offline-teas", [...offlineTeas, Object.fromEntries(formData)])
+              .then(cache => console.log('offline teas:', cache));
+            });
+      });
     });
   }
 

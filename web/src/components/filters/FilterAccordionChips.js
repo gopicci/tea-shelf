@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FilterChips() {
+export default function FilterAccordionChips() {
   const classes = useStyles();
   const state = useContext(FilterContext)
   const dispatch = useContext(FilterDispatch)
@@ -32,7 +32,7 @@ export default function FilterChips() {
     });
   };
 
-  const handleReset = (event, entry, item) => {
+  const handleReset = (event) => {
     event.stopPropagation();
     dispatch({
       type: "CLEAR"
@@ -51,7 +51,9 @@ export default function FilterChips() {
       }
       {
         Object.entries(state.filters).map(([entry, list]) => (
+          list &&
           Object.entries(list).map(([item, checked]) => (
+            item &&
             checked &&
              <Chip
                 key={item}

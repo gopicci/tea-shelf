@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import {Accordion, AccordionSummary, AccordionDetails, AccordionActions, Box, Button, Grid} from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
-import FilterChips from './FilterChips';
+import FilterAccordionChips from './FilterAccordionChips';
 
 import {FilterDispatch, FilterContext} from '../statecontainers/FilterContext';
 import FilterList from './FilterList';
@@ -11,13 +11,17 @@ import FilterList from './FilterList';
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    display: 'none',
     [theme.breakpoints.up('sm')]: {
-      width: '80%',
+      display: 'block',
     },
+    width: '80%',
     margin: 'auto',
     marginTop: -theme.spacing(1),
     padding: 'auto',
-
+  },
+  accordionDetails: {
+    padding: 0,
   },
   listGrid: {
     display: 'flex',
@@ -26,9 +30,6 @@ const useStyles = makeStyles((theme) => ({
   listItem: {
     minWidth: 220,
     flexGrow: 1,
-    [theme.breakpoints.up('sm')]: {
-      width: 200,
-    },
   },
   actions: {
     display: 'flex',
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function FilterLayout() {
+export default function FilterAccordion() {
   const classes = useStyles();
 
   const state = useContext(FilterContext)
@@ -68,9 +69,9 @@ export default function FilterLayout() {
           id="panel1c-header"
           onClick={handleExpansion}
           >
-          <FilterChips />
+          <FilterAccordionChips />
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails className={classes.accordionDetails}>
           <Grid container justify="center" className={classes.listGrid}>
             <Grid item className={classes.listItem}>
               <FilterList key='sortList' entry='sorting' list={state.sorting} />

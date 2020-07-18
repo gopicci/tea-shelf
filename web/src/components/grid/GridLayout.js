@@ -12,6 +12,7 @@ import {FilterContext} from '../statecontainers/FilterContext';
 import {GridViewState} from '../statecontainers/GridViewContext';
 
 import localforage from "localforage";
+import {CategoriesState} from '../statecontainers/CategoriesContext';
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -53,29 +54,32 @@ const useStyles = makeStyles((theme) => ({
 
 export default function GridLayout() {
   const classes = useStyles();
+  const categories = useContext(CategoriesState);
 
-  const state = useContext(FilterContext);
+  const filterState = useContext(FilterContext);
   const teas = useContext(TeasState)
 
   const [filteredTeas, setFilteredTeas] = useState(teas);
 
   useEffect(() => {
-    if (state.active > 0)
-      setFilteredTeas(teas.filter((tea) =>
-        state.filters.categories[tea.category.toLowerCase()]
-        || state.filters.subcategories[tea.subcategory.toLowerCase()]
+    if (filterState.active > 0)
+      setFilteredTeas(teas.filter((tea) => {
+        const categoryName = categories.find(category => category.id === tea.category)
+        return filterState.filters.categories[categoryName.name.toLowerCase()]
+        //|| state.filters.subcategories[tea.subcategory.toLowerCase()]
+        }
       ))
     else
       setFilteredTeas(teas);
-  }, [state]);
+  }, [filterState]);
 
   const gridView = useContext(GridViewState);
 
   return (
       <Grid container justify="center" className={gridView ? classes.gridRoot : classes.listRoot}>
         {
-          teas &&
-            teas.map(tea =>
+          filteredTeas &&
+            filteredTeas.map(tea =>
               <Grid item className={gridView ? classes.gridItem : classes.listItem} key={tea.id}>
                 <TeaCard tea={tea} gridView={gridView} />
               </Grid>

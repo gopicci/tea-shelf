@@ -9,7 +9,7 @@ import {FilterDispatch} from '../statecontainers/FilterContext'
 
 
 export default function FilterList({ entry, list }) {
-  const classes = formListStyles();
+  const formListClasses = formListStyles();
 
   const dispatch = useContext(FilterDispatch)
 
@@ -22,7 +22,7 @@ export default function FilterList({ entry, list }) {
     else
       dispatch({
         type: "CHECK_FILTER",
-        data: { entry: entry, item: event }
+        data: { entry: entry, item: event.target.name }
       });
   };
 
@@ -34,26 +34,26 @@ export default function FilterList({ entry, list }) {
 
   return (
     <FormGroup>
-      <FormLabel className={classes.formLabel}>
-        <Typography  className={classes.entryName}>
+      <FormLabel className={formListClasses.formLabel}>
+        <Typography  className={formListClasses.formLabelText}>
           {entry === 'sorting' ? 'Sort by' : entry}:
         </Typography>
       </FormLabel>
-      <List dense={true}>
-        {
+      <List className={formListClasses.list}>
+        {list &&
           Object.entries(list).slice(0,3).map(([item, checked]) => (
             <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
           ))
         }
-        {
+        {list &&
           Object.entries(list).length > 3 &&
             !open &&
-              <ListItem key='ShowAll' className={classes.listItem}>
-                <Link className={classes.linkSmall} onClick={handleShowAllClick}>Show all</Link>
+              <ListItem key='ShowAll' className={formListClasses.listItem}>
+                <Link className={formListClasses.linkSmall} onClick={handleShowAllClick}>Show all</Link>
               </ListItem>
         }
         <Collapse in={open} timeout="auto">
-            {
+            {list &&
               Object.entries(list).slice(3).map(([item, checked]) => (
                 <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
               ))

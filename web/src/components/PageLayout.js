@@ -6,7 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import SearchAppBar from './appbar/SearchAppBar';
 import DrawerLayout from './drawer/DrawerLayout';
 import GridLayout from './grid/GridLayout';
-import FilterLayout from './filters/FilterLayout';
+import FilterAccordion from './filters/FilterAccordion';
+import FilterBar from './filters/FilterBar';
 
 import FilterState from './statecontainers/FilterContext';
 
@@ -43,7 +44,8 @@ export default function PageLayout({setRoute}) {
         <FilterState>
           <DrawerLayout />
           <Box className={classes.mainBox}>
-            <FilterLayout />
+            <FilterBar setRoute={setRoute} />
+            <FilterAccordion />
             <GridLayout />
           </Box>
         </FilterState>

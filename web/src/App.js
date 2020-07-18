@@ -6,6 +6,7 @@ import Login from "./components/Login";
 
 import PageLayout from "./components/PageLayout";
 import Create from "./components/Create";
+import FilterLayoutMobile from './components/filters/FilterLayoutMobile';
 
 import { mainTheme } from "./style/MainTheme";
 import "./App.css";
@@ -26,6 +27,8 @@ function App() {
     switch (route) {
       case "MAIN":
         return <PageLayout setRoute={setRoute} />;
+      case "FILTER":
+        return <FilterLayoutMobile setRoute={setRoute} />;
       case "CREATE":
         return <Create setRoute={setRoute} />;
       default:

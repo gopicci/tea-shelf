@@ -1,16 +1,10 @@
-import React, { useReducer } from 'react';
+import React, {useContext, useReducer, useEffect, useState} from 'react';
+import {getSubcategoryName} from '../../services/ParsingService';
 
-import { categories, subcategories, countries, regions, sorting } from '../../dev/DevData';
+import { countries, regions, sorting } from '../../dev/DevData';
 
-const categoriesFilter = categories.reduce((obj, item) => {
-    obj[item.toLowerCase()] = false;
-    return obj;
-  }, {})
-
-const subcategoriesFilter = subcategories.reduce((obj, item) => {
-    obj[item.toLowerCase()] = false;
-    return obj;
-  }, {})
+import {CategoriesState} from './CategoriesContext';
+import {SubcategoriesState} from './SubcategoriesContext';
 
 
 const countriesFilter = countries.reduce((obj, item) => {
@@ -29,55 +23,94 @@ const sortingFilter = sorting.reduce((obj, item) => {
     return obj;
   }, {})
 
-const initialState = {
-    sorting: {...sortingFilter, 'latest (default)': true },
-    active: 0,
-    filters: {
-      categories: categoriesFilter,
-      subcategories: subcategoriesFilter,
-      countries: countriesFilter,
-      regions: regionsFilter,
-    }
-}
 
-export const FilterContext = React.createContext(initialState)
+export const FilterContext = React.createContext(null)
 export const FilterDispatch = React.createContext(null);
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "CHECK_FILTER":
-      let activeUpdate = state.active;
-      const checked = !state.filters[action.data.entry][action.data.item]
-      if (checked){
-        activeUpdate += 1;
-      } else {
-        activeUpdate -= 1;
-      }
-      const newFilterState = JSON.parse(JSON.stringify(state))
-      newFilterState.active = activeUpdate
-      newFilterState.filters[action.data.entry][action.data.item] = checked
-      return newFilterState
-    case "CHECK_SORT":
-      const newSort = JSON.parse(JSON.stringify(state))
-      newSort.sorting = {...initialState.sorting}
-      newSort.sorting['latest (default)'] = false;
-      newSort.sorting[action.data.item] = true;
-      return newSort
-    case "CLEAR":
-      return {
-        ...initialState,
-        sorting: state.sorting,
-      }
-    case "RESET":
-      return initialState
-    default:
-      return action
-  }
-}
 
 export default function FilterState(props) {
 
+  const categories = useContext(CategoriesState);
+  const subcategories = useContext(SubcategoriesState);
+
+  const [initialState, setInitialState] = useState({
+    sorting: {...sortingFilter, 'latest (default)': true },
+    active: 0,
+    filters: {
+      categories: null,
+      subcategories: null,
+      countries: countriesFilter,
+      regions: regionsFilter,
+    }
+  });
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "CHECK_FILTER":
+        let activeUpdate = state.active;
+        const checked = !state.filters[action.data.entry][action.data.item]
+        if (checked){
+          activeUpdate += 1;
+        } else {
+          activeUpdate -= 1;
+        }
+        const newFilterState = JSON.parse(JSON.stringify(state))
+        newFilterState.active = activeUpdate
+        newFilterState.filters[action.data.entry][action.data.item] = checked
+        return newFilterState
+      case "CHECK_SORT":
+        const newSort = JSON.parse(JSON.stringify(state))
+        newSort.sorting = {...initialState.sorting}
+        newSort.sorting['latest (default)'] = false;
+        newSort.sorting[action.data.item] = true;
+        return newSort
+      case "CLEAR":
+        return {
+          ...initialState,
+          sorting: state.sorting,
+        }
+      case "RESET":
+        return initialState
+      default:
+        return action
+    }
+  }
+
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (categories)
+      setInitialState({
+        ...initialState,
+        filters: {
+          ...initialState.filters,
+          categories: categories.reduce((obj, item) => {
+            obj[item.name.toLowerCase()] = false;
+            return obj;
+          }, {})
+        }
+      });
+  }, [categories])
+
+  useEffect(() => {
+    if (subcategories)
+      setInitialState({
+        ...initialState,
+        filters: {
+          ...initialState.filters,
+          subcategories: subcategories.reduce((obj, item) => {
+            obj[getSubcategoryName(item).toLowerCase()] = false;
+            return obj;
+          }, {})
+        }
+      });
+  }, [subcategories])
+
+
+  useEffect(() => {
+    dispatch({
+      type: "CLEAR"
+    });
+  }, [initialState])
 
   return (
     <FilterDispatch.Provider value={dispatch}>

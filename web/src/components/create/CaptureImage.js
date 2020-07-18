@@ -29,6 +29,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+const videoConstraints = {
+  facingMode: "environment",
+}
+
 export default function CaptureImage(props) {
   const classes = useStyles();
 
@@ -53,6 +58,7 @@ export default function CaptureImage(props) {
             audio={false}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
+            videoConstraints={videoConstraints}
           />
           :
           <img src={props.imageData} />
