@@ -59,7 +59,7 @@ export default function Create({setRoute}) {
 
   const handleClose = () => {
     setStep(1);
-    setRoute('MAIN')
+    setRoute('MAIN');
   }
 
   const props = {imageData, setImageData, teaData, setTeaData, handleNext, handlePrevious, handleClose, handleCreate}

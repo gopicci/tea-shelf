@@ -1,17 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Button, Grid} from '@material-ui/core';
+import {Grid} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
 import TeaCard from './TeaCard';
 
-import  {APIRequest} from '../../services/AuthService';
-import {FileToBase64} from '../../services/ImageService';
-
 import {TeasState} from '../statecontainers/TeasContext';
-import {FilterContext} from '../statecontainers/FilterContext';
+import {FilterState} from '../statecontainers/FilterContext';
 import {GridViewState} from '../statecontainers/GridViewContext';
 
-import localforage from "localforage";
 import {CategoriesState} from '../statecontainers/CategoriesContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -56,7 +52,7 @@ export default function GridLayout() {
   const classes = useStyles();
   const categories = useContext(CategoriesState);
 
-  const filterState = useContext(FilterContext);
+  const filterState = useContext(FilterState);
   const teas = useContext(TeasState)
 
   const [filteredTeas, setFilteredTeas] = useState(teas);

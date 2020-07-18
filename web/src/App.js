@@ -4,9 +4,9 @@ import { ThemeProvider } from "@material-ui/styles";
 import Register from "./components/Register";
 import Login from "./components/Login";
 
-import PageLayout from "./components/PageLayout";
+import MainPageLayout from "./components/MainPageLayout";
 import Create from "./components/Create";
-import FilterLayoutMobile from './components/filters/FilterLayoutMobile';
+import SortFilter from './components/SortFilter';
 
 import { mainTheme } from "./style/MainTheme";
 import "./App.css";
@@ -26,13 +26,13 @@ function App() {
   function getRoute(route) {
     switch (route) {
       case "MAIN":
-        return <PageLayout setRoute={setRoute} />;
+        return <MainPageLayout setRoute={setRoute} />;
       case "FILTER":
-        return <FilterLayoutMobile setRoute={setRoute} />;
+        return <SortFilter setRoute={setRoute} />;
       case "CREATE":
         return <Create setRoute={setRoute} />;
       default:
-        return <PageLayout setRoute={setRoute} />;
+        return <MainPageLayout setRoute={setRoute} />;
     }
   }
 

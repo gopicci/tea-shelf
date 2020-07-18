@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import FilterAccordionChips from './FilterAccordionChips';
 
-import {FilterDispatch, FilterContext} from '../statecontainers/FilterContext';
+import {FilterDispatch, FilterState} from '../statecontainers/FilterContext';
 import FilterList from './FilterList';
 
 
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterAccordion() {
   const classes = useStyles();
 
-  const state = useContext(FilterContext)
+  const state = useContext(FilterState)
   const dispatch = useContext(FilterDispatch)
 
   const [open, setOpen] = useState(false);

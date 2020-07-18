@@ -20,7 +20,8 @@ export const mainTheme = createMuiTheme({
       color: "#444",
     },
     body2: {
-      color: "#888",
+      color: "#666",
+      fontSize: 15,
     },
   },
 });

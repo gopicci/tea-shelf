@@ -9,8 +9,6 @@ import GridLayout from './grid/GridLayout';
 import FilterAccordion from './filters/FilterAccordion';
 import FilterBar from './filters/FilterBar';
 
-import FilterState from './statecontainers/FilterContext';
-
 const useStyles = makeStyles((theme) => ({
   page: {
     display: 'flex',
@@ -31,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function PageLayout({setRoute}) {
+export default function MainPageLayout({setRoute}) {
   const classes = useStyles();
 
   const handleCreate = () => setRoute('CREATE');
@@ -41,14 +39,12 @@ export default function PageLayout({setRoute}) {
       <SearchAppBar />
       <Toolbar />
       <Box className={classes.page}>
-        <FilterState>
           <DrawerLayout />
           <Box className={classes.mainBox}>
             <FilterBar setRoute={setRoute} />
             <FilterAccordion />
             <GridLayout />
           </Box>
-        </FilterState>
         <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
       </Box>
     </>

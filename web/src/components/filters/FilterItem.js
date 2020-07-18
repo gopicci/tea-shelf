@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
   label: {
     flexGrow: 1,
+    margin: 0,
   },
   checkbox: {
     flexGrow: 1,
@@ -19,9 +20,7 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(2),
   },
   labelTypography: {
-    fontSize: 15,
     flexGrow: 1,
-    color: '#666',
     textTransform: 'capitalize',
   },
   checkIcon: {
@@ -51,7 +50,7 @@ export default function FilterItem({ name, checked, handleChange }) {
               checkedIcon={<Check className={classes.checkIcon} />}
               icon={<Check className={classes.checkIcon} visibility='hidden' />}
             />}
-        label={<Typography className={classes.labelTypography}>{name}</Typography>}
+        label={<Typography variant='body2' className={classes.labelTypography}>{name}</Typography>}
       />
       </Box>
     </ListItem>

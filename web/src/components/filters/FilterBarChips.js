@@ -1,10 +1,10 @@
 import React, {useContext} from 'react';
 import { Chip } from '@material-ui/core';
-import {FilterDispatch, FilterContext} from '../statecontainers/FilterContext';
+import {FilterDispatch, FilterState} from '../statecontainers/FilterContext';
 
 
 export default function FilterBarChips() {
-  const state = useContext(FilterContext)
+  const state = useContext(FilterState)
   const dispatch = useContext(FilterDispatch)
 
   const handleDelete = (event, entry, item) => {

@@ -24,10 +24,10 @@ const sortingFilter = sorting.reduce((obj, item) => {
   }, {})
 
 
-export const FilterContext = React.createContext(null)
+export const FilterState = React.createContext(null)
 export const FilterDispatch = React.createContext(null);
 
-export default function FilterState(props) {
+export default function FilterContext(props) {
 
   const categories = useContext(CategoriesState);
   const subcategories = useContext(SubcategoriesState);
@@ -114,9 +114,9 @@ export default function FilterState(props) {
 
   return (
     <FilterDispatch.Provider value={dispatch}>
-      <FilterContext.Provider value={state}>
+      <FilterState.Provider value={state}>
         {props.children}
-      </FilterContext.Provider>
+      </FilterState.Provider>
     </FilterDispatch.Provider>
 
   )
