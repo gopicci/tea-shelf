@@ -179,15 +179,15 @@ class Origin(models.Model):
         ordering = ["country", "region", "locality"]
         constraints = [
             models.UniqueConstraint(
-                fields=["country", "region", "locality"], name="unique_origin"
+                fields=["user", "country", "region", "locality"], name="unique_origin"
             ),
             models.UniqueConstraint(
-                fields=["country", "region"],
+                fields=["user", "country", "region"],
                 condition=models.Q(locality=None),
                 name="unique_region_origin",
             ),
             models.UniqueConstraint(
-                fields=["country", "locality"],
+                fields=["user", "country", "locality"],
                 condition=models.Q(region=None),
                 name="unique_locality_origin",
             ),
@@ -321,11 +321,12 @@ class Tea(models.Model):
         blank=True,
     )
     category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, null=True, blank=True
+        Category, on_delete=models.CASCADE, null=True, blank=True
     )
     subcategory = models.ForeignKey(
         Subcategory, on_delete=models.SET_NULL, null=True, blank=True
     )
+    origin = models.ForeignKey(Origin, on_delete=models.SET_NULL, null=True, blank=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
 
     gongfu_preferred = models.BooleanField(default=True)

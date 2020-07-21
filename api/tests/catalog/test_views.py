@@ -16,7 +16,7 @@ auth_override = {
 def token(client):
     resp = client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
     resp = client.post(

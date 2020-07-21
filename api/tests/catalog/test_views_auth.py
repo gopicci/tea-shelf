@@ -9,7 +9,7 @@ def test_register(client):
 
     resp = client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
     assert resp.status_code == 201
@@ -52,7 +52,7 @@ def test_register_different_passwords(client):
 
     resp = client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pizza",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pizza"},
         content_type="application/json",
     )
     assert resp.status_code == 400
@@ -68,7 +68,7 @@ def test_can_login(client):
 
     resp = client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
     assert resp.status_code == 201
@@ -102,7 +102,7 @@ def test_logged_in_can_access_user_page(client):
 
     resp = client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
     assert resp.status_code == 201
@@ -130,7 +130,7 @@ def test_token_refresh(client):
 
     resp = client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
     assert resp.status_code == 201
@@ -181,7 +181,7 @@ def test_logout(client):
 
     client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
     client.post(

@@ -7,7 +7,7 @@ from catalog.serializers import LoginSerializer, UserSerializer
 def test_valid_login_serializer(client):
     client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
 
@@ -22,7 +22,7 @@ def test_valid_login_serializer(client):
 def test_invalid_login_serializer_missing_field(client):
     client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
 
@@ -45,7 +45,7 @@ def test_invalid_login_serializer_missing_field(client):
 def test_invalid_login_serializer_wrong_field(client):
     client.post(
         "/api/register/",
-        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!",},
+        {"email": "test@test.com", "password1": "pAzzw0rd!", "password2": "pAzzw0rd!"},
         content_type="application/json",
     )
 

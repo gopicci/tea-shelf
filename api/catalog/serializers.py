@@ -134,7 +134,29 @@ class OriginSerializer(serializers.ModelSerializer):
         read_only_fields = ("user",)
 
     def create(self, validated_data):
-        instance, _ = Origin.objects.get_or_create(**validated_data)
+        """
+        Checks if public origin exists or user already has it.
+        """
+        query_data = {"country": validated_data["country"], "is_public": True}
+        if "region" in validated_data:
+            query_data["region"] = validated_data["region"]
+        if "locality" in validated_data:
+            query_data["locality"] = validated_data["locality"]
+
+        try:
+            instance = Origin.objects.get(**query_data)
+        except Origin.DoesNotExist:
+            try:
+                query_data["is_public"] = False
+                query_data["user"] = validated_data["user"]
+                instance = Origin.objects.get(**query_data)
+            except Origin.DoesNotExist:
+                instance = None
+
+        if not instance:
+            instance = Origin(**validated_data)
+            instance.save()
+
         return instance
 
 

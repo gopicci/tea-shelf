@@ -141,11 +141,29 @@ class OriginForm(ModelForm):
         pass
 
     def save_m2m(self):
-        instance, _ = Origin.objects.get_or_create(**self.cleaned_data)
-        return instance
+        return self.save()
 
     def save(self, commit=True):
-        instance, _ = Origin.objects.get_or_create(**self.cleaned_data)
+        query_data = {"country": self.cleaned_data["country"], "is_public": True}
+        if "region" in self.cleaned_data:
+            query_data["region"] = self.cleaned_data["region"]
+        if "locality" in self.cleaned_data:
+            query_data["locality"] = self.cleaned_data["locality"]
+
+        try:
+            instance = Origin.objects.get(**query_data)
+        except Origin.DoesNotExist:
+            try:
+                query_data["is_public"] = False
+                query_data["user"] = self.cleaned_data["user"]
+                instance = Origin.objects.get(**query_data)
+            except Origin.DoesNotExist:
+                instance = None
+
+        if not instance:
+            instance = Origin(**self.cleaned_data)
+            instance.save()
+
         return instance
 
 
