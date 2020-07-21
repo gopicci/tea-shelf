@@ -1,5 +1,5 @@
 export const ImageDataToFile = async imageData => {
-  if (!imageData) return Promise.resolve();
+  if (!imageData) return Promise.reject();
   else
     return fetch(imageData)
       .then((res) => res.arrayBuffer())
@@ -7,8 +7,11 @@ export const ImageDataToFile = async imageData => {
 };
 
 export const FileToBase64 = file => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result);
-  reader.onerror = error => reject(error);
+  if (!file) return Promise.reject();
+  else {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  }
 });

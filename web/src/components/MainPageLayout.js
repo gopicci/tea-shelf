@@ -8,6 +8,7 @@ import DrawerLayout from './drawer/DrawerLayout';
 import GridLayout from './grid/GridLayout';
 import FilterAccordion from './filters/FilterAccordion';
 import FilterBar from './filters/FilterBar';
+import CustomSnackbar from './snackbar/CustomSnackbar';
 
 const useStyles = makeStyles((theme) => ({
   page: {

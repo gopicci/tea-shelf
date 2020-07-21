@@ -13,6 +13,7 @@ import "./App.css";
 
 import MainStateContainer from "./components/statecontainers/MainStateContainer";
 import {getUser} from './services/AuthService';
+import CustomSnackbar from './components/snackbar/CustomSnackbar';
 
 function App() {
   const isLoggedIn = getUser();
@@ -41,7 +42,10 @@ function App() {
       {!isLoggedIn ? (
         <Login />
       ) : (
-        <MainStateContainer>{getRoute(route)}</MainStateContainer>
+        <MainStateContainer>
+          {getRoute(route)}
+          <CustomSnackbar />
+        </MainStateContainer>
       )}
     </ThemeProvider>
   );

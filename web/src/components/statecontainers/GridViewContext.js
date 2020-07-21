@@ -1,10 +1,10 @@
-import React, { useReducer } from 'react';
+import React, { createContext, useReducer } from 'react';
 
 
 const initialState = true
 
-export const GridViewState = React.createContext(initialState)
-export const GridViewDispatch = React.createContext(null);
+export const GridViewState = createContext(initialState)
+export const GridViewDispatch = createContext(null);
 
 const reducer = (state, action) => {
   switch (action.type) {

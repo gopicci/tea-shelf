@@ -1,4 +1,4 @@
-import React, {useContext, useReducer, useEffect, useState} from 'react';
+import React, {createContext, useContext, useReducer, useEffect, useState} from 'react';
 import {getSubcategoryName} from '../../services/ParsingService';
 
 import { countries, regions, sorting } from '../../dev/DevData';
@@ -24,8 +24,8 @@ const sortingFilter = sorting.reduce((obj, item) => {
   }, {})
 
 
-export const FilterState = React.createContext(null)
-export const FilterDispatch = React.createContext(null);
+export const FilterState = createContext(null)
+export const FilterDispatch = createContext(null);
 
 export default function FilterContext(props) {
 
@@ -104,7 +104,6 @@ export default function FilterContext(props) {
         }
       });
   }, [subcategories])
-
 
   useEffect(() => {
     dispatch({

@@ -9,6 +9,7 @@ import {FilterState} from '../statecontainers/FilterContext';
 import {GridViewState} from '../statecontainers/GridViewContext';
 
 import {CategoriesState} from '../statecontainers/CategoriesContext';
+import {SubcategoriesState} from '../statecontainers/SubcategoriesContext';
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 export default function GridLayout() {
   const classes = useStyles();
   const categories = useContext(CategoriesState);
-
+  const subcategories = useContext(SubcategoriesState);
   const filterState = useContext(FilterState);
   const teas = useContext(TeasState)
 
@@ -67,17 +68,19 @@ export default function GridLayout() {
       ))
     else
       setFilteredTeas(teas);
-  }, [filterState]);
+  }, [filterState, categories, subcategories, teas]);
 
   const gridView = useContext(GridViewState);
+
+  let width = window.innerWidth;
 
   return (
       <Grid container justify="center" className={gridView ? classes.gridRoot : classes.listRoot}>
         {
           filteredTeas &&
             filteredTeas.map(tea =>
-              <Grid item className={gridView ? classes.gridItem : classes.listItem} key={tea.id}>
-                <TeaCard tea={tea} gridView={gridView} />
+              <Grid item className={gridView && width > 600 ? classes.gridItem : classes.listItem} key={tea.id}>
+                <TeaCard tea={tea} gridView={gridView && width > 600} />
               </Grid>
           )
         }

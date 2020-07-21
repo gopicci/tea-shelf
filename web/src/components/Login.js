@@ -1,19 +1,28 @@
-import React from 'react';
+import React from "react";
 import { Formik } from "formik";
-import { Avatar, Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@material-ui/core';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { makeStyles } from '@material-ui/core/styles';
-
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  Grid,
+  Link,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import { makeStyles } from "@material-ui/core/styles";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
+      {"Copyright © "}
       <Link color="inherit" href="https://material-ui.com/">
         Your Website
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 }
@@ -21,16 +30,16 @@ function Copyright() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -42,38 +51,36 @@ export default function Login() {
   const classes = useStyles();
 
   const onSubmit = async (values, actions) => {
-
-    fetch(`${process.env.REACT_APP_API}/login/`, {
-      method: "post",
-      headers: { "Content-Type": "application/json", },
-      body: JSON.stringify({ email: values.email, password: values.password }),
-    })
-      .then(res => res.json()
-        .then(data => ({ ok: res.ok, body: data }))
-      )
-      .then(res => {
-        actions.setSubmitting(false);
-
-        if (!res.ok) {
-          if (res.body['non_field_errors']) {
-            actions.setFieldError("email", "nofield");
-            actions.setFieldError("password", res.body['non_field_errors'][0]);
-          }
-          if (res.body['email']) {
-            actions.setFieldError("email", res.body['email'][0]);
-          }
-          if (res.body['password']) {
-            actions.setFieldError("password", res.body['password'][0]);
-          }
-          throw Error(res.body.statusText);
-        } else {
-          window.localStorage.setItem('user.auth', JSON.stringify(res.body));
-          window.location.reload(false);
-        }
-      })
-      .catch(error => {
-        console.error(error);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API}/login/`, {
+        method: "post",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email: values.email, password: values.password}),
       });
+
+      const data = await response.json()
+
+      actions.setSubmitting(false);
+
+      if (!response.ok) {
+        if (data["non_field_errors"]) {
+          actions.setFieldError("email", "nofield");
+          actions.setFieldError("password", data["non_field_errors"][0]);
+        }
+        if (data["email"]) {
+          actions.setFieldError("email", data["email"][0]);
+        }
+        if (data["password"]) {
+          actions.setFieldError("password", data["password"][0]);
+        }
+        console.error(response.statusText);
+      } else {
+        window.localStorage.setItem("user.auth", JSON.stringify(data));
+        window.location.reload(false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -88,17 +95,12 @@ export default function Login() {
         </Typography>
         <Formik
           initialValues={{
-          email: "",
-          password: "",
-        }}
-        onSubmit={onSubmit}
+            email: "",
+            password: "",
+          }}
+          onSubmit={onSubmit}
         >
-          {({ errors,
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-              values
-          }) => (
+          {({ errors, handleChange, handleSubmit, isSubmitting, values }) => (
             <form className={classes.form} noValidate onSubmit={handleSubmit}>
               <TextField
                 margin="normal"
@@ -110,7 +112,11 @@ export default function Login() {
                 autoComplete="email"
                 autoFocus
                 error={"email" in errors}
-                helperText={"email" in errors && errors.email !== "nofield" ? errors.email : ""}
+                helperText={
+                  "email" in errors && errors.email !== "nofield"
+                    ? errors.email
+                    : ""
+                }
                 onChange={handleChange}
                 value={values.email}
               />
