@@ -181,6 +181,29 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
+def custom_get_or_create(model, validated_data):
+    """
+    Checks if public model instance with same name exists or user already has it.
+    """
+    query_data = {"name": validated_data["name"], "is_public": True}
+
+    try:
+        instance = model.objects.get(**query_data)
+    except model.DoesNotExist:
+        try:
+            query_data["is_public"] = False
+            query_data["user"] = validated_data["user"]
+            instance = model.objects.get(**query_data)
+        except model.DoesNotExist:
+            instance = None
+
+    if not instance:
+        instance = model(**validated_data)
+        instance.save()
+
+    return instance
+
+
 class SubcategorySerializer(serializers.ModelSerializer):
     """
     Subcategory serializer, passes request user on creation.
@@ -196,26 +219,7 @@ class SubcategorySerializer(serializers.ModelSerializer):
         read_only_fields = ("user",)
 
     def create(self, validated_data):
-        """
-        Checks if public subcategory exists or user already has it.
-        """
-        query_data = {"name": validated_data["name"], "is_public": True}
-
-        try:
-            instance = Subcategory.objects.get(**query_data)
-        except Subcategory.DoesNotExist:
-            try:
-                query_data["is_public"] = False
-                query_data["user"] = validated_data["user"]
-                instance = Subcategory.objects.get(**query_data)
-            except Subcategory.DoesNotExist:
-                instance = None
-
-        if not instance:
-            instance = Subcategory(**validated_data)
-            instance.save()
-
-        return instance
+        return custom_get_or_create(Subcategory, validated_data)
 
 
 class SubcategoryNameSerializer(serializers.ModelSerializer):
@@ -241,26 +245,7 @@ class VendorSerializer(serializers.ModelSerializer):
         read_only_fields = ("user",)
 
     def create(self, validated_data):
-        """
-        Checks if public vendor exists or user already has it.
-        """
-        query_data = {"name": validated_data["name"], "is_public": True}
-
-        try:
-            instance = Vendor.objects.get(**query_data)
-        except Vendor.DoesNotExist:
-            try:
-                query_data["is_public"] = False
-                query_data["user"] = validated_data["user"]
-                instance = Vendor.objects.get(**query_data)
-            except Vendor.DoesNotExist:
-                instance = None
-
-        if not instance:
-            instance = Vendor(**validated_data)
-            instance.save()
-
-        return instance
+        return custom_get_or_create(Vendor, validated_data)
 
 
 class TeaSerializer(serializers.ModelSerializer):
@@ -339,14 +324,12 @@ class TeaSerializer(serializers.ModelSerializer):
             tea_instance.origin = origin_instance
 
         if subcategory_data:
-            subcategory_instance, _ = Subcategory.objects.get_or_create(
-                **subcategory_data
+            tea_instance.subcategory = custom_get_or_create(
+                Subcategory, subcategory_data
             )
-            tea_instance.subcategory = subcategory_instance
 
         if vendor_data:
-            vendor_instance, _ = Vendor.objects.get_or_create(**vendor_data)
-            tea_instance.vendor = vendor_instance
+            tea_instance.vendor = custom_get_or_create(Vendor, vendor_data)
 
         tea_instance.save()
         return tea_instance

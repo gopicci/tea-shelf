@@ -16,6 +16,8 @@ from .models import (
     Tea,
 )
 
+from .serializers import custom_get_or_create
+
 
 def make_public(modeladmin, request, queryset):
     """
@@ -221,23 +223,7 @@ class SubcategoryForm(ModelForm):
         return self.save()
 
     def save(self, commit=True):
-        query_data = {"name": self.cleaned_data["name"], "is_public": True}
-
-        try:
-            instance = Subcategory.objects.get(**query_data)
-        except Subcategory.DoesNotExist:
-            try:
-                query_data["is_public"] = False
-                query_data["user"] = self.cleaned_data["user"]
-                instance = Subcategory.objects.get(**query_data)
-            except Subcategory.DoesNotExist:
-                instance = None
-
-        if not instance:
-            instance = Subcategory(**self.cleaned_data)
-            instance.save()
-
-        return instance
+        return custom_get_or_create(Subcategory, self.cleaned_data)
 
 
 @admin.register(Subcategory)
@@ -290,6 +276,21 @@ class VendorNameInline(admin.TabularInline):
     extra = 0
 
 
+class VendorForm(ModelForm):
+    """
+    Custom WesternBrewing form returns instance on save if existing.
+    """
+
+    def clean(self):
+        pass
+
+    def save_m2m(self):
+        return self.save()
+
+    def save(self, commit=True):
+        return custom_get_or_create(Vendor, self.cleaned_data)
+
+
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
     """
@@ -317,6 +318,7 @@ class VendorAdmin(admin.ModelAdmin):
     )
     inlines = [VendorNameInline]
     actions = [make_public]
+    form = VendorForm
 
     def get_changeform_initial_data(self, request):
         """
