@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from drf_extra_fields.fields import Base64ImageField
 
 from .models import (
     GongfuBrewing,
@@ -206,12 +207,15 @@ class SubcategoryNameSerializer(serializers.ModelSerializer):
 
 class TeaSerializer(serializers.ModelSerializer):
     """
-    Tea serializer with nested brewings, passes request user on creation.
+    Tea serializer with nested brewings and origin, passes request user on creation.
+    Expects image as base64.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
+    image = Base64ImageField(required=False)
     gongfu_brewing = GongfuBrewingSerializer(required=False)
     western_brewing = WesternBrewingSerializer(required=False)
+    origin = OriginSerializer(required=False)
 
     class Meta:
         model = Tea
@@ -220,10 +224,10 @@ class TeaSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Nested create, removes null brewings entries and creates separate instances
+        Nested create, removes null origin and brewings entries and creates separate instances
         before feeding them to the tea instance.
         """
-        gongfu_data, western_data = {}, {}
+        gongfu_data, western_data, origin_data = {}, {}, {}
 
         if "gongfu_brewing" in validated_data:
             gongfu_data = validated_data.pop("gongfu_brewing")
@@ -232,6 +236,11 @@ class TeaSerializer(serializers.ModelSerializer):
         if "western_brewing" in validated_data:
             western_data = validated_data.pop("western_brewing")
             [western_data.pop(k) for k, v in list(western_data.items()) if v is None]
+
+        if "origin" in validated_data:
+            origin_data = validated_data.pop("origin")
+            origin_data["user"] = validated_data["user"]
+            [origin_data.pop(k) for k, v in list(origin_data.items()) if v is None]
 
         tea_instance = Tea.objects.create(**validated_data)
 
@@ -242,6 +251,10 @@ class TeaSerializer(serializers.ModelSerializer):
         if western_data:
             western_instance, _ = WesternBrewing.objects.get_or_create(**western_data)
             tea_instance.western_brewing = western_instance
+
+        if origin_data:
+            origin_instance, _ = Origin.objects.get_or_create(**origin_data)
+            tea_instance.origin = origin_instance
 
         tea_instance.save()
         return tea_instance
