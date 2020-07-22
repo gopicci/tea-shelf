@@ -31,6 +31,7 @@ from catalog.views import (
     OriginDetailView,
     CategoryView,
     SubcategoryView,
+    VendorView,
     TeaViewSet,
 )
 
@@ -68,5 +69,6 @@ urlpatterns = [
     path("api/origin/<int:pk>/", OriginDetailView.as_view(), name="origin_detail"),
     path("api/category/", CategoryView.as_view(), name="category_list"),
     path("api/subcategory/", SubcategoryView.as_view(), name="subcategory_list_create"),
+    path("api/vendor/", VendorView.as_view(), name="vendor_list_create"),
     path("api/", include(router.urls)),
 ]

@@ -171,6 +171,26 @@ def test_user_can_create_and_view_subcategory(client, token):
 
 @override_settings(REST_FRAMEWORK=auth_override)
 @pytest.mark.django_db
+def test_user_can_create_and_view_vendor(client, token):
+    category = Category(name="OOLONG")
+    category.save()
+    resp = client.post(
+        "/api/vendor/",
+        {"name": "Test", "website": "https://www.stilltest.com", "popularity": 7},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+    resp = client.get("/api/vendor/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+    assert resp.data[0]["user"]
+    assert resp.data[0]["name"] == "Test"
+    assert resp.data[0]["website"] == "https://www.stilltest.com"
+    assert resp.data[0]["popularity"] == 7
+
+
+@override_settings(REST_FRAMEWORK=auth_override)
+@pytest.mark.django_db
 def test_user_can_crud_tea(client, token):
     resp = client.post(
         "/api/tea/",

@@ -11,6 +11,7 @@ from .models import (
     Category,
     Subcategory,
     SubcategoryName,
+    Vendor,
     Tea,
 )
 from .validators import validate_username
@@ -227,6 +228,41 @@ class SubcategoryNameSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class VendorSerializer(serializers.ModelSerializer):
+    """
+    Vendor serializer, passes request user on creation.
+    """
+
+    user = serializers.ReadOnlyField(source="user.pk")
+
+    class Meta:
+        model = Vendor
+        fields = "__all__"
+        read_only_fields = ("user",)
+
+    def create(self, validated_data):
+        """
+        Checks if public vendor exists or user already has it.
+        """
+        query_data = {"name": validated_data["name"], "is_public": True}
+
+        try:
+            instance = Vendor.objects.get(**query_data)
+        except Vendor.DoesNotExist:
+            try:
+                query_data["is_public"] = False
+                query_data["user"] = validated_data["user"]
+                instance = Vendor.objects.get(**query_data)
+            except Vendor.DoesNotExist:
+                instance = None
+
+        if not instance:
+            instance = Vendor(**validated_data)
+            instance.save()
+
+        return instance
+
+
 class TeaSerializer(serializers.ModelSerializer):
     """
     Tea serializer with nested brewings and origin, passes request user on creation.
@@ -260,7 +296,11 @@ class TeaSerializer(serializers.ModelSerializer):
         if "western_brewing" in validated_data:
             western_data = validated_data.pop("western_brewing")
             if western_data:
-                [western_data.pop(k) for k, v in list(western_data.items()) if v is None]
+                [
+                    western_data.pop(k)
+                    for k, v in list(western_data.items())
+                    if v is None
+                ]
 
         if "origin" in validated_data:
             origin_data = validated_data.pop("origin")

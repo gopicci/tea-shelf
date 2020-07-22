@@ -9,6 +9,7 @@ from catalog.serializers import (
     CategorySerializer,
     SubcategorySerializer,
     SubcategoryNameSerializer,
+    VendorSerializer,
     TeaSerializer,
 )
 from catalog.models import Category, Subcategory, CustomUser
@@ -150,6 +151,30 @@ def test_invalid_subcategory_serializer(client):
     assert serializer.data == invalid_serializer_data
     assert serializer.errors == {
         "category": ["Incorrect type. Expected pk value, received str."]
+    }
+
+
+@pytest.mark.django_db
+def test_valid_vendor_serializer(client):
+    user = CustomUser(email="test@test.com")
+    user.save()
+    valid_serializer_data = {"user": user, "name": "test"}
+    serializer = VendorSerializer(data=valid_serializer_data)
+    assert serializer.is_valid()
+    assert serializer.validated_data["name"] == "test"
+    assert serializer.errors == {}
+
+
+@pytest.mark.django_db
+def test_invalid_vendor_serializer(client):
+    user = CustomUser(email="test@test.com")
+    user.save()
+    invalid_serializer_data = {"name": "test", "popularity": 20}
+    serializer = VendorSerializer(data=invalid_serializer_data)
+    assert not serializer.is_valid()
+    assert serializer.data == invalid_serializer_data
+    assert serializer.errors == {
+        "popularity": ["Ensure this value is less than or equal to 10."]
     }
 
 
