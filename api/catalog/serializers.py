@@ -265,8 +265,8 @@ class VendorSerializer(serializers.ModelSerializer):
 
 class TeaSerializer(serializers.ModelSerializer):
     """
-    Tea serializer with nested brewings and origin, passes request user on creation.
-    Expects image as base64.
+    Tea serializer with nested brewings, origin and vendor,
+    passes request user on creation. Expects image as base64.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
@@ -275,6 +275,7 @@ class TeaSerializer(serializers.ModelSerializer):
     western_brewing = WesternBrewingSerializer(required=False, allow_null=True)
     origin = OriginSerializer(required=False, allow_null=True)
     subcategory = SubcategorySerializer(required=False, allow_null=True)
+    vendor = VendorSerializer(required=False, allow_null=True)
 
     class Meta:
         model = Tea
@@ -286,7 +287,8 @@ class TeaSerializer(serializers.ModelSerializer):
         Nested create, removes null nested entries and creates separate instances
         before feeding them to the tea instance.
         """
-        gongfu_data, western_data, origin_data, subcategory_data = {}, {}, {}, {}
+        gongfu_data, western_data, origin_data = {}, {}, {}
+        subcategory_data, vendor_data = {}, {}
 
         if "gongfu_brewing" in validated_data:
             gongfu_data = validated_data.pop("gongfu_brewing")
@@ -296,11 +298,9 @@ class TeaSerializer(serializers.ModelSerializer):
         if "western_brewing" in validated_data:
             western_data = validated_data.pop("western_brewing")
             if western_data:
-                [
-                    western_data.pop(k)
-                    for k, v in list(western_data.items())
-                    if v is None
-                ]
+                for k, v in list(western_data.items()):
+                    if v is None:
+                        western_data.pop(k)
 
         if "origin" in validated_data:
             origin_data = validated_data.pop("origin")
@@ -315,6 +315,14 @@ class TeaSerializer(serializers.ModelSerializer):
                 for k, v in list(subcategory_data.items()):
                     if v is None:
                         subcategory_data.pop(k)
+
+        if "vendor" in validated_data:
+            vendor_data = validated_data.pop("vendor")
+            if vendor_data:
+                vendor_data["user"] = validated_data["user"]
+                for k, v in list(vendor_data.items()):
+                    if v is None:
+                        vendor_data.pop(k)
 
         tea_instance = Tea.objects.create(**validated_data)
 
@@ -335,6 +343,10 @@ class TeaSerializer(serializers.ModelSerializer):
                 **subcategory_data
             )
             tea_instance.subcategory = subcategory_instance
+
+        if vendor_data:
+            vendor_instance, _ = Vendor.objects.get_or_create(**vendor_data)
+            tea_instance.vendor = vendor_instance
 
         tea_instance.save()
         return tea_instance
