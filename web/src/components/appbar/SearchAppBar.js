@@ -8,7 +8,6 @@ import {
   InputBase,
   IconButton,
 } from "@material-ui/core";
-import { fade, makeStyles } from "@material-ui/core/styles";
 import {
   AccountCircle,
   CloudDone,
@@ -18,8 +17,11 @@ import {
   ViewStream,
   ViewModule,
 } from "@material-ui/icons";
+import { fade, makeStyles } from "@material-ui/core/styles";
+import localforage from "localforage";
 
-import {getOfflineTeas, syncOffline} from '../../services/SyncService';
+import { getOfflineTeas, syncOffline } from "../../services/SyncService";
+import { APIRequest } from "../../services/AuthService";
 
 import {
   GridViewState,
@@ -27,9 +29,7 @@ import {
 } from "../statecontainers/GridViewContext";
 import { TeaDispatch } from "../statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "../statecontainers/SubcategoriesContext";
-import {SnackbarDispatch} from '../statecontainers/SnackbarContext';
-import localforage from "localforage";
-import {APIRequest} from '../../services/AuthService';
+import { SnackbarDispatch } from "../statecontainers/SnackbarContext";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SearchAppBar({handleSnackbarOpen}) {
+export default function SearchAppBar() {
   const classes = useStyles();
 
   const [isSyncing, setSyncing] = useState(false);
@@ -124,7 +124,7 @@ export default function SearchAppBar({handleSnackbarOpen}) {
     let error = null;
     try {
       await syncOffline();
-    } catch(e) {
+    } catch (e) {
       console.error(e);
       error = e;
     }
@@ -156,7 +156,7 @@ export default function SearchAppBar({handleSnackbarOpen}) {
     setSyncing(false);
 
     if (error) {
-      snackbarDispatch({type: 'ERROR', data: error.message});
+      snackbarDispatch({ type: "ERROR", data: error.message });
     } else {
       setShowCloud(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -192,15 +192,26 @@ export default function SearchAppBar({handleSnackbarOpen}) {
           />
         </Box>
         <Box className={classes.user}>
-          <IconButton color="inherit" aria-label="refresh">
-            {isSyncing ? (
-              <CircularProgress className={classes.circularProgress} size='sm'/>
-            ) : showCloud ? (
+          {isSyncing ? (
+            <IconButton color="inherit" aria-label="refresh">
+              <CircularProgress
+                className={classes.circularProgress}
+                size="sm"
+              />
+            </IconButton>
+          ) : showCloud ? (
+            <IconButton color="inherit" aria-label="refresh">
               <CloudDone />
-            ) : (
-              <Refresh onClick={handleRefresh} />
-            )}
-          </IconButton>
+            </IconButton>
+          ) : (
+            <IconButton
+              color="inherit"
+              aria-label="refresh"
+              onClick={handleRefresh}
+            >
+              <Refresh />
+            </IconButton>
+          )}
           <IconButton
             onClick={handleGridViewChange}
             color="inherit"

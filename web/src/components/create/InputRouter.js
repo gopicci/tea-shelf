@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 
 import InputLayout from './InputLayout';
 import EditText from './EditText';
-import EditList from './EditList';
+import EditYear from './EditYear';
 import EditCategory from './EditCategory';
 import EditOrigin from './EditOrigin';
 import EditSubcategory from './EditSubcategory';
@@ -25,7 +25,7 @@ export default function InputRouter(props) {
       case 'EDIT_CATEGORY':
         return <EditCategory {...inputProps} field={editRoute.field} />
       case 'EDIT_LIST':
-        return <EditList {...inputProps} field={editRoute.field} list={editRoute.data} />
+        return <EditYear {...inputProps} field={editRoute.field} />
       case 'EDIT_SUBCATEGORY':
         return <EditSubcategory {...inputProps} field={editRoute.field} />
       case 'EDIT_ORIGIN':

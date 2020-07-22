@@ -11,6 +11,7 @@ import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 import CheckboxList from "../generics/CheckboxList";
+import CheckboxListItem from "../generics/CheckboxListItem";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,10 +37,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditList(props) {
+export default function EditYear(props) {
   const classes = useStyles();
 
-  const checkboxList = props.list.reduce((obj, item) => {
+  const length = 60;
+  const currentYear = new Date().getFullYear();
+  const years = [...Array(length)].map((_, b) => String(currentYear - b));
+  years.push("Unknown");
+
+  const checkboxList = years.reduce((obj, item) => {
     obj[item.toLowerCase()] = false;
     return obj;
   }, {});
@@ -71,8 +77,16 @@ export default function EditList(props) {
         label=""
         list={checkboxList}
         handleChange={(e) => handleChange(e)}
-        reverse={props.field === 'year'}
+        reverse={props.field === "year"}
       />
+      {[0, 10, 20, 30, 40].map((tens) => (
+        <CheckboxListItem
+          key={String(currentYear - length - tens)}
+          name={String(currentYear - length - tens)}
+          checked={false}
+          handleChange={handleChange}
+        />
+      ))}
     </Box>
   );
 }

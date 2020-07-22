@@ -22,7 +22,7 @@ function App() {
 
   // console.log(getUser())
 
-  const [route, setRoute] = useState("MAIN");
+  const [route, setRoute] = useState("CREATE");
 
   function getRoute(route) {
     switch (route) {

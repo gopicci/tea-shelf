@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 
-import {CategoriesState} from "../statecontainers/CategoriesContext";
+import { CategoriesState } from "../statecontainers/CategoriesContext";
 
 const useStyles = makeStyles((theme) => ({
   gridCard: {
@@ -74,12 +74,14 @@ export default function TeaCard({ tea, gridView }) {
       <CardActionArea
         className={gridView ? classes.gridCard : classes.listCard}
       >
-        <CardMedia
-          className={gridView ? classes.gridImage : classes.listImage}
-          alt="Tea image"
-          image={tea.image}
-          title="Tea image"
-        />
+        {tea.image && (
+          <CardMedia
+            className={gridView ? classes.gridImage : classes.listImage}
+            alt="Tea image"
+            image={tea.image}
+            title="Tea image"
+          />
+        )}
         <CardContent className={classes.content}>
           <Box className={classes.infoBox}>
             <Typography gutterBottom variant="h5" component="h2">
@@ -91,7 +93,7 @@ export default function TeaCard({ tea, gridView }) {
               variant="subtitle1"
               component="h5"
             >
-              {tea.year} {tea.subcategory}
+              {tea.year} {tea.subcategory ? tea.subcategory.name : null}
             </Typography>
           </Box>
           <Box className={classes.category}>

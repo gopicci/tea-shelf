@@ -79,7 +79,7 @@ export default function GridLayout() {
         {
           filteredTeas &&
             filteredTeas.map(tea =>
-              <Grid item className={gridView && width > 600 ? classes.gridItem : classes.listItem} key={tea.id}>
+              <Grid item className={gridView && width > 600 ? classes.gridItem : classes.listItem} key={tea.name}>
                 <TeaCard tea={tea} gridView={gridView && width > 600} />
               </Grid>
           )

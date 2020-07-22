@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from "react";
 import {
   AppBar,
   Box,
@@ -15,10 +15,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
-import {getSubcategoryName} from '../../services/ParsingService';
-import {getOriginName} from '../../services/ParsingService';
+import { getSubcategoryName } from "../../services/ParsingService";
+import { getOriginName } from "../../services/ParsingService";
+import { getYearsList } from '../../services/ParsingService';
 
-import {CategoriesState} from '../statecontainers/CategoriesContext';
+import { CategoriesState } from "../statecontainers/CategoriesContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,12 +41,7 @@ export default function InputLayout(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
-  const categories = useContext(CategoriesState);
-
-  const years = [...Array(100)].map((_, b) =>
-    String(new Date().getFullYear() - b)
-  );
-  years.push("Unknown");
+  const categories = useContext(CategoriesState)
 
   function handleAdd() {
     props.handleCreate();
@@ -68,23 +64,23 @@ export default function InputLayout(props) {
           data: null,
         });
         break;
+      case "subcategory":
+      props.setEditRoute({
+        route: "EDIT_SUBCATEGORY",
+        field: event.currentTarget.id,
+        data: null,
+      });
+      break;
       case "year":
         props.setEditRoute({
           route: "EDIT_LIST",
           field: event.currentTarget.id,
-          data: years,
+          data: null,
         });
         break;
       case "origin":
         props.setEditRoute({
           route: "EDIT_ORIGIN",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "subcategory":
-        props.setEditRoute({
-          route: "EDIT_SUBCATEGORY",
           field: event.currentTarget.id,
           data: null,
         });
@@ -135,11 +131,13 @@ export default function InputLayout(props) {
           <InputItem
             key="category"
             name="category"
-            value={categories &&
-                    props.teaData.category &&
-                      Object.entries(categories).find(
-                        (entry) => entry[1].id === props.teaData.category
-                      )[1].name.toLowerCase()}
+            value={
+              categories &&
+              props.teaData.category &&
+              Object.entries(categories)
+                .find((entry) => entry[1].id === props.teaData.category)[1]
+                .name.toLowerCase()
+            }
             handleClick={handleClick}
           />
         </List>
@@ -152,7 +150,16 @@ export default function InputLayout(props) {
           <InputItem
             key="subcategory"
             name="subcategory"
-            value={props.teaData.subcategory && getSubcategoryName(props.teaData.subcategory)}
+            value={
+              props.teaData.subcategory &&
+              getSubcategoryName(props.teaData.subcategory)
+            }
+            handleClick={handleClick}
+          />
+          <InputItem
+            key="year"
+            name="year"
+            value={props.teaData.year}
             handleClick={handleClick}
           />
           <InputItem

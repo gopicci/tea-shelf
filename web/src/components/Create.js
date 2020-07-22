@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, {useContext, useEffect, useState} from 'react';
 import localforage from "localforage";
 
 import CaptureImage from "./create/CaptureImage";
@@ -18,6 +18,7 @@ export default function Create({ setRoute }) {
     category: null,
     subcategory: null,
     origin: null,
+    vendor: null,
     is_archived: false,
     gongfu_brewing: null,
     western_brewing: null,
@@ -28,28 +29,33 @@ export default function Create({ setRoute }) {
     weight_consumed: null,
     rating: null,
     notes: "",
-    vendor: null,
   });
+
+  useEffect(() => {
+    console.log(teaData);
+  }, [teaData]);
+
 
   const snackbarDispatch = useContext(SnackbarDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
 
   async function handleCreate() {
-    // save local, then sync
-    // !subcategory.is_public ? add
 
-    let formData = new FormData();
     let customSubcategory = false;
     let customVendor = false;
 
     try {
       if (imageData) teaData["image"] = imageData;
 
-      if (teaData.subcategory)
+      if (teaData.subcategory) {
+        if (!teaData.subcategory.category) customSubcategory = true;
         teaData.subcategory = {
           name: teaData.subcategory.name,
           category: teaData.category,
         };
+      }
+
+      if (teaData.year === "unknown") teaData.year = null;
 
       console.log(teaData);
       console.log(JSON.stringify(teaData));
@@ -57,16 +63,20 @@ export default function Create({ setRoute }) {
       console.log("Tea created: ", res);
       console.log(await res.json());
 
+      snackbarDispatch({ type: "SUCCESS", data: "Tea successfully created" });
+
+      // If new subcategory was created update cache
       if (customSubcategory) {
         const subGetRes = await APIRequest("/subcategory/", "GET");
         const subGetData = await subGetRes.json();
         subcategoriesDispatch({ type: "SET", data: subGetData });
         await localforage.setItem("subcategories", subGetData);
       }
+
     } catch (e) {
       console.error(e);
       if (e.message === "Bad Request") {
-        snackbarDispatch({ type: "ERROR", data: e.message });
+        snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
       } else {
         console.log(e.message, "cache locally");
         const offlineTeas = await localforage.getItem("offline-teas");
@@ -74,12 +84,16 @@ export default function Create({ setRoute }) {
           ...offlineTeas,
           teaData,
         ]);
+        snackbarDispatch({
+          type: "WARNING",
+          data: "Offline mode, tea saved locally",
+        });
         console.log("offline teas:", cache);
       }
     }
   }
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2);
 
   const handleNext = () => setStep(step + 1);
 

@@ -9,6 +9,12 @@ const reducer = (state, action) => {
   switch (action.type) {
     case "ERROR":
       return { open: true, severity: "error", message: action.data };
+    case "WARNING":
+      return { open: true, severity: "warning", message: action.data };
+    case "INFO":
+      return { open: true, severity: "info", message: action.data };
+    case "SUCCESS":
+      return { open: true, severity: "success", message: action.data };
     case "RESET":
       return initialState;
     default:

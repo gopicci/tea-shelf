@@ -49,7 +49,8 @@ export default function EditCategory(props) {
       if (entry[1].name.toLowerCase() === event.target.name.toLowerCase())
         props.setTeaData({
           ...props.teaData,
-          [props.field]: entry[1].id
+          [props.field]: entry[1].id,
+          subcategory: null,
         });
     props.handleBackToLayout();
   }
