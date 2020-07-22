@@ -3,6 +3,7 @@ import React from "react";
 import GridViewContext from "./GridViewContext";
 import CategoriesContext from "./CategoriesContext";
 import SubcategoriesContext from "./SubcategoriesContext";
+import VendorsContext from './VendorsContext';
 import TeasContext from "./TeasContext";
 import FilterContext from './FilterContext';
 import SnackbarContext from './SnackbarContext';
@@ -13,13 +14,13 @@ export default function MainStateContainer(props) {
     <SnackbarContext>
       <CategoriesContext>
         <SubcategoriesContext>
-          <TeasContext>
-            <FilterContext>
-              <GridViewContext>
-                {props.children}
-              </GridViewContext>
-            </FilterContext>
-          </TeasContext>
+          <VendorsContext>
+            <TeasContext>
+              <FilterContext>
+                <GridViewContext>{props.children}</GridViewContext>
+              </FilterContext>
+            </TeasContext>
+          </VendorsContext>
         </SubcategoriesContext>
       </CategoriesContext>
     </SnackbarContext>

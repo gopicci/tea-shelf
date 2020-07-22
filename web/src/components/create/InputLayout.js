@@ -85,6 +85,13 @@ export default function InputLayout(props) {
           data: null,
         });
         break;
+      case "vendor":
+        props.setEditRoute({
+          route: "EDIT_VENDOR",
+          field: event.currentTarget.id,
+          data: null,
+        });
+        break;
       default:
         return event;
     }
@@ -168,6 +175,15 @@ export default function InputLayout(props) {
             value={
               props.teaData.origin &&
               getOriginName(props.teaData.origin).replace("&#39;", "'")
+            }
+            handleClick={handleClick}
+          />
+          <InputItem
+            key="vendor"
+            name="vendor"
+            value={
+              props.teaData.vendor &&
+              props.teaData.vendor.name
             }
             handleClick={handleClick}
           />

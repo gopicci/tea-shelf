@@ -30,6 +30,7 @@ import {
 import { TeaDispatch } from "../statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "../statecontainers/SubcategoriesContext";
 import { SnackbarDispatch } from "../statecontainers/SnackbarContext";
+import { VendorsDispatch } from '../statecontainers/VendorsContext';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -112,6 +113,7 @@ export default function SearchAppBar() {
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
+  const vendorDispatch = useContext(VendorsDispatch)
 
   function handleGridViewChange() {
     gridViewDispatch({
@@ -152,7 +154,17 @@ export default function SearchAppBar() {
       console.error(e);
       error = e;
     }
+    try {
+      const res = await APIRequest("/vendor/", "GET");
+      const body = await res.json();
 
+      vendorDispatch({ type: "SET", data: body });
+
+      await localforage.setItem("vendors", body);
+    } catch (e) {
+      console.error(e);
+      error = e;
+    }
     setSyncing(false);
 
     if (error) {

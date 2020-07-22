@@ -63,7 +63,8 @@ export default function GridLayout() {
       setFilteredTeas(teas.filter((tea) => {
         const categoryName = categories.find(category => category.id === tea.category)
         return filterState.filters.categories[categoryName.name.toLowerCase()]
-        //|| state.filters.subcategories[tea.subcategory.toLowerCase()]
+        || (tea.subcategory && filterState.filters.subcategories[tea.subcategory.name.toLowerCase()])
+        || (tea.vendor && filterState.filters.vendor[tea.vendor.name.toLowerCase()])
         }
       ))
     else
