@@ -96,6 +96,9 @@ const useStyles = makeStyles((theme) => ({
       display: "block",
     },
   },
+  circularProgress: {
+    color: theme.palette.common.white,
+  },
 }));
 
 export default function SearchAppBar({handleSnackbarOpen}) {
@@ -191,7 +194,7 @@ export default function SearchAppBar({handleSnackbarOpen}) {
         <Box className={classes.user}>
           <IconButton color="inherit" aria-label="refresh">
             {isSyncing ? (
-              <CircularProgress color="white" size='sm'/>
+              <CircularProgress className={classes.circularProgress} size='sm'/>
             ) : showCloud ? (
               <CloudDone />
             ) : (

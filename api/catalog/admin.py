@@ -209,6 +209,37 @@ class SubcategoryNameInline(admin.TabularInline):
     extra = 0
 
 
+class SubcategoryForm(ModelForm):
+    """
+    Custom WesternBrewing form returns instance on save if existing.
+    """
+
+    def clean(self):
+        pass
+
+    def save_m2m(self):
+        return self.save()
+
+    def save(self, commit=True):
+        query_data = {"name": self.cleaned_data["name"], "is_public": True}
+
+        try:
+            instance = Subcategory.objects.get(**query_data)
+        except Subcategory.DoesNotExist:
+            try:
+                query_data["is_public"] = False
+                query_data["user"] = self.cleaned_data["user"]
+                instance = Subcategory.objects.get(**query_data)
+            except Subcategory.DoesNotExist:
+                instance = None
+
+        if not instance:
+            instance = Subcategory(**self.cleaned_data)
+            instance.save()
+
+        return instance
+
+
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     """
@@ -238,6 +269,7 @@ class SubcategoryAdmin(admin.ModelAdmin):
     )
     inlines = [SubcategoryNameInline]
     actions = [make_public]
+    form = SubcategoryForm
 
     def get_changeform_initial_data(self, request):
         """

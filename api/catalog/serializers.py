@@ -186,13 +186,35 @@ class SubcategorySerializer(serializers.ModelSerializer):
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
-    gongfu_brewing = GongfuBrewingSerializer(required=False)
-    western_brewing = WesternBrewingSerializer(required=False)
+    gongfu_brewing = GongfuBrewingSerializer(required=False, allow_null=True)
+    western_brewing = WesternBrewingSerializer(required=False, allow_null=True)
 
     class Meta:
         model = Subcategory
         fields = "__all__"
         read_only_fields = ("user",)
+
+    def create(self, validated_data):
+        """
+        Checks if public subcategory exists or user already has it.
+        """
+        query_data = {"name": validated_data["name"], "is_public": True}
+
+        try:
+            instance = Subcategory.objects.get(**query_data)
+        except Subcategory.DoesNotExist:
+            try:
+                query_data["is_public"] = False
+                query_data["user"] = validated_data["user"]
+                instance = Subcategory.objects.get(**query_data)
+            except Subcategory.DoesNotExist:
+                instance = None
+
+        if not instance:
+            instance = Subcategory(**validated_data)
+            instance.save()
+
+        return instance
 
 
 class SubcategoryNameSerializer(serializers.ModelSerializer):
@@ -212,10 +234,11 @@ class TeaSerializer(serializers.ModelSerializer):
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
-    image = Base64ImageField(required=False)
-    gongfu_brewing = GongfuBrewingSerializer(required=False)
-    western_brewing = WesternBrewingSerializer(required=False)
-    origin = OriginSerializer(required=False)
+    image = Base64ImageField(required=False, allow_null=True)
+    gongfu_brewing = GongfuBrewingSerializer(required=False, allow_null=True)
+    western_brewing = WesternBrewingSerializer(required=False, allow_null=True)
+    origin = OriginSerializer(required=False, allow_null=True)
+    subcategory = SubcategorySerializer(required=False, allow_null=True)
 
     class Meta:
         model = Tea
@@ -224,23 +247,34 @@ class TeaSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Nested create, removes null origin and brewings entries and creates separate instances
+        Nested create, removes null nested entries and creates separate instances
         before feeding them to the tea instance.
         """
-        gongfu_data, western_data, origin_data = {}, {}, {}
+        gongfu_data, western_data, origin_data, subcategory_data = {}, {}, {}, {}
 
         if "gongfu_brewing" in validated_data:
             gongfu_data = validated_data.pop("gongfu_brewing")
-            [gongfu_data.pop(k) for k, v in list(gongfu_data.items()) if v is None]
+            if gongfu_data:
+                [gongfu_data.pop(k) for k, v in list(gongfu_data.items()) if v is None]
 
         if "western_brewing" in validated_data:
             western_data = validated_data.pop("western_brewing")
-            [western_data.pop(k) for k, v in list(western_data.items()) if v is None]
+            if western_data:
+                [western_data.pop(k) for k, v in list(western_data.items()) if v is None]
 
         if "origin" in validated_data:
             origin_data = validated_data.pop("origin")
-            origin_data["user"] = validated_data["user"]
-            [origin_data.pop(k) for k, v in list(origin_data.items()) if v is None]
+            if origin_data:
+                origin_data["user"] = validated_data["user"]
+                [origin_data.pop(k) for k, v in list(origin_data.items()) if v is None]
+
+        if "subcategory" in validated_data:
+            subcategory_data = validated_data.pop("subcategory")
+            if subcategory_data:
+                subcategory_data["user"] = validated_data["user"]
+                for k, v in list(subcategory_data.items()):
+                    if v is None:
+                        subcategory_data.pop(k)
 
         tea_instance = Tea.objects.create(**validated_data)
 
@@ -255,6 +289,12 @@ class TeaSerializer(serializers.ModelSerializer):
         if origin_data:
             origin_instance, _ = Origin.objects.get_or_create(**origin_data)
             tea_instance.origin = origin_instance
+
+        if subcategory_data:
+            subcategory_instance, _ = Subcategory.objects.get_or_create(
+                **subcategory_data
+            )
+            tea_instance.subcategory = subcategory_instance
 
         tea_instance.save()
         return tea_instance

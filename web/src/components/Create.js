@@ -13,16 +13,22 @@ export default function Create({ setRoute }) {
   const [imageData, setImageData] = useState(null);
 
   const [teaData, setTeaData] = useState({
+    image: null,
     name: "",
     category: null,
     subcategory: null,
     origin: null,
+    is_archived: false,
+    gongfu_brewing: null,
+    western_brewing: null,
     year: null,
-    vendor: null,
+    gongfu_preferred: false,
     price: null,
-    weight: null,
-    brewing: null,
+    weight_left: null,
+    weight_consumed: null,
+    rating: null,
     notes: "",
+    vendor: null,
   });
 
   const snackbarDispatch = useContext(SnackbarDispatch);
@@ -37,25 +43,19 @@ export default function Create({ setRoute }) {
     let customVendor = false;
 
     try {
-      if (imageData) teaData["image"] = imageData
+      if (imageData) teaData["image"] = imageData;
 
-      // nest this instead?
       if (teaData.subcategory)
-        if (teaData.subcategory.id)
-          teaData.subcategory = teaData.subcategory.id
-        else {
-          customSubcategory = true;
-          let subData =  {"name": teaData.subcategory.name, "category": teaData.category}
-          const subPostRes = await APIRequest("/subcategory/", "POST", JSON.stringify(subData));
-          console.log("Subcategory created: ", subPostRes);
-          const subPostData = await subPostRes.json();
-          teaData.subcategory = subPostData.id;
-        }
+        teaData.subcategory = {
+          name: teaData.subcategory.name,
+          category: teaData.category,
+        };
 
-
+      console.log(teaData);
+      console.log(JSON.stringify(teaData));
       const res = await APIRequest("/tea/", "POST", JSON.stringify(teaData));
       console.log("Tea created: ", res);
-      console.log(await res.json())
+      console.log(await res.json());
 
       if (customSubcategory) {
         const subGetRes = await APIRequest("/subcategory/", "GET");
@@ -72,7 +72,7 @@ export default function Create({ setRoute }) {
         const offlineTeas = await localforage.getItem("offline-teas");
         const cache = await localforage.setItem("offline-teas", [
           ...offlineTeas,
-          Object.fromEntries(formData),
+          teaData,
         ]);
         console.log("offline teas:", cache);
       }

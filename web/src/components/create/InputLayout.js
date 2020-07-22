@@ -16,6 +16,7 @@ import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
 import {getSubcategoryName} from '../../services/ParsingService';
+import {getOriginName} from '../../services/ParsingService';
 
 import {CategoriesState} from '../statecontainers/CategoriesContext';
 
@@ -151,7 +152,7 @@ export default function InputLayout(props) {
           <InputItem
             key="subcategory"
             name="subcategory"
-            value={getSubcategoryName(props.teaData.subcategory)}
+            value={props.teaData.subcategory && getSubcategoryName(props.teaData.subcategory)}
             handleClick={handleClick}
           />
           <InputItem
@@ -159,21 +160,10 @@ export default function InputLayout(props) {
             name="origin"
             value={
               props.teaData.origin &&
-              Object.values(props.teaData.origin).join(", ").replace("&#39;", "'")
+              getOriginName(props.teaData.origin).replace("&#39;", "'")
             }
             handleClick={handleClick}
           />
-          {Object.entries(props.teaData).map(
-            ([key, value]) =>
-              !["name", "category", "subcategory", "origin"].includes(key) && (
-                <InputItem
-                  key={key}
-                  name={key}
-                  value={value}
-                  handleClick={handleClick}
-                />
-              )
-          )}
         </List>
       </FormGroup>
     </Box>
