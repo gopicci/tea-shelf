@@ -141,8 +141,11 @@ export default function EditOrigin(props) {
 
           for (const entry of Object.entries(json))
             if (entry[1].type === "element") {
-              origin[entry[1].attributes[0].value] =
-                entry[1].children[0].content;
+              if (entry[1].attributes[0].value === "country-name")
+                origin["country"] = entry[1].children[0].content;
+              else
+                origin[entry[1].attributes[0].value] =
+                  entry[1].children[0].content;
             }
 
           props.setTeaData({ ...props.teaData, origin: origin });

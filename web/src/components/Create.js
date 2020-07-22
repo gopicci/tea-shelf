@@ -7,7 +7,7 @@ import { APIRequest } from "../services/AuthService";
 import { ImageDataToFile } from "../services/ImageService";
 
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
-import {SubcategoriesDispatch} from './statecontainers/SubcategoriesContext';
+import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 
 export default function Create({ setRoute }) {
   const [imageData, setImageData] = useState(null);
@@ -37,28 +37,25 @@ export default function Create({ setRoute }) {
     let customVendor = false;
 
     try {
-      if (imageData) formData.append("image", await ImageDataToFile(imageData));
-      console.log(teaData);
+      if (imageData) teaData["image"] = imageData
 
-      formData.append("name", teaData.name);
-      formData.append("category", teaData.category);
-
+      // nest this instead?
       if (teaData.subcategory)
         if (teaData.subcategory.id)
-          formData.append("subcategory", teaData.subcategory.id);
+          teaData.subcategory = teaData.subcategory.id
         else {
           customSubcategory = true;
-          let subData = new FormData();
-          subData.append("name", teaData.subcategory.name);
-          subData.append("category", teaData.category);
-          const subPostRes = await APIRequest("/subcategory/", "POST", subData);
+          let subData =  {"name": teaData.subcategory.name, "category": teaData.category}
+          const subPostRes = await APIRequest("/subcategory/", "POST", JSON.stringify(subData));
           console.log("Subcategory created: ", subPostRes);
           const subPostData = await subPostRes.json();
-          formData.append("subcategory", subPostData.id);
+          teaData.subcategory = subPostData.id;
         }
 
-      const res = await APIRequest("/tea/", "POST", formData);
+
+      const res = await APIRequest("/tea/", "POST", JSON.stringify(teaData));
       console.log("Tea created: ", res);
+      console.log(await res.json())
 
       if (customSubcategory) {
         const subGetRes = await APIRequest("/subcategory/", "GET");
@@ -66,7 +63,6 @@ export default function Create({ setRoute }) {
         subcategoriesDispatch({ type: "SET", data: subGetData });
         await localforage.setItem("subcategories", subGetData);
       }
-
     } catch (e) {
       console.error(e);
       if (e.message === "Bad Request") {

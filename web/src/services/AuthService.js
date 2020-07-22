@@ -53,7 +53,8 @@ export const fetchTimeout = async (
       method: method,
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json, text/plain, */*",
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
       body: body,
     }),
