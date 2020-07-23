@@ -13,9 +13,12 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
   },
+  noTitle: {
+    textTransform: "none",
+  },
 }));
 
-export default function InputItem({ name, value, handleClick }) {
+export default function InputItem({ name, value, handleClick, noTitle=false }) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
@@ -31,7 +34,7 @@ export default function InputItem({ name, value, handleClick }) {
           <Typography variant={"body2"}>{name}</Typography>
         </Box>
         <Box className={classes.valueBox}>
-          <Typography variant={"body2"}>{value}</Typography>
+          <Typography variant={"body2"} className={noTitle && classes.noTitle}>{value}</Typography>
         </Box>
       </Box>
     </ListItem>

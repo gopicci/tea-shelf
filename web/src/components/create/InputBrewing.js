@@ -41,6 +41,44 @@ export default function InputBrewing(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
+  function parseBrewingTimeTop(seconds) {
+    if (!seconds) return "";
+    if (seconds <= 60)
+      return seconds.toString()
+    else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60)
+      if (seconds % 60 === 0)
+        return minutes.toString()
+      else
+        return minutes.toString() + "m"
+    }
+    else {
+      const hours = Math.floor(seconds / 3600)
+      if (seconds % 3600 === 0 || seconds > 18000)
+        return hours.toString()
+      else
+        return hours.toString() + "h"
+    }
+  }
+
+  function parseBrewingTimeBottom(seconds) {
+    if (!seconds) return "";
+    if (seconds <= 60)
+      return "sec"
+    else if (seconds < 3600) {
+      const remainderSeconds = seconds % 60
+      if (remainderSeconds > 0)
+        return remainderSeconds.toString() + "sec"
+      else return "min"
+    }
+    else {
+      const remainderMinutes = Math.floor((seconds % 3600) / 60)
+      if (remainderMinutes > 0 && seconds < 18000)
+        return remainderMinutes.toString() + "min"
+      else return "hour"
+    }
+  }
+
   return (
     <ListItem className={formListClasses.listItem} id={props.name}>
       <Box className={formListClasses.listItemBox}>
@@ -84,7 +122,10 @@ export default function InputBrewing(props) {
               variant="body2"
               className={classes.brewingButtonBoxTextSmall}
             >
-              /100ml
+              {props.teaData[props.name + "_brewing"] &&
+                props.teaData[props.name + "_brewing"].weight &&
+                "/100ml"
+              }
             </Typography>
           </Box>
           <Box className={classes.brewingButtonBox} id={props.name + "_initial"} onClick={props.handleClick}>
@@ -93,13 +134,16 @@ export default function InputBrewing(props) {
               className={classes.brewingButtonBoxText}
             >
               {props.teaData[props.name + "_brewing"] &&
-                props.teaData[props.name + "_brewing"].initial}
+                  parseBrewingTimeTop(props.teaData[props.name + "_brewing"].initial)
+              }
             </Typography>
             <Typography
               variant="body2"
               className={classes.brewingButtonBoxTextSmall}
             >
-              sec
+              {props.teaData[props.name + "_brewing"] &&
+                  parseBrewingTimeBottom(props.teaData[props.name + "_brewing"].initial)
+              }
             </Typography>
           </Box>
           <Box className={classes.brewingButtonBox} id={props.name + "_increments"} onClick={props.handleClick}>
@@ -109,13 +153,14 @@ export default function InputBrewing(props) {
             >
               {props.teaData[props.name + "_brewing"] &&
                 props.teaData[props.name + "_brewing"].increments &&
-                  "+" + props.teaData[props.name + "_brewing"].increments}
+                  "+" + parseBrewingTimeTop(props.teaData[props.name + "_brewing"].increments)}
             </Typography>
             <Typography
               variant="body2"
               className={classes.brewingButtonBoxTextSmall}
             >
-              sec
+              {props.teaData[props.name + "_brewing"] &&
+                parseBrewingTimeBottom(props.teaData[props.name + "_brewing"].increments)}
             </Typography>
           </Box>
         </Box>

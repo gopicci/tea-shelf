@@ -16,7 +16,7 @@ import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
 import InputBrewing from "./InputBrewing";
-import { getSubcategoryName } from "../../services/ParsingService";
+import {cropToNoZeroes, getSubcategoryName} from '../../services/ParsingService';
 import { getOriginName } from "../../services/ParsingService";
 
 import { CategoriesState } from "../statecontainers/CategoriesContext";
@@ -102,14 +102,14 @@ export default function InputLayout(props) {
         break;
       case "gongfu_weight":
         props.setEditRoute({
-          route: "EDIT_WEIGHT",
+          route: "EDIT_WEIGHT_LIST",
           field: event.currentTarget.id,
           data: { max: 10, increment: 0.5 },
         });
         break;
       case "western_weight":
         props.setEditRoute({
-          route: "EDIT_WEIGHT",
+          route: "EDIT_WEIGHT_LIST",
           field: event.currentTarget.id,
           data: { max: 2, increment: 0.1 },
         });
@@ -124,7 +124,20 @@ export default function InputLayout(props) {
           data: null,
         });
         break;
-
+      case "weight":
+        props.setEditRoute({
+          route: "EDIT_WEIGHT_INPUT",
+          field: event.currentTarget.id,
+          data: null,
+        });
+        break;
+      case "price":
+        props.setEditRoute({
+          route: "EDIT_PRICE",
+          field: event.currentTarget.id,
+          data: null,
+        });
+        break;
       default:
         return event;
     }
@@ -215,6 +228,19 @@ export default function InputLayout(props) {
             key="vendor"
             name="vendor"
             value={props.teaData.vendor && props.teaData.vendor.name}
+            handleClick={handleClick}
+          />
+          <InputItem
+            key="price"
+            name="price"
+            value={props.teaData.price && props.teaData.price + "/g - " + cropToNoZeroes(props.teaData.price * 28.35, 1) + "/oz"}
+            handleClick={handleClick}
+            noTitle={true}
+          />
+          <InputItem
+            key="weight"
+            name="weight"
+            value={props.teaData.weight_left && props.teaData.weight_left + "g - " + cropToNoZeroes(props.teaData.weight_left / 28.35, 2) + "oz"}
             handleClick={handleClick}
           />
         </List>

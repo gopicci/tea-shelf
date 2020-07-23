@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditWeight(props) {
+export default function EditWeightList(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
@@ -70,7 +70,7 @@ export default function EditWeight(props) {
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <IconButton
             onClick={props.handleBackToLayout}
@@ -82,7 +82,7 @@ export default function EditWeight(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Select weight
+            Select weight {(props.field === "gongfu_weight" || props.field === "western_weight") && "per 100ml"}
           </Typography>
         </Toolbar>
       </AppBar>

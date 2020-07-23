@@ -67,7 +67,7 @@ export default function EditTemperature(props) {
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <IconButton
             onClick={props.handleBackToLayout}

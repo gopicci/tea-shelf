@@ -14,6 +14,8 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
 
+import {cropToNoZeroes} from '../../services/ParsingService';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -41,17 +43,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditTime(props) {
+export default function EditWeightInput(props) {
   const classes = useStyles();
 
   const [text, setText] = useState("");
-  const [inputType, setInputType] = useState("seconds");
+  const [inputType, setInputType] = useState("grams");
 
-  const fields = props.field.split("_")
 
   function handleChange(event){
-    const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
-    setText(onlyNumbers.slice(0,3));
+    const onlyNumbers = event.target.value.replace(/[^0-9.]/g, '');
+    setText(onlyNumbers.slice(0,5));
   }
 
   function handleRadioChange(event) {
@@ -59,21 +60,11 @@ export default function EditTime(props) {
   }
 
   function handleAdd() {
-    let timeInSeconds = parseInt(text)
-    if (inputType === "minutes")
-      timeInSeconds = timeInSeconds * 60
-    if (inputType === "hours")
-      timeInSeconds = timeInSeconds * 3600
+    let grams = parseFloat(text)
+    if (inputType === "ounces")
+      grams = grams * 28.35;
 
-    if (fields[0] === "gongfu" || fields[0] === "western")
-      props.setTeaData({
-        ...props.teaData,
-        [fields[0] + "_brewing"]: {
-          ...props.teaData[fields[0] + "_brewing"],
-          [fields[1]]: timeInSeconds,
-        }
-      })
-    else props.setTeaData({ ...props.teaData, [props.field]: timeInSeconds });
+    props.setTeaData({ ...props.teaData, weight_left: cropToNoZeroes(grams, 1) });
     props.handleBackToLayout();
   }
 
@@ -93,7 +84,7 @@ export default function EditTime(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Add {fields[1] ? fields[1] : fields[0]}
+            Add {props.field}
           </Typography>
           <Button color="inherit" disabled={!text} onClick={handleAdd}>
             ADD
@@ -107,13 +98,12 @@ export default function EditTime(props) {
           onChange={handleChange}
           onFocus={handleFocus}
           variant="outlined"
-          placeholder={"Enter time in " + inputType}
+          placeholder={"Enter weight in " + inputType}
           fullWidth
         />
         <RadioGroup aria-label="type" name="type" value={inputType} onChange={handleRadioChange}>
-          <FormControlLabel className={classes.radio} value="seconds" control={<Radio />} label="Seconds" />
-          <FormControlLabel className={classes.radio} value="minutes" control={<Radio />} label="Minutes" />
-          <FormControlLabel className={classes.radio} value="hours" control={<Radio />} label="Hours" />
+          <FormControlLabel className={classes.radio} value="grams" control={<Radio />} label="Grams" />
+          <FormControlLabel className={classes.radio} value="ounces" control={<Radio />} label="Ounces" />
         </RadioGroup>
       </Box>
     </Box>

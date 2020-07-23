@@ -8,8 +8,10 @@ import EditOrigin from "./EditOrigin";
 import EditSubcategory from "./EditSubcategory";
 import EditVendor from "./EditVendor";
 import EditTemperature from "./EditTemperature";
-import EditWeight from "./EditWeight";
+import EditWeightList from "./EditWeightList";
+import EditWeightInput from "./EditWeightInput";
 import EditTime from "./EditTime";
+import EditPrice from './EditPrice';
 
 export default function InputRouter(props) {
   const [editRoute, setEditRoute] = useState({
@@ -41,14 +43,18 @@ export default function InputRouter(props) {
         return <EditVendor {...inputProps} field={editRoute.field} />;
       case "EDIT_TEMPERATURE":
         return <EditTemperature {...inputProps} field={editRoute.field} />;
-      case "EDIT_WEIGHT":
+      case "EDIT_WEIGHT_LIST":
         return (
-          <EditWeight
+          <EditWeightList
             {...inputProps}
             field={editRoute.field}
             data={editRoute.data}
           />
         );
+      case "EDIT_WEIGHT_INPUT":
+        return <EditWeightInput {...inputProps} field={editRoute.field} />;
+      case "EDIT_PRICE":
+        return <EditPrice {...inputProps} field={editRoute.field} />;
       case "EDIT_TIME":
         return <EditTime {...inputProps} field={editRoute.field} />;
       default:

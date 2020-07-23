@@ -18,3 +18,8 @@ export function getOriginName(origin) {
 export function celsiusToFahrenheit(c) {
   return String(Math.round(parseInt(c) * 9/5 + 32))
 }
+
+export function cropToNoZeroes(input, crop) {
+  // toFixed trims decimals but also converts to string. To string removes trailing zeroes
+  return parseFloat(input.toFixed(crop)).toString()
+}
