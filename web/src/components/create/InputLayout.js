@@ -6,19 +6,18 @@ import {
   FormGroup,
   FormLabel,
   IconButton,
-  List, ListItem,
-  Link,
+  List,
   Toolbar,
   Typography,
-} from '@material-ui/core';
-import { ArrowBack, RadioButtonUnchecked } from "@material-ui/icons";
+} from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
 import { makeStyles, fade } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
+import InputBrewing from "./InputBrewing";
 import { getSubcategoryName } from "../../services/ParsingService";
 import { getOriginName } from "../../services/ParsingService";
-import { getYearsList } from '../../services/ParsingService';
 
 import { CategoriesState } from "../statecontainers/CategoriesContext";
 
@@ -36,42 +35,13 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
-  nameBox: {
-    width: theme.spacing(13),
-  },
-  valueBox: {
-    flexGrow: 1,
-    display: "flex",
-  },
-  brewingButtonBox: {
-    height: theme.spacing(6),
-    width: theme.spacing(6),
-    borderRadius: theme.spacing(3),
-    marginTop: -theme.spacing(1.5),
-    marginBottom: -theme.spacing(1.5),
-    marginLeft: "auto",
-    marginRight: "auto",
-    backgroundColor: fade("#dadfe5", 0.3),
-    display: "flex",
-    flexDirection: "column",
-    padding: theme.spacing(1),
-    cursor: "pointer",
-    textTransform: "none",
-  },
-  brewingButtonBoxText: {
-    margin: "auto",
-  },
-  brewingButtonBoxTextSmall: {
-    margin: "auto",
-    fontSize: 10,
-  },
 }));
 
 export default function InputLayout(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
-  const categories = useContext(CategoriesState)
+  const categories = useContext(CategoriesState);
 
   function handleAdd() {
     props.handleCreate();
@@ -95,12 +65,12 @@ export default function InputLayout(props) {
         });
         break;
       case "subcategory":
-      props.setEditRoute({
-        route: "EDIT_SUBCATEGORY",
-        field: event.currentTarget.id,
-        data: null,
-      });
-      break;
+        props.setEditRoute({
+          route: "EDIT_SUBCATEGORY",
+          field: event.currentTarget.id,
+          data: null,
+        });
+        break;
       case "year":
         props.setEditRoute({
           route: "EDIT_LIST",
@@ -123,12 +93,38 @@ export default function InputLayout(props) {
         });
         break;
       case "gongfu_temperature":
+      case "western_temperature":
         props.setEditRoute({
           route: "EDIT_TEMPERATURE",
           field: event.currentTarget.id,
           data: null,
         });
         break;
+      case "gongfu_weight":
+        props.setEditRoute({
+          route: "EDIT_WEIGHT",
+          field: event.currentTarget.id,
+          data: { max: 10, increment: 0.5 },
+        });
+        break;
+      case "western_weight":
+        props.setEditRoute({
+          route: "EDIT_WEIGHT",
+          field: event.currentTarget.id,
+          data: { max: 2, increment: 0.1 },
+        });
+        break;
+      case "gongfu_initial":
+      case "gongfu_increments":
+      case "western_initial":
+      case "western_increments":
+        props.setEditRoute({
+          route: "EDIT_TIME",
+          field: event.currentTarget.id,
+          data: null,
+        });
+        break;
+
       default:
         return event;
     }
@@ -218,10 +214,7 @@ export default function InputLayout(props) {
           <InputItem
             key="vendor"
             name="vendor"
-            value={
-              props.teaData.vendor &&
-              props.teaData.vendor.name
-            }
+            value={props.teaData.vendor && props.teaData.vendor.name}
             handleClick={handleClick}
           />
         </List>
@@ -231,40 +224,17 @@ export default function InputLayout(props) {
           </Typography>
         </FormLabel>
         <List className={formListClasses.list}>
-          <ListItem
-            className={formListClasses.listItem}
+          <InputBrewing
             key="gongfu"
-            id="gongfu"
-          >
-            <Box className={formListClasses.listItemBox}>
-              <Box className={classes.nameBox}>
-                <Typography variant={"body2"}>gongfu</Typography>
-              </Box>
-              <Box className={classes.valueBox}>
-                <Box className={classes.brewingButtonBox} onClick={handleClick}>
-                  <Typography variant="body2" className={classes.brewingButtonBoxText}>95°c</Typography>
-                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>205F</Typography>
-                </Box>
-                <Box className={classes.brewingButtonBox} onClick={handleClick}>
-                  <Typography variant="body2" className={classes.brewingButtonBoxText}>5g</Typography>
-                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>/100ml</Typography>
-                </Box>
-                <Box className={classes.brewingButtonBox} onClick={handleClick}>
-                  <Typography variant="body2" className={classes.brewingButtonBoxText}>20</Typography>
-                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>sec</Typography>
-                </Box>
-                <Box className={classes.brewingButtonBox} onClick={handleClick}>
-                  <Typography variant="body2" className={classes.brewingButtonBoxText}>+5</Typography>
-                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>sec</Typography>
-                </Box>
-              </Box>
-            </Box>
-          </ListItem>
-          <InputItem
+            name="gongfu"
+            handleClick={handleClick}
+            {...props}
+          />
+          <InputBrewing
             key="western"
             name="western"
-            value={props.teaData.western_brewing}
             handleClick={handleClick}
+            {...props}
           />
         </List>
       </FormGroup>

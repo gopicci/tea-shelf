@@ -14,3 +14,7 @@ export function getOriginName(origin) {
   name += origin.country;
   return name;
 }
+
+export function celsiusToFahrenheit(c) {
+  return String(Math.round(parseInt(c) * 9/5 + 32))
+}

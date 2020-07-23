@@ -12,7 +12,6 @@ import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 import InputItem from "./InputItem";
-import { celsiusToFahrenheit } from "../../services/ParsingService";
 import { formListStyles } from "../../style/FormListStyles";
 
 const useStyles = makeStyles((theme) => ({
@@ -39,29 +38,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditTemperature(props) {
+export default function EditWeight(props) {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
-  const degrees = [...Array(100)].map((_, b) => String(b)).reverse();
+  const crop = props.data.increment < 1 ? 1 : 0;
+  const list = [...Array(props.data.max / props.data.increment + 1)]
+    .map((_, b) => String((b * props.data.increment).toFixed(crop)))
+    .reverse();
 
-  function handleClick(degree) {
-    if (props.field === "gongfu_temperature")
+  function handleClick(weight) {
+    if (props.field === "gongfu_weight")
       props.setTeaData({
         ...props.teaData,
         gongfu_brewing: {
           ...props.teaData.gongfu_brewing,
-          temperature: degree,
+          weight: parseFloat(weight),
         },
       });
-    if (props.field === "western_temperature")
+    else if (props.field === "western_weight")
       props.setTeaData({
         ...props.teaData,
         western_brewing: {
           ...props.teaData.western_brewing,
-          temperature: degree,
+          weight: parseFloat(weight),
         },
       });
+    else props.setTeaData({ ...props.teaData, [props.field]: weight });
     props.handleBackToLayout();
   }
 
@@ -79,17 +82,17 @@ export default function EditTemperature(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Select temperature
+            Select weight
           </Typography>
         </Toolbar>
       </AppBar>
       <List className={formListClasses.list}>
-        {degrees.map((d) => (
+        {list.map((w) => (
           <InputItem
-            key={d}
-            name={d + "°c"}
-            value={celsiusToFahrenheit(d) + "F"}
-            handleClick={() => handleClick(d)}
+            key={w}
+            name={w + "g"}
+            value=""
+            handleClick={() => handleClick(w)}
           />
         ))}
       </List>
