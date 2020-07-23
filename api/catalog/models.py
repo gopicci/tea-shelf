@@ -80,14 +80,14 @@ class Brewing(models.Model):
     """
 
     temperature = models.PositiveSmallIntegerField(
-        default=99, validators=[MaxValueValidator(100)], null=True, blank=True
+        default=0, validators=[MaxValueValidator(100)], null=True, blank=True
     )
     weight = models.FloatField(
-        default=5, validators=[MinValueValidator(0)], null=True, blank=True
+        default=0, validators=[MinValueValidator(0)], null=True, blank=True
     )
-    initial = models.DurationField(default=timedelta(seconds=20), null=True, blank=True)
+    initial = models.DurationField(default=timedelta(seconds=0), null=True, blank=True)
     increments = models.DurationField(
-        default=timedelta(seconds=5), null=True, blank=True
+        default=timedelta(seconds=0), null=True, blank=True
     )
 
     class Meta:

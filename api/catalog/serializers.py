@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -104,7 +106,17 @@ class BrewingSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
+        if not validated_data["temperature"]:
+            validated_data["temperature"] = 0
+        if not validated_data["weight"]:
+            validated_data["weight"] = 0
+        if not validated_data["initial"]:
+            validated_data["initial"] = timedelta(seconds=0)
+        if not validated_data["increments"]:
+            validated_data["increments"] = timedelta(seconds=0)
+
         instance, _ = Brewing.objects.get_or_create(**validated_data)
+
         return instance
 
 
