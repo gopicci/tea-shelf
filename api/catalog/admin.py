@@ -5,8 +5,7 @@ from django.utils.html import format_html
 
 from .models import (
     CustomUser,
-    GongfuBrewing,
-    WesternBrewing,
+    Brewing,
     Category,
     Subcategory,
     SubcategoryName,
@@ -58,7 +57,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
 
-class GongfuBrewingForm(ModelForm):
+class BrewingForm(ModelForm):
     """
     Custom GongfuBrewing form returns instance on save if existing.
     """
@@ -67,16 +66,16 @@ class GongfuBrewingForm(ModelForm):
         pass
 
     def save_m2m(self):
-        instance, _ = GongfuBrewing.objects.get_or_create(**self.cleaned_data)
+        instance, _ = Brewing.objects.get_or_create(**self.cleaned_data)
         return instance
 
     def save(self, commit=True):
-        instance, _ = GongfuBrewing.objects.get_or_create(**self.cleaned_data)
+        instance, _ = Brewing.objects.get_or_create(**self.cleaned_data)
         return instance
 
 
-@admin.register(GongfuBrewing)
-class GongfuBrewingAdmin(admin.ModelAdmin):
+@admin.register(Brewing)
+class BrewingAdmin(admin.ModelAdmin):
     """
     Registering GongfuBrewing model.
     """
@@ -94,44 +93,7 @@ class GongfuBrewingAdmin(admin.ModelAdmin):
         "initial",
         "increments",
     )
-    form = GongfuBrewingForm
-
-
-class WesternBrewingForm(ModelForm):
-    """
-    Custom WesternBrewing form returns instance on save if existing.
-    """
-
-    def clean(self):
-        pass
-
-    def save_m2m(self):
-        instance, _ = WesternBrewing.objects.get_or_create(**self.cleaned_data)
-        return instance
-
-    def save(self, commit=True):
-        instance, _ = WesternBrewing.objects.get_or_create(**self.cleaned_data)
-        return instance
-
-
-@admin.register(WesternBrewing)
-class WesternBrewingAdmin(admin.ModelAdmin):
-    """
-    Registering WesternBrewing model.
-    """
-
-    list_display = (
-        "__str__",
-        "temperature",
-        "weight",
-        "initial",
-    )
-    list_editable = (
-        "temperature",
-        "weight",
-        "initial",
-    )
-    form = WesternBrewingForm
+    form = BrewingForm
 
 
 class OriginForm(ModelForm):

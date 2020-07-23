@@ -6,8 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (
     LoginSerializer,
     UserSerializer,
-    GongfuBrewingSerializer,
-    WesternBrewingSerializer,
+    BrewingSerializer,
     CategorySerializer,
     SubcategorySerializer,
     VendorSerializer,
@@ -16,8 +15,7 @@ from .serializers import (
 )
 from .models import (
     Category,
-    GongfuBrewing,
-    WesternBrewing,
+    Brewing,
     Origin,
     Subcategory,
     Vendor,
@@ -56,40 +54,22 @@ class UserView(generics.RetrieveAPIView):
         return self.request.user
 
 
-class GongfuBrewingCreateView(generics.CreateAPIView):
+class BrewingCreateView(generics.CreateAPIView):
     """
     Create gongfu brewing details.
     """
 
-    serializer_class = GongfuBrewingSerializer
+    serializer_class = BrewingSerializer
 
 
-class GongfuBrewingDetailView(generics.RetrieveAPIView):
+class BrewingDetailView(generics.RetrieveAPIView):
     """
     Retrieve gongfu brewing details.
     """
 
     lookup_field = "pk"
-    queryset = GongfuBrewing.objects.all()
-    serializer_class = GongfuBrewingSerializer
-
-
-class WesternBrewingCreateView(generics.CreateAPIView):
-    """
-    Create western brewing details.
-    """
-
-    serializer_class = WesternBrewingSerializer
-
-
-class WesternBrewingDetailView(generics.RetrieveAPIView):
-    """
-    Retrieve western brewing details.
-    """
-
-    lookup_field = "pk"
-    queryset = WesternBrewing.objects.all()
-    serializer_class = WesternBrewingSerializer
+    queryset = Brewing.objects.all()
+    serializer_class = BrewingSerializer
 
 
 class OriginCreateView(generics.CreateAPIView):

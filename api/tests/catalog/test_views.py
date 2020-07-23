@@ -32,13 +32,9 @@ def token(client):
 def test_anon_cannot_reach_views(client):
     resp = client.get("/api/category/")
     assert resp.status_code == 401
-    resp = client.get("/api/brewing/gongfu/")
+    resp = client.get("/api/brewing/")
     assert resp.status_code == 401
-    resp = client.get("/api/brewing/gongfu/0/")
-    assert resp.status_code == 401
-    resp = client.get("/api/brewing/western/")
-    assert resp.status_code == 401
-    resp = client.get("/api/brewing/western/0/")
+    resp = client.get("/api/brewing/0/")
     assert resp.status_code == 401
     resp = client.get("/api/origin/0/")
     assert resp.status_code == 401
@@ -53,9 +49,9 @@ def test_user_can_list_category(client, token):
 
 @override_settings(REST_FRAMEWORK=auth_override)
 @pytest.mark.django_db
-def test_user_can_create_and_view_gongfu_brewing_instructions(client, token):
+def test_user_can_create_and_view_brewing_instructions(client, token):
     resp = client.post(
-        "/api/brewing/gongfu/",
+        "/api/brewing/",
         {"temperature": 99, "weight": 3.5, "initial": 20, "increments": 5},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {token}",
@@ -65,7 +61,7 @@ def test_user_can_create_and_view_gongfu_brewing_instructions(client, token):
     first_id = resp.data["id"]
 
     resp = client.post(
-        "/api/brewing/gongfu/",
+        "/api/brewing/",
         {"temperature": 99, "weight": 3.5, "initial": 20, "increments": 5},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {token}",
@@ -76,46 +72,11 @@ def test_user_can_create_and_view_gongfu_brewing_instructions(client, token):
     _id = resp.data["id"]
     assert first_id == _id
 
-    resp = client.get(
-        f"/api/brewing/gongfu/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
-    )
+    resp = client.get(f"/api/brewing/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 200
     assert resp.data["temperature"] == 99
     assert resp.data["initial"] == "00:00:20"
     assert resp.data["increments"] == "00:00:05"
-
-
-@override_settings(REST_FRAMEWORK=auth_override)
-@pytest.mark.django_db
-def test_user_can_create_and_view_western_brewing_instructions(client, token):
-    resp = client.post(
-        "/api/brewing/western/",
-        {"temperature": 85, "weight": 0.8, "initial": 185},
-        content_type="application/json",
-        HTTP_AUTHORIZATION=f"Bearer {token}",
-    )
-    assert resp.status_code == 201
-    assert resp.data["weight"] == 0.8
-    first_id = resp.data["id"]
-
-    resp = client.post(
-        "/api/brewing/western/",
-        {"temperature": 85, "weight": 0.8, "initial": 185},
-        content_type="application/json",
-        HTTP_AUTHORIZATION=f"Bearer {token}",
-    )
-    assert resp.status_code == 201
-    assert resp.data["weight"] == 0.8
-
-    _id = resp.data["id"]
-    assert first_id == _id
-
-    resp = client.get(
-        f"/api/brewing/western/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
-    )
-    assert resp.status_code == 200
-    assert resp.data["temperature"] == 85
-    assert resp.data["initial"] == "00:03:05"
 
 
 @override_settings(REST_FRAMEWORK=auth_override)

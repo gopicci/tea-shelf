@@ -73,7 +73,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Users"
 
 
-class GongfuBrewing(models.Model):
+class Brewing(models.Model):
     """
     Model defining a set of gongfu brewing instructions.
     Temperature in Celsius, weight in grams, initial brewing time and increments in seconds.
@@ -94,7 +94,7 @@ class GongfuBrewing(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["temperature", "weight", "initial", "increments"],
-                name="unique_gongfu",
+                name="unique_brewing",
             )
         ]
 
@@ -118,48 +118,6 @@ class GongfuBrewing(models.Model):
             + format_delta(self.initial)
             + " + "
             + format_delta(self.increments)
-        )
-
-
-class WesternBrewing(models.Model):
-    """
-    Model defining a set of western brewing instructions.
-    Temperature in Celsius, weight in grams, brewing time in seconds.
-    """
-
-    temperature = models.PositiveSmallIntegerField(
-        default=99, validators=[MaxValueValidator(100)], null=True, blank=True
-    )
-    weight = models.FloatField(
-        default=1, validators=[MinValueValidator(0)], null=True, blank=True
-    )
-    initial = models.DurationField(default=timedelta(minutes=2), null=True, blank=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["temperature", "weight", "initial"], name="unique_western"
-            )
-        ]
-
-    def save(self, *args, **kwargs):
-        """
-        Truncates weight to 1 decimal.
-        """
-        self.weight = float("%.1f" % self.weight)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        """
-        Returns weight, temperature, brewing time
-        in standard western brewing style, ie: 1g 99°c 2m
-        """
-        return (
-            str(int(self.weight) if self.weight.is_integer() else "%.1f" % self.weight)
-            + "g "
-            + str(self.temperature)
-            + "°c "
-            + format_delta(self.initial)
         )
 
 
@@ -221,10 +179,10 @@ class Category(models.Model):
     )
     name = models.CharField(max_length=20, choices=CATEGORIES)
     gongfu_brewing = models.ForeignKey(
-        GongfuBrewing, on_delete=models.SET_NULL, null=True, blank=True
+        Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
     western_brewing = models.ForeignKey(
-        WesternBrewing, on_delete=models.SET_NULL, null=True, blank=True
+        Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     def __str__(self):
@@ -245,10 +203,10 @@ class Subcategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     gongfu_brewing = models.ForeignKey(
-        GongfuBrewing, on_delete=models.SET_NULL, null=True, blank=True
+        Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
     western_brewing = models.ForeignKey(
-        WesternBrewing, on_delete=models.SET_NULL, null=True, blank=True
+        Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     def __str__(self):
@@ -331,10 +289,10 @@ class Tea(models.Model):
 
     gongfu_preferred = models.BooleanField(default=True)
     gongfu_brewing = models.ForeignKey(
-        GongfuBrewing, on_delete=models.SET_NULL, null=True, blank=True
+        Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
     western_brewing = models.ForeignKey(
-        WesternBrewing, on_delete=models.SET_NULL, null=True, blank=True
+        Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     created_on = models.DateTimeField(auto_now_add=True)

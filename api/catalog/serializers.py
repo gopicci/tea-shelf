@@ -5,8 +5,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from drf_extra_fields.fields import Base64ImageField
 
 from .models import (
-    GongfuBrewing,
-    WesternBrewing,
+    Brewing,
     Origin,
     Category,
     Subcategory,
@@ -95,31 +94,17 @@ class LoginSerializer(TokenObtainPairSerializer):
         return data
 
 
-class GongfuBrewingSerializer(serializers.ModelSerializer):
+class BrewingSerializer(serializers.ModelSerializer):
     """
-    GongfuBrewing serializer returns instance if existing or creates a new one.
-    """
-
-    class Meta:
-        model = GongfuBrewing
-        fields = "__all__"
-
-    def create(self, validated_data):
-        instance, _ = GongfuBrewing.objects.get_or_create(**validated_data)
-        return instance
-
-
-class WesternBrewingSerializer(serializers.ModelSerializer):
-    """
-    WesternBrewing serializer returns instance if existing or creates a new one.
+    Brewing serializer returns instance if existing or creates a new one.
     """
 
     class Meta:
-        model = WesternBrewing
+        model = Brewing
         fields = "__all__"
 
     def create(self, validated_data):
-        instance, _ = WesternBrewing.objects.get_or_create(**validated_data)
+        instance, _ = Brewing.objects.get_or_create(**validated_data)
         return instance
 
 
@@ -167,8 +152,8 @@ class CategorySerializer(serializers.ModelSerializer):
     Category serializer with nested brewings.
     """
 
-    gongfu_brewing = GongfuBrewingSerializer()
-    western_brewing = WesternBrewingSerializer()
+    gongfu_brewing = BrewingSerializer()
+    western_brewing = BrewingSerializer()
 
     class Meta:
         model = Category
@@ -210,8 +195,8 @@ class SubcategorySerializer(serializers.ModelSerializer):
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
-    gongfu_brewing = GongfuBrewingSerializer(required=False, allow_null=True)
-    western_brewing = WesternBrewingSerializer(required=False, allow_null=True)
+    gongfu_brewing = BrewingSerializer(required=False, allow_null=True)
+    western_brewing = BrewingSerializer(required=False, allow_null=True)
 
     class Meta:
         model = Subcategory
@@ -256,8 +241,8 @@ class TeaSerializer(serializers.ModelSerializer):
 
     user = serializers.ReadOnlyField(source="user.pk")
     image = Base64ImageField(required=False, allow_null=True)
-    gongfu_brewing = GongfuBrewingSerializer(required=False, allow_null=True)
-    western_brewing = WesternBrewingSerializer(required=False, allow_null=True)
+    gongfu_brewing = BrewingSerializer(required=False, allow_null=True)
+    western_brewing = BrewingSerializer(required=False, allow_null=True)
     origin = OriginSerializer(required=False, allow_null=True)
     subcategory = SubcategorySerializer(required=False, allow_null=True)
     vendor = VendorSerializer(required=False, allow_null=True)
@@ -312,11 +297,11 @@ class TeaSerializer(serializers.ModelSerializer):
         tea_instance = Tea.objects.create(**validated_data)
 
         if gongfu_data:
-            gongfu_instance, _ = GongfuBrewing.objects.get_or_create(**gongfu_data)
+            gongfu_instance, _ = Brewing.objects.get_or_create(**gongfu_data)
             tea_instance.gongfu_brewing = gongfu_instance
 
         if western_data:
-            western_instance, _ = WesternBrewing.objects.get_or_create(**western_data)
+            western_instance, _ = Brewing.objects.get_or_create(**western_data)
             tea_instance.western_brewing = western_instance
 
         if origin_data:

@@ -10,8 +10,7 @@ from django.db import IntegrityError, transaction
 
 from catalog.models import (
     CustomUser,
-    GongfuBrewing,
-    WesternBrewing,
+    Brewing,
     Origin,
     Category,
     Subcategory,
@@ -35,8 +34,8 @@ def test_custom_user_model():
 
 
 @pytest.mark.django_db
-def test_gongfubrewing_model():
-    brewing = GongfuBrewing(
+def test_brewing_model():
+    brewing = Brewing(
         temperature=99,
         weight=5.0076865,
         initial=timedelta(seconds=10),
@@ -51,8 +50,8 @@ def test_gongfubrewing_model():
 
 
 @pytest.mark.django_db
-def test_gongfubrewing_model_validators():
-    brewing = GongfuBrewing(
+def test_brewing_model_validators():
+    brewing = Brewing(
         temperature=101,
         weight=5,
         initial=timedelta(seconds=10),
@@ -63,7 +62,7 @@ def test_gongfubrewing_model_validators():
         brewing.full_clean()
         brewing.save()
 
-    brewing = GongfuBrewing(
+    brewing = Brewing(
         temperature=99,
         weight=-1,
         initial=timedelta(seconds=10),
@@ -74,10 +73,10 @@ def test_gongfubrewing_model_validators():
         brewing.full_clean()
         brewing.save()
 
-    brewings = GongfuBrewing.objects.all()
+    brewings = Brewing.objects.all()
     assert len(brewings) == 0
 
-    brewing1 = GongfuBrewing(
+    brewing1 = Brewing(
         temperature=99,
         weight=5,
         initial=timedelta(seconds=10),
@@ -85,10 +84,10 @@ def test_gongfubrewing_model_validators():
     )
     brewing1.save()
 
-    brewings = GongfuBrewing.objects.all()
+    brewings = Brewing.objects.all()
     assert len(brewings) == 1
 
-    brewing2 = GongfuBrewing(
+    brewing2 = Brewing(
         temperature=99,
         weight=5,
         initial=timedelta(seconds=10),
@@ -98,53 +97,7 @@ def test_gongfubrewing_model_validators():
         brewing2.save()
 
     with pytest.raises(transaction.TransactionManagementError):
-        brewings = GongfuBrewing.objects.all()
-        assert len(brewings) == 1
-
-
-@pytest.mark.django_db
-def test_westernbrewing_model():
-    brewing = WesternBrewing(
-        temperature=85, weight=0.82464, initial=timedelta(seconds=180)
-    )
-    brewing.save()
-    assert brewing.temperature == 85
-    assert brewing.weight == 0.8
-    assert brewing.initial.total_seconds() == 180
-    assert str(brewing) == "0.8g 85°c 3m"
-
-
-@pytest.mark.django_db
-def test_westernbrewingg_model_validators():
-    brewing = WesternBrewing(
-        temperature=101, weight=0.8, initial=timedelta(seconds=180)
-    )
-
-    with pytest.raises(ValidationError):
-        brewing.full_clean()
-        brewing.save()
-
-    brewing = WesternBrewing(temperature=85, weight=-2, initial=timedelta(seconds=180))
-
-    with pytest.raises(ValidationError):
-        brewing.full_clean()
-        brewing.save()
-
-    brewings = WesternBrewing.objects.all()
-    assert len(brewings) == 0
-
-    brewing1 = WesternBrewing(temperature=85, weight=2, initial=timedelta(seconds=180))
-    brewing1.save()
-
-    brewings = WesternBrewing.objects.all()
-    assert len(brewings) == 1
-
-    brewing2 = WesternBrewing(temperature=85, weight=2, initial=timedelta(seconds=180))
-    with pytest.raises(IntegrityError):
-        brewing2.save()
-
-    with pytest.raises(transaction.TransactionManagementError):
-        brewings = WesternBrewing.objects.all()
+        brewings = Brewing.objects.all()
         assert len(brewings) == 1
 
 
@@ -188,20 +141,25 @@ def test_origin_model_validators():
 
 @pytest.mark.django_db
 def test_category_model():
-    gongfu = GongfuBrewing(
+    gongfu = Brewing(
         temperature=99,
         weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
     gongfu.save()
-    western = WesternBrewing(temperature=85, weight=0.8, initial=timedelta(seconds=180))
+    western = Brewing(
+        temperature=85,
+        weight=0.8,
+        initial=timedelta(seconds=180),
+        increments=timedelta(seconds=30),
+    )
     western.save()
     category = Category(name="OOLONG", gongfu_brewing=gongfu, western_brewing=western)
     category.save()
     assert category.name == "OOLONG"
     assert str(category.gongfu_brewing) == "5g 99°c 10s + 3s"
-    assert type(category.western_brewing) == WesternBrewing
+    assert type(category.western_brewing) == Brewing
 
 
 @pytest.mark.django_db
@@ -212,14 +170,19 @@ def test_subcategory_subcategoryname_model():
     category.save()
     origin = Origin(country="Germany", region="Yunnan", locality="Paris", user=user)
     origin.save()
-    gongfu = GongfuBrewing(
+    gongfu = Brewing(
         temperature=99,
         weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
     gongfu.save()
-    western = WesternBrewing(temperature=85, weight=0.8, initial=timedelta(seconds=180))
+    western = Brewing(
+        temperature=85,
+        weight=0.8,
+        initial=timedelta(seconds=180),
+        increments=timedelta(seconds=30),
+    )
     western.save()
     subcategory = Subcategory(
         category=category,
@@ -281,14 +244,19 @@ def test_tea_model():
     category.save()
     origin = Origin(country="Germany", region="Yunnan", locality="Paris", user=user)
     origin.save()
-    gongfu = GongfuBrewing(
+    gongfu = Brewing(
         temperature=99,
         weight=5,
         initial=timedelta(seconds=10),
         increments=timedelta(seconds=3),
     )
     gongfu.save()
-    western = WesternBrewing(temperature=85, weight=0.8, initial=timedelta(seconds=180))
+    western = Brewing(
+        temperature=85,
+        weight=0.8,
+        initial=timedelta(seconds=180),
+        increments=timedelta(seconds=30),
+    )
     western.save()
     subcategory = Subcategory(
         category=category,
