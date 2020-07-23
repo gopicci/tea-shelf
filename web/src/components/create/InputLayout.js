@@ -6,12 +6,13 @@ import {
   FormGroup,
   FormLabel,
   IconButton,
-  List,
+  List, ListItem,
+  Link,
   Toolbar,
   Typography,
-} from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
+} from '@material-ui/core';
+import { ArrowBack, RadioButtonUnchecked } from "@material-ui/icons";
+import { makeStyles, fade } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
@@ -34,6 +35,35 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+  },
+  nameBox: {
+    width: theme.spacing(13),
+  },
+  valueBox: {
+    flexGrow: 1,
+    display: "flex",
+  },
+  brewingButtonBox: {
+    height: theme.spacing(6),
+    width: theme.spacing(6),
+    borderRadius: theme.spacing(3),
+    marginTop: -theme.spacing(1.5),
+    marginBottom: -theme.spacing(1.5),
+    marginLeft: "auto",
+    marginRight: "auto",
+    backgroundColor: fade("#dadfe5", 0.3),
+    display: "flex",
+    flexDirection: "column",
+    padding: theme.spacing(1),
+    cursor: "pointer",
+    textTransform: "none",
+  },
+  brewingButtonBoxText: {
+    margin: "auto",
+  },
+  brewingButtonBoxTextSmall: {
+    margin: "auto",
+    fontSize: 10,
   },
 }));
 
@@ -88,6 +118,13 @@ export default function InputLayout(props) {
       case "vendor":
         props.setEditRoute({
           route: "EDIT_VENDOR",
+          field: event.currentTarget.id,
+          data: null,
+        });
+        break;
+      case "gongfu_temperature":
+        props.setEditRoute({
+          route: "EDIT_TEMPERATURE",
           field: event.currentTarget.id,
           data: null,
         });
@@ -185,6 +222,48 @@ export default function InputLayout(props) {
               props.teaData.vendor &&
               props.teaData.vendor.name
             }
+            handleClick={handleClick}
+          />
+        </List>
+        <FormLabel className={formListClasses.formLabel}>
+          <Typography className={formListClasses.formLabelText}>
+            Brewing instructions
+          </Typography>
+        </FormLabel>
+        <List className={formListClasses.list}>
+          <ListItem
+            className={formListClasses.listItem}
+            key="gongfu"
+            id="gongfu"
+          >
+            <Box className={formListClasses.listItemBox}>
+              <Box className={classes.nameBox}>
+                <Typography variant={"body2"}>gongfu</Typography>
+              </Box>
+              <Box className={classes.valueBox}>
+                <Box className={classes.brewingButtonBox} onClick={handleClick}>
+                  <Typography variant="body2" className={classes.brewingButtonBoxText}>95°c</Typography>
+                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>205F</Typography>
+                </Box>
+                <Box className={classes.brewingButtonBox} onClick={handleClick}>
+                  <Typography variant="body2" className={classes.brewingButtonBoxText}>5g</Typography>
+                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>/100ml</Typography>
+                </Box>
+                <Box className={classes.brewingButtonBox} onClick={handleClick}>
+                  <Typography variant="body2" className={classes.brewingButtonBoxText}>20</Typography>
+                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>sec</Typography>
+                </Box>
+                <Box className={classes.brewingButtonBox} onClick={handleClick}>
+                  <Typography variant="body2" className={classes.brewingButtonBoxText}>+5</Typography>
+                  <Typography variant="body2" className={classes.brewingButtonBoxTextSmall}>sec</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </ListItem>
+          <InputItem
+            key="western"
+            name="western"
+            value={props.teaData.western_brewing}
             handleClick={handleClick}
           />
         </List>

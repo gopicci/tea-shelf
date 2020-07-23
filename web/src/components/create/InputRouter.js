@@ -7,6 +7,7 @@ import EditCategory from './EditCategory';
 import EditOrigin from './EditOrigin';
 import EditSubcategory from './EditSubcategory';
 import EditVendor from './EditVendor';
+import EditTemperature from './EditTemperature';
 
 export default function InputRouter(props) {
 
@@ -33,6 +34,8 @@ export default function InputRouter(props) {
         return <EditOrigin {...inputProps} field={editRoute.field} />
       case 'EDIT_VENDOR':
         return <EditVendor {...inputProps} field={editRoute.field} />
+      case 'EDIT_TEMPERATURE':
+        return <EditTemperature {...inputProps} field={editRoute.field} />
       default:
         return <InputLayout {...inputProps} />
     }

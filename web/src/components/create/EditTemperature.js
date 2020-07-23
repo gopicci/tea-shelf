@@ -37,21 +37,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditYear(props) {
+export default function EditTemperature(props) {
   const classes = useStyles();
 
-  const length = 60;
-  const currentYear = new Date().getFullYear();
-  const years = [...Array(length)].map((_, b) => String(currentYear - b));
-  years.push("Unknown");
-
-  const checkboxList = years.reduce((obj, item) => {
+  const degrees = [...Array(100)].map((_, b) => String(b));
+  const checkboxList = degrees.reduce((obj, item) => {
     obj[item.toLowerCase()] = false;
     return obj;
   }, {});
 
   function handleChange(event) {
-    props.setTeaData({ ...props.teaData, [props.field]: event.target.name });
+    if (props.field === "gongfu_temperature")
+    props.setTeaData({ ...props.teaData, gongfu_brewing: {temperature: event.target.name }});
     props.handleBackToLayout();
   }
 
@@ -69,7 +66,7 @@ export default function EditYear(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Select {props.field}
+            Select temperature
           </Typography>
         </Toolbar>
       </AppBar>
@@ -79,14 +76,6 @@ export default function EditYear(props) {
         handleChange={(e) => handleChange(e)}
         reverse={true}
       />
-      {[0, 10, 20, 30, 40].map((tens) => (
-        <CheckboxListItem
-          key={String(currentYear - length - tens)}
-          name={String(currentYear - length - tens)}
-          checked={false}
-          handleChange={handleChange}
-        />
-      ))}
     </Box>
   );
 }

@@ -77,6 +77,7 @@ export default function EditText(props) {
           id="standard-multiline"
           rows={4}
           rowsMax={Infinity}
+          inputProps={{maxLength: 50}}
           multiline
           autoFocus
           fullWidth
@@ -84,7 +85,7 @@ export default function EditText(props) {
         />
       </Box>
       <Box className={classes.counter}>
-        <Typography>{text.length}</Typography>
+        <Typography>{text.length} / 50</Typography>
       </Box>
     </Box>
   );
