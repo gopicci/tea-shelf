@@ -10,7 +10,7 @@ import {
   TextField,
   Toolbar,
   Typography,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
 
@@ -47,11 +47,11 @@ export default function EditTime(props) {
   const [text, setText] = useState("");
   const [inputType, setInputType] = useState("seconds");
 
-  const fields = props.field.split("_")
+  const fields = props.field.split("_");
 
-  function handleChange(event){
-    const onlyNumbers = event.target.value.replace(/[^0-9]/g, '');
-    setText(onlyNumbers.slice(0,3));
+  function handleChange(event) {
+    const onlyNumbers = event.target.value.replace(/[^0-9]/g, "");
+    setText(onlyNumbers.slice(0, 3));
   }
 
   function handleRadioChange(event) {
@@ -59,11 +59,9 @@ export default function EditTime(props) {
   }
 
   function handleAdd() {
-    let timeInSeconds = parseInt(text)
-    if (inputType === "minutes")
-      timeInSeconds = timeInSeconds * 60
-    if (inputType === "hours")
-      timeInSeconds = timeInSeconds * 3600
+    let timeInSeconds = parseInt(text);
+    if (inputType === "minutes") timeInSeconds = timeInSeconds * 60;
+    if (inputType === "hours") timeInSeconds = timeInSeconds * 3600;
 
     if (fields[0] === "gongfu" || fields[0] === "western")
       props.setTeaData({
@@ -71,8 +69,8 @@ export default function EditTime(props) {
         [fields[0] + "_brewing"]: {
           ...props.teaData[fields[0] + "_brewing"],
           [fields[1]]: timeInSeconds,
-        }
-      })
+        },
+      });
     else props.setTeaData({ ...props.teaData, [props.field]: timeInSeconds });
     props.handleBackToLayout();
   }
@@ -88,14 +86,19 @@ export default function EditTime(props) {
             edge="start"
             className={classes.menuButton}
             color="inherit"
-            aria-label="menu"
+            aria-label="back"
           >
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
             Add {fields[1] ? fields[1] : fields[0]}
           </Typography>
-          <Button color="inherit" disabled={!text} onClick={handleAdd}>
+          <Button
+            color="inherit"
+            disabled={!text}
+            onClick={handleAdd}
+            aria-label="add"
+          >
             ADD
           </Button>
         </Toolbar>
@@ -109,11 +112,32 @@ export default function EditTime(props) {
           variant="outlined"
           placeholder={"Enter time in " + inputType}
           fullWidth
+          aria-label="time-text"
         />
-        <RadioGroup aria-label="type" name="type" value={inputType} onChange={handleRadioChange}>
-          <FormControlLabel className={classes.radio} value="seconds" control={<Radio />} label="Seconds" />
-          <FormControlLabel className={classes.radio} value="minutes" control={<Radio />} label="Minutes" />
-          <FormControlLabel className={classes.radio} value="hours" control={<Radio />} label="Hours" />
+        <RadioGroup
+          aria-label="type"
+          name="type"
+          value={inputType}
+          onChange={handleRadioChange}
+        >
+          <FormControlLabel
+            className={classes.radio}
+            value="seconds"
+            control={<Radio />}
+            label="Seconds"
+          />
+          <FormControlLabel
+            className={classes.radio}
+            value="minutes"
+            control={<Radio />}
+            label="Minutes"
+          />
+          <FormControlLabel
+            className={classes.radio}
+            value="hours"
+            control={<Radio />}
+            label="Hours"
+          />
         </RadioGroup>
       </Box>
     </Box>

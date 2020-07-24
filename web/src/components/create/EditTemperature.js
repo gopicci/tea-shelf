@@ -74,7 +74,7 @@ export default function EditTemperature(props) {
             edge="start"
             className={classes.menuButton}
             color="inherit"
-            aria-label="menu"
+            aria-label="back"
           >
             <ArrowBack />
           </IconButton>

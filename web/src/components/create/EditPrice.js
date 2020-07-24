@@ -47,7 +47,7 @@ export default function EditPrice(props) {
   const classes = useStyles();
 
   const [textPrice, setTextPrice] = useState("");
-  const [textWeight, setTextWeight] = useState("1");
+  const [textWeight, setTextWeight] = useState(props.teaData.weight_left ? String(props.teaData.weight_left) : "1");
   const [inputType, setInputType] = useState("grams");
 
   function handlePriceChange(event) {
@@ -61,27 +61,35 @@ export default function EditPrice(props) {
   }
 
   function handleRadioChange(event) {
-    setInputType(event.target.value);
+    if (event.target.value !== inputType){
+      setInputType(event.target.value);
+      if (event.target.value === "grams")
+        setTextWeight(cropToNoZeroes(parseFloat(textWeight) * 28.35, 2));
+      else
+        setTextWeight(cropToNoZeroes(parseFloat(textWeight) / 28.35, 2));
+    }
   }
 
   function handleAdd() {
+
     let grams = parseFloat(textWeight);
 
     if (inputType === "ounces") grams = grams * 28.35;
 
     const price = parseFloat(textPrice) / grams;
 
-    if (!props.teaData.weight_left && grams > 1)
-      props.setTeaData({
-        ...props.teaData,
-        [props.field]: cropToNoZeroes(price, 2),
-        weight_left: cropToNoZeroes(grams, 1),
-      });
-    else
-      props.setTeaData({
-        ...props.teaData,
-        [props.field]: cropToNoZeroes(price, 2),
-      });
+    if (!isNaN(grams) && !isNaN(price))
+      if (!props.teaData.weight_left && grams > 1)
+        props.setTeaData({
+          ...props.teaData,
+          [props.field]: cropToNoZeroes(price, 2),
+          weight_left: cropToNoZeroes(grams, 1),
+        });
+      else
+        props.setTeaData({
+          ...props.teaData,
+          [props.field]: cropToNoZeroes(price, 2),
+        });
 
     props.handleBackToLayout();
   }
@@ -97,7 +105,7 @@ export default function EditPrice(props) {
             edge="start"
             className={classes.menuButton}
             color="inherit"
-            aria-label="menu"
+            aria-label="back"
           >
             <ArrowBack />
           </IconButton>
@@ -108,6 +116,7 @@ export default function EditPrice(props) {
             color="inherit"
             disabled={!(textPrice && textWeight)}
             onClick={handleAdd}
+            aria-label="add"
           >
             ADD
           </Button>
@@ -121,6 +130,7 @@ export default function EditPrice(props) {
           onFocus={handleFocus}
           variant="outlined"
           label={"Enter price paid"}
+          aria-label="price"
           fullWidth
         />
         <TextField
@@ -130,6 +140,7 @@ export default function EditPrice(props) {
           onFocus={handleFocus}
           variant="outlined"
           label={"Enter amount bought in " + inputType}
+          aria-label="amount"
           fullWidth
         />
         <RadioGroup
@@ -143,12 +154,14 @@ export default function EditPrice(props) {
             value="grams"
             control={<Radio />}
             label="Grams"
+            aria-label="grams"
           />
           <FormControlLabel
             className={classes.radio}
             value="ounces"
             control={<Radio />}
             label="Ounces"
+            aria-label="ounces"
           />
         </RadioGroup>
       </Box>

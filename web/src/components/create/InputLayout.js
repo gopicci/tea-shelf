@@ -163,6 +163,7 @@ export default function InputLayout(props) {
             color="inherit"
             disabled={!props.teaData.name || !props.teaData.category}
             onClick={handleAdd}
+            aria-label="add"
           >
             ADD
           </Button>
@@ -231,17 +232,17 @@ export default function InputLayout(props) {
             handleClick={handleClick}
           />
           <InputItem
+            key="weight"
+            name="weight"
+            value={props.teaData.weight_left && props.teaData.weight_left + "g - " + cropToNoZeroes(props.teaData.weight_left / 28.35, 2) + "oz"}
+            handleClick={handleClick}
+          />
+          <InputItem
             key="price"
             name="price"
             value={props.teaData.price && props.teaData.price + "/g - " + cropToNoZeroes(props.teaData.price * 28.35, 1) + "/oz"}
             handleClick={handleClick}
             noTitle={true}
-          />
-          <InputItem
-            key="weight"
-            name="weight"
-            value={props.teaData.weight_left && props.teaData.weight_left + "g - " + cropToNoZeroes(props.teaData.weight_left / 28.35, 2) + "oz"}
-            handleClick={handleClick}
           />
         </List>
         <FormLabel className={formListClasses.formLabel}>

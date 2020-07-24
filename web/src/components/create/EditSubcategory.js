@@ -17,7 +17,7 @@ import { ArrowBack } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
-import { getSubcategoryName } from "../../services/ParsingService";
+import {brewingTimesToSeconds, getSubcategoryName} from '../../services/ParsingService';
 
 import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
 
@@ -63,15 +63,30 @@ export default function EditSubcategory(props) {
     );
   }, [subcategories]);
 
+  function defineTeaData(subcategory){
+    let data = {
+      ...props.teaData,
+      subcategory: { name: subcategory.name },
+      category: subcategory.category,
+    }
+    if (subcategory.western_brewing)
+      data = {
+      ...data,
+        western_brewing: brewingTimesToSeconds(subcategory.western_brewing),
+      }
+    if (subcategory.gongfu_brewing)
+      data = {
+      ...data,
+        gongfu_brewing: brewingTimesToSeconds(subcategory.gongfu_brewing),
+      }
+    return data
+  }
+
   function handleListSelect(event) {
     const item = Object.entries(subcategories).find(
       (entry) => getSubcategoryName(entry[1]) === event.currentTarget.id
     );
-    props.setTeaData({
-      ...props.teaData,
-      [props.field]: { name: item[1].name },
-      category: item[1].category,
-    });
+    props.setTeaData(defineTeaData(item[1]));
     props.handleBackToLayout();
   }
 
@@ -81,10 +96,7 @@ export default function EditSubcategory(props) {
         (entry) => getSubcategoryName(entry[1]) === value
       );
       if (item)
-        props.setTeaData({
-          ...props.teaData,
-          [props.field]: { name: item[1].name, category: item[1].category },
-        });
+        props.setTeaData(defineTeaData(item[1]));
       else
         props.setTeaData({ ...props.teaData, [props.field]: { name: value } });
       props.handleBackToLayout();
@@ -126,7 +138,7 @@ export default function EditSubcategory(props) {
           selectOnFocus
           clearOnBlur
           handleHomeEndKeys
-          id="free-solo-with-text-demo"
+          id="subcategory-autocomplete"
           options={options}
           getOptionLabel={(option) => {
             // Value selected with enter, right from the input
@@ -186,6 +198,7 @@ export default function EditSubcategory(props) {
                   className={formListClasses.listItem}
                   key={option}
                   id={option}
+                  aria-label={option}
                   onClick={handleListSelect}
                 >
                   <Box className={formListClasses.listItemBox}>

@@ -57,14 +57,14 @@ export default function EditYear(props) {
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <IconButton
             onClick={props.handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
-            aria-label="menu"
+            aria-label="back"
           >
             <ArrowBack />
           </IconButton>

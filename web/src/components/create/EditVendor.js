@@ -123,7 +123,7 @@ export default function EditVendor(props) {
           selectOnFocus
           clearOnBlur
           handleHomeEndKeys
-          id="free-solo-with-text-demo"
+          id="vendor-autocomplete"
           options={options}
           getOptionLabel={(option) => {
             // Value selected with enter, right from the input
