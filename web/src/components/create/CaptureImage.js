@@ -99,7 +99,7 @@ export default function CaptureImage(props) {
                 className={classes.control}
                 onClick={replay}
                 color="inherit"
-                aria-label="capture"
+                aria-label="recapture"
               >
                 <Replay fontSize='large'/>
               </IconButton>
@@ -107,7 +107,7 @@ export default function CaptureImage(props) {
                 className={classes.control}
                 onClick={props.handleNext}
                 color="inherit"
-                aria-label="capture"
+                aria-label="done"
               >
                 <Done />
               </IconButton>

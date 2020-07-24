@@ -58,14 +58,14 @@ export default function EditText(props) {
             edge="start"
             className={classes.menuButton}
             color="inherit"
-            aria-label="menu"
+            aria-label="back"
           >
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
             Add {props.field}
           </Typography>
-          <Button color="inherit" disabled={!text} onClick={handleAdd}>
+          <Button color="inherit" disabled={!text} onClick={handleAdd} aria-label="add">
             ADD
           </Button>
         </Toolbar>
@@ -82,6 +82,7 @@ export default function EditText(props) {
           autoFocus
           fullWidth
           defaultValue={text}
+          aria-label="name input"
         />
       </Box>
       <Box className={classes.counter}>

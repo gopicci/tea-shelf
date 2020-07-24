@@ -28,6 +28,7 @@ export default function InputItem({ name, value, handleClick, noTitle=false }) {
       className={formListClasses.listItem}
       id={name}
       onClick={handleClick}
+      aria-label={name}
     >
       <Box className={formListClasses.listItemBox}>
         <Box className={classes.nameBox}>

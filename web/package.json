@@ -11,6 +11,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "autosuggest-highlight": "^3.1.1",
+    "cypress": "^4.11.0",
     "fontsource-roboto": "^2.1.4",
     "formik": "^2.1.4",
     "himalaya": "^1.1.0",
@@ -19,7 +20,8 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "react-webcam": "^5.2.0",
-    "throttle": "^1.0.3"
+    "throttle": "^1.0.3",
+    "whatwg-fetch": "^3.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -14,6 +14,8 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 
+import {APIRequest} from '../services/AuthService';
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -52,11 +54,7 @@ export default function Login() {
 
   const onSubmit = async (values, actions) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API}/login/`, {
-        method: "post",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({email: values.email, password: values.password}),
-      });
+      const response = await APIRequest("/login/", "POST", JSON.stringify({email: values.email, password: values.password}))
 
       const data = await response.json()
 

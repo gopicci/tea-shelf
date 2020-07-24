@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from "react";
 import {
   AppBar,
   Box,
@@ -10,10 +10,9 @@ import { ArrowBack } from "@material-ui/icons";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-
 import CheckboxList from "../generics/CheckboxList";
-
-import {CategoriesState} from '../statecontainers/CategoriesContext';
+import {brewingTimesToSeconds} from '../../services/ParsingService';
+import { CategoriesState } from "../statecontainers/CategoriesContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,10 +46,13 @@ export default function EditCategory(props) {
   function handleChange(event) {
     for (const entry of Object.entries(categories))
       if (entry[1].name.toLowerCase() === event.target.name.toLowerCase())
+
         props.setTeaData({
           ...props.teaData,
           [props.field]: entry[1].id,
           subcategory: null,
+          gongfu_brewing: brewingTimesToSeconds(entry[1].gongfu_brewing),
+          western_brewing: brewingTimesToSeconds(entry[1].western_brewing),
         });
     props.handleBackToLayout();
   }
@@ -64,7 +66,7 @@ export default function EditCategory(props) {
             edge="start"
             className={classes.menuButton}
             color="inherit"
-            aria-label="menu"
+            aria-label="back"
           >
             <ArrowBack />
           </IconButton>
@@ -73,20 +75,19 @@ export default function EditCategory(props) {
           </Typography>
         </Toolbar>
       </AppBar>
-      {categories &&
+      {categories && (
         <CheckboxList
           label=""
-          list={
-            Object.entries(categories)
-            .map(entry => entry[1].name)
-              .reduce((obj, item) => {
-                obj[item.toLowerCase()] = false;
-                return obj;
-                }, {})
-          }
+          list={Object.entries(categories)
+            .map((entry) => entry[1].name)
+            .reduce((obj, item) => {
+              obj[item.toLowerCase()] = false;
+              return obj;
+            }, {})}
           handleChange={(e) => handleChange(e)}
-          reverse={props.field === 'year'}
-        />}
+          reverse={props.field === "year"}
+        />
+      )}
     </Box>
   );
 }

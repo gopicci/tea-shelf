@@ -93,7 +93,7 @@ export default function Create({ setRoute }) {
     }
   }
 
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(1);
 
   const handleNext = () => setStep(step + 1);
 

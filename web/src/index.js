@@ -6,8 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'fontsource-roboto';
 
-import {getUser} from './services/AuthService';
-
+import "whatwg-fetch"; // disable fetch for cypress support
 
 
 ReactDOM.render(

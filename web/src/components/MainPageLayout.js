@@ -46,7 +46,7 @@ export default function MainPageLayout({setRoute}) {
             <FilterAccordion />
             <GridLayout />
           </Box>
-        <Fab className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
+        <Fab aria-label="add tea" className={classes.addButton} onClick={handleCreate}><CameraAlt /></Fab>
       </Box>
     </>
   );
