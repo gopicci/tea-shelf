@@ -4,7 +4,6 @@ import localforage from "localforage";
 import CaptureImage from "./create/CaptureImage";
 import InputRouter from "./create/InputRouter";
 import { APIRequest } from "../services/AuthService";
-import { ImageDataToFile } from "../services/ImageService";
 
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
@@ -12,7 +11,7 @@ import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 export default function Create({ setRoute }) {
   const [imageData, setImageData] = useState(null);
 
-  const [teaData, setTeaData] = useState({
+  const initialState = {
     image: null,
     name: "",
     category: null,
@@ -29,7 +28,9 @@ export default function Create({ setRoute }) {
     weight_consumed: null,
     rating: null,
     notes: "",
-  });
+  }
+
+  const [teaData, setTeaData] = useState(initialState);
 
   useEffect(() => {
     console.log(teaData);
@@ -100,6 +101,7 @@ export default function Create({ setRoute }) {
   const handlePrevious = () => setStep(step - 1);
 
   const handleClose = () => {
+    setTeaData(initialState);
     setStep(1);
     setRoute("MAIN");
   };

@@ -44,6 +44,7 @@ export default function EditCategory(props) {
   const categories = useContext(CategoriesState);
 
   function handleChange(event) {
+    console.log(categories)
     for (const entry of Object.entries(categories))
       if (entry[1].name.toLowerCase() === event.target.name.toLowerCase())
 

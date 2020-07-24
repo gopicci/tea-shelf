@@ -111,6 +111,7 @@ export const APIRequest = async (
       }
     } else {
       // Request not ok but not for invalid token
+      console.log(await res.json())
       throw Error(res.statusText);
     }
   }

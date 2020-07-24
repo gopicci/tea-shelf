@@ -25,13 +25,14 @@ export function cropToNoZeroes(input, crop) {
 }
 
 export function brewingTimesToSeconds(brewing) {
+  let newBrewing = {...brewing}
   if (brewing.initial) {
     const a = String(brewing.initial).split(":");
-    brewing.initial = (+a[0] * 3600 + +a[1] * 60 + +a[2]).toString();
+    newBrewing.initial = (+a[0] * 3600 + +a[1] * 60 + +a[2]).toString();
   }
   if (brewing.increments) {
     const b = String(brewing.increments).split(":");
-    brewing.increments = (+b[0] * 3600 + +b[1] * 60 + +b[2]).toString();
+    newBrewing.increments = (+b[0] * 3600 + +b[1] * 60 + +b[2]).toString();
   }
-  return brewing;
+  return newBrewing;
 }
