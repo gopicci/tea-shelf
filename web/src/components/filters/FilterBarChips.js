@@ -1,38 +1,44 @@
-import React, {useContext} from 'react';
-import { Chip } from '@material-ui/core';
-import {FilterDispatch, FilterState} from '../statecontainers/FilterContext';
-
+import React, { useContext } from "react";
+import { Chip } from "@material-ui/core";
+import { FilterDispatch, FilterState } from "../statecontainers/FilterContext";
 
 export default function FilterBarChips() {
-  const state = useContext(FilterState)
-  const dispatch = useContext(FilterDispatch)
+  /**
+   * Defines chips components for mobile filter bar based on filters state.
+   */
+
+  const state = useContext(FilterState);
+  const dispatch = useContext(FilterDispatch);
 
   const handleDelete = (event, entry, item) => {
     dispatch({
       type: "CHECK_FILTER",
-      data: { entry: entry, item: item }
+      data: { entry: entry, item: item },
     });
   };
 
   return (
     <>
-      {
-        Object.entries(state.filters).map(([entry, list]) => (
+      {Object.entries(state.filters).map(
+        ([entry, list]) =>
           list &&
-          Object.entries(list).map(([item, checked]) => (
-            item &&
-            checked &&
-             <Chip
-                key={item}
-                name={item}
-                label={item}
-                onClick={e => { e.stopPropagation() }}
-                onDelete={e => handleDelete(e, entry, item)}
-                size='small'
-              />
-          ))
-        ))
-      }
+          Object.entries(list).map(
+            ([item, checked]) =>
+              item &&
+              checked && (
+                <Chip
+                  key={item}
+                  name={item}
+                  label={item}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onDelete={(e) => handleDelete(e, entry, item)}
+                  size="small"
+                />
+              )
+          )
+      )}
     </>
   );
 }

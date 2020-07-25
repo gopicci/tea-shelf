@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+
 import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
@@ -40,110 +41,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function InputLayout(props) {
+export default function InputLayout({
+  teaData,
+  handleCreate,
+  handleClose,
+  handlePrevious,
+  setEditRoute,
+}) {
+  /**
+   * Defines mobile tea creation input stage layout.
+   *
+   * @param teaData {json} Input tea data state
+   * @param handleCreate {function} Handle tea posting process
+   * @param handleClose {function} Cancel process and reroute to main route
+   * @param handlePrevious {function} Go back to previous stage (captureImage)
+   * @param setEditRoute {function} Reroutes to input item
+   */
+
   const classes = useStyles();
   const formListClasses = formListStyles();
 
   const categories = useContext(CategoriesState);
 
   function handleAdd() {
-    props.handleCreate();
-    props.handleClose();
+    handleCreate();
+    handleClose();
   }
 
   function handleClick(event) {
-    switch (event.currentTarget.id) {
-      case "name":
-        props.setEditRoute({
-          route: "EDIT_TEXT",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "category":
-        props.setEditRoute({
-          route: "EDIT_CATEGORY",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "subcategory":
-        props.setEditRoute({
-          route: "EDIT_SUBCATEGORY",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "year":
-        props.setEditRoute({
-          route: "EDIT_LIST",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "origin":
-        props.setEditRoute({
-          route: "EDIT_ORIGIN",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "vendor":
-        props.setEditRoute({
-          route: "EDIT_VENDOR",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "gongfu_temperature":
-      case "western_temperature":
-        props.setEditRoute({
-          route: "EDIT_TEMPERATURE",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "gongfu_weight":
-        props.setEditRoute({
-          route: "EDIT_WEIGHT_LIST",
-          field: event.currentTarget.id,
-          data: { max: 10, increment: 0.5 },
-        });
-        break;
-      case "western_weight":
-        props.setEditRoute({
-          route: "EDIT_WEIGHT_LIST",
-          field: event.currentTarget.id,
-          data: { max: 2, increment: 0.1 },
-        });
-        break;
-      case "gongfu_initial":
-      case "gongfu_increments":
-      case "western_initial":
-      case "western_increments":
-        props.setEditRoute({
-          route: "EDIT_TIME",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "weight":
-        props.setEditRoute({
-          route: "EDIT_WEIGHT_INPUT",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      case "price":
-        props.setEditRoute({
-          route: "EDIT_PRICE",
-          field: event.currentTarget.id,
-          data: null,
-        });
-        break;
-      default:
-        return event;
-    }
+    setEditRoute(event.currentTarget.id);
   }
 
   return (
@@ -151,7 +77,7 @@ export default function InputLayout(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={props.handlePrevious}
+            onClick={handlePrevious}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -164,7 +90,7 @@ export default function InputLayout(props) {
           </Typography>
           <Button
             color="inherit"
-            disabled={!props.teaData.name || !props.teaData.category}
+            disabled={!teaData.name || !teaData.category}
             onClick={handleAdd}
             aria-label="add"
           >
@@ -182,7 +108,7 @@ export default function InputLayout(props) {
           <InputItem
             key="name"
             name="name"
-            value={props.teaData.name}
+            value={teaData.name}
             handleClick={handleClick}
           />
           <InputItem
@@ -190,9 +116,9 @@ export default function InputLayout(props) {
             name="category"
             value={
               categories &&
-              props.teaData.category &&
+              teaData.category &&
               Object.entries(categories)
-                .find((entry) => entry[1].id === props.teaData.category)[1]
+                .find((entry) => entry[1].id === teaData.category)[1]
                 .name.toLowerCase()
             }
             handleClick={handleClick}
@@ -208,40 +134,39 @@ export default function InputLayout(props) {
             key="subcategory"
             name="subcategory"
             value={
-              props.teaData.subcategory &&
-              getSubcategoryName(props.teaData.subcategory)
+              teaData.subcategory && getSubcategoryName(teaData.subcategory)
             }
             handleClick={handleClick}
           />
           <InputItem
             key="year"
             name="year"
-            value={props.teaData.year}
+            value={teaData.year}
             handleClick={handleClick}
           />
           <InputItem
             key="origin"
             name="origin"
             value={
-              props.teaData.origin &&
-              getOriginName(props.teaData.origin).replace("&#39;", "'")
+              teaData.origin &&
+              getOriginName(teaData.origin).replace("&#39;", "'")
             }
             handleClick={handleClick}
           />
           <InputItem
             key="vendor"
             name="vendor"
-            value={props.teaData.vendor && props.teaData.vendor.name}
+            value={teaData.vendor && teaData.vendor.name}
             handleClick={handleClick}
           />
           <InputItem
             key="weight"
             name="weight"
             value={
-              props.teaData.weight_left &&
-              props.teaData.weight_left +
+              teaData.weight_left &&
+              teaData.weight_left +
                 "g - " +
-                cropToNoZeroes(props.teaData.weight_left / 28.35, 2) +
+                cropToNoZeroes(teaData.weight_left / 28.35, 2) +
                 "oz"
             }
             handleClick={handleClick}
@@ -250,10 +175,10 @@ export default function InputLayout(props) {
             key="price"
             name="price"
             value={
-              props.teaData.price &&
-              props.teaData.price +
+              teaData.price &&
+              teaData.price +
                 "/g - " +
-                cropToNoZeroes(props.teaData.price * 28.35, 1) +
+                cropToNoZeroes(teaData.price * 28.35, 1) +
                 "/oz"
             }
             handleClick={handleClick}
@@ -270,13 +195,13 @@ export default function InputLayout(props) {
             key="gongfu"
             name="gongfu"
             handleClick={handleClick}
-            {...props}
+            teaData={teaData}
           />
           <InputBrewing
             key="western"
             name="western"
             handleClick={handleClick}
-            {...props}
+            teaData={teaData}
           />
         </List>
       </FormGroup>

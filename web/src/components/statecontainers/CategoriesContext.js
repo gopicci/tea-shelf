@@ -1,13 +1,17 @@
 import React, { createContext, useEffect, useState } from "react";
-import { APIRequest } from "../../services/AuthService";
-
 import localforage from "localforage";
 
+import { APIRequest } from "../../services/AuthService";
 import { logout } from "../../services/AuthService";
 
 export const CategoriesState = createContext(null);
 
 export default function CategoriesContext(props) {
+  /**
+   * Categories state provider. Categories are central to a lot of the app
+   * functions, they get loaded cache first otherwise user gets logged out.
+   */
+
   const [state, setState] = useState(null);
 
   useEffect(() => {

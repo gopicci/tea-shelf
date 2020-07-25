@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   InputAdornment,
   TextField,
@@ -17,7 +17,10 @@ import { ArrowBack } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
-import {brewingTimesToSeconds, getSubcategoryName} from '../../services/ParsingService';
+import {
+  brewingTimesToSeconds,
+  getSubcategoryName,
+} from "../../services/ParsingService";
 
 import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
 
@@ -45,79 +48,78 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditSubcategory(props) {
+export default function EditSubcategory({
+  teaData,
+  setTeaData,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation subcategory input component. Shows a list and autocomplete from
+   * central subcategories state, with option to add extra.
+   * Updates category entry if different than ones in matching subcategory.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
   const formListClasses = formListStyles();
 
   const subcategories = useContext(SubcategoriesState);
 
-  const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
-  const [options, setOptions] = useState(null);
 
-  useEffect(() => {
-    setOptions(
-      Object.entries(subcategories).map((entry) => {
-        return getSubcategoryName(entry[1]);
-      })
-    );
-  }, [subcategories]);
+  const options = Object.entries(subcategories).map((entry) => {
+    return getSubcategoryName(entry[1]);
+  });
 
-  function defineTeaData(subcategory){
-    let data = {
-      ...props.teaData,
-      subcategory: { name: subcategory.name },
-      category: subcategory.category,
-    }
-    if (subcategory.western_brewing)
-      data = {
-      ...data,
-        western_brewing: brewingTimesToSeconds(subcategory.western_brewing),
-      }
-    if (subcategory.gongfu_brewing)
-      data = {
-      ...data,
-        gongfu_brewing: brewingTimesToSeconds(subcategory.gongfu_brewing),
-      }
-    return data
+  function updateSubcategory(name) {
+    // Look for a match in subcategories central state
+    const match = Object.entries(subcategories).find((entry) => {
+      const lcName = name.toLowerCase();
+      if (getSubcategoryName(entry[1]).toLowerCase() === lcName) return true;
+      if (entry[1].name.toLowerCase() === lcName) return true;
+      return entry[1].translated_name.toLowerCase() === lcName;
+    });
+    if (match) {
+      // Match found, update also category
+      let data = {
+        ...teaData,
+        subcategory: match[1],
+        category: match[1].category,
+      };
+      if (match[1].western_brewing)
+        data = {
+          ...data,
+          western_brewing: brewingTimesToSeconds(match[1].western_brewing),
+        };
+      if (match[1].gongfu_brewing)
+        data = {
+          ...data,
+          gongfu_brewing: brewingTimesToSeconds(match[1].gongfu_brewing),
+        };
+      setTeaData(data);
+    } else setTeaData({ ...teaData, subcategory: { name: name } });
+    handleBackToLayout();
   }
 
-  function handleListSelect(event) {
-    const item = Object.entries(subcategories).find(
-      (entry) => getSubcategoryName(entry[1]) === event.currentTarget.id
-    );
-    props.setTeaData(defineTeaData(item[1]));
-    props.handleBackToLayout();
-  }
-
-  useEffect(() => {
-    if (value) {
-      const item = Object.entries(subcategories).find(
-        (entry) => getSubcategoryName(entry[1]) === value
-      );
-      if (item)
-        props.setTeaData(defineTeaData(item[1]));
-      else
-        props.setTeaData({ ...props.teaData, [props.field]: { name: value } });
-      props.handleBackToLayout();
+  function handleOnChange(event, newValue) {
+    if (typeof newValue === "string") {
+      updateSubcategory(newValue);
+    } else if (newValue && newValue.inputValue) {
+      // Create a new value from the user input
+      updateSubcategory(newValue.inputValue);
+    } else {
+      updateSubcategory(newValue);
     }
-  }, [value]);
+  }
 
   return (
     <Box className={classes.root}>
       {options && (
         <Autocomplete
-          value={value}
-          onChange={(event, newValue) => {
-            if (typeof newValue === "string") {
-              setValue(newValue);
-            } else if (newValue && newValue.inputValue) {
-              // Create a new value from the user input
-              setValue(newValue.inputValue);
-            } else {
-              setValue(newValue);
-            }
-          }}
+          onChange={handleOnChange}
           onInputChange={(event, newInputValue) => {
             setInputValue(newInputValue);
           }}
@@ -168,7 +170,7 @@ export default function EditSubcategory(props) {
                 startAdornment: (
                   <InputAdornment position="start">
                     <IconButton
-                      onClick={props.handleBackToLayout}
+                      onClick={handleBackToLayout}
                       edge="start"
                       className={classes.menuButton}
                       color="inherit"
@@ -199,7 +201,7 @@ export default function EditSubcategory(props) {
                   key={option}
                   id={option}
                   aria-label={option}
-                  onClick={handleListSelect}
+                  onClick={(e) => updateSubcategory(e.currentTarget.id)}
                 >
                   <Box className={formListClasses.listItemBox}>
                     <Typography variant={"body2"}>{option}</Typography>

@@ -43,11 +43,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditPrice(props) {
+export default function EditPrice({
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation price input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
   const [textPrice, setTextPrice] = useState("");
-  const [textWeight, setTextWeight] = useState(props.teaData.weight_left ? String(props.teaData.weight_left) : "1");
+  const [textWeight, setTextWeight] = useState(
+    teaData.weight_left ? String(teaData.weight_left) : "1"
+  );
   const [inputType, setInputType] = useState("grams");
 
   function handlePriceChange(event) {
@@ -61,17 +77,17 @@ export default function EditPrice(props) {
   }
 
   function handleRadioChange(event) {
-    if (event.target.value !== inputType){
+    // Update weight from C to F on radio select
+    if (event.target.value !== inputType) {
       setInputType(event.target.value);
       if (event.target.value === "grams")
         setTextWeight(cropToNoZeroes(parseFloat(textWeight) * 28.35, 2));
-      else
-        setTextWeight(cropToNoZeroes(parseFloat(textWeight) / 28.35, 2));
+      else setTextWeight(cropToNoZeroes(parseFloat(textWeight) / 28.35, 2));
     }
   }
 
   function handleAdd() {
-
+    // Add weight_left if it wasn't there yet
     let grams = parseFloat(textWeight);
 
     if (inputType === "ounces") grams = grams * 28.35;
@@ -79,19 +95,19 @@ export default function EditPrice(props) {
     const price = parseFloat(textPrice) / grams;
 
     if (!isNaN(grams) && !isNaN(price))
-      if (!props.teaData.weight_left && grams > 1)
-        props.setTeaData({
-          ...props.teaData,
-          [props.field]: cropToNoZeroes(price, 2),
+      if (!teaData.weight_left && grams > 1)
+        setTeaData({
+          ...teaData,
+          [field]: cropToNoZeroes(price, 2),
           weight_left: cropToNoZeroes(grams, 1),
         });
       else
-        props.setTeaData({
-          ...props.teaData,
-          [props.field]: cropToNoZeroes(price, 2),
+        setTeaData({
+          ...teaData,
+          [field]: cropToNoZeroes(price, 2),
         });
 
-    props.handleBackToLayout();
+    handleBackToLayout();
   }
 
   const handleFocus = (event) => event.target.select();
@@ -101,7 +117,7 @@ export default function EditPrice(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -110,7 +126,7 @@ export default function EditPrice(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Add {props.field}
+            Add {field}
           </Typography>
           <Button
             color="inherit"

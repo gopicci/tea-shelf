@@ -54,7 +54,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditOriginOnline(props) {
+export default function EditOriginOnline({
+  teaData,
+  setTeaData,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation online origin input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
   const [value, setValue] = useState(null);
@@ -93,17 +105,13 @@ export default function EditOriginOnline(props) {
     }
 
     if (inputValue === "") {
-      setOptions(value ? [value] : []);
+      setOptions([]);
       return undefined;
     }
 
     fetch({ input: inputValue, types: ["(regions)"] }, (results) => {
       if (active) {
         let newOptions = [];
-
-        if (value) {
-          newOptions = [value];
-        }
 
         if (results) {
           newOptions = [...newOptions, ...results];
@@ -118,19 +126,19 @@ export default function EditOriginOnline(props) {
     };
   }, [inputValue, fetch]);
 
-  useEffect(() => {
+  function updateOrigin(newValue) {
     if (!placesService.current && window.google) {
       placesService.current = new window.google.maps.places.PlacesService(
         window.document.createElement("div")
       );
     }
-    if (!placesService.current || !value) {
+    if (!placesService.current || !newValue) {
       return undefined;
     }
 
     placesService.current.getDetails(
       {
-        placeId: value.place_id,
+        placeId: newValue.place_id,
         fields: ["adr_address"],
       },
       function (place, status) {
@@ -147,12 +155,12 @@ export default function EditOriginOnline(props) {
                   entry[1].children[0].content;
             }
 
-          props.setTeaData({ ...props.teaData, origin: origin });
-          props.handleBackToLayout();
+          setTeaData({ ...teaData, origin: origin });
+          handleBackToLayout();
         }
       }
     );
-  }, [value]);
+  }
 
   return (
     <Box className={classes.root}>
@@ -171,6 +179,7 @@ export default function EditOriginOnline(props) {
         onChange={(event, newValue) => {
           setOptions(newValue ? [newValue, ...options] : options);
           setValue(newValue);
+          updateOrigin(newValue);
         }}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
@@ -189,7 +198,7 @@ export default function EditOriginOnline(props) {
               startAdornment: (
                 <InputAdornment position="start">
                   <IconButton
-                    onClick={props.handleBackToLayout}
+                    onClick={handleBackToLayout}
                     edge="start"
                     className={classes.menuButton}
                     color="inherit"

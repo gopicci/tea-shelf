@@ -8,10 +8,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
-
 import { makeStyles } from "@material-ui/core/styles";
 
 import InputItem from "./InputItem";
+
 import { formListStyles } from "../../style/FormListStyles";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,34 +38,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditWeightList(props) {
+export default function EditWeightList({
+  data,
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation weight list input component.
+   *
+   * @param data {{max: int , increments: int}} Weight list data
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
   const formListClasses = formListStyles();
 
-  const crop = props.data.increment < 1 ? 1 : 0;
-  const list = [...Array(props.data.max / props.data.increment + 1)]
-    .map((_, b) => String((b * props.data.increment).toFixed(crop)))
+  const crop = data.increment < 1 ? 1 : 0;
+  const list = [...Array(data.max / data.increment + 1)]
+    .map((_, b) => String((b * data.increment).toFixed(crop)))
     .reverse();
 
   function handleClick(weight) {
-    if (props.field === "gongfu_weight")
-      props.setTeaData({
-        ...props.teaData,
+    if (field === "gongfu_weight")
+      setTeaData({
+        ...teaData,
         gongfu_brewing: {
-          ...props.teaData.gongfu_brewing,
+          ...teaData.gongfu_brewing,
           weight: parseFloat(weight),
         },
       });
-    else if (props.field === "western_weight")
-      props.setTeaData({
-        ...props.teaData,
+    else if (field === "western_weight")
+      setTeaData({
+        ...teaData,
         western_brewing: {
-          ...props.teaData.western_brewing,
+          ...teaData.western_brewing,
           weight: parseFloat(weight),
         },
       });
-    else props.setTeaData({ ...props.teaData, [props.field]: weight });
-    props.handleBackToLayout();
+    else setTeaData({ ...teaData, [field]: weight });
+    handleBackToLayout();
   }
 
   return (
@@ -73,7 +89,7 @@ export default function EditWeightList(props) {
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -82,7 +98,9 @@ export default function EditWeightList(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Select weight {(props.field === "gongfu_weight" || props.field === "western_weight") && "per 100ml"}
+            Select weight{" "}
+            {(field === "gongfu_weight" || field === "western_weight") &&
+              "per 100ml"}
           </Typography>
         </Toolbar>
       </AppBar>

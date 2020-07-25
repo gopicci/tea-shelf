@@ -35,16 +35,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditText(props) {
+export default function EditText({
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation text input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
-  const [text, setText] = useState(props.teaData[props.field]);
+  const [text, setText] = useState(teaData[field]);
 
   const handleChange = (event) => setText(event.target.value);
 
   function handleAdd() {
-    props.setTeaData({ ...props.teaData, [props.field]: text.replace(/\n/g, " ") });
-    props.handleBackToLayout();
+    setTeaData({ ...teaData, [field]: text.replace(/\n/g, " ") });
+    handleBackToLayout();
   }
 
   const handleFocus = (event) => event.target.select();
@@ -54,7 +68,7 @@ export default function EditText(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -63,9 +77,14 @@ export default function EditText(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Add {props.field}
+            Add {field}
           </Typography>
-          <Button color="inherit" disabled={!text} onClick={handleAdd} aria-label="add">
+          <Button
+            color="inherit"
+            disabled={!text}
+            onClick={handleAdd}
+            aria-label="add"
+          >
             ADD
           </Button>
         </Toolbar>
@@ -77,7 +96,7 @@ export default function EditText(props) {
           id="standard-multiline"
           rows={4}
           rowsMax={Infinity}
-          inputProps={{maxLength: 50}}
+          inputProps={{ maxLength: 50 }}
           multiline
           autoFocus
           fullWidth

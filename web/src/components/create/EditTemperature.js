@@ -39,30 +39,44 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditTemperature(props) {
+export default function EditTemperature({
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation brewing temperature input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
   const formListClasses = formListStyles();
 
   const degrees = [...Array(100)].map((_, b) => String(b)).reverse();
 
   function handleClick(degree) {
-    if (props.field === "gongfu_temperature")
-      props.setTeaData({
-        ...props.teaData,
+    if (field === "gongfu_temperature")
+      setTeaData({
+        ...teaData,
         gongfu_brewing: {
-          ...props.teaData.gongfu_brewing,
+          ...teaData.gongfu_brewing,
           temperature: degree,
         },
       });
-    if (props.field === "western_temperature")
-      props.setTeaData({
-        ...props.teaData,
+    if (field === "western_temperature")
+      setTeaData({
+        ...teaData,
         western_brewing: {
-          ...props.teaData.western_brewing,
+          ...teaData.western_brewing,
           temperature: degree,
         },
       });
-    props.handleBackToLayout();
+    handleBackToLayout();
   }
 
   return (
@@ -70,7 +84,7 @@ export default function EditTemperature(props) {
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"

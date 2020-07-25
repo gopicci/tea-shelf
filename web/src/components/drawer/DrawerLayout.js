@@ -35,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DrawerLayout() {
+  /**
+   * Desktop left side drawer component.
+   */
+
   const classes = useStyles();
 
   return (

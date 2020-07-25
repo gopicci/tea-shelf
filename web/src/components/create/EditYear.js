@@ -37,7 +37,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditYear(props) {
+export default function EditYear({
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation year list input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
   const length = 60;
@@ -51,8 +65,8 @@ export default function EditYear(props) {
   }, {});
 
   function handleChange(event) {
-    props.setTeaData({ ...props.teaData, [props.field]: event.target.name });
-    props.handleBackToLayout();
+    setTeaData({ ...teaData, [field]: event.target.name });
+    handleBackToLayout();
   }
 
   return (
@@ -60,7 +74,7 @@ export default function EditYear(props) {
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -69,7 +83,7 @@ export default function EditYear(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Select {props.field}
+            Select {field}
           </Typography>
         </Toolbar>
       </AppBar>

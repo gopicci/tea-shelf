@@ -1,13 +1,16 @@
 import React, { createContext, useEffect, useReducer } from "react";
-import { APIRequest } from "../../services/AuthService";
-
 import localforage from "localforage";
+import { APIRequest } from "../../services/AuthService";
 import { genericReducer } from "../../services/SyncService";
 
 export const VendorsState = createContext(null);
 export const VendorsDispatch = createContext(null);
 
 export default function VendorsContext(props) {
+  /**
+   * Vendors state and dispatch provider.
+   */
+
   const [state, dispatch] = useReducer(genericReducer, null);
 
   useEffect(() => {

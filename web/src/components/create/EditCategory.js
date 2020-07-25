@@ -11,7 +11,7 @@ import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 import CheckboxList from "../generics/CheckboxList";
-import {brewingTimesToSeconds} from '../../services/ParsingService';
+import { brewingTimesToSeconds } from "../../services/ParsingService";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,24 +38,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditCategory(props) {
+export default function EditCategory({
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation category list input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
 
   function handleChange(event) {
-    console.log(categories)
+    console.log(categories);
     for (const entry of Object.entries(categories))
       if (entry[1].name.toLowerCase() === event.target.name.toLowerCase())
-
-        props.setTeaData({
-          ...props.teaData,
-          [props.field]: entry[1].id,
+        setTeaData({
+          ...teaData,
+          [field]: entry[1].id,
           subcategory: null,
           gongfu_brewing: brewingTimesToSeconds(entry[1].gongfu_brewing),
           western_brewing: brewingTimesToSeconds(entry[1].western_brewing),
         });
-    props.handleBackToLayout();
+    handleBackToLayout();
   }
 
   return (
@@ -63,7 +76,7 @@ export default function EditCategory(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -72,7 +85,7 @@ export default function EditCategory(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Select {props.field}
+            Select {field}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -86,7 +99,7 @@ export default function EditCategory(props) {
               return obj;
             }, {})}
           handleChange={(e) => handleChange(e)}
-          reverse={props.field === "year"}
+          reverse={field === "year"}
         />
       )}
     </Box>

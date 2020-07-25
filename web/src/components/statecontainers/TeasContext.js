@@ -1,27 +1,18 @@
-import React, {
-  createContext,
-  useEffect,
-  useReducer,
-} from "react";
-
+import React, { createContext, useEffect, useReducer } from "react";
 import localforage from "localforage";
-import { getOfflineTeas } from '../../services/SyncService';
+import { getOfflineTeas } from "../../services/SyncService";
 import { APIRequest } from "../../services/AuthService";
-import { genericReducer } from '../../services/SyncService';
-
+import { genericReducer } from "../../services/SyncService";
 
 export const TeasState = createContext(null);
 export const TeaDispatch = createContext(null);
 
 export default function TeasContext(props) {
   /**
-   * Defines overall tea entries context.
-   *
+   * Teas state and dispatch provider.
    */
 
   const [state, dispatch] = useReducer(genericReducer, null);
-
-
 
   useEffect(() => {
     async function getTeas() {

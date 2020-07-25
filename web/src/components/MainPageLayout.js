@@ -29,6 +29,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MainPageLayout({ setRoute }) {
+  /**
+   * Defines layout for main landing page.
+   * @param setRoute {function} Set main route
+   */
+
   const classes = useStyles();
 
   const handleCreate = () => setRoute("CREATE");

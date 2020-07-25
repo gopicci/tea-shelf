@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useState } from "react";
 import localforage from "localforage";
 
 import CaptureImage from "./create/CaptureImage";
@@ -6,43 +6,49 @@ import InputRouter from "./create/InputRouter";
 import { APIRequest } from "../services/AuthService";
 
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
+import { TeaDispatch } from "./statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
-import { VendorsDispatch } from './statecontainers/VendorsContext';
+import { VendorsDispatch } from "./statecontainers/VendorsContext";
+
+// Defines tea data structure in API format
+const initialState = {
+  image: null,
+  name: "",
+  category: null,
+  subcategory: null,
+  origin: null,
+  vendor: null,
+  is_archived: false,
+  gongfu_brewing: null,
+  western_brewing: null,
+  year: null,
+  gongfu_preferred: false,
+  price: null,
+  weight_left: null,
+  weight_consumed: null,
+  rating: null,
+  notes: "",
+};
 
 export default function Create({ setRoute }) {
+  /**
+   * Mobile tea entry creation process. Consists of 3 stages:
+   * captureImage -> inputLayout -> handleCreate
+   *
+   * teaData tracks the input state.
+   *
+   * @param setRoute {function} Set main route
+   */
+  const [teaData, setTeaData] = useState(initialState);
   const [imageData, setImageData] = useState(null);
 
-  const initialState = {
-    image: null,
-    name: "",
-    category: null,
-    subcategory: null,
-    origin: null,
-    vendor: null,
-    is_archived: false,
-    gongfu_brewing: null,
-    western_brewing: null,
-    year: null,
-    gongfu_preferred: false,
-    price: null,
-    weight_left: null,
-    weight_consumed: null,
-    rating: null,
-    notes: "",
-  }
-
-  const [teaData, setTeaData] = useState(initialState);
-
-  useEffect(() => {
-    console.log(teaData);
-  }, [teaData]);
-
-
   const snackbarDispatch = useContext(SnackbarDispatch);
+  const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorsDispatch = useContext(VendorsDispatch);
 
   async function handleCreate() {
+    // Handle posting process
 
     let customSubcategory = false;
     let customVendor = false;
@@ -58,8 +64,7 @@ export default function Create({ setRoute }) {
         };
       }
 
-      if (teaData.vendor)
-        if (!teaData.vendor.popularity) customVendor = true;
+      if (teaData.vendor) if (!teaData.vendor.popularity) customVendor = true;
 
       if (teaData.year === "unknown") teaData.year = null;
 
@@ -67,9 +72,13 @@ export default function Create({ setRoute }) {
       console.log(JSON.stringify(teaData));
       const res = await APIRequest("/tea/", "POST", JSON.stringify(teaData));
       console.log("Tea created: ", res);
-      console.log(await res.json());
+      const body = await res.json();
+      console.log(body);
 
       snackbarDispatch({ type: "SUCCESS", data: "Tea successfully created" });
+
+      // Update tea context with newly added
+      teaDispatch({ type: "ADD", data: body });
 
       // If new subcategory was created update cache
       if (customSubcategory) {
@@ -86,7 +95,6 @@ export default function Create({ setRoute }) {
         vendorsDispatch({ type: "SET", data: venGetData });
         await localforage.setItem("vendors", venGetData);
       }
-
     } catch (e) {
       console.error(e);
       if (e.message === "Bad Request") {
@@ -102,6 +110,7 @@ export default function Create({ setRoute }) {
           type: "WARNING",
           data: "Offline mode, tea saved locally",
         });
+        teaDispatch({ type: "ADD", data: teaData });
         console.log("offline teas:", cache);
       }
     }

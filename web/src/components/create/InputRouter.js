@@ -11,52 +11,65 @@ import EditTemperature from "./EditTemperature";
 import EditWeightList from "./EditWeightList";
 import EditWeightInput from "./EditWeightInput";
 import EditTime from "./EditTime";
-import EditPrice from './EditPrice';
+import EditPrice from "./EditPrice";
 
 export default function InputRouter(props) {
-  const [editRoute, setEditRoute] = useState({
-    route: "INPUT_LIST",
-    field: null,
-    data: null,
-  });
+  /**
+   * Defines mobile tea creation input stage routes.
+   */
 
-  const handleBackToLayout = () =>
-    setEditRoute({ route: "INPUT_LIST", field: null, data: null });
+  const [editRoute, setEditRoute] = useState("input_layout");
+
+  function handleBackToLayout() {
+    setEditRoute("input_layout");
+  }
 
   const inputProps = { setEditRoute, handleBackToLayout, ...props };
 
   function renderSwitch(editRoute) {
-    switch (editRoute.route) {
-      case "INPUT_LIST":
+    switch (editRoute) {
+      case "input_layout":
         return <InputLayout {...inputProps} />;
-      case "EDIT_TEXT":
-        return <EditText {...inputProps} field={editRoute.field} />;
-      case "EDIT_CATEGORY":
-        return <EditCategory {...inputProps} field={editRoute.field} />;
-      case "EDIT_LIST":
-        return <EditYear {...inputProps} field={editRoute.field} />;
-      case "EDIT_SUBCATEGORY":
-        return <EditSubcategory {...inputProps} field={editRoute.field} />;
-      case "EDIT_ORIGIN":
-        return <EditOrigin {...inputProps} field={editRoute.field} />;
-      case "EDIT_VENDOR":
-        return <EditVendor {...inputProps} field={editRoute.field} />;
-      case "EDIT_TEMPERATURE":
-        return <EditTemperature {...inputProps} field={editRoute.field} />;
-      case "EDIT_WEIGHT_LIST":
+      case "name":
+        return <EditText {...inputProps} field={editRoute} />;
+      case "category":
+        return <EditCategory {...inputProps} field={editRoute} />;
+      case "subcategory":
+        return <EditSubcategory {...inputProps} field={editRoute} />;
+      case "year":
+        return <EditYear {...inputProps} field={editRoute} />;
+      case "origin":
+        return <EditOrigin {...inputProps} field={editRoute} />;
+      case "vendor":
+        return <EditVendor {...inputProps} field={editRoute} />;
+      case "gongfu_temperature":
+      case "western_temperature":
+        return <EditTemperature {...inputProps} field={editRoute} />;
+      case "gongfu_weight":
         return (
           <EditWeightList
             {...inputProps}
-            field={editRoute.field}
-            data={editRoute.data}
+            field={editRoute}
+            data={{ max: 10, increment: 0.5 }}
           />
         );
-      case "EDIT_WEIGHT_INPUT":
-        return <EditWeightInput {...inputProps} field={editRoute.field} />;
-      case "EDIT_PRICE":
-        return <EditPrice {...inputProps} field={editRoute.field} />;
-      case "EDIT_TIME":
-        return <EditTime {...inputProps} field={editRoute.field} />;
+      case "western_weight":
+        return (
+          <EditWeightList
+            {...inputProps}
+            field={editRoute}
+            data={{ max: 2, increment: 0.1 }}
+          />
+        );
+      case "gongfu_initial":
+      case "gongfu_increments":
+      case "western_initial":
+      case "western_increments":
+        return <EditTime {...inputProps} field={editRoute} />;
+      case "weight":
+        return <EditWeightInput {...inputProps} field={editRoute} />;
+      case "price":
+        return <EditPrice {...inputProps} field={editRoute} />;
       default:
         return <InputLayout {...inputProps} />;
     }

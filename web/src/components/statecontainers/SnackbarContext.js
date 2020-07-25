@@ -23,6 +23,10 @@ const reducer = (state, action) => {
 };
 
 export default function SnackbarContext(props) {
+  /**
+   * Snackbar state and dispatch provider.
+   */
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (

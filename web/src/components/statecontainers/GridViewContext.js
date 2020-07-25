@@ -1,21 +1,23 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer } from "react";
 
+const initialState = true;
 
-const initialState = true
-
-export const GridViewState = createContext(initialState)
+export const GridViewState = createContext(initialState);
 export const GridViewDispatch = createContext(null);
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "SWITCH_VIEW":
-      return !state
+      return !state;
     default:
-      return action
+      return action;
   }
-}
+};
 
 export default function GridViewContext(props) {
+  /**
+   * Grid view switch status state and dispatch provider.
+   */
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -25,7 +27,5 @@ export default function GridViewContext(props) {
         {props.children}
       </GridViewState.Provider>
     </GridViewDispatch.Provider>
-
-  )
-
+  );
 }

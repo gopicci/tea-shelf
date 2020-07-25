@@ -3,19 +3,20 @@ import { ThemeProvider } from "@material-ui/styles";
 
 //import Register from "./components/Register";
 import Login from "./components/Login";
-
 import MainPageLayout from "./components/MainPageLayout";
 import Create from "./components/Create";
-import SortFilter from './components/SortFilter';
-
+import SortFilter from "./components/SortFilter";
+import CustomSnackbar from "./components/snackbar/CustomSnackbar";
+import MainStateContainer from "./components/statecontainers/MainStateContainer";
+import { getUser } from "./services/AuthService";
 import { mainTheme } from "./style/MainTheme";
 import "./App.css";
 
-import MainStateContainer from "./components/statecontainers/MainStateContainer";
-import {getUser} from './services/AuthService';
-import CustomSnackbar from './components/snackbar/CustomSnackbar';
-
 function App() {
+  /**
+   * Main app component. Checks if user is logged in and sets up main routes.
+   * Routes are wrapped in central state provider.
+   */
   const isLoggedIn = getUser();
 
   const [route, setRoute] = useState("MAIN");

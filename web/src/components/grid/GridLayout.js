@@ -8,7 +8,6 @@ import { getSubcategoryName } from "../../services/ParsingService";
 import { TeasState } from "../statecontainers/TeasContext";
 import { FilterState } from "../statecontainers/FilterContext";
 import { GridViewState } from "../statecontainers/GridViewContext";
-
 import { CategoriesState } from "../statecontainers/CategoriesContext";
 import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
 import { VendorsState } from "../statecontainers/VendorsContext";
@@ -51,18 +50,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function GridLayout() {
+  /**
+   * Grid component containing tea cards. Filters tea cards based on
+   * central filter state.
+   *
+   * @param tea {json} Tea instance data in API format
+   * @param gridView {bool} Grid view switch status
+   */
+
   const classes = useStyles();
+
   const categories = useContext(CategoriesState);
   const subcategories = useContext(SubcategoriesState);
   const vendors = useContext(VendorsState);
-
   const filterState = useContext(FilterState);
   const teas = useContext(TeasState);
+  const gridView = useContext(GridViewState);
 
   const [filteredTeas, setFilteredTeas] = useState(teas);
 
   useEffect(() => {
     if (filterState.active > 0)
+      // At least 1 filter entry is checked
       setFilteredTeas(
         teas.filter((tea) => {
           const category = categories.find(
@@ -101,8 +110,6 @@ export default function GridLayout() {
       );
     else setFilteredTeas(teas);
   }, [filterState, categories, subcategories, vendors, teas]);
-
-  const gridView = useContext(GridViewState);
 
   let width = window.innerWidth;
 

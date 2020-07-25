@@ -3,7 +3,10 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { SnackbarState, SnackbarDispatch } from "../statecontainers/SnackbarContext";
+import {
+  SnackbarState,
+  SnackbarDispatch,
+} from "../statecontainers/SnackbarContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,13 +18,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomSnackbar() {
+  /**
+   * Custom center top snackbar component used for major communications.
+   * Relies on central snackbar state and dispatch provider.
+   */
+
   const classes = useStyles();
 
   const state = useContext(SnackbarState);
   const dispatch = useContext(SnackbarDispatch);
 
   function handleClose() {
-    dispatch({type: "RESET"});
+    dispatch({ type: "RESET" });
   }
 
   return (

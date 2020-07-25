@@ -1,4 +1,7 @@
 export const ImageDataToFile = async imageData => {
+  /**
+   * Convert image data into File format.
+   */
   if (!imageData) return Promise.reject();
   else
     return fetch(imageData)
@@ -7,6 +10,9 @@ export const ImageDataToFile = async imageData => {
 };
 
 export const FileToBase64 = file => new Promise((resolve, reject) => {
+  /**
+   * Convert File format image to base64.
+   */
   if (!file) return Promise.reject();
   else {
     const reader = new FileReader();

@@ -1,30 +1,37 @@
-import React, { useContext, useState } from 'react';
-import {Accordion, AccordionSummary, AccordionDetails, AccordionActions, Box, Button, Grid} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext, useState } from "react";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  AccordionActions,
+  Box,
+  Button,
+  Grid,
+} from "@material-ui/core";
+import { ExpandMore } from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles";
 
-import FilterAccordionChips from './FilterAccordionChips';
+import FilterAccordionChips from "./FilterAccordionChips";
+import FilterList from "./FilterList";
 
-import {FilterDispatch, FilterState} from '../statecontainers/FilterContext';
-import FilterList from './FilterList';
-
+import { FilterDispatch, FilterState } from "../statecontainers/FilterContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
+    display: "none",
+    [theme.breakpoints.up("sm")]: {
+      display: "block",
     },
-    width: '80%',
-    margin: 'auto',
+    width: "80%",
+    margin: "auto",
     marginTop: -theme.spacing(1),
-    padding: 'auto',
+    padding: "auto",
   },
   accordionDetails: {
     padding: 0,
   },
   listGrid: {
-    display: 'flex',
+    display: "flex",
     flexGrow: 1,
   },
   listItem: {
@@ -32,17 +39,20 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   actions: {
-    display: 'flex',
-    justifyContent: 'space-between',
-  }
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
 
-
 export default function FilterAccordion() {
+  /**
+   * Desktop filters accordion component.
+   */
+
   const classes = useStyles();
 
-  const state = useContext(FilterState)
-  const dispatch = useContext(FilterDispatch)
+  const state = useContext(FilterState);
+  const dispatch = useContext(FilterDispatch);
 
   const [open, setOpen] = useState(false);
 
@@ -52,37 +62,32 @@ export default function FilterAccordion() {
 
   const handleReset = () => {
     dispatch({
-      type: "RESET"
+      type: "RESET",
     });
     setOpen(!open);
   };
 
   return (
-    <Box className={ classes.root }>
-      <Accordion
-        elevation={0}
-        expanded={open}
-      >
+    <Box className={classes.root}>
+      <Accordion elevation={0} expanded={open}>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1c-content"
           id="panel1c-header"
           onClick={handleExpansion}
-          >
+        >
           <FilterAccordionChips />
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
           <Grid container justify="center" className={classes.listGrid}>
             <Grid item className={classes.listItem}>
-              <FilterList key='sortList' entry='sorting' list={state.sorting} />
+              <FilterList key="sortList" entry="sorting" list={state.sorting} />
             </Grid>
-            {
-              Object.entries(state.filters).map(([entry, list]) => (
-                <Grid item className={classes.listItem} key={entry}>
-                  <FilterList entry={entry} list={list}/>
-                </Grid>
-              ))
-            }
+            {Object.entries(state.filters).map(([entry, list]) => (
+              <Grid item className={classes.listItem} key={entry}>
+                <FilterList entry={entry} list={list} />
+              </Grid>
+            ))}
           </Grid>
         </AccordionDetails>
         <AccordionActions className={classes.actions}>
@@ -95,5 +100,5 @@ export default function FilterAccordion() {
         </AccordionActions>
       </Accordion>
     </Box>
-  )
+  );
 }

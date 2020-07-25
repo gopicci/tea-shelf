@@ -29,9 +29,6 @@ const useStyles = makeStyles((theme) => ({
 
 function HideOnScroll(props) {
   const { children, window } = props;
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger({ target: window ? window() : undefined });
 
   return (
@@ -42,6 +39,12 @@ function HideOnScroll(props) {
 }
 
 export default function FilterBar({ setRoute }) {
+  /**
+   * Mobile filter bar component. Contains filters chips, hides on scroll.
+   *
+   * @param setRoute {function} Set main route
+   */
+
   const classes = useStyles();
 
   const handleButtonClick = () => setRoute("FILTER");

@@ -1,4 +1,7 @@
 export const getAccessToken = () => {
+  /**
+   * Get access token from local storage auth data.
+   */
   const auth = JSON.parse(window.localStorage.getItem("user.auth"));
   if (auth) {
     return auth.access;
@@ -7,6 +10,9 @@ export const getAccessToken = () => {
 };
 
 export const getRefreshToken = () => {
+  /**
+   * Get refresh token from local storage auth data.
+   */
   const auth = JSON.parse(window.localStorage.getItem("user.auth"));
   if (auth) {
     return auth.refresh;
@@ -15,6 +21,9 @@ export const getRefreshToken = () => {
 };
 
 export const getUser = () => {
+  /**
+   * Get user info from local storage access token.
+   */
   const auth = JSON.parse(window.localStorage.getItem("user.auth"));
   if (auth) {
     const [, payload] = auth.access.split(".");
@@ -25,6 +34,9 @@ export const getUser = () => {
 };
 
 export const logout = () => {
+  /**
+   * Remove local storage auth data.
+   */
   window.localStorage.removeItem("user.auth");
   window.location.reload(false);
 };
@@ -111,7 +123,7 @@ export const APIRequest = async (
       }
     } else {
       // Request not ok but not for invalid token
-      console.log(await res.json())
+      console.log(await res.json());
       throw Error(res.statusText);
     }
   }

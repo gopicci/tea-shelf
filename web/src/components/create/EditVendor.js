@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   InputAdornment,
   TextField,
@@ -17,7 +17,7 @@ import { ArrowBack } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
-import { VendorsState } from '../statecontainers/VendorsContext';
+import { VendorsState } from "../statecontainers/VendorsContext";
 
 const filter = createFilterOptions();
 
@@ -43,66 +43,57 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditVendor(props) {
+export default function EditVendor({
+  teaData,
+  setTeaData,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation vendor input component. Shows a list and autocomplete from
+   * central vendors state, with option to add extra.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
   const formListClasses = formListStyles();
 
   const vendors = useContext(VendorsState);
 
-  const [value, setValue] = useState("");
   const [inputValue, setInputValue] = useState("");
-  const [options, setOptions] = useState(null);
 
-  useEffect(() => {
-    setOptions(
-      Object.entries(vendors).map((entry) => {
-        return entry[1].name;
-      })
-    );
-  }, [vendors]);
+  const options = Object.entries(vendors).map((entry) => {
+    return entry[1].name;
+  });
 
-  function handleListSelect(event) {
-    const item = Object.entries(vendors).find(
-      (entry) => entry[1].name === event.currentTarget.id
+  function updateVendor(name) {
+    // If input already exist add the object, otherwise add only the name
+    const match = Object.entries(vendors).find(
+      (entry) => entry[1].name === name
     );
-    props.setTeaData({
-      ...props.teaData,
-      [props.field]: { name: item[1].name },
-    });
-    props.handleBackToLayout();
+    if (match) setTeaData({ ...teaData, vendor: match[1] });
+    else setTeaData({ ...teaData, vendor: { name: name } });
+    handleBackToLayout();
   }
 
-  useEffect(() => {
-    if (value) {
-      const item = Object.entries(vendors).find(
-        (entry) => entry[1].name === value
-      );
-      if (item)
-        props.setTeaData({
-          ...props.teaData,
-          [props.field]: { name: item[1].name },
-        });
-      else
-        props.setTeaData({ ...props.teaData, [props.field]: { name: value } });
-      props.handleBackToLayout();
+  function handleOnChange(event, newValue) {
+    if (typeof newValue === "string") {
+      updateVendor(newValue);
+    } else if (newValue && newValue.inputValue) {
+      // Create a new value from the user input
+      updateVendor(newValue.inputValue);
+    } else {
+      updateVendor(newValue);
     }
-  }, [value]);
+  }
 
   return (
     <Box className={classes.root}>
       {options && (
         <Autocomplete
-          value={value}
-          onChange={(event, newValue) => {
-            if (typeof newValue === "string") {
-              setValue(newValue);
-            } else if (newValue && newValue.inputValue) {
-              // Create a new value from the user input
-              setValue(newValue.inputValue);
-            } else {
-              setValue(newValue);
-            }
-          }}
+          onChange={handleOnChange}
           onInputChange={(event, newInputValue) => {
             setInputValue(newInputValue);
           }}
@@ -153,7 +144,7 @@ export default function EditVendor(props) {
                 startAdornment: (
                   <InputAdornment position="start">
                     <IconButton
-                      onClick={props.handleBackToLayout}
+                      onClick={handleBackToLayout}
                       edge="start"
                       className={classes.menuButton}
                       color="inherit"
@@ -183,7 +174,7 @@ export default function EditVendor(props) {
                   className={formListClasses.listItem}
                   key={option}
                   id={option}
-                  onClick={handleListSelect}
+                  onClick={(e) => updateVendor(e.currentTarget.id)}
                 >
                   <Box className={formListClasses.listItemBox}>
                     <Typography variant={"body2"}>{option}</Typography>

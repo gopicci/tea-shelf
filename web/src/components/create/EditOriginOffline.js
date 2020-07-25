@@ -35,17 +35,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditOriginOffline(props) {
+export default function EditOriginOffline({
+  teaData,
+  field,
+  setTeaData,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation offline origin input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
-  const [origin, setOrigin] = useState(props.teaData[props.field]);
+  const [origin, setOrigin] = useState(teaData[field]);
 
   const handleChange = (event) =>
     setOrigin({ ...origin, [event.target.id]: event.target.value });
 
   function handleAdd() {
-    props.setTeaData({ ...props.teaData, origin: origin });
-    props.handleBackToLayout();
+    setTeaData({ ...teaData, origin: origin });
+    handleBackToLayout();
   }
 
   const handleFocus = (event) => event.target.select();
@@ -55,7 +69,7 @@ export default function EditOriginOffline(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -64,7 +78,7 @@ export default function EditOriginOffline(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Add {props.field}
+            Add {field}
           </Typography>
           <Button
             color="inherit"

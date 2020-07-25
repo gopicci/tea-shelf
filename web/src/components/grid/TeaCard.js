@@ -65,6 +65,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function TeaCard({ tea, gridView }) {
+  /**
+   * Card component visualizing a single tea instance.
+   *
+   * @param tea {json} Tea instance data in API format
+   * @param gridView {bool} Grid view switch status
+   */
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);

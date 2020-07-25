@@ -41,13 +41,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditTime(props) {
+export default function EditTime({
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation brewing time list input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
   const [text, setText] = useState("");
   const [inputType, setInputType] = useState("seconds");
 
-  const fields = props.field.split("_");
+  const fields = field.split("_");
 
   function handleChange(event) {
     const onlyNumbers = event.target.value.replace(/[^0-9]/g, "");
@@ -64,15 +78,15 @@ export default function EditTime(props) {
     if (inputType === "hours") timeInSeconds = timeInSeconds * 3600;
 
     if (fields[0] === "gongfu" || fields[0] === "western")
-      props.setTeaData({
-        ...props.teaData,
+      setTeaData({
+        ...teaData,
         [fields[0] + "_brewing"]: {
-          ...props.teaData[fields[0] + "_brewing"],
+          ...teaData[fields[0] + "_brewing"],
           [fields[1]]: timeInSeconds,
         },
       });
-    else props.setTeaData({ ...props.teaData, [props.field]: timeInSeconds });
-    props.handleBackToLayout();
+    else setTeaData({ ...teaData, [field]: timeInSeconds });
+    handleBackToLayout();
   }
 
   const handleFocus = (event) => event.target.select();
@@ -82,7 +96,7 @@ export default function EditTime(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"

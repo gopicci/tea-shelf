@@ -43,7 +43,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditWeightInput(props) {
+export default function EditWeightInput({
+  teaData,
+  setTeaData,
+  field,
+  handleBackToLayout,
+}) {
+  /**
+   * Mobile tea creation weight input component.
+   *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
+   * @param field {string} Input field name
+   * @param handleBackToLayout {function} Reroutes to input layout
+   */
+
   const classes = useStyles();
 
   const [text, setText] = useState("");
@@ -62,11 +76,11 @@ export default function EditWeightInput(props) {
     let grams = parseFloat(text);
     if (inputType === "ounces") grams = grams * 28.35;
     if (!isNaN(grams))
-      props.setTeaData({
-        ...props.teaData,
+      setTeaData({
+        ...teaData,
         weight_left: cropToNoZeroes(grams, 1),
       });
-    props.handleBackToLayout();
+    handleBackToLayout();
   }
 
   const handleFocus = (event) => event.target.select();
@@ -76,7 +90,7 @@ export default function EditWeightInput(props) {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            onClick={props.handleBackToLayout}
+            onClick={handleBackToLayout}
             edge="start"
             className={classes.menuButton}
             color="inherit"
@@ -85,7 +99,7 @@ export default function EditWeightInput(props) {
             <ArrowBack />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Add {props.field}
+            Add {field}
           </Typography>
           <Button
             color="inherit"

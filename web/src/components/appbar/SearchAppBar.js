@@ -30,7 +30,7 @@ import {
 import { TeaDispatch } from "../statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "../statecontainers/SubcategoriesContext";
 import { SnackbarDispatch } from "../statecontainers/SnackbarContext";
-import { VendorsDispatch } from '../statecontainers/VendorsContext';
+import { VendorsDispatch } from "../statecontainers/VendorsContext";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -103,6 +103,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SearchAppBar() {
+  /**
+   * Search app bar component. Handles search, sync and grid view switch.
+   */
   const classes = useStyles();
 
   const [isSyncing, setSyncing] = useState(false);
@@ -113,53 +116,71 @@ export default function SearchAppBar() {
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
-  const vendorDispatch = useContext(VendorsDispatch)
+  const vendorDispatch = useContext(VendorsDispatch);
 
   function handleGridViewChange() {
+    // Handle grid view switch
     gridViewDispatch({
       type: "SWITCH_VIEW",
     });
   }
 
   async function handleRefresh() {
+    // Handle sync
+
     setSyncing(true);
     let error = null;
+
     try {
+      // Try to upload offline tea entries
       await syncOffline();
     } catch (e) {
       console.error(e);
       error = e;
     }
+
     try {
+      // Get remaining offline teas
       const offlineTeas = await getOfflineTeas();
 
+      // Download teas from API
       const res = await APIRequest("/tea/", "GET");
       const body = await res.json();
 
+      // Update central teas state
       teaDispatch({ type: "SET", data: offlineTeas.concat(body) });
 
+      // Update teas cache
       await localforage.setItem("teas", body);
     } catch (e) {
       console.error(e);
       error = e;
     }
+
     try {
+      // Download subcategories from API
       const res = await APIRequest("/subcategory/", "GET");
       const body = await res.json();
 
+      // Update central subcategories state
       subcategoriesDispatch({ type: "SET", data: body });
 
+      // Update subcategories cache
       await localforage.setItem("subcategories", body);
     } catch (e) {
       console.error(e);
       error = e;
     }
+
     try {
+      // Download vendors from API
       const res = await APIRequest("/vendor/", "GET");
       const body = await res.json();
 
+      // Update central vendors state
       vendorDispatch({ type: "SET", data: body });
 
+      // Update vendors cache
       await localforage.setItem("vendors", body);
     } catch (e) {
       console.error(e);
@@ -170,6 +191,7 @@ export default function SearchAppBar() {
     if (error) {
       snackbarDispatch({ type: "ERROR", data: error.message });
     } else {
+      // If no errors show cloud icon for 2 sec
       setShowCloud(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setShowCloud(false);

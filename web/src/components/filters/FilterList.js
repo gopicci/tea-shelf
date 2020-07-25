@@ -1,28 +1,42 @@
-import React, {useContext, useState} from 'react';
-import {Collapse, FormGroup, FormLabel, Link, List, ListItem, Typography,} from '@material-ui/core';
+import React, { useContext, useState } from "react";
+import {
+  Collapse,
+  FormGroup,
+  FormLabel,
+  Link,
+  List,
+  ListItem,
+  Typography,
+} from "@material-ui/core";
 
-import {formListStyles} from '../../style/FormListStyles'
+import { formListStyles } from "../../style/FormListStyles";
 
-import FilterItem from './FilterItem';
+import CheckboxListItem from "../generics/CheckboxListItem";
 
-import {FilterDispatch} from '../statecontainers/FilterContext'
-
+import { FilterDispatch } from "../statecontainers/FilterContext";
 
 export default function FilterList({ entry, list }) {
+  /**
+   * Filters checkbox list component. Uses central filter dispatch to handle change.
+   *
+   * @param entry {string} List name
+   * @param list {[{string: boolean}]} Filter list array in {name: checked} format
+   */
+
   const formListClasses = formListStyles();
 
-  const dispatch = useContext(FilterDispatch)
+  const dispatch = useContext(FilterDispatch);
 
   const handleChange = (event) => {
-    if (entry === 'sorting')
+    if (entry === "sorting")
       dispatch({
         type: "CHECK_SORT",
-        data: { item: event.target.name }
-      })
+        data: { item: event.target.name },
+      });
     else
       dispatch({
         type: "CHECK_FILTER",
-        data: { entry: entry, item: event.target.name }
+        data: { entry: entry, item: event.target.name },
       });
   };
 
@@ -35,29 +49,44 @@ export default function FilterList({ entry, list }) {
   return (
     <FormGroup>
       <FormLabel className={formListClasses.formLabel}>
-        <Typography  className={formListClasses.formLabelText}>
-          {entry === 'sorting' ? 'Sort by' : entry}:
+        <Typography className={formListClasses.formLabelText}>
+          {entry === "sorting" ? "Sort by" : entry}:
         </Typography>
       </FormLabel>
       <List className={formListClasses.list}>
         {list &&
-          Object.entries(list).slice(0,3).map(([item, checked]) => (
-            <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
-          ))
-        }
-        {list &&
-          Object.entries(list).length > 3 &&
-            !open &&
-              <ListItem key='ShowAll' className={formListClasses.listItem}>
-                <Link className={formListClasses.linkSmall} onClick={handleShowAllClick}>Show all</Link>
-              </ListItem>
-        }
+          Object.entries(list)
+            .slice(0, 3)
+            .map(([item, checked]) => (
+              <CheckboxListItem
+                key={item}
+                name={item}
+                checked={checked}
+                handleChange={handleChange}
+              />
+            ))}
+        {list && Object.entries(list).length > 3 && !open && (
+          <ListItem key="ShowAll" className={formListClasses.listItem}>
+            <Link
+              className={formListClasses.linkSmall}
+              onClick={handleShowAllClick}
+            >
+              Show all
+            </Link>
+          </ListItem>
+        )}
         <Collapse in={open} timeout="auto">
-            {list &&
-              Object.entries(list).slice(3).map(([item, checked]) => (
-                <FilterItem key={item} name={item} checked={checked} handleChange={handleChange} />
-              ))
-            }
+          {list &&
+            Object.entries(list)
+              .slice(3)
+              .map(([item, checked]) => (
+                <CheckboxListItem
+                  key={item}
+                  name={item}
+                  checked={checked}
+                  handleChange={handleChange}
+                />
+              ))}
         </Collapse>
       </List>
     </FormGroup>

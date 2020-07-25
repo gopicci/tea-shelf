@@ -6,39 +6,50 @@ import React, {
   useState,
 } from "react";
 import { getSubcategoryName } from "../../services/ParsingService";
-
 import { CategoriesState } from "./CategoriesContext";
-import { TeasState } from './TeasContext';
+import { TeasState } from "./TeasContext";
 
 export const FilterState = createContext(null);
 export const FilterDispatch = createContext(null);
 
+// Define sorting options
+const sorting = {
+  "latest (default)": true,
+  year: false,
+  rating: false,
+  alphabetical: false,
+  origin: false,
+  vendor: false,
+};
+
+// Define initial filters structure
+const filtersDefinition = {
+  sorting: { ...sorting },
+  active: 0,
+  filters: {
+    categories: {},
+    subcategories: {},
+    vendors: {},
+    countries: {},
+    regions: {},
+    localities: {},
+  },
+};
+
 export default function FilterContext(props) {
+  /**
+   * Filters status state and dispatch provider. Structure gets updated on teas state
+   * change, dispatch takes care of keeping track of the checked status.
+   */
   const categories = useContext(CategoriesState);
-  const teas = useContext(TeasState)
+  const teas = useContext(TeasState);
 
-  const sorting = ['Latest (Default)', 'Year', 'Rating', 'Alphabetical', 'Origin', 'Vendor']
-    .reduce((obj, item) => {
-    obj[item.toLowerCase()] = false;
-    return obj;
-  }, {});
-
-  const [initialState, setInitialState] = useState({
-    sorting: { ...sorting, "latest (default)": true },
-    active: 0,
-    filters: {
-      categories: null,
-      subcategories: null,
-      vendors: null,
-      countries: null,
-      regions: null,
-      localities: null,
-    },
-  });
+  const [initialState, setInitialState] = useState(filtersDefinition);
 
   const reducer = (state, action) => {
     switch (action.type) {
       case "CHECK_FILTER":
+        // Change filter checked status and number of overall checked filters
         let activeUpdate = state.active;
         const checked = !state.filters[action.data.entry][action.data.item];
         if (checked) {
@@ -51,17 +62,20 @@ export default function FilterContext(props) {
         newFilterState.filters[action.data.entry][action.data.item] = checked;
         return newFilterState;
       case "CHECK_SORT":
+        // Change sorting option status, keep only 1 checked at the time
         const newSort = JSON.parse(JSON.stringify(state));
         newSort.sorting = { ...initialState.sorting };
         newSort.sorting["latest (default)"] = false;
         newSort.sorting[action.data.item] = true;
         return newSort;
       case "CLEAR":
+        // Set all filters to unchecked but keep current sorting option
         return {
           ...initialState,
           sorting: state.sorting,
         };
       case "RESET":
+        // Set all filters and sorting options to default state
         return initialState;
       default:
         return action;
@@ -71,41 +85,66 @@ export default function FilterContext(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    if(!teas) return;
-    let update = {...initialState}
-    let additions = {filters: {}}
+    // Update state structure on teas state change
+    if (!teas) return;
+
+    let filters = { ...filtersDefinition.filters };
+
     for (const tea of teas) {
       if (tea.category) {
-        const categoryName = categories.find(category => category.id === tea.category).name.toLowerCase();
-        if (!initialState.filters.categories || !(categoryName in initialState.filters.categories))
-          additions.filters.categories = {...additions.filters.categories, [categoryName]: false}
+        // Category defined, add if not present
+        const categoryName = categories
+          .find((category) => category.id === tea.category)
+          .name.toLowerCase();
+        if (!(categoryName in filters.categories))
+          filters.categories = {
+            ...filters.categories,
+            [categoryName]: false,
+          };
       }
       if (tea.subcategory) {
+        // Subcategory defined, add if not present
         const subcategoryName = getSubcategoryName(tea.subcategory);
-        if (!initialState.filters.subcategories || !(subcategoryName in initialState.filters.subcategories))
-          additions.filters.subcategories = {...additions.filters.subcategories, [subcategoryName]: false}
+        if (!(subcategoryName in filters.subcategories))
+          filters.subcategories = {
+            ...filters.subcategories,
+            [subcategoryName]: false,
+          };
       }
       if (tea.origin) {
-        if (!initialState.filters.countries || !(tea.origin.country in initialState.filters.countries))
-          additions.filters.countries = {...additions.filters.countries, [tea.origin.country]: false}
+        if (!(tea.origin.country in filters.countries))
+          // Country defined, add if not present
+          filters.countries = {
+            ...filters.countries,
+            [tea.origin.country]: false,
+          };
         if (tea.origin.region)
-          if (!initialState.filters.regions || !(tea.origin.region in initialState.filters.regions))
-            additions.filters.regions = {...additions.filters.regions, [tea.origin.region]: false}
+          if (!(tea.origin.region in filters.regions))
+            // Region defined, add if not present
+            filters.regions = {
+              ...filters.regions,
+              [tea.origin.region]: false,
+            };
         if (tea.origin.locality)
-          if (!initialState.filters.localities || !(tea.origin.locality in initialState.filters.localities))
-            additions.filters.localities = {...additions.filters.localities, [tea.origin.locality]: false}
-
+          if (!(tea.origin.locality in filters.localities))
+            // Locality defined, add if not present
+            filters.localities = {
+              ...filters.localities,
+              [tea.origin.locality]: false,
+            };
       }
       if (tea.vendor) {
-         if (!initialState.filters.vendors || !(tea.vendor.name in initialState.filters.vendors))
-          additions.filters.vendors = {...additions.filters.vendors, [tea.vendor.name]: false}
+        // Vendor defined, add if not present
+        if (!(tea.vendor.name in filters.vendors))
+          filters.vendors = { ...filters.vendors, [tea.vendor.name]: false };
       }
-      if (Object.keys(additions.filters).length > 0) Object.assign(update, additions)
     }
-    setInitialState(update);
-  }, [teas])
+
+    setInitialState({ ...filtersDefinition, filters: filters });
+  }, [teas, categories]);
 
   useEffect(() => {
+    // Set all filters to unchecked on structure change
     dispatch({
       type: "CLEAR",
     });
