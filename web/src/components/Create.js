@@ -7,6 +7,7 @@ import { APIRequest } from "../services/AuthService";
 
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
+import { VendorsDispatch } from './statecontainers/VendorsContext';
 
 export default function Create({ setRoute }) {
   const [imageData, setImageData] = useState(null);
@@ -39,6 +40,7 @@ export default function Create({ setRoute }) {
 
   const snackbarDispatch = useContext(SnackbarDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
+  const vendorsDispatch = useContext(VendorsDispatch);
 
   async function handleCreate() {
 
@@ -56,6 +58,9 @@ export default function Create({ setRoute }) {
         };
       }
 
+      if (teaData.vendor)
+        if (!teaData.vendor.popularity) customVendor = true;
+
       if (teaData.year === "unknown") teaData.year = null;
 
       console.log(teaData);
@@ -72,6 +77,14 @@ export default function Create({ setRoute }) {
         const subGetData = await subGetRes.json();
         subcategoriesDispatch({ type: "SET", data: subGetData });
         await localforage.setItem("subcategories", subGetData);
+      }
+
+      // If new vendor was created update cache
+      if (customVendor) {
+        const venGetRes = await APIRequest("/vendor/", "GET");
+        const venGetData = await venGetRes.json();
+        vendorsDispatch({ type: "SET", data: venGetData });
+        await localforage.setItem("vendors", venGetData);
       }
 
     } catch (e) {

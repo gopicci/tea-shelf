@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Box, IconButton } from '@material-ui/core';
 import { CameraAlt, Close, Done, Replay, SkipNext } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -61,7 +61,7 @@ export default function CaptureImage(props) {
             videoConstraints={videoConstraints}
           />
           :
-          <img src={props.imageData} />
+          <img src={props.imageData} alt="" />
       }
       </Box>
       <Box className={classes.controlsBox}>

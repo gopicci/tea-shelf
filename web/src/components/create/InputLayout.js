@@ -11,12 +11,15 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
-import { makeStyles, fade } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
 import InputItem from "./InputItem";
 import InputBrewing from "./InputBrewing";
-import {cropToNoZeroes, getSubcategoryName} from '../../services/ParsingService';
+import {
+  cropToNoZeroes,
+  getSubcategoryName,
+} from "../../services/ParsingService";
 import { getOriginName } from "../../services/ParsingService";
 
 import { CategoriesState } from "../statecontainers/CategoriesContext";
@@ -234,13 +237,25 @@ export default function InputLayout(props) {
           <InputItem
             key="weight"
             name="weight"
-            value={props.teaData.weight_left && props.teaData.weight_left + "g - " + cropToNoZeroes(props.teaData.weight_left / 28.35, 2) + "oz"}
+            value={
+              props.teaData.weight_left &&
+              props.teaData.weight_left +
+                "g - " +
+                cropToNoZeroes(props.teaData.weight_left / 28.35, 2) +
+                "oz"
+            }
             handleClick={handleClick}
           />
           <InputItem
             key="price"
             name="price"
-            value={props.teaData.price && props.teaData.price + "/g - " + cropToNoZeroes(props.teaData.price * 28.35, 1) + "/oz"}
+            value={
+              props.teaData.price &&
+              props.teaData.price +
+                "/g - " +
+                cropToNoZeroes(props.teaData.price * 28.35, 1) +
+                "/oz"
+            }
             handleClick={handleClick}
             noTitle={true}
           />

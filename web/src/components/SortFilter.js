@@ -1,17 +1,16 @@
 import {
   AppBar,
-  Box, Button, Grid,
+  Box,
+  Button,
   IconButton,
   Toolbar,
-  Typography
-} from '@material-ui/core';
-import React, {useContext} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import {ArrowBack} from '@material-ui/icons';
-import {FilterDispatch, FilterState} from './statecontainers/FilterContext';
-import FilterList from './filters/FilterList';
-import {formListStyles} from '../style/FormListStyles';
-
+  Typography,
+} from "@material-ui/core";
+import React, { useContext } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { ArrowBack } from "@material-ui/icons";
+import { FilterDispatch, FilterState } from "./statecontainers/FilterContext";
+import FilterList from "./filters/FilterList";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,27 +29,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-export default function SortFilter({setRoute}) {
+export default function SortFilter({ setRoute }) {
   const classes = useStyles();
-  const formListClasses = formListStyles();
 
-  const state = useContext(FilterState)
-  const dispatch = useContext(FilterDispatch)
+  const state = useContext(FilterState);
+  const dispatch = useContext(FilterDispatch);
 
-  console.log(state)
+  console.log(state);
 
-  const handleClose = () => setRoute('MAIN');
+  const handleClose = () => setRoute("MAIN");
 
   const handleReset = () => {
     dispatch({
-      type: "RESET"
+      type: "RESET",
     });
   };
-
-  const handleApply = () => {
-    console.log('apply')
-  }
 
   return (
     <Box className={classes.root}>
@@ -74,12 +67,10 @@ export default function SortFilter({setRoute}) {
         </Toolbar>
       </AppBar>
       <Toolbar />
-      <FilterList key='sortList' entry='sorting' list={state.sorting} />
-      {
-        Object.entries(state.filters).map(([entry, list]) => (
-          <FilterList entry={entry} list={list}/>
-        ))
-      }
+      <FilterList key="sortList" entry="sorting" list={state.sorting} />
+      {Object.entries(state.filters).map(([entry, list]) => (
+        <FilterList entry={entry} list={list} />
+      ))}
     </Box>
-  )
+  );
 }
