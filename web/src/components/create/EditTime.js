@@ -1,18 +1,13 @@
 import React, { useState } from "react";
 import {
-  AppBar,
   Box,
-  Button,
   FormControlLabel,
-  IconButton,
   Radio,
   RadioGroup,
   TextField,
-  Toolbar,
-  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { ArrowBack } from "@material-ui/icons";
+import InputAppBar from './InputAppBar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,30 +88,13 @@ export default function EditTime({
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            onClick={handleBackToLayout}
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="back"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Add {fields[1] ? fields[1] : fields[0]}
-          </Typography>
-          <Button
-            color="inherit"
-            disabled={!text}
-            onClick={handleAdd}
-            aria-label="add"
-          >
-            ADD
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <InputAppBar
+        handleBackToLayout={handleBackToLayout}
+        name={fields[1] ? fields[1] : fields[0]}
+        showAdd={true}
+        disableAdd={!text}
+        handleAdd={handleAdd}
+      />
       <Box className={classes.mainBox}>
         <TextField
           className={classes.textField}

@@ -1,15 +1,7 @@
 import React, { useContext } from "react";
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
-
+import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
+import InputAppBar from "./InputAppBar";
 import CheckboxList from "../generics/CheckboxList";
 import { brewingTimesToSeconds } from "../../services/ParsingService";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
@@ -21,13 +13,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     margin: 0,
     flexDirection: "column",
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-    textTransform: "capitalize",
   },
   textField: {
     padding: theme.spacing(4),
@@ -73,22 +58,7 @@ export default function EditCategory({
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            onClick={handleBackToLayout}
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="back"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Select {field}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <InputAppBar handleBackToLayout={handleBackToLayout} name={field} />
       {categories && (
         <CheckboxList
           label=""

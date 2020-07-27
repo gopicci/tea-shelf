@@ -1,17 +1,9 @@
 import React from "react";
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
-
-import { makeStyles } from "@material-ui/core/styles";
-
+import { Box } from "@material-ui/core";
 import CheckboxList from "../generics/CheckboxList";
 import CheckboxListItem from "../generics/CheckboxListItem";
+import InputAppBar from "./InputAppBar";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,22 +63,7 @@ export default function EditYear({
 
   return (
     <Box className={classes.root}>
-      <AppBar position="fixed">
-        <Toolbar>
-          <IconButton
-            onClick={handleBackToLayout}
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="back"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Select {field}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <InputAppBar handleBackToLayout={handleBackToLayout} name={field} />
       <CheckboxList
         label=""
         list={checkboxList}

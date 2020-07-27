@@ -1,16 +1,7 @@
 import React from "react";
-import {
-  AppBar,
-  Box,
-  IconButton,
-  List,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
-
+import { Box, List } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
+import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import { celsiusToFahrenheit } from "../../services/ParsingService";
 import { formListStyles } from "../../style/FormListStyles";
@@ -81,22 +72,7 @@ export default function EditTemperature({
 
   return (
     <Box className={classes.root}>
-      <AppBar position="fixed">
-        <Toolbar>
-          <IconButton
-            onClick={handleBackToLayout}
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="back"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Select temperature
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <InputAppBar handleBackToLayout={handleBackToLayout} name="Temperature" />
       <List className={formListClasses.list}>
         {degrees.map((d) => (
           <InputItem

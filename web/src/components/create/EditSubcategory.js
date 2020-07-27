@@ -15,14 +15,12 @@ import Autocomplete, {
 } from "@material-ui/lab/Autocomplete";
 import { ArrowBack } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import { formListStyles } from "../../style/FormListStyles";
-
 import {
   brewingTimesToSeconds,
   getSubcategoryName,
 } from "../../services/ParsingService";
-
 import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
+import { formListStyles } from "../../style/FormListStyles";
 
 const filter = createFilterOptions();
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { APIRequest } from "../../services/AuthService";
-
 import EditOriginOnline from "./EditOriginOnline";
 import EditOriginOffline from "./EditOriginOffline";
 

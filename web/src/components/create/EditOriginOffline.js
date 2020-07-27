@@ -1,15 +1,7 @@
 import React, { useState } from "react";
-import {
-  AppBar,
-  Box,
-  Button,
-  IconButton,
-  TextField,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { Box, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { ArrowBack } from "@material-ui/icons";
+import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,29 +58,13 @@ export default function EditOriginOffline({
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            onClick={handleBackToLayout}
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Add {field}
-          </Typography>
-          <Button
-            color="inherit"
-            disabled={!origin || !origin.country}
-            onClick={handleAdd}
-          >
-            ADD
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <InputAppBar
+        handleBackToLayout={handleBackToLayout}
+        name={field}
+        showAdd={true}
+        disableAdd={!origin || !origin.country}
+        handleAdd={handleAdd}
+      />
       <Box className={classes.inputBox}>
         <TextField
           className={classes.textField}

@@ -1,15 +1,8 @@
 import React, { useState } from "react";
-import {
-  AppBar,
-  Box,
-  Button,
-  IconButton,
-  InputBase,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { Box, InputBase, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { ArrowBack } from "@material-ui/icons";
+
+import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,30 +58,13 @@ export default function EditText({
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            onClick={handleBackToLayout}
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="back"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Add {field}
-          </Typography>
-          <Button
-            color="inherit"
-            disabled={!text}
-            onClick={handleAdd}
-            aria-label="add"
-          >
-            ADD
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <InputAppBar
+        handleBackToLayout={handleBackToLayout}
+        name={field}
+        showAdd={true}
+        disableAdd={!text}
+        handleAdd={handleAdd}
+      />
       <Box className={classes.textField}>
         <InputBase
           onChange={handleChange}

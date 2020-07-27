@@ -1,20 +1,8 @@
 import React, { useContext } from "react";
-import {
-  AppBar,
-  Box,
-  Button,
-  FormGroup,
-  FormLabel,
-  IconButton,
-  List,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import { Box, FormGroup, FormLabel, List, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { formListStyles } from "../../style/FormListStyles";
-
+import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import InputBrewing from "./InputBrewing";
 import {
@@ -24,6 +12,8 @@ import {
 import { getOriginName } from "../../services/ParsingService";
 
 import { CategoriesState } from "../statecontainers/CategoriesContext";
+
+import { formListStyles } from "../../style/FormListStyles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,30 +64,13 @@ export default function InputLayout({
 
   return (
     <Box className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            onClick={handlePrevious}
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="back"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Add Tea
-          </Typography>
-          <Button
-            color="inherit"
-            disabled={!teaData.name || !teaData.category}
-            onClick={handleAdd}
-            aria-label="add"
-          >
-            ADD
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <InputAppBar
+        handleBackToLayout={handlePrevious}
+        name="Tea"
+        showAdd={true}
+        disableAdd={!teaData.name || !teaData.category}
+        handleAdd={handleAdd}
+      />
       <FormGroup>
         <FormLabel className={formListClasses.formLabel}>
           <Typography className={formListClasses.formLabelText}>
