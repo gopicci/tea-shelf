@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Box, FormGroup, FormLabel, List, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import InputBrewing from "./InputBrewing";
@@ -10,9 +9,7 @@ import {
   getSubcategoryName,
 } from "../../services/ParsingService";
 import { getOriginName } from "../../services/ParsingService";
-
 import { CategoriesState } from "../statecontainers/CategoriesContext";
-
 import { formListStyles } from "../../style/FormListStyles";
 
 const useStyles = makeStyles((theme) => ({
