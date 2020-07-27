@@ -1,27 +1,8 @@
 import React, { useContext } from "react";
-import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import InputAppBar from "./InputAppBar";
 import CheckboxList from "../generics/CheckboxList";
 import { brewingTimesToSeconds } from "../../services/ParsingService";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-  textField: {
-    padding: theme.spacing(4),
-    flexGrow: 1,
-  },
-  counter: {
-    textAlign: "right",
-  },
-}));
 
 export default function EditCategory({
   teaData,
@@ -37,8 +18,6 @@ export default function EditCategory({
    * @param field {string} Input field name
    * @param handleBackToLayout {function} Reroutes to input layout
    */
-
-  const classes = useStyles();
 
   const categories = useContext(CategoriesState);
 
@@ -57,7 +36,7 @@ export default function EditCategory({
   }
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar handleBackToLayout={handleBackToLayout} name={field} />
       {categories && (
         <CheckboxList
@@ -72,6 +51,6 @@ export default function EditCategory({
           reverse={field === "year"}
         />
       )}
-    </Box>
+    </>
   );
 }

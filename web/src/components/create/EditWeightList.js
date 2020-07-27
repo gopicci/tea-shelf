@@ -1,26 +1,8 @@
 import React from "react";
-import { Box, List } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { List } from "@material-ui/core";
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import { formListStyles } from "../../style/FormListStyles";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-  textField: {
-    padding: theme.spacing(4),
-    flexGrow: 1,
-  },
-  counter: {
-    textAlign: "right",
-  },
-}));
 
 export default function EditWeightList({
   data,
@@ -39,7 +21,6 @@ export default function EditWeightList({
    * @param handleBackToLayout {function} Reroutes to input layout
    */
 
-  const classes = useStyles();
   const formListClasses = formListStyles();
 
   const crop = data.increment < 1 ? 1 : 0;
@@ -69,7 +50,7 @@ export default function EditWeightList({
   }
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar handleBackToLayout={handleBackToLayout} name={field} />
       <List className={formListClasses.list}>
         {list.map((w) => (
@@ -81,6 +62,6 @@ export default function EditWeightList({
           />
         ))}
       </List>
-    </Box>
+    </>
   );
 }

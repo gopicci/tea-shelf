@@ -1,26 +1,7 @@
 import React from "react";
-import { Box } from "@material-ui/core";
 import CheckboxList from "../generics/CheckboxList";
 import CheckboxListItem from "../generics/CheckboxListItem";
 import InputAppBar from "./InputAppBar";
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-  textField: {
-    padding: theme.spacing(4),
-    flexGrow: 1,
-  },
-  counter: {
-    textAlign: "right",
-  },
-}));
 
 export default function EditYear({
   teaData,
@@ -36,8 +17,6 @@ export default function EditYear({
    * @param field {string} Input field name
    * @param handleBackToLayout {function} Reroutes to input layout
    */
-
-  const classes = useStyles();
 
   const length = 60;
   const currentYear = new Date().getFullYear();
@@ -55,7 +34,7 @@ export default function EditYear({
   }
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar handleBackToLayout={handleBackToLayout} name={field} />
       <CheckboxList
         label=""
@@ -71,6 +50,6 @@ export default function EditYear({
           handleChange={handleChange}
         />
       ))}
-    </Box>
+    </>
   );
 }

@@ -5,13 +5,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
   textField: {
     padding: theme.spacing(4),
     flexGrow: 1,
@@ -50,7 +43,7 @@ export default function EditText({
   const handleFocus = (event) => event.target.select();
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
         name={field}
@@ -76,6 +69,6 @@ export default function EditText({
       <Box className={classes.counter}>
         <Typography>{text.length} / 50</Typography>
       </Box>
-    </Box>
+    </>
   );
 }

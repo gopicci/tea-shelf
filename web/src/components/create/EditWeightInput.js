@@ -11,13 +11,6 @@ import { cropToNoZeroes } from "../../services/ParsingService";
 import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
   mainBox: {
     padding: theme.spacing(4),
     flexGrow: 1,
@@ -73,7 +66,7 @@ export default function EditWeightInput({
   const handleFocus = (event) => event.target.select();
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
         name={field}
@@ -112,6 +105,6 @@ export default function EditWeightInput({
           />
         </RadioGroup>
       </Box>
-    </Box>
+    </>
   );
 }

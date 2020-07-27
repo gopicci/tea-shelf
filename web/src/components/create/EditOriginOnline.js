@@ -30,13 +30,6 @@ const autocompleteService = { current: null };
 const placesService = { current: null };
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
   autocomplete: {
     flexGrow: 1,
   },
@@ -163,7 +156,7 @@ export default function EditOriginOnline({
   }
 
   return (
-    <Box className={classes.root}>
+    <>
       <Autocomplete
         id="origin-autocomplete"
         className={classes.autocomplete}
@@ -200,7 +193,6 @@ export default function EditOriginOnline({
                   <IconButton
                     onClick={handleBackToLayout}
                     edge="start"
-                    className={classes.menuButton}
                     color="inherit"
                     aria-label="back"
                   >
@@ -242,6 +234,6 @@ export default function EditOriginOnline({
           );
         }}
       />
-    </Box>
+    </>
   );
 }

@@ -14,7 +14,6 @@ import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { ArrowBack } from "@material-ui/icons";
-import { fade, makeStyles } from "@material-ui/core/styles";
 import {
   brewingTimesToSeconds,
   getSubcategoryName,
@@ -23,28 +22,6 @@ import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
 import { formListStyles } from "../../style/FormListStyles";
 
 const filter = createFilterOptions();
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-  icon: {
-    color: theme.palette.text.secondary,
-    marginRight: theme.spacing(2),
-  },
-  textField: {
-    padding: theme.spacing(2),
-    flexGrow: 1,
-  },
-  listItem: {
-    paddingBottom: theme.spacing(1),
-    borderBottom: `solid 1px ${fade(theme.palette.common.black, 0.15)}`,
-  },
-}));
 
 export default function EditSubcategory({
   teaData,
@@ -61,7 +38,6 @@ export default function EditSubcategory({
    * @param handleBackToLayout {function} Reroutes to input layout
    */
 
-  const classes = useStyles();
   const formListClasses = formListStyles();
 
   const subcategories = useContext(SubcategoriesState);
@@ -114,7 +90,7 @@ export default function EditSubcategory({
   }
 
   return (
-    <Box className={classes.root}>
+    <>
       {options && (
         <Autocomplete
           onChange={handleOnChange}
@@ -159,7 +135,7 @@ export default function EditSubcategory({
           renderInput={(params) => (
             <TextField
               {...params}
-              className={classes.textField}
+              className={formListClasses.textField}
               variant="outlined"
               placeholder="Search subcategory"
               fullWidth
@@ -170,7 +146,6 @@ export default function EditSubcategory({
                     <IconButton
                       onClick={handleBackToLayout}
                       edge="start"
-                      className={classes.menuButton}
                       color="inherit"
                       aria-label="back"
                     >
@@ -209,6 +184,6 @@ export default function EditSubcategory({
           </List>
         </FormGroup>
       )}
-    </Box>
+    </>
   );
 }

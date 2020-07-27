@@ -1,27 +1,9 @@
 import React from "react";
-import { Box, List } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { List } from "@material-ui/core";
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import { celsiusToFahrenheit } from "../../services/ParsingService";
 import { formListStyles } from "../../style/FormListStyles";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-  textField: {
-    padding: theme.spacing(4),
-    flexGrow: 1,
-  },
-  counter: {
-    textAlign: "right",
-  },
-}));
 
 export default function EditTemperature({
   teaData,
@@ -38,7 +20,6 @@ export default function EditTemperature({
    * @param handleBackToLayout {function} Reroutes to input layout
    */
 
-  const classes = useStyles();
   const formListClasses = formListStyles();
 
   const degrees = [...Array(100)].map((_, b) => String(b)).reverse();
@@ -64,7 +45,7 @@ export default function EditTemperature({
   }
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar handleBackToLayout={handleBackToLayout} name="Temperature" />
       <List className={formListClasses.list}>
         {degrees.map((d) => (
@@ -76,6 +57,6 @@ export default function EditTemperature({
           />
         ))}
       </List>
-    </Box>
+    </>
   );
 }

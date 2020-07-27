@@ -1,14 +1,24 @@
 import React, { useContext, useState } from "react";
+import {Box} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
 import localforage from "localforage";
-
 import CaptureImage from "./create/CaptureImage";
 import InputRouter from "./create/InputRouter";
 import { APIRequest } from "../services/AuthService";
-
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    height: "100vh",
+    display: "flex",
+    margin: 0,
+    flexDirection: "column",
+  },
+}));
 
 // Defines tea data structure in API format
 const initialState = {
@@ -39,6 +49,9 @@ export default function Create({ setRoute }) {
    *
    * @param setRoute {function} Set main route
    */
+
+  const classes = useStyles();
+
   const [teaData, setTeaData] = useState(initialState);
   const [imageData, setImageData] = useState(null);
 
@@ -150,5 +163,5 @@ export default function Create({ setRoute }) {
     }
   }
 
-  return <>{renderSwitch(step)}</>;
+  return <Box className={classes.root}>{renderSwitch(step)}</Box>;
 }

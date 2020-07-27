@@ -7,16 +7,9 @@ import {
   TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InputAppBar from './InputAppBar';
+import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
   mainBox: {
     padding: theme.spacing(4),
     flexGrow: 1,
@@ -80,7 +73,7 @@ export default function EditTime({
   const handleFocus = (event) => event.target.select();
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
         name={fields[1] ? fields[1] : fields[0]}
@@ -125,6 +118,6 @@ export default function EditTime({
           />
         </RadioGroup>
       </Box>
-    </Box>
+    </>
   );
 }

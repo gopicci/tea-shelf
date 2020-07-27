@@ -51,4 +51,8 @@ export const formListStyles = makeStyles({
     color: `${theme.palette.primary.main}`,
     cursor: "pointer",
   },
+  textField: {
+    padding: theme.spacing(2),
+    flexGrow: 1,
+  },
 });

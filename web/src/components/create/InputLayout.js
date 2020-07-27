@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import { Box, FormGroup, FormLabel, List, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { FormGroup, FormLabel, List, Typography } from "@material-ui/core";
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import InputBrewing from "./InputBrewing";
@@ -11,16 +10,6 @@ import {
 import { getOriginName } from "../../services/ParsingService";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
 import { formListStyles } from "../../style/FormListStyles";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-}));
 
 export default function InputLayout({
   teaData,
@@ -39,7 +28,6 @@ export default function InputLayout({
    * @param setEditRoute {function} Reroutes to input item
    */
 
-  const classes = useStyles();
   const formListClasses = formListStyles();
 
   const categories = useContext(CategoriesState);
@@ -54,7 +42,7 @@ export default function InputLayout({
   }
 
   return (
-    <Box className={classes.root}>
+    <>
       <InputAppBar
         handleBackToLayout={handlePrevious}
         name="Tea"
@@ -169,6 +157,6 @@ export default function InputLayout({
           />
         </List>
       </FormGroup>
-    </Box>
+    </>
   );
 }

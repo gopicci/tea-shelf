@@ -6,11 +6,7 @@ import Webcam from "react-webcam";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
+    flexGrow: 1,
     backgroundColor: theme.palette.primary.main,
   },
   imageBox: {
