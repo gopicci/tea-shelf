@@ -12,13 +12,6 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     flexDirection: "column",
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-    textTransform: "capitalize",
-  },
   textField: {
     padding: theme.spacing(4),
     flexGrow: 1,
