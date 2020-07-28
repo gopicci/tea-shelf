@@ -47,7 +47,7 @@ export default function InputAppBar({
           edge="start"
           className={classes.menuButton}
           color="inherit"
-          aria-label="menu"
+          aria-label="back"
         >
           <ArrowBack />
         </IconButton>

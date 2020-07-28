@@ -1,15 +1,13 @@
 import React from "react";
-import { Box, ListItem, Typography } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import { formListStyles } from "../../style/FormListStyles";
-
-import { celsiusToFahrenheit } from "../../services/ParsingService";
+import {
+  brewingTimesToSeconds,
+  celsiusToFahrenheit,
+} from "../../services/ParsingService";
 
 const useStyles = makeStyles((theme) => ({
-  nameBox: {
-    width: theme.spacing(13),
-  },
-  valueBox: {
+  root: {
     flexGrow: 1,
     display: "flex",
   },
@@ -47,9 +45,16 @@ export default function InputBrewing({ name, teaData, handleClick }) {
    */
 
   const classes = useStyles();
-  const formListClasses = formListStyles();
 
-  function parseBrewingTimeTop(seconds) {
+  function convertToSeconds(time) {
+    if (String(time).includes(":")) {
+      const a = String(time).split(":");
+      return parseInt(+a[0] * 3600 + +a[1] * 60 + +a[2]);
+    } else return parseInt(time);
+  }
+
+  function parseBrewingTimeTop(time) {
+    let seconds = convertToSeconds(time);
     if (!seconds) return "";
     if (seconds <= 60) return seconds.toString();
     else if (seconds < 3600) {
@@ -63,7 +68,8 @@ export default function InputBrewing({ name, teaData, handleClick }) {
     }
   }
 
-  function parseBrewingTimeBottom(seconds) {
+  function parseBrewingTimeBottom(time) {
+    let seconds = convertToSeconds(time);
     if (!seconds) return "";
     if (seconds <= 60) return "sec";
     else if (seconds < 3600) {
@@ -79,101 +85,80 @@ export default function InputBrewing({ name, teaData, handleClick }) {
   }
 
   return (
-    <ListItem className={formListClasses.listItem} id={name}>
-      <Box className={formListClasses.listItemBox}>
-        <Box className={classes.nameBox}>
-          <Typography variant={"body2"}>{name}</Typography>
-        </Box>
-        <Box className={classes.valueBox}>
-          <Box
-            className={classes.brewingButtonBox}
-            id={name + "_temperature"}
-            onClick={handleClick}
-          >
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxText}
-            >
-              {teaData[name + "_brewing"] &&
-                teaData[name + "_brewing"].temperature &&
-                teaData[name + "_brewing"].temperature + "°c"}
-            </Typography>
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxTextSmall}
-            >
-              {teaData[name + "_brewing"] &&
-                teaData[name + "_brewing"].temperature &&
-                celsiusToFahrenheit(teaData[name + "_brewing"].temperature) +
-                  "F"}
-            </Typography>
-          </Box>
-          <Box
-            className={classes.brewingButtonBox}
-            id={name + "_weight"}
-            onClick={handleClick}
-          >
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxText}
-            >
-              {teaData[name + "_brewing"] &&
-                teaData[name + "_brewing"].weight &&
-                teaData[name + "_brewing"].weight + "g"}
-            </Typography>
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxTextSmall}
-            >
-              {teaData[name + "_brewing"] &&
-                teaData[name + "_brewing"].weight &&
-                "/100ml"}
-            </Typography>
-          </Box>
-          <Box
-            className={classes.brewingButtonBox}
-            id={name + "_initial"}
-            onClick={handleClick}
-          >
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxText}
-            >
-              {teaData[name + "_brewing"] &&
-                parseBrewingTimeTop(teaData[name + "_brewing"].initial)}
-            </Typography>
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxTextSmall}
-            >
-              {teaData[name + "_brewing"] &&
-                parseBrewingTimeBottom(teaData[name + "_brewing"].initial)}
-            </Typography>
-          </Box>
-          <Box
-            className={classes.brewingButtonBox}
-            id={name + "_increments"}
-            onClick={handleClick}
-          >
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxText}
-            >
-              {teaData[name + "_brewing"] &&
-                teaData[name + "_brewing"].increments &&
-                "+" +
-                  parseBrewingTimeTop(teaData[name + "_brewing"].increments)}
-            </Typography>
-            <Typography
-              variant="body2"
-              className={classes.brewingButtonBoxTextSmall}
-            >
-              {teaData[name + "_brewing"] &&
-                parseBrewingTimeBottom(teaData[name + "_brewing"].increments)}
-            </Typography>
-          </Box>
-        </Box>
+    <Box className={classes.root}>
+      <Box
+        className={classes.brewingButtonBox}
+        id={name + "_temperature"}
+        onClick={handleClick}
+      >
+        <Typography variant="body2" className={classes.brewingButtonBoxText}>
+          {teaData[name + "_brewing"] &&
+            teaData[name + "_brewing"].temperature &&
+            teaData[name + "_brewing"].temperature + "°c"}
+        </Typography>
+        <Typography
+          variant="body2"
+          className={classes.brewingButtonBoxTextSmall}
+        >
+          {teaData[name + "_brewing"] &&
+            teaData[name + "_brewing"].temperature &&
+            celsiusToFahrenheit(teaData[name + "_brewing"].temperature) + "F"}
+        </Typography>
       </Box>
-    </ListItem>
+      <Box
+        className={classes.brewingButtonBox}
+        id={name + "_weight"}
+        onClick={handleClick}
+      >
+        <Typography variant="body2" className={classes.brewingButtonBoxText}>
+          {teaData[name + "_brewing"] &&
+            teaData[name + "_brewing"].weight &&
+            teaData[name + "_brewing"].weight + "g"}
+        </Typography>
+        <Typography
+          variant="body2"
+          className={classes.brewingButtonBoxTextSmall}
+        >
+          {teaData[name + "_brewing"] &&
+            teaData[name + "_brewing"].weight &&
+            "/100ml"}
+        </Typography>
+      </Box>
+      <Box
+        className={classes.brewingButtonBox}
+        id={name + "_initial"}
+        onClick={handleClick}
+      >
+        <Typography variant="body2" className={classes.brewingButtonBoxText}>
+          {teaData[name + "_brewing"] &&
+            parseBrewingTimeTop(teaData[name + "_brewing"].initial)}
+        </Typography>
+        <Typography
+          variant="body2"
+          className={classes.brewingButtonBoxTextSmall}
+        >
+          {teaData[name + "_brewing"] &&
+            parseBrewingTimeBottom(teaData[name + "_brewing"].initial)}
+        </Typography>
+      </Box>
+      <Box
+        className={classes.brewingButtonBox}
+        id={name + "_increments"}
+        onClick={handleClick}
+      >
+        <Typography variant="body2" className={classes.brewingButtonBoxText}>
+          {teaData[name + "_brewing"] &&
+            teaData[name + "_brewing"].increments &&
+            "+" + parseBrewingTimeTop(teaData[name + "_brewing"].increments)}
+        </Typography>
+        <Typography
+          variant="body2"
+          className={classes.brewingButtonBoxTextSmall}
+        >
+          {teaData[name + "_brewing"] &&
+            parseBrewingTimeBottom(teaData[name + "_brewing"].increments)}
+        </Typography>
+      </Box>
+    </Box>
   );
 }

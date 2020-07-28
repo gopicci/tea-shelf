@@ -138,7 +138,7 @@ export default function Create({ setRoute }) {
   const handleClose = () => {
     setTeaData(initialState);
     setStep(1);
-    setRoute("MAIN");
+    setRoute({route: "MAIN"});
   };
 
   const props = {

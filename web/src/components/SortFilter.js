@@ -37,9 +37,11 @@ export default function SortFilter({ setRoute }) {
 
   console.log(state);
 
-  const handleClose = () => setRoute("MAIN");
+  function handleClose() {
+    setRoute({route: "MAIN"});
+  }
 
-  const handleReset = () => {
+  function handleReset() {
     dispatch({
       type: "RESET",
     });
@@ -54,7 +56,7 @@ export default function SortFilter({ setRoute }) {
             edge="start"
             className={classes.menuButton}
             color="inherit"
-            aria-label="menu"
+            aria-label="back"
           >
             <ArrowBack />
           </IconButton>

@@ -10,18 +10,13 @@ import {
 } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-
 import FilterAccordionChips from "./FilterAccordionChips";
 import FilterList from "./FilterList";
-
 import { FilterDispatch, FilterState } from "../statecontainers/FilterContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "none",
-    [theme.breakpoints.up("sm")]: {
-      display: "block",
-    },
+    display: "block",
     width: "80%",
     margin: "auto",
     marginTop: -theme.spacing(1),

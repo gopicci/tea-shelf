@@ -49,7 +49,7 @@ export default function InputItem({
           <Typography variant={"body2"}>{name}</Typography>
         </Box>
         <Box className={classes.valueBox}>
-          <Typography variant={"body2"} className={noTitle && classes.noTitle}>
+          <Typography variant={"body2"} className={noTitle ? classes.noTitle : ""}>
             {value}
           </Typography>
         </Box>

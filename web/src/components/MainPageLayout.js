@@ -1,13 +1,14 @@
 import React from "react";
 import { Box, Fab, Toolbar } from "@material-ui/core";
-import { CameraAlt } from "@material-ui/icons";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
-
+import { CameraAlt } from "@material-ui/icons";
 import SearchAppBar from "./appbar/SearchAppBar";
 import DrawerLayout from "./drawer/DrawerLayout";
 import GridLayout from "./grid/GridLayout";
 import FilterAccordion from "./filters/FilterAccordion";
 import FilterBar from "./filters/FilterBar";
+import { mainTheme as theme } from "../style/MainTheme";
 
 const useStyles = makeStyles((theme) => ({
   page: {
@@ -16,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.main,
   },
   mainBox: {
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
     display: "block",
     flexGrow: 1,
   },
@@ -31,12 +35,17 @@ const useStyles = makeStyles((theme) => ({
 export default function MainPageLayout({ setRoute }) {
   /**
    * Defines layout for main landing page.
+   *
    * @param setRoute {function} Set main route
    */
 
   const classes = useStyles();
 
-  const handleCreate = () => setRoute("CREATE");
+  function handleCreate() {
+    setRoute({route: "CREATE"});
+  }
+
+  const upSmall = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
     <>
@@ -45,9 +54,8 @@ export default function MainPageLayout({ setRoute }) {
       <Box className={classes.page}>
         <DrawerLayout />
         <Box className={classes.mainBox}>
-          <FilterBar setRoute={setRoute} />
-          <FilterAccordion />
-          <GridLayout />
+          {upSmall ? <FilterAccordion /> : <FilterBar setRoute={setRoute} />}
+          <GridLayout setRoute={setRoute} />
         </Box>
         <Fab
           aria-label="add tea"

@@ -1,16 +1,11 @@
 import React from "react";
 import { Button, Paper, Slide, useScrollTrigger } from "@material-ui/core";
-
 import { makeStyles } from "@material-ui/core/styles";
-
 import FilterBarChips from "./FilterBarChips";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    [theme.breakpoints.up("sm")]: {
-      display: "none",
-    },
     position: "fixed",
     top: "50px",
     zIndex: 2,
@@ -47,7 +42,9 @@ export default function FilterBar({ setRoute }) {
 
   const classes = useStyles();
 
-  const handleButtonClick = () => setRoute("FILTER");
+  function handleButtonClick() {
+    setRoute({route: "FILTER"});
+  }
 
   return (
     <>

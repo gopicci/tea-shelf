@@ -11,11 +11,17 @@ import { GridViewState } from "../statecontainers/GridViewContext";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
 import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
 import { VendorsState } from "../statecontainers/VendorsContext";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { mainTheme as theme } from "../../style/MainTheme";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
     margin: "auto",
     padding: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      padding: 0,
+      paddingTop: theme.spacing(6),
+    },
     maxWidth: "100%",
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
@@ -42,6 +48,10 @@ const useStyles = makeStyles((theme) => ({
   listItem: {
     width: "100%",
     padding: theme.spacing(1),
+    [theme.breakpoints.down("sm")]: {
+      padding: 0,
+      paddingTop: theme.spacing(1),
+    },
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.complex,
@@ -49,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function GridLayout() {
+export default function GridLayout({ setRoute }) {
   /**
    * Grid component containing tea cards. Filters tea cards based on
    * central filter state.
@@ -111,7 +121,7 @@ export default function GridLayout() {
     else setFilteredTeas(teas);
   }, [filterState, categories, subcategories, vendors, teas]);
 
-  let width = window.innerWidth;
+  const upSmall = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
     <Grid
@@ -124,11 +134,15 @@ export default function GridLayout() {
           <Grid
             item
             className={
-              gridView && width > 600 ? classes.gridItem : classes.listItem
+              gridView && upSmall ? classes.gridItem : classes.listItem
             }
             key={tea.name}
           >
-            <TeaCard tea={tea} gridView={gridView && width > 600} />
+            <TeaCard
+              tea={tea}
+              gridView={gridView && upSmall}
+              setRoute={setRoute}
+            />
           </Grid>
         ))}
     </Grid>

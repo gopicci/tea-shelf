@@ -8,12 +8,9 @@ import {
   ListItem,
   Typography,
 } from "@material-ui/core";
-
-import { formListStyles } from "../../style/FormListStyles";
-
 import CheckboxListItem from "../generics/CheckboxListItem";
-
 import { FilterDispatch } from "../statecontainers/FilterContext";
+import { formListStyles } from "../../style/FormListStyles";
 
 export default function FilterList({ entry, list }) {
   /**

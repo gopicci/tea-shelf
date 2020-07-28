@@ -1,3 +1,5 @@
+import { countryCodes } from "./CountryCodes";
+
 export function getSubcategoryName(subcategory) {
   /**
    * Attempt to build subcategory name in "name (translated_name)" format
@@ -21,6 +23,17 @@ export function getOriginName(origin) {
   if (origin.region) name += origin.region + ", ";
   name += origin.country;
   return name;
+}
+
+export function getOriginShortName(origin) {
+  /**
+   * Returns origin region if present, or locality, or country.
+   */
+  if (!origin) return;
+  if (!origin.country) return;
+  if (origin.region) return origin.region;
+  if (origin.locality) return origin.locality;
+  return origin.country;
 }
 
 export function celsiusToFahrenheit(c) {
@@ -53,4 +66,14 @@ export function brewingTimesToSeconds(brewing) {
     newBrewing.increments = (+b[0] * 3600 + +b[1] * 60 + +b[2]).toString();
   }
   return newBrewing;
+}
+
+export function getCountryCode(countryName) {
+  /**
+   * Return country code from the country name/code.
+   */
+  if (!countryName) return "";
+  if (countryCodes[countryName]) return countryCodes[countryName];
+  if (Object.values(countryCodes).includes(countryName)) return countryName;
+  return "";
 }

@@ -1,5 +1,13 @@
 import React, { useContext } from "react";
-import { FormGroup, FormLabel, List, Typography } from "@material-ui/core";
+import {
+  Box,
+  FormGroup,
+  FormLabel,
+  List,
+  ListItem,
+  Typography,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import InputBrewing from "./InputBrewing";
@@ -10,6 +18,12 @@ import {
 import { getOriginName } from "../../services/ParsingService";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
 import { formListStyles } from "../../style/FormListStyles";
+
+const useStyles = makeStyles((theme) => ({
+  nameBox: {
+    width: theme.spacing(13),
+  },
+}));
 
 export default function InputLayout({
   teaData,
@@ -28,6 +42,7 @@ export default function InputLayout({
    * @param setEditRoute {function} Reroutes to input item
    */
 
+  const classes = useStyles();
   const formListClasses = formListStyles();
 
   const categories = useContext(CategoriesState);
@@ -143,18 +158,32 @@ export default function InputLayout({
           </Typography>
         </FormLabel>
         <List className={formListClasses.list}>
-          <InputBrewing
-            key="gongfu"
-            name="gongfu"
-            handleClick={handleClick}
-            teaData={teaData}
-          />
-          <InputBrewing
-            key="western"
-            name="western"
-            handleClick={handleClick}
-            teaData={teaData}
-          />
+          <ListItem className={formListClasses.listItem} id="gongfu">
+            <Box className={formListClasses.listItemBox}>
+              <Box className={classes.nameBox}>
+                <Typography variant={"body2"}>Gongfu</Typography>
+              </Box>
+              <InputBrewing
+                key="gongfu"
+                name="gongfu"
+                handleClick={handleClick}
+                teaData={teaData}
+              />
+            </Box>
+          </ListItem>
+          <ListItem className={formListClasses.listItem} id="western">
+            <Box className={formListClasses.listItemBox}>
+              <Box className={classes.nameBox}>
+                <Typography variant={"body2"}>Western</Typography>
+              </Box>
+              <InputBrewing
+                key="western"
+                name="western"
+                handleClick={handleClick}
+                teaData={teaData}
+              />
+            </Box>
+          </ListItem>
         </List>
       </FormGroup>
     </>
