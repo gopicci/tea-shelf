@@ -74,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
   teaImage: {
     minWidth: theme.spacing(14),
     maxWidth: theme.spacing(14),
+    minHeight: theme.spacing(18),
     maxHeight: theme.spacing(18),
     objectFit: "cover",
     margin: theme.spacing(2),
