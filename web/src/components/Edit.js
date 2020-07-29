@@ -2,8 +2,8 @@ import React, { useContext, useState } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
-import CaptureImage from "./input/mobile/CaptureImage";
 import InputRouter from "./input/mobile/InputRouter";
+import TeaDetails from './TeaDetails';
 import { APIRequest } from "../services/AuthService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
@@ -20,78 +20,67 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Defines tea data structure in API format
-const initialState = {
-  image: null,
-  name: "",
-  category: null,
-  subcategory: null,
-  origin: null,
-  vendor: null,
-  is_archived: false,
-  gongfu_brewing: null,
-  western_brewing: null,
-  year: null,
-  gongfu_preferred: false,
-  price: null,
-  weight_left: null,
-  weight_consumed: null,
-  rating: null,
-  notes: "",
-};
-
-export default function Create({ setRoute }) {
+export default function Edit({ setRoute, editData, notes=false, details=false }) {
   /**
-   * Mobile tea entry creation process. Consists of 3 stages:
-   * captureImage -> inputLayout -> handleCreate
+   * Mobile tea entry edit process.
    *
    * teaData tracks the input state.
    *
+   * @param editData {json} Initial input tea data
    * @param setRoute {function} Set main route
+   * @param notes {bool} Editing notes
+   * @param details {bool} View tea details
    */
 
   const classes = useStyles();
 
-  const [teaData, setTeaData] = useState(initialState);
-  const [imageData, setImageData] = useState(null);
-
+  const [teaData, setTeaData] = useState(editData);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorsDispatch = useContext(VendorsDispatch);
 
-  async function handleCreate() {
-    // Handle posting process
+  async function handleEdit(data=null) {
+    let reqData = { ...teaData };
+    if (data) reqData = {...data};
 
+    let image = null;
     let customSubcategory = false;
     let customVendor = false;
 
     try {
-      if (imageData) teaData["image"] = imageData;
+      image = reqData.image;
+      delete reqData.image;
 
-      if (teaData.subcategory) {
-        if (!teaData.subcategory.category) customSubcategory = true;
-        teaData.subcategory = {
-          name: teaData.subcategory.name,
-          category: teaData.category,
+      if (reqData.subcategory) {
+        if (!reqData.subcategory.category) customSubcategory = true;
+        reqData.subcategory = {
+          name: reqData.subcategory.name,
+          category: reqData.category,
         };
       }
 
-      if (teaData.vendor) if (!teaData.vendor.popularity) customVendor = true;
+      if (reqData.vendor) if (!reqData.vendor.popularity) customVendor = true;
 
-      if (teaData.year === "unknown") teaData.year = null;
+      if (reqData.year === "unknown") reqData.year = null;
 
-      console.log(teaData);
-      console.log(JSON.stringify(teaData));
-      const res = await APIRequest("/tea/", "POST", JSON.stringify(teaData));
-      console.log("Tea created: ", res);
+      console.log(reqData);
+      console.log(JSON.stringify(reqData));
+      const res = await APIRequest(
+        `/tea/${reqData.id}/`,
+        "PUT",
+        JSON.stringify(reqData)
+      );
+      console.log("Tea updated: ", res);
       const body = await res.json();
       console.log(body);
 
-      snackbarDispatch({ type: "SUCCESS", data: "Tea successfully created" });
+      snackbarDispatch({ type: "SUCCESS", data: "Tea successfully updated" });
 
       // Update tea context with newly added
-      teaDispatch({ type: "ADD", data: body });
+      teaDispatch({ type: "EDIT", data: body });
+
+      setTeaData(body);
 
       // If new subcategory was created update cache
       if (customSubcategory) {
@@ -108,16 +97,20 @@ export default function Create({ setRoute }) {
         vendorsDispatch({ type: "SET", data: venGetData });
         await localforage.setItem("vendors", venGetData);
       }
+
+      setRoute({route: "TEA_DETAILS", data: body})
+
     } catch (e) {
       console.error(e);
       if (e.message === "Bad Request") {
         snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
       } else {
         console.log(e.message, "cache locally");
+        if (image) reqData["image"] = image;
         const offlineTeas = await localforage.getItem("offline-teas");
         const cache = await localforage.setItem("offline-teas", [
           ...offlineTeas,
-          teaData,
+          reqData,
         ]);
         snackbarDispatch({
           type: "WARNING",
@@ -125,47 +118,27 @@ export default function Create({ setRoute }) {
         });
         teaDispatch({ type: "ADD", data: teaData });
         console.log("offline teas:", cache);
+
+        setRoute({route: "TEA_DETAILS", data: reqData})
       }
     }
   }
 
-  const [step, setStep] = useState(1);
-
-  function handleNext() {
-    setStep(step + 1);
-  }
-
   function handlePrevious() {
-    setStep(step - 1);
-  }
-
-  function handleClose() {
-    setTeaData(initialState);
-    setStep(1);
-    setRoute({ route: "MAIN" });
+    setRoute({ route: "TEA_DETAILS", data: teaData });
   }
 
   const props = {
-    imageData,
-    setImageData,
     teaData,
     setTeaData,
-    handleNext,
     handlePrevious,
-    handleClose,
-    handleCreate,
-  };
-
-  function renderSwitch(step) {
-    switch (step) {
-      case 1:
-        return <CaptureImage {...props} />;
-      case 2:
-        return <InputRouter {...props} />;
-      default:
-        return <CaptureImage {...props} />;
-    }
+    handleEdit,
+    notes,
   }
 
-  return <Box className={classes.root}>{renderSwitch(step)}</Box>;
+  return (
+    <Box className={classes.root}>
+      {details ?  <TeaDetails {...props} setRoute={setRoute} /> : <InputRouter {...props} />}
+    </Box>
+  );
 }

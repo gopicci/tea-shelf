@@ -12,13 +12,14 @@ import EditWeightList from "./EditWeightList";
 import EditWeightInput from "./EditWeightInput";
 import EditTime from "./EditTime";
 import EditPrice from "./EditPrice";
+import EditNotes from './EditNotes';
 
 export default function InputRouter(props) {
   /**
    * Defines mobile tea creation input stage routes.
    */
 
-  const [editRoute, setEditRoute] = useState("input_layout");
+  const [editRoute, setEditRoute] = useState(props.notes ? "notes" : "input_layout");
 
   function handleBackToLayout() {
     setEditRoute("input_layout");
@@ -70,6 +71,8 @@ export default function InputRouter(props) {
         return <EditWeightInput {...inputProps} field={editRoute} />;
       case "price":
         return <EditPrice {...inputProps} field={editRoute} />;
+      case "notes":
+        return <EditNotes {...inputProps} />;
       default:
         return <InputLayout {...inputProps} />;
     }

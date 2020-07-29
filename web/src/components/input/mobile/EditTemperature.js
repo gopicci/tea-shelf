@@ -2,8 +2,8 @@ import React from "react";
 import { List } from "@material-ui/core";
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
-import { celsiusToFahrenheit } from "../../services/ParsingService";
-import { formListStyles } from "../../style/FormListStyles";
+import { celsiusToFahrenheit } from "../../../services/ParsingService";
+import { formListStyles } from "../../../style/FormListStyles";
 
 export default function EditTemperature({
   teaData,

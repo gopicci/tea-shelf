@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, ListItem, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { formListStyles } from "../../style/FormListStyles";
+import { formListStyles } from "../../../style/FormListStyles";
 
 const useStyles = makeStyles((theme) => ({
   nameBox: {

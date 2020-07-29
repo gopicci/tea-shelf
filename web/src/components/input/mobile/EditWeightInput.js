@@ -7,6 +7,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { cropToNoZeroes } from "../../../services/ParsingService";
 import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,14 +23,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditTime({
+export default function EditWeightInput({
   teaData,
   setTeaData,
   field,
   handleBackToLayout,
 }) {
   /**
-   * Mobile tea creation brewing time list input component.
+   * Mobile tea creation weight input component.
    *
    * @param teaData {json} Input tea data state
    * @param setTeaData {function} Set input tea data state
@@ -40,33 +41,25 @@ export default function EditTime({
   const classes = useStyles();
 
   const [text, setText] = useState("");
-  const [inputType, setInputType] = useState("seconds");
-
-  const fields = field.split("_");
+  const [inputType, setInputType] = useState("grams");
 
   function handleChange(event) {
-    const onlyNumbers = event.target.value.replace(/[^0-9]/g, "");
-    setText(onlyNumbers.slice(0, 3));
+    const onlyNumbers = event.target.value.replace(/[^0-9.]/g, "");
+    setText(onlyNumbers.slice(0, 5));
   }
 
   function handleRadioChange(event) {
     setInputType(event.target.value);
   }
 
-  function handleAdd() {
-    let timeInSeconds = parseInt(text);
-    if (inputType === "minutes") timeInSeconds = timeInSeconds * 60;
-    if (inputType === "hours") timeInSeconds = timeInSeconds * 3600;
-
-    if (fields[0] === "gongfu" || fields[0] === "western")
+  function handleSave() {
+    let grams = parseFloat(text);
+    if (inputType === "ounces") grams = grams * 28.35;
+    if (!isNaN(grams))
       setTeaData({
         ...teaData,
-        [fields[0] + "_brewing"]: {
-          ...teaData[fields[0] + "_brewing"],
-          [fields[1]]: timeInSeconds,
-        },
+        weight_left: cropToNoZeroes(grams, 1),
       });
-    else setTeaData({ ...teaData, [field]: timeInSeconds });
     handleBackToLayout();
   }
 
@@ -76,10 +69,10 @@ export default function EditTime({
     <>
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
-        name={fields[1] ? fields[1] : fields[0]}
-        showAdd={true}
-        disableAdd={!text}
-        handleAdd={handleAdd}
+        name={field}
+        saveName="Save"
+        disableSave={!text}
+        handleSave={handleSave}
       />
       <Box className={classes.mainBox}>
         <TextField
@@ -88,9 +81,9 @@ export default function EditTime({
           onChange={handleChange}
           onFocus={handleFocus}
           variant="outlined"
-          placeholder={"Enter time in " + inputType}
+          placeholder={"Enter weight in " + inputType}
           fullWidth
-          aria-label="time-text"
+          aria-label="weight"
         />
         <RadioGroup
           aria-label="type"
@@ -100,21 +93,15 @@ export default function EditTime({
         >
           <FormControlLabel
             className={classes.radio}
-            value="seconds"
+            value="grams"
             control={<Radio />}
-            label="Seconds"
+            label="Grams"
           />
           <FormControlLabel
             className={classes.radio}
-            value="minutes"
+            value="ounces"
             control={<Radio />}
-            label="Minutes"
-          />
-          <FormControlLabel
-            className={classes.radio}
-            value="hours"
-            control={<Radio />}
-            label="Hours"
+            label="Ounces"
           />
         </RadioGroup>
       </Box>

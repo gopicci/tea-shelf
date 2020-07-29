@@ -35,7 +35,7 @@ export default function EditOriginOffline({
   const handleChange = (event) =>
     setOrigin({ ...origin, [event.target.id]: event.target.value });
 
-  function handleAdd() {
+  function handleSave() {
     setTeaData({ ...teaData, origin: origin });
     handleBackToLayout();
   }
@@ -47,9 +47,9 @@ export default function EditOriginOffline({
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
         name={field}
-        showAdd={true}
-        disableAdd={!origin || !origin.country}
-        handleAdd={handleAdd}
+        saveName="Save"
+        disableSave={!origin || !origin.country}
+        handleSave={handleSave}
       />
       <Box className={classes.inputBox}>
         <TextField

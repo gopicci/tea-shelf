@@ -14,8 +14,8 @@ import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { ArrowBack } from "@material-ui/icons";
-import { formListStyles } from "../../style/FormListStyles";
-import { VendorsState } from "../statecontainers/VendorsContext";
+import { formListStyles } from "../../../style/FormListStyles";
+import { VendorsState } from "../../statecontainers/VendorsContext";
 
 const filter = createFilterOptions();
 

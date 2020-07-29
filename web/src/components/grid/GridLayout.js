@@ -130,13 +130,13 @@ export default function GridLayout({ setRoute }) {
       className={gridView ? classes.gridRoot : classes.listRoot}
     >
       {filteredTeas &&
-        filteredTeas.map((tea) => (
+        filteredTeas.map((tea, i) => (
           <Grid
             item
             className={
               gridView && upSmall ? classes.gridItem : classes.listItem
             }
-            key={tea.name}
+            key={i}
           >
             <TeaCard
               tea={tea}

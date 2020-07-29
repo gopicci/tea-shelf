@@ -17,9 +17,9 @@ import { ArrowBack } from "@material-ui/icons";
 import {
   brewingTimesToSeconds,
   getSubcategoryName,
-} from "../../services/ParsingService";
-import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
-import { formListStyles } from "../../style/FormListStyles";
+} from "../../../services/ParsingService";
+import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
+import { formListStyles } from "../../../style/FormListStyles";
 
 const filter = createFilterOptions();
 

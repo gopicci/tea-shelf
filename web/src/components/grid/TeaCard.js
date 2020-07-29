@@ -81,6 +81,9 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     textAlign: "right",
   },
+  rating: {
+    margin: "auto",
+  },
   countryFlag: {
     fontSize: theme.typography.body2.fontSize,
     paddingLeft: theme.spacing(0.5),
@@ -140,7 +143,16 @@ export default function TeaCard({ tea, gridView, setRoute }) {
             </Typography>
           </Box>
           <Box className={classes.bottomBox}>
-            <StarRate className={classes.icon} />
+            {tea.rating > 0 &&
+              <>
+                <StarRate className={classes.icon} />
+                <Typography
+                  className={classes.rating}
+                  variant="body2"
+                  component="span"
+                >{tea.rating / 2}</Typography>
+              </>
+            }
             {tea.origin && (
               <>
                 <Typography

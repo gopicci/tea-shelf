@@ -1,10 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import {
-  brewingTimesToSeconds,
-  celsiusToFahrenheit,
-} from "../../services/ParsingService";
+import { celsiusToFahrenheit } from "../../../services/ParsingService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,9 +44,13 @@ export default function InputBrewing({ name, teaData, handleClick }) {
   const classes = useStyles();
 
   function convertToSeconds(time) {
-    if (String(time).includes(":")) {
-      const a = String(time).split(":");
-      return parseInt(+a[0] * 3600 + +a[1] * 60 + +a[2]);
+    const s = String(time);
+    if (s.includes(":")) {
+      // Input is API format dd hh:mm:ss
+      let days = 0;
+      if (s.includes(" ")) days = parseInt(s.slice(0, 2));
+      const a = s.slice(-8).split(":");
+      return parseInt(days * 24 * 3600 + +a[0] * 3600 + +a[1] * 60 + +a[2]);
     } else return parseInt(time);
   }
 

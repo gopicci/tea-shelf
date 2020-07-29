@@ -22,16 +22,18 @@ const useStyles = makeStyles((theme) => ({
 export default function InputAppBar({
   name,
   handleBackToLayout,
-  showAdd = false,
-  disableAdd = true,
-  handleAdd = null,
+  actionName = "Edit",
+  saveName = null,
+  disableSave = true,
+  handleSave = null,
 }) {
   /**
    * Mobile tea creation appbar component.
    *
    * @param name {string} Input name
    * @param handleBackToLayout {function} Reroutes to input layout
-   * @param showAdd {bool} Define presence of add button
+   * @param actionName {string} Define name of title action
+   * @param saveName {string} Define presence and name of save button
    * @param disableAdd {bool} Define if add button is disabled
    * @param handleAdd {function} Handles add click
 
@@ -52,11 +54,16 @@ export default function InputAppBar({
           <ArrowBack />
         </IconButton>
         <Typography variant="h6" className={classes.title}>
-          Add {name}
+          {actionName} {name}
         </Typography>
-        {showAdd && (
-          <Button color="inherit" disabled={disableAdd} onClick={handleAdd}>
-            ADD
+        {saveName && (
+          <Button
+            color="inherit"
+            disabled={disableSave}
+            onClick={handleSave}
+            aria-label={saveName}
+          >
+            {saveName}
           </Button>
         )}
       </Toolbar>

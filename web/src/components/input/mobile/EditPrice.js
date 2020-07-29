@@ -7,7 +7,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { cropToNoZeroes } from "../../services/ParsingService";
+import { cropToNoZeroes } from "../../../services/ParsingService";
 import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({
@@ -66,7 +66,7 @@ export default function EditPrice({
     }
   }
 
-  function handleAdd() {
+  function handleSave() {
     // Add weight_left if it wasn't there yet
     let grams = parseFloat(textWeight);
 
@@ -97,9 +97,9 @@ export default function EditPrice({
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
         name={field}
-        showAdd={true}
-        disableAdd={!(textPrice && textWeight)}
-        handleAdd={handleAdd}
+        saveName="Save"
+        disableSave={!(textPrice && textWeight)}
+        handleSave={handleSave}
       />
       <Box className={classes.mainBox}>
         <TextField

@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   FormControlLabel,
   FormGroup,
   IconButton,
@@ -20,9 +21,10 @@ import {
   getSubcategoryName,
   getOriginName,
   getCountryCode,
+  cropToNoZeroes,
 } from "../services/ParsingService";
 import ReactCountryFlag from "react-country-flag";
-import InputBrewing from "./create/InputBrewing";
+import InputBrewing from "./input/mobile/InputBrewing";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,9 +33,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     margin: 0,
     flexDirection: "column",
-  },
-  barMain: {
-    flexGrow: 1,
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -45,15 +44,16 @@ const useStyles = makeStyles((theme) => ({
   page: {
     display: "flex",
     flexDirection: "column",
-    minHeight: "100%",
+    minHeight: "100vh",
+    flexShrink: 0,
     background: theme.palette.background.main,
   },
   card: {
     display: "flex",
+    flexShrink: 0,
     flexDirection: "column",
     borderRadius: 0,
     marginBottom: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
   },
   empty: {
     display: "flex",
@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "flex-end",
     minHeight: theme.spacing(10),
     background: theme.palette.background.main,
+    paddingRight: theme.spacing(1),
   },
   editButton: {
     color: theme.palette.primary.main,
@@ -68,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   pageTop: {
     display: "flex",
     flexDirection: "row",
+    paddingRight: theme.spacing(2),
   },
   teaImage: {
     minWidth: theme.spacing(14),
@@ -94,7 +96,6 @@ const useStyles = makeStyles((theme) => ({
   row: {
     display: "flex",
     flexDirection: "row",
-    paddingBottom: theme.spacing(4),
   },
   divider: {
     width: `calc(100% - ${theme.spacing(4)}px)`,
@@ -103,24 +104,33 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     borderTop: `solid 1px ${theme.palette.divider}`,
   },
-  starRating: {
-    display: 'flex',
-    justifyContent: "center",
-    flexGrow: 1,
-  },
   brewingTitle: {
     flexGrow: 1,
     textAlign: "left",
+    margin: "auto",
+  },
+  grow: {
+    flexGrow: 1,
+  },
+  centerGrow: {
+    flexGrow: 1,
+    textAlign: "center",
   },
   brewing: {
     flexGrow: 1,
-    marginBottom: theme.spacing(16),
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(2),
   },
   notesBox: {
     display: "flex",
     flexGrow: 1,
+    flexDirection: "column",
+    justifyContent: "center",
     minHeight: theme.spacing(16),
     paddingBottom: theme.spacing(2),
+  },
+  notes: {
+    textAlign: "left",
   },
   countryFlag: {
     paddingLeft: theme.spacing(0.5),
@@ -128,14 +138,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TeaDetails({ setRoute, tea }) {
+export default function TeaDetails({ setRoute, teaData, handleEdit }) {
   /**
    * Mobile tea entry creation process. Consists of 3 stages:
    * captureImage -> inputLayout -> handleCreate
    *
-   * teaData tracks the input state.
    *
    * @param setRoute {function} Set main route
+   * @param teaData {json} Track the input state
+   * @param handleEdit {function} Handle state edits
    */
 
   const classes = useStyles();
@@ -146,8 +157,16 @@ export default function TeaDetails({ setRoute, tea }) {
     setRoute({ route: "MAIN" });
   }
 
-  function handleRatingChange(event, value) {
-    console.log(value);
+  function handleRatingChange(_, value) {
+    handleEdit({ ...teaData, rating: value * 2 });
+  }
+
+  function handleEditClick() {
+    setRoute({ route: "EDIT", data: teaData });
+  }
+
+  function handleEditNotes() {
+    setRoute({ route: "EDIT_NOTES", data: teaData });
   }
 
   function handleSwitch() {
@@ -158,7 +177,7 @@ export default function TeaDetails({ setRoute, tea }) {
     <Box className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Box className={classes.barMain}>
+          <Box className={classes.grow}>
             <IconButton
               onClick={handleBack}
               edge="start"
@@ -174,7 +193,7 @@ export default function TeaDetails({ setRoute, tea }) {
           </IconButton>
         </Toolbar>
       </AppBar>
-      {tea && (
+      {teaData && (
         <Box className={classes.page}>
           <Card className={classes.card}>
             <Box className={classes.empty}>
@@ -182,100 +201,130 @@ export default function TeaDetails({ setRoute, tea }) {
                 className={classes.editButton}
                 size="small"
                 endIcon={<Edit />}
+                onClick={handleEditClick}
               >
                 Edit
               </Button>
             </Box>
             <Box className={classes.pageTop}>
               <img
-                src={tea.image ? tea.image : emptyImage}
+                src={teaData.image ? teaData.image : emptyImage}
                 alt=""
                 className={classes.teaImage}
               />
               <Box className={classes.center}>
-                <Typography variant="h1">{tea.name}</Typography>
+                <Typography variant="h1">{teaData.name}</Typography>
               </Box>
             </Box>
             <Box className={classes.generic}>
               <Typography variant="h2">
-                {tea.year} {getSubcategoryName(tea.subcategory)}
+                {teaData.year} {getSubcategoryName(teaData.subcategory)}
               </Typography>
             </Box>
             <Box className={classes.divider} />
             <Box className={classes.generic}>
-              <Typography variant="caption">
-                Rating:
-              </Typography>
-              <Rating
-                name="customized-empty"
-                className={classes.starRating}
-                defaultValue={0}
-                precision={0.5}
-                size="large"
-                onChange={handleRatingChange}
-                emptyIcon={<Star fontSize="inherit" />}
-              />
+              <Typography variant="caption">Rating:</Typography>
+              <Box className={classes.grow}>
+                <Rating
+                  name="customized-empty"
+                  defaultValue={teaData.rating / 2}
+                  precision={0.5}
+                  size="large"
+                  onChange={handleRatingChange}
+                  emptyIcon={<Star fontSize="inherit" />}
+                />
+              </Box>
             </Box>
             <Box className={classes.divider} />
-
             <Box className={classes.generic}>
               <Box className={classes.row}>
-              <Typography
-                variant="caption"
-                className={classes.brewingTitle}
-                component="span"
-              >
-                Brewing instructions:
-              </Typography>
-              <FormGroup>
-                <FormControlLabel
-                  value="start"
-                  control={<Switch size="small" color="default" />}
-                  label={gongfu ? "Gongfu" : "Western"}
-                  labelPlacement="start"
-                  onChange={handleSwitch}
-                />
-              </FormGroup>
+                <Typography
+                  variant="caption"
+                  className={classes.brewingTitle}
+                >
+                  Brewing instructions:
+                </Typography>
+                <FormGroup>
+                  <FormControlLabel
+                    value="start"
+                    control={<Switch size="small" color="default" />}
+                    label={<Typography variant="caption" >{gongfu ? "Gongfu" : "Western"}</Typography>}
+                    labelPlacement="start"
+                    onChange={handleSwitch}
+                  />
+                </FormGroup>
               </Box>
               <Box className={classes.brewing}>
                 <InputBrewing
                   name={gongfu ? "gongfu" : "western"}
-                  teaData={tea}
+                  teaData={teaData}
                   handleClick={null}
                 />
               </Box>
             </Box>
-            {tea.weight_left > 0 && (
-              <Typography variant="caption">
-                Weight left: {tea.weight_left}
-              </Typography>
-            )}
-            {tea.price > 0 && (
-              <Typography variant="caption">
-                Price: {tea.weight_left}
-              </Typography>
+            {(teaData.weight_left > 0 || teaData.price > 0) && (
+              <>
+                <Box className={classes.divider} />
+                <Box className={classes.generic}>
+                  <Box className={classes.row}>
+                    {teaData.weight_left > 0 && (
+                      <Typography
+                        variant="caption"
+                        className={classes.centerGrow}
+                      >
+                        Weight left:{" "}
+                        {teaData.weight_left +
+                          "g (" +
+                          cropToNoZeroes(teaData.weight_left / 28.35, 2) +
+                          "oz)"}
+                      </Typography>
+                    )}
+                    {teaData.price > 0 && (
+                      <Typography
+                        variant="caption"
+                        className={classes.centerGrow}
+                      >
+                        Price:{" "}
+                        {teaData.price +
+                          "/g (" +
+                          cropToNoZeroes(teaData.price * 28.35, 1) +
+                          "/oz)"}
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </>
             )}
           </Card>
           <Card className={classes.card}>
-            <Box className={classes.generic}>
-              <Typography variant="caption" display="block">
-                Notes:
-              </Typography>
-              <Box className={classes.notesBox}>
-                <Typography variant="caption" className={classes.center}>
-                  {tea.notes ? tea.notes : <Button>Add notes</Button>}
+            <CardActionArea onClick={handleEditNotes} aria-label="Edit notes">
+              <Box className={classes.generic}>
+                <Typography variant="caption" display="block">
+                  {teaData.notes && "Edit notes:"}
                 </Typography>
+
+                {!teaData.notes ? (
+                  <Typography variant="caption" className={classes.center}>
+                    <Button>Add notes</Button>
+                  </Typography>
+                ) : (
+                  <Box className={classes.notesBox}>
+                      {teaData.notes.split("\n").map((s, key) => (
+                        <Typography variant="body1" className={classes.notes} key={key}>{s}</Typography>
+                      ))}
+                  </Box>
+                )}
               </Box>
-            </Box>
+            </CardActionArea>
           </Card>
-          {tea.origin && (
+          {teaData.origin && (
             <Card className={classes.card}>
               <Box className={classes.generic}>
                 <Typography variant="caption" display="block">
                   Origin:
                 </Typography>
                 <Typography variant="body2">
-                  {getOriginName(tea.origin)}
+                  {getOriginName(teaData.origin)}
                 </Typography>
                 <ReactCountryFlag
                   svg
@@ -284,8 +333,8 @@ export default function TeaDetails({ setRoute, tea }) {
                     height: "2em",
                   }}
                   className={classes.countryFlag}
-                  countryCode={getCountryCode(tea.origin.country)}
-                  aria-label={tea.origin.country}
+                  countryCode={getCountryCode(teaData.origin.country)}
+                  aria-label={teaData.origin.country}
                 />
               </Box>
             </Card>

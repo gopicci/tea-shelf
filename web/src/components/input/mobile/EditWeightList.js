@@ -2,7 +2,7 @@ import React from "react";
 import { List } from "@material-ui/core";
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
-import { formListStyles } from "../../style/FormListStyles";
+import { formListStyles } from "../../../style/FormListStyles";
 
 export default function EditWeightList({
   data,

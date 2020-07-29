@@ -33,23 +33,27 @@ export default function EditText({
 
   const [text, setText] = useState(teaData[field]);
 
-  const handleChange = (event) => setText(event.target.value);
+  function handleChange(event) {
+    setText(event.target.value);
+  }
 
-  function handleAdd() {
+  function handleSave() {
     setTeaData({ ...teaData, [field]: text.replace(/\n/g, " ") });
     handleBackToLayout();
   }
 
-  const handleFocus = (event) => event.target.select();
+  function handleFocus(event) {
+    event.target.select();
+  }
 
   return (
     <>
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
         name={field}
-        showAdd={true}
-        disableAdd={!text}
-        handleAdd={handleAdd}
+        saveName="Save"
+        disableSave={!text}
+        handleSave={handleSave}
       />
       <Box className={classes.textField}>
         <InputBase

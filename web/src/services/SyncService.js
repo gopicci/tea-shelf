@@ -3,7 +3,7 @@ import localforage from "localforage";
 
 export function genericReducer(state, action) {
   /**
-   * Generic array state reducer.
+   * Generic object array state reducer, assumes id field on entries.
    */
   switch (action.type) {
     case "CLEAR":
@@ -12,6 +12,10 @@ export function genericReducer(state, action) {
       return action.data;
     case "ADD":
       return state.concat(action.data);
+    case "EDIT":
+      return state.map((item) =>
+        item.id === action.data.id ? action.data : item
+      );
     default:
       return action;
   }
@@ -51,13 +55,14 @@ export async function getOfflineTeas() {
    */
 
   const cache = await localforage.getItem("offline-teas");
-  if (!cache)
-    return localforage.setItem("offline-teas", []);
+  if (!cache) return localforage.setItem("offline-teas", []);
   else
     return Promise.all(
-      cache.map(async (entry) => {
-        entry.category = parseInt(entry.category);
-        return entry;
-      })
+      cache
+        .filter((entry) => entry.name && entry.category)
+        .map(async (entry) => {
+          entry.category = parseInt(entry.category);
+          return entry;
+        })
     );
 }

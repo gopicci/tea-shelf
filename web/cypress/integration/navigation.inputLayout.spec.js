@@ -36,9 +36,9 @@ describe("Create navigation", () => {
     cy.get('button[aria-label="add tea"]').click();
     cy.get('button[aria-label="skip"]').click();
     cy.get('div[aria-label="name"]').click();
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('textarea[id="standard-multiline"]').type(longName);
-    cy.get('button[aria-label="add"]').should("be.enabled");
+    cy.get('button[aria-label="Save"]').should("be.enabled");
     cy.get('textarea[id="standard-multiline"]')
       .invoke("text")
       .then((text) => {
@@ -49,7 +49,7 @@ describe("Create navigation", () => {
     cy.get("p").contains("test").should("not.exist");
     cy.get('div[aria-label="name"]').click();
     cy.get('textarea[id="standard-multiline"]').type("test");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("test").should("exist");
     cy.get('div[aria-label="name"]').click();
     cy.get('textarea[id="standard-multiline"]')
@@ -166,19 +166,19 @@ describe("Create navigation", () => {
     cy.get('button[aria-label="add tea"]').click();
     cy.get('button[aria-label="skip"]').click();
     cy.get('div[id="weight"]').click();
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="weight"]').type("...");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("...").should("not.exist");
     cy.get("p").contains("NaN").should("not.exist");
     cy.get('div[id="weight"]').click();
     cy.get('div[aria-label="weight"]').type("10");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("10g - 0.35oz").should("exist");
     cy.get('div[id="weight"]').click();
     cy.get('div[aria-label="weight"]').type("10");
     cy.get('input[value="ounces"]').click();
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("283.5g - 10oz").should("exist");
     cy.get('div[id="weight"]').click();
     cy.get('button[aria-label="back"]').click();
@@ -194,15 +194,15 @@ describe("Create navigation", () => {
     cy.get('button[aria-label="add tea"]').click();
     cy.get('button[aria-label="skip"]').click();
     cy.get('div[id="price"]').click();
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="price"]').type("...");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("...").should("not.exist");
     cy.get("p").contains("NaN").should("not.exist");
     cy.get('div[id="price"]').click();
     cy.get('div[aria-label="price"]').type("100");
     cy.get('div[aria-label="amount"]').type("10");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("10/g - 283.5/oz").should("exist");
     cy.get("p").contains("10g - 0.35oz").should("exist");
     cy.get('div[id="price"]').click();
@@ -213,7 +213,7 @@ describe("Create navigation", () => {
     cy.get('input[value="0.35"]').should("exist");
     cy.get('div[aria-label="price"]').type("2");
     cy.get('div[aria-label="amount"]').type(".1");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("0.71/g - 20.1/oz").should("exist");
     cy.get("p").contains("10g - 0.35oz").should("exist");
     cy.get('button[aria-label="back"]').click();
@@ -243,11 +243,11 @@ describe("Create navigation", () => {
 
     // Can pick initial time
     cy.get('div[id="gongfu_initial"]').click();
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type(".a#%>!");
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16m").should("exist");
     cy.get("p").contains("39sec").should("exist");
     cy.get('div[id="gongfu_initial"]').click();
@@ -256,22 +256,22 @@ describe("Create navigation", () => {
     cy.get('div[id="gongfu_initial"]').click();
     cy.get('input[value="minutes"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16").should("exist");
     cy.get("p").contains("hour").should("exist");
     cy.get('div[id="gongfu_initial"]').click();
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("999").should("exist");
 
     // Can pick increments
     cy.get('div[id="gongfu_increments"]').click();
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type(".a#%>!");
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16m").should("exist");
     cy.get("p").contains("39sec").should("exist");
     cy.get('div[id="gongfu_increments"]').click();
@@ -280,13 +280,13 @@ describe("Create navigation", () => {
     cy.get('div[id="gongfu_increments"]').click();
     cy.get('input[value="minutes"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16").should("exist");
     cy.get("p").contains("hour").should("exist");
     cy.get('div[id="gongfu_increments"]').click();
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("999").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
@@ -315,11 +315,11 @@ describe("Create navigation", () => {
 
     // Can pick initial time
     cy.get('div[id="western_initial"]').click();
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type(".a#%>!");
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16m").should("exist");
     cy.get("p").contains("39sec").should("exist");
     cy.get('div[id="western_initial"]').click();
@@ -328,22 +328,22 @@ describe("Create navigation", () => {
     cy.get('div[id="western_initial"]').click();
     cy.get('input[value="minutes"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16").should("exist");
     cy.get("p").contains("hour").should("exist");
     cy.get('div[id="western_initial"]').click();
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("999").should("exist");
 
     // Can pick increments
     cy.get('div[id="western_increments"]').click();
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type(".a#%>!");
-    cy.get('button[aria-label="add"]').should("be.disabled");
+    cy.get('button[aria-label="Save"]').should("be.disabled");
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16m").should("exist");
     cy.get("p").contains("39sec").should("exist");
     cy.get('div[id="western_increments"]').click();
@@ -352,13 +352,13 @@ describe("Create navigation", () => {
     cy.get('div[id="western_increments"]').click();
     cy.get('input[value="minutes"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("16").should("exist");
     cy.get("p").contains("hour").should("exist");
     cy.get('div[id="western_increments"]').click();
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
-    cy.get('button[aria-label="add"]').click();
+    cy.get('button[aria-label="Save"]').click();
     cy.get("p").contains("999").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();

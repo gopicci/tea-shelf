@@ -5,7 +5,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import Login from "./components/Login";
 import MainPageLayout from "./components/MainPageLayout";
 import Create from "./components/Create";
-import TeaDetails from "./components/TeaDetails";
+import Edit from "./components/Edit";
 import SortFilter from "./components/SortFilter";
 import CustomSnackbar from "./components/snackbar/CustomSnackbar";
 import MainStateContainer from "./components/statecontainers/MainStateContainer";
@@ -20,20 +20,22 @@ function App() {
    */
   const isLoggedIn = getUser();
 
-  const [route, setRoute] = useState({route: "MAIN", data: null});
+  const [route, setRoute] = useState({ route: "MAIN", data: null });
 
   function getRoute(route) {
     switch (route.route) {
       case "MAIN":
-        return (
-          <MainPageLayout setRoute={setRoute} />
-        );
+        return <MainPageLayout setRoute={setRoute} />;
       case "FILTER":
         return <SortFilter setRoute={setRoute} />;
       case "CREATE":
         return <Create setRoute={setRoute} />;
+      case "EDIT":
+        return <Edit setRoute={setRoute} editData={route.data} />;
+      case "EDIT_NOTES":
+        return <Edit setRoute={setRoute} editData={route.data} notes={true} />;
       case "TEA_DETAILS":
-        return <TeaDetails setRoute={setRoute} tea={route.data} />;
+        return <Edit setRoute={setRoute} editData={route.data} details={true} />;
       default:
         return <MainPageLayout setRoute={setRoute} />;
     }

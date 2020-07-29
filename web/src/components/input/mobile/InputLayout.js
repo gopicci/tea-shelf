@@ -14,10 +14,10 @@ import InputBrewing from "./InputBrewing";
 import {
   cropToNoZeroes,
   getSubcategoryName,
-} from "../../services/ParsingService";
-import { getOriginName } from "../../services/ParsingService";
-import { CategoriesState } from "../statecontainers/CategoriesContext";
-import { formListStyles } from "../../style/FormListStyles";
+} from "../../../services/ParsingService";
+import { getOriginName } from "../../../services/ParsingService";
+import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { formListStyles } from "../../../style/FormListStyles";
 
 const useStyles = makeStyles((theme) => ({
   nameBox: {
@@ -27,8 +27,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function InputLayout({
   teaData,
-  handleCreate,
-  handleClose,
+  handleEdit=null,
+  handleCreate=null,
+  handleClose=null,
   handlePrevious,
   setEditRoute,
 }) {
@@ -47,9 +48,15 @@ export default function InputLayout({
 
   const categories = useContext(CategoriesState);
 
-  function handleAdd() {
-    handleCreate();
-    handleClose();
+
+  function handleSave() {
+    if (handleCreate) {
+      handleCreate();
+      handleClose();
+    } else {
+      handleEdit();
+      handlePrevious();
+    }
   }
 
   function handleClick(event) {
@@ -61,9 +68,10 @@ export default function InputLayout({
       <InputAppBar
         handleBackToLayout={handlePrevious}
         name="Tea"
-        showAdd={true}
-        disableAdd={!teaData.name || !teaData.category}
-        handleAdd={handleAdd}
+        actionName={handleCreate ? "Add" : "Edit" }
+        saveName={handleCreate ? "Create" : "Save" }
+        disableSave={!teaData.name || !teaData.category}
+        handleSave={handleSave}
       />
       <FormGroup>
         <FormLabel className={formListClasses.formLabel}>

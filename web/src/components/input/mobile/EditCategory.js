@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import InputAppBar from "./InputAppBar";
-import CheckboxList from "../generics/CheckboxList";
-import { brewingTimesToSeconds } from "../../services/ParsingService";
-import { CategoriesState } from "../statecontainers/CategoriesContext";
+import CheckboxList from "../../generics/CheckboxList";
+import { brewingTimesToSeconds } from "../../../services/ParsingService";
+import { CategoriesState } from "../../statecontainers/CategoriesContext";
 
 export default function EditCategory({
   teaData,

@@ -1,6 +1,6 @@
 import React from "react";
-import CheckboxList from "../generics/CheckboxList";
-import CheckboxListItem from "../generics/CheckboxListItem";
+import CheckboxList from "../../generics/CheckboxList";
+import CheckboxListItem from "../../generics/CheckboxListItem";
 import InputAppBar from "./InputAppBar";
 
 export default function EditYear({
