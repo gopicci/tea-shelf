@@ -187,6 +187,57 @@ def test_user_can_crud_tea(client, token):
 
 @override_settings(REST_FRAMEWORK=auth_override)
 @pytest.mark.django_db
+def test_tea_nested_serializers_create_update(client, token):
+    category = Category(name="OOLONG")
+    category.save()
+    resp_vendor = client.post(
+        "/api/vendor/",
+        {
+            "name": "Test vendor",
+            "website": "https://www.stilltest.com",
+            "popularity": 7,
+        },
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp_vendor.status_code == 201
+    resp_post = client.post(
+        "/api/tea/",
+        {
+            "name": "Test tea",
+            "subcategory": {"name": "Test subcategory", "category": category.id},
+            "vendor": {"name": "Test vendor"},
+        },
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp_post.status_code == 201
+    assert resp_post.data["name"] == "Test tea"
+    assert resp_post.data["subcategory"]["name"] == "Test subcategory"
+    assert resp_post.data["vendor"]["name"] == "Test vendor"
+    assert resp_post.data["vendor"]["id"] == resp_vendor.data["id"]
+
+    _id = resp_post.data["id"]
+    resp_put = client.put(
+        f"/api/tea/{_id}/",
+        {
+            "name": "Updated tea",
+            "subcategory": {"name": "Updated subcategory", "category": category.id},
+            "vendor": {"name": "Test vendor"},
+        },
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp_put.status_code == 200
+    assert resp_put.data["name"] == "Updated tea"
+    assert resp_put.data["subcategory"]["name"] == "Updated subcategory"
+    assert resp_put.data["subcategory"]["id"] != resp_post.data["subcategory"]["id"]
+    assert resp_put.data["vendor"]["name"] == "Test vendor"
+    assert resp_put.data["vendor"]["id"] == resp_post.data["vendor"]["id"]
+
+
+@override_settings(REST_FRAMEWORK=auth_override)
+@pytest.mark.django_db
 def test_users_cannot_view_others_teas(client, token):
     resp = client.post(
         "/api/tea/",

@@ -268,61 +268,71 @@ class TeaSerializer(serializers.ModelSerializer):
         nested_data = {}
 
         if "gongfu_brewing" in validated_data:
-            nested_data['gongfu'] = validated_data.pop("gongfu_brewing")
-            if nested_data['gongfu']:
-                [nested_data['gongfu'].pop(k) for k, v in list(nested_data['gongfu'].items()) if v is None]
+            nested_data["gongfu"] = validated_data.pop("gongfu_brewing")
+            if nested_data["gongfu"]:
+                [
+                    nested_data["gongfu"].pop(k)
+                    for k, v in list(nested_data["gongfu"].items())
+                    if v is None
+                ]
 
         if "western_brewing" in validated_data:
-            nested_data['western'] = validated_data.pop("western_brewing")
-            if nested_data['western']:
-                for k, v in list(nested_data['western'].items()):
+            nested_data["western"] = validated_data.pop("western_brewing")
+            if nested_data["western"]:
+                for k, v in list(nested_data["western"].items()):
                     if v is None:
-                        nested_data['western'].pop(k)
+                        nested_data["western"].pop(k)
 
         if "origin" in validated_data:
-            nested_data['origin'] = validated_data.pop("origin")
-            if nested_data['origin']:
-                nested_data['origin']["user"] = validated_data["user"]
-                [nested_data['origin'].pop(k) for k, v in list(nested_data['origin'].items()) if v is None]
+            nested_data["origin"] = validated_data.pop("origin")
+            if nested_data["origin"]:
+                nested_data["origin"]["user"] = validated_data["user"]
+                [
+                    nested_data["origin"].pop(k)
+                    for k, v in list(nested_data["origin"].items())
+                    if v is None
+                ]
 
         if "subcategory" in validated_data:
-            nested_data['subcategory'] = validated_data.pop("subcategory")
-            if nested_data['subcategory']:
-                nested_data['subcategory']["user"] = validated_data["user"]
-                for k, v in list(nested_data['subcategory'].items()):
+            nested_data["subcategory"] = validated_data.pop("subcategory")
+            if nested_data["subcategory"]:
+                nested_data["subcategory"]["user"] = validated_data["user"]
+                for k, v in list(nested_data["subcategory"].items()):
                     if v is None:
-                        nested_data['subcategory'].pop(k)
+                        nested_data["subcategory"].pop(k)
 
         if "vendor" in validated_data:
-            nested_data['vendor'] = validated_data.pop("vendor")
-            if nested_data['vendor']:
-                nested_data['vendor']["user"] = validated_data["user"]
-                for k, v in list(nested_data['vendor'].items()):
+            nested_data["vendor"] = validated_data.pop("vendor")
+            if nested_data["vendor"]:
+                nested_data["vendor"]["user"] = validated_data["user"]
+                for k, v in list(nested_data["vendor"].items()):
                     if v is None:
-                        nested_data['vendor'].pop(k)
-        
+                        nested_data["vendor"].pop(k)
+
         return validated_data, nested_data
 
     def assign_nested_data(self, instance, nested_data):
-        if nested_data['gongfu']:
-            gongfu_instance, _ = Brewing.objects.get_or_create(**nested_data['gongfu'])
+        if "gongfu" in nested_data:
+            gongfu_instance, _ = Brewing.objects.get_or_create(**nested_data["gongfu"])
             instance.gongfu_brewing = gongfu_instance
 
-        if nested_data['western']:
-            western_instance, _ = Brewing.objects.get_or_create(**nested_data['western'])
+        if "western" in nested_data:
+            western_instance, _ = Brewing.objects.get_or_create(
+                **nested_data["western"]
+            )
             instance.western_brewing = western_instance
 
-        if nested_data['origin']:
-            origin_instance, _ = Origin.objects.get_or_create(**nested_data['origin'])
+        if "origin" in nested_data:
+            origin_instance, _ = Origin.objects.get_or_create(**nested_data["origin"])
             instance.origin = origin_instance
 
-        if nested_data['subcategory']:
+        if "subcategory" in nested_data:
             instance.subcategory = custom_get_or_create(
-                Subcategory, nested_data['subcategory']
+                Subcategory, nested_data["subcategory"]
             )
 
-        if nested_data['vendor']:
-            instance.vendor = custom_get_or_create(Vendor, nested_data['vendor'])
+        if "vendor" in nested_data:
+            instance.vendor = custom_get_or_create(Vendor, nested_data["vendor"])
 
         instance.save()
         return instance
@@ -335,9 +345,9 @@ class TeaSerializer(serializers.ModelSerializer):
         unnested_data, nested_data = self.extract_nested_fields(validated_data)
 
         instance = Tea.objects.create(**unnested_data)
-        
+
         return self.assign_nested_data(instance, nested_data)
-    
+
     def update(self, instance, validated_data):
         unnested_data, nested_data = self.extract_nested_fields(validated_data)
 
