@@ -14,7 +14,7 @@ const buildSW = () => {
 
       globPatterns: ["**/*.{js,css,html,png,svg}"],
 
-      maximumFileSizeToCacheInBytes: 5 * 1024 * 102,
+      maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
     })
     .then(({ count, size, warnings }) => {
       warnings.forEach(console.warn);

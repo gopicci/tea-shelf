@@ -5,10 +5,12 @@ import localforage from "localforage";
 import CaptureImage from "./input/mobile/CaptureImage";
 import InputRouter from "./input/mobile/InputRouter";
 import { APIRequest } from "../services/AuthService";
+import { generateUniqueId } from "../services/SyncService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
+import {teaModel, teaSerializer} from '../services/Serializers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,26 +21,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
 }));
-
-// Defines tea data structure in API format
-const initialState = {
-  image: null,
-  name: "",
-  category: null,
-  subcategory: null,
-  origin: null,
-  vendor: null,
-  is_archived: false,
-  gongfu_brewing: null,
-  western_brewing: null,
-  year: null,
-  gongfu_preferred: false,
-  price: null,
-  weight_left: null,
-  weight_consumed: null,
-  rating: null,
-  notes: "",
-};
 
 export default function Create({ setRoute }) {
   /**
@@ -52,7 +34,7 @@ export default function Create({ setRoute }) {
 
   const classes = useStyles();
 
-  const [teaData, setTeaData] = useState(initialState);
+  const [teaData, setTeaData] = useState(teaModel);
   const [imageData, setImageData] = useState(null);
 
   const snackbarDispatch = useContext(SnackbarDispatch);
@@ -63,27 +45,26 @@ export default function Create({ setRoute }) {
   async function handleCreate() {
     // Handle posting process
 
+    let reqData = { ...teaData };
+
     let customSubcategory = false;
     let customVendor = false;
 
     try {
-      if (imageData) teaData["image"] = imageData;
+      delete reqData.id;
 
-      if (teaData.subcategory) {
-        if (!teaData.subcategory.category) customSubcategory = true;
-        teaData.subcategory = {
-          name: teaData.subcategory.name,
-          category: teaData.category,
-        };
-      }
+      if (imageData) reqData["image"] = imageData;
 
-      if (teaData.vendor) if (!teaData.vendor.popularity) customVendor = true;
+      if (reqData.subcategory)
+        if (!reqData.subcategory.category) customSubcategory = true;
 
-      if (teaData.year === "unknown") teaData.year = null;
+      if (reqData.vendor) if (!reqData.vendor.popularity) customVendor = true;
 
-      console.log(teaData);
-      console.log(JSON.stringify(teaData));
-      const res = await APIRequest("/tea/", "POST", JSON.stringify(teaData));
+      reqData = teaSerializer(reqData);
+
+      console.log(reqData);
+      console.log(JSON.stringify(reqData));
+      const res = await APIRequest("/tea/", "POST", JSON.stringify(reqData));
       console.log("Tea created: ", res);
       const body = await res.json();
       console.log(body);
@@ -115,15 +96,18 @@ export default function Create({ setRoute }) {
       } else {
         console.log(e.message, "cache locally");
         const offlineTeas = await localforage.getItem("offline-teas");
+
+        reqData["id"] = generateUniqueId(offlineTeas);
+
         const cache = await localforage.setItem("offline-teas", [
           ...offlineTeas,
-          teaData,
+          reqData,
         ]);
         snackbarDispatch({
           type: "WARNING",
           data: "Offline mode, tea saved locally",
         });
-        teaDispatch({ type: "ADD", data: teaData });
+        teaDispatch({ type: "ADD", data: reqData });
         console.log("offline teas:", cache);
       }
     }
@@ -140,7 +124,7 @@ export default function Create({ setRoute }) {
   }
 
   function handleClose() {
-    setTeaData(initialState);
+    setTeaData(teaModel);
     setStep(1);
     setRoute({ route: "MAIN" });
   }

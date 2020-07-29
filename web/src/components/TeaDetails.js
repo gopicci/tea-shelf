@@ -152,6 +152,8 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
 
   const classes = useStyles();
 
+  console.log(teaData)
+
   const [gongfu, setGongfu] = useState(true);
 
   function handleBack() {
@@ -228,7 +230,7 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
               <Box className={classes.grow}>
                 <Rating
                   name="customized-empty"
-                  defaultValue={teaData.rating / 2}
+                  value={teaData.rating / 2 || 0}
                   precision={0.5}
                   size="large"
                   onChange={handleRatingChange}
@@ -335,6 +337,7 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
                   }}
                   className={classes.countryFlag}
                   countryCode={getCountryCode(teaData.origin.country)}
+                  alt=""
                   aria-label={teaData.origin.country}
                 />
               </Box>

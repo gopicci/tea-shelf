@@ -81,6 +81,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     textAlign: "right",
   },
+  ratingBox: {
+    display: "flex",
+    flexShrink: 1,
+  },
   rating: {
     margin: "auto",
   },
@@ -144,14 +148,14 @@ export default function TeaCard({ tea, gridView, setRoute }) {
           </Box>
           <Box className={classes.bottomBox}>
             {tea.rating > 0 &&
-              <>
+              <Box className={classes.ratingBox}>
                 <StarRate className={classes.icon} />
                 <Typography
                   className={classes.rating}
                   variant="body2"
                   component="span"
                 >{tea.rating / 2}</Typography>
-              </>
+              </Box>
             }
             {tea.origin && (
               <>

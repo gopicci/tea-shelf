@@ -21,6 +21,21 @@ export function genericReducer(state, action) {
   }
 }
 
+export function generateUniqueId(array) {
+  /**
+   * Generate unique id from array of objects with id field
+   */
+  let i = 0;
+  for (const item of array) {
+    console.log("id", item.id)
+    if (item.id === i)
+      i += 1
+    else
+      return i
+  }
+  return i
+}
+
 export async function syncOffline() {
   /**
    * Upload offline teas from storage.
@@ -31,7 +46,15 @@ export async function syncOffline() {
 
   const requests = offlineTeas.map(async (tea) => {
     try {
-      await APIRequest("/tea/", "POST", JSON.stringify(tea));
+      if (String(tea.id).length > 5) {
+        let req = {...tea};
+        if (req.image) delete req.image;
+        console.log('a', JSON.stringify(req))
+        await APIRequest(`/tea/${req.id}/`, "PUT", JSON.stringify(req));
+      }
+      else{
+        console.log('b', JSON.stringify(tea))
+        await APIRequest("/tea/", "POST", JSON.stringify(tea));}
     } catch (e) {
       failed.push(tea);
       console.error(e);

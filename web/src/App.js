@@ -31,11 +31,11 @@ function App() {
       case "CREATE":
         return <Create setRoute={setRoute} />;
       case "EDIT":
-        return <Edit setRoute={setRoute} editData={route.data} />;
+        return <Edit setRoute={setRoute} initialState={route.data} />;
       case "EDIT_NOTES":
-        return <Edit setRoute={setRoute} editData={route.data} notes={true} />;
+        return <Edit setRoute={setRoute} initialState={route.data} notes={true} />;
       case "TEA_DETAILS":
-        return <Edit setRoute={setRoute} editData={route.data} details={true} />;
+        return <Edit setRoute={setRoute} initialState={route.data} details={true} />;
       default:
         return <MainPageLayout setRoute={setRoute} />;
     }

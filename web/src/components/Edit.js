@@ -3,12 +3,13 @@ import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import InputRouter from "./input/mobile/InputRouter";
-import TeaDetails from './TeaDetails';
+import TeaDetails from "./TeaDetails";
 import { APIRequest } from "../services/AuthService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
+import { teaSerializer } from "../services/Serializers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,13 +21,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Edit({ setRoute, editData, notes=false, details=false }) {
+export default function Edit({
+  setRoute,
+  initialState,
+  notes = false,
+  details = false,
+}) {
   /**
    * Mobile tea entry edit process.
    *
    * teaData tracks the input state.
    *
-   * @param editData {json} Initial input tea data
+   * @param initialState {json} Initial input tea data
    * @param setRoute {function} Set main route
    * @param notes {bool} Editing notes
    * @param details {bool} View tea details
@@ -34,53 +40,60 @@ export default function Edit({ setRoute, editData, notes=false, details=false })
 
   const classes = useStyles();
 
-  const [teaData, setTeaData] = useState(editData);
+  const [teaData, setTeaData] = useState(initialState);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorsDispatch = useContext(VendorsDispatch);
 
-  async function handleEdit(data=null) {
+  async function handleEdit(data = null) {
     let reqData = { ...teaData };
-    if (data) reqData = {...data};
+    if (data) reqData = { ...data };
 
     let image = null;
     let customSubcategory = false;
     let customVendor = false;
 
     try {
-      image = reqData.image;
-      delete reqData.image;
-
-      if (reqData.subcategory) {
+      if (reqData.subcategory)
         if (!reqData.subcategory.category) customSubcategory = true;
-        reqData.subcategory = {
-          name: reqData.subcategory.name,
-          category: reqData.category,
-        };
-      }
 
       if (reqData.vendor) if (!reqData.vendor.popularity) customVendor = true;
 
-      if (reqData.year === "unknown") reqData.year = null;
+      reqData = teaSerializer(reqData);
 
-      console.log(reqData);
-      console.log(JSON.stringify(reqData));
-      const res = await APIRequest(
-        `/tea/${reqData.id}/`,
-        "PUT",
-        JSON.stringify(reqData)
-      );
-      console.log("Tea updated: ", res);
+      // Update context with request
+      teaDispatch({ type: "EDIT", data: reqData });
+      setTeaData({ ...reqData });
+
+
+
+      image = reqData.image;
+      delete reqData.image;
+      console.log("r", reqData);
+      let res;
+
+      if (String(reqData.id).length > 5)
+        // Editing online tea
+        res = await APIRequest(
+          `/tea/${reqData.id}/`,
+          "PUT",
+          JSON.stringify(reqData)
+        );
+      else {
+        // Editing offline tea
+        delete reqData.id;
+        res = await APIRequest(`/tea/`, "POST", JSON.stringify(reqData));
+      }
+
       const body = await res.json();
       console.log(body);
 
       snackbarDispatch({ type: "SUCCESS", data: "Tea successfully updated" });
 
-      // Update tea context with newly added
+      // Update context with response
       teaDispatch({ type: "EDIT", data: body });
-
-      setTeaData(body);
+      setTeaData({ ...body });
 
       // If new subcategory was created update cache
       if (customSubcategory) {
@@ -97,29 +110,41 @@ export default function Edit({ setRoute, editData, notes=false, details=false })
         vendorsDispatch({ type: "SET", data: venGetData });
         await localforage.setItem("vendors", venGetData);
       }
-
-      setRoute({route: "TEA_DETAILS", data: body})
-
     } catch (e) {
       console.error(e);
       if (e.message === "Bad Request") {
         snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
+        // Revert context to initialState
+        teaDispatch({ type: "EDIT", data: initialState });
+        setTeaData(initialState);
       } else {
         console.log(e.message, "cache locally");
+
+        let offlineTeas = await localforage.getItem("offline-teas");
+        if (!offlineTeas) await localforage.setItem("offline-teas", []);
+
         if (image) reqData["image"] = image;
-        const offlineTeas = await localforage.getItem("offline-teas");
+        if (!reqData.id) reqData["id"] = initialState["id"];
+
+        // Update context with request
+        teaDispatch({ type: "EDIT", data: reqData });
+        setTeaData({ ...reqData });
+
+        // If tea already present in cache remove before adding again
+        for (const tea of offlineTeas)
+          if (tea.id === initialState.id)
+            offlineTeas.splice(offlineTeas.indexOf(tea), 1);
+
         const cache = await localforage.setItem("offline-teas", [
           ...offlineTeas,
           reqData,
         ]);
+
         snackbarDispatch({
           type: "WARNING",
           data: "Offline mode, tea saved locally",
         });
-        teaDispatch({ type: "ADD", data: teaData });
         console.log("offline teas:", cache);
-
-        setRoute({route: "TEA_DETAILS", data: reqData})
       }
     }
   }
@@ -134,11 +159,15 @@ export default function Edit({ setRoute, editData, notes=false, details=false })
     handlePrevious,
     handleEdit,
     notes,
-  }
+  };
 
   return (
     <Box className={classes.root}>
-      {details ?  <TeaDetails {...props} setRoute={setRoute} /> : <InputRouter {...props} />}
+      {details ? (
+        <TeaDetails {...props} setRoute={setRoute} />
+      ) : (
+        <InputRouter {...props} />
+      )}
     </Box>
   );
 }
