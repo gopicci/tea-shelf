@@ -44,7 +44,7 @@ export default function EditNotes({
 
   const classes = useStyles();
 
-  const [text, setText] = useState(teaData.notes);
+  const [text, setText] = useState(teaData.notes ? teaData.notes : "");
 
   function handleChange(event) {
     setText(event.target.value);
@@ -71,7 +71,7 @@ export default function EditNotes({
           <Typography variant="h6" className={classes.title}>
             {teaData.notes ? "Edit Notes" : "Add notes"}
           </Typography>
-          <Button color="inherit" disabled={!text} onClick={handleSave}>
+          <Button color="inherit" disabled={!text} onClick={handleSave} aria-label="save">
             SAVE
           </Button>
         </Toolbar>

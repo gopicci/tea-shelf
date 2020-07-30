@@ -191,7 +191,7 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
               <ArrowBack />
             </IconButton>
           </Box>
-          <IconButton edge="start" color="inherit" aria-label="back">
+          <IconButton edge="start" color="inherit" aria-label="menu">
             <MoreVert />
           </IconButton>
         </Toolbar>
@@ -205,6 +205,7 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
                 size="small"
                 endIcon={<Edit />}
                 onClick={handleEditClick}
+                aria-label="edit"
               >
                 Edit
               </Button>

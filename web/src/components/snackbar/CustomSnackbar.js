@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
-import Snackbar from "@material-ui/core/Snackbar";
+import { ClickAwayListener, Snackbar } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
-
 import {
   SnackbarState,
   SnackbarDispatch,
@@ -33,23 +32,25 @@ export default function CustomSnackbar() {
   }
 
   return (
-    <Snackbar
-      anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      open={state.open}
-      autoHideDuration={6000}
-      onClose={handleClose}
-      className={classes.root}
-    >
-      {state.message && (
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          onClose={handleClose}
-          severity={state.severity}
-        >
-          {state.message}
-        </MuiAlert>
-      )}
-    </Snackbar>
+    <ClickAwayListener onClickAway={handleClose}>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={state.open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        className={classes.root}
+      >
+        {state.message && (
+          <MuiAlert
+            elevation={6}
+            variant="filled"
+            onClose={handleClose}
+            severity={state.severity}
+          >
+            {state.message}
+          </MuiAlert>
+        )}
+      </Snackbar>
+    </ClickAwayListener>
   );
 }

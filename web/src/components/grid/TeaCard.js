@@ -125,6 +125,7 @@ export default function TeaCard({ tea, gridView, setRoute }) {
       <CardActionArea
         className={gridView ? classes.gridCard : classes.listCard}
         onClick={handleCardClick}
+        aria-label={tea.name}
       >
         <CardMedia
           className={gridView ? classes.gridImage : classes.listImage}
