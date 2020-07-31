@@ -43,7 +43,7 @@ export function teaSerializer(tea) {
   let serialized = {};
 
   // Drop non model entries
-  for (const k of Object.keys(teaModel)) if (tea[k]) serialized[k] = tea[k];
+  for (const k of Object.keys(teaModel)) if (tea[k] != null) serialized[k] = tea[k];
 
   if (serialized.year === "unknown") serialized.year = null;
 
