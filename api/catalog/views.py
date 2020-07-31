@@ -1,7 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework import generics, permissions, viewsets
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
+from .vision_parser import VisionParser
 
 from .serializers import (
     LoginSerializer,
@@ -23,14 +28,14 @@ from .models import (
 )
 
 
-class RegisterView(generics.CreateAPIView):
+class RegisterView(CreateAPIView):
     """
     Register view.
     """
 
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (AllowAny,)
 
 
 class LoginView(TokenObtainPairView):
@@ -39,10 +44,10 @@ class LoginView(TokenObtainPairView):
     """
 
     serializer_class = LoginSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (AllowAny,)
 
 
-class UserView(generics.RetrieveAPIView):
+class UserView(RetrieveAPIView):
     """
     Logged in user detail view.
     """
@@ -54,7 +59,7 @@ class UserView(generics.RetrieveAPIView):
         return self.request.user
 
 
-class BrewingCreateView(generics.CreateAPIView):
+class BrewingCreateView(CreateAPIView):
     """
     Create gongfu brewing details.
     """
@@ -62,7 +67,7 @@ class BrewingCreateView(generics.CreateAPIView):
     serializer_class = BrewingSerializer
 
 
-class BrewingDetailView(generics.RetrieveAPIView):
+class BrewingDetailView(RetrieveAPIView):
     """
     Retrieve gongfu brewing details.
     """
@@ -72,7 +77,7 @@ class BrewingDetailView(generics.RetrieveAPIView):
     serializer_class = BrewingSerializer
 
 
-class OriginCreateView(generics.CreateAPIView):
+class OriginCreateView(CreateAPIView):
     """
     Create origin passing current user.
     """
@@ -83,7 +88,7 @@ class OriginCreateView(generics.CreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class OriginDetailView(generics.RetrieveAPIView):
+class OriginDetailView(RetrieveAPIView):
     """
     Retrieve origin details.
     """
@@ -93,7 +98,7 @@ class OriginDetailView(generics.RetrieveAPIView):
     serializer_class = OriginSerializer
 
 
-class CategoryView(generics.ListAPIView):
+class CategoryView(ListAPIView):
     """
     List categories.
     """
@@ -102,7 +107,7 @@ class CategoryView(generics.ListAPIView):
     serializer_class = CategorySerializer
 
 
-class SubcategoryView(generics.ListCreateAPIView):
+class SubcategoryView(ListCreateAPIView):
     """
     List and create subcategories.
     """
@@ -119,7 +124,7 @@ class SubcategoryView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class VendorView(generics.ListCreateAPIView):
+class VendorView(ListCreateAPIView):
     """
     List and create vendors.
     """
@@ -136,7 +141,7 @@ class VendorView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class TeaViewSet(viewsets.ModelViewSet):
+class TeaViewSet(ModelViewSet):
     """
     Tea view set.
     """
@@ -155,3 +160,11 @@ class TeaViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class VisionParserView(APIView):
+    def post(self, request):
+        image_data = request.data['image'].split(',')[1]
+        parser = VisionParser(image_data)
+        tea_data = parser.get_tea_data()
+        return Response(tea_data)

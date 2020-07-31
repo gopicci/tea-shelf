@@ -31,6 +31,7 @@ from catalog.views import (
     SubcategoryView,
     VendorView,
     TeaViewSet,
+    VisionParserView,
 )
 
 router = routers.SimpleRouter()
@@ -51,4 +52,5 @@ urlpatterns = [
     path("api/subcategory/", SubcategoryView.as_view(), name="subcategory_list_create"),
     path("api/vendor/", VendorView.as_view(), name="vendor_list_create"),
     path("api/", include(router.urls)),
+    path("api/parser/", VisionParserView.as_view(), name="parser"),
 ]
