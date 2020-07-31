@@ -1,8 +1,13 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useContext } from "react";
 import { Box, IconButton } from "@material-ui/core";
 import { CameraAlt, Close, Done, Replay, SkipNext } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import Webcam from "react-webcam";
+import { APIRequest } from "../../../services/AuthService";
+import { visionParserSerializer } from "../../../services/Serializers";
+import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
+import { VendorsState } from "../../statecontainers/VendorsContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +33,8 @@ const videoConstraints = {
 };
 
 export default function CaptureImage({
+  teaData,
+  setTeaData,
   imageData,
   setImageData,
   handleClose,
@@ -36,6 +43,8 @@ export default function CaptureImage({
   /**
    * Mobile tea creation capture stage component.
    *
+   * @param teaData {json} Input tea data state
+   * @param setTeaData {function} Set input tea data state
    * @param imageData {string} Base64 image data
    * @param setImageData {function} Set image data
    * @param handleClose {function} Cancel process and reroute to main route
@@ -44,12 +53,47 @@ export default function CaptureImage({
 
   const classes = useStyles();
 
+  const categories = useContext(CategoriesState);
+  const subcategories = useContext(SubcategoriesState);
+  const vendors = useContext(VendorsState);
+
   const webcamRef = useRef(null);
 
-  const capture = useCallback(() => {
+  const capture = useCallback(async () => {
+    // Get screenshot
     const screenshot = webcamRef.current.getScreenshot();
+
+    // Update image data state
     setImageData(screenshot);
-  }, [webcamRef, setImageData]);
+
+    // Post image to API parser
+    const parserRes = await APIRequest(
+      "/parser/",
+      "POST",
+      JSON.stringify({ image: screenshot })
+    );
+
+    if (parserRes.ok) {
+      // Update teaData with suggestions from parser
+      setTeaData({
+        ...teaData,
+        ...visionParserSerializer(
+          await parserRes.json(),
+          categories,
+          subcategories,
+          vendors
+        ),
+      });
+    }
+  }, [
+    webcamRef,
+    setImageData,
+    teaData,
+    setTeaData,
+    categories,
+    subcategories,
+    vendors,
+  ]);
 
   const replay = () => {
     setImageData(null);
