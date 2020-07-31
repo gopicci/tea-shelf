@@ -21,7 +21,7 @@ if (typeof importScripts === 'function') {
         cacheName: "image-cache",
         plugins: [
           new workbox.cacheableResponse.CacheableResponsePlugin({
-            statuses: [0, 200],
+            statuses: [200],
           })
     ]
 
