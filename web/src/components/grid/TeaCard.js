@@ -6,7 +6,6 @@ import {
   CardActions,
   CardActionArea,
   CardContent,
-  CardMedia,
   Typography,
 } from "@material-ui/core";
 import { StarRate, MoreVert } from "@material-ui/icons";
@@ -26,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   gridCard: {
+    minHeight: 200,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "top",
+    alignItems: "stretch",
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.complex,
@@ -44,14 +48,15 @@ const useStyles = makeStyles((theme) => ({
   gridImage: {
     height: 120,
     width: "100%",
+    objectFit: "cover",
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.complex,
     }),
   },
   listImage: {
-    minWidth: theme.spacing(10),
-    minHeight: "100px",
+    width: theme.spacing(10),
+    height: "100px",
     objectFit: "cover",
     margin: theme.spacing(2),
     borderRadius: 4,
@@ -127,11 +132,11 @@ export default function TeaCard({ tea, gridView, setRoute }) {
         onClick={handleCardClick}
         aria-label={tea.name}
       >
-        <CardMedia
+        <img
           className={gridView ? classes.gridImage : classes.listImage}
-          alt="Tea image"
-          image={tea.image ? tea.image : emptyImage}
-          title="Tea image"
+          alt="tea"
+          src={tea.image ? tea.image : emptyImage}
+          crossOrigin="anonymous"
         />
         <CardContent className={classes.content}>
           <Box className={classes.topBox}>
