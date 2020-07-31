@@ -1,6 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    RetrieveAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+)
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
@@ -164,7 +169,7 @@ class TeaViewSet(ModelViewSet):
 
 class VisionParserView(APIView):
     def post(self, request):
-        image_data = request.data['image'].split(',')[1]
+        image_data = request.data["image"].split(",")[1]
         parser = VisionParser(image_data)
         tea_data = parser.get_tea_data()
         return Response(tea_data)
