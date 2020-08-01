@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+import googlemaps
+import os
 from rest_framework.generics import (
     CreateAPIView,
     RetrieveAPIView,
@@ -168,8 +170,42 @@ class TeaViewSet(ModelViewSet):
 
 
 class VisionParserView(APIView):
+    """
+    Get tea data from vision parser
+    """
+
     def post(self, request):
         image_data = request.data["image"].split(",")[1]
         parser = VisionParser(image_data)
         tea_data = parser.get_tea_data()
         return Response(tea_data)
+
+
+class PlacesAutocompleteView(APIView):
+    """
+    Wrapper view around Places API autocomplete
+    """
+
+    def post(self, request):
+        gmaps = googlemaps.Client(key=os.environ.get("GOOGLE_MAPS_API_KEY"))
+        results = gmaps.places_autocomplete(
+            request.data["input"],
+            session_token=request.data["token"],
+            types=["(regions)"],
+        )
+        return Response(results)
+
+
+class PlacesDetailsView(APIView):
+    """
+    Wrapper view around Places API details
+    """
+
+    def post(self, request):
+        gmaps = googlemaps.Client(key=os.environ.get("GOOGLE_MAPS_API_KEY"))
+        results = gmaps.place(
+            request.data["place_id"],
+            session_token=request.data["token"],
+            fields=["adr_address"],
+        )
+        return Response(results)

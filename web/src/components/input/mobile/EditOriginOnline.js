@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   InputAdornment,
@@ -12,22 +12,8 @@ import { ArrowBack, LocationOn } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import { parse as himalaya } from "himalaya";
-import throttle from "lodash/throttle";
-
-function loadScript(src, position, id) {
-  if (!position) {
-    return;
-  }
-
-  const script = document.createElement("script");
-  script.setAttribute("async", "");
-  script.setAttribute("id", id);
-  script.src = src;
-  position.appendChild(script);
-}
-
-const autocompleteService = { current: null };
-const placesService = { current: null };
+import { v4 as uuidv4 } from "uuid";
+import { APIRequest } from "../../../services/AuthService";
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -65,94 +51,50 @@ export default function EditOriginOnline({
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
-  const loaded = useRef(false);
 
-  if (typeof window !== "undefined" && !loaded.current) {
-    if (!document.querySelector("#google-maps")) {
-      loadScript(
-        `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GCLOUD_API_KEY}&libraries=places`,
-        document.querySelector("head"),
-        "google-maps"
-      );
-    }
+  const [token, setToken] = useState(null);
 
-    loaded.current = true;
-  }
-
-  const fetch = useMemo(
-    () =>
-      throttle((request, callback) => {
-        autocompleteService.current.getPlacePredictions(request, callback);
-      }, 200),
-    []
-  );
+  useEffect(() => setToken(uuidv4()), []);
 
   useEffect(() => {
-    let active = true;
-
-    if (!autocompleteService.current && window.google) {
-      autocompleteService.current = new window.google.maps.places.AutocompleteService();
-    }
-    if (!autocompleteService.current) {
-      return undefined;
-    }
-
-    if (inputValue === "") {
-      setOptions([]);
-      return undefined;
-    }
-
-    fetch({ input: inputValue, types: ["(regions)"] }, (results) => {
-      if (active) {
-        let newOptions = [];
-
-        if (results) {
-          newOptions = [...newOptions, ...results];
-        }
-
-        setOptions(newOptions);
-      }
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [inputValue, fetch]);
-
-  function updateOrigin(newValue) {
-    if (!placesService.current && window.google) {
-      placesService.current = new window.google.maps.places.PlacesService(
-        window.document.createElement("div")
+    async function getOptions() {
+      const res = await APIRequest(
+        "/places/autocomplete/",
+        "POST",
+        JSON.stringify({ input: inputValue, token: token })
       );
-    }
-    if (!placesService.current || !newValue) {
-      return undefined;
-    }
-
-    placesService.current.getDetails(
-      {
-        placeId: newValue.place_id,
-        fields: ["adr_address"],
-      },
-      function (place, status) {
-        if (status === "OK") {
-          const json = himalaya(place.adr_address);
-          const origin = {};
-
-          for (const entry of Object.entries(json))
-            if (entry[1].type === "element") {
-              if (entry[1].attributes[0].value === "country-name")
-                origin["country"] = entry[1].children[0].content;
-              else
-                origin[entry[1].attributes[0].value] =
-                  entry[1].children[0].content;
-            }
-
-          setTeaData({ ...teaData, origin: origin });
-          handleBackToLayout();
-        }
+      if (res.ok) {
+        const results = await res.json();
+        setOptions(results);
       }
+    }
+    if (inputValue.length > 1) getOptions();
+    if (inputValue === "") setOptions([]);
+  }, [inputValue, token]);
+
+  async function updateOrigin(newValue) {
+    const res = await APIRequest(
+      "/places/details/",
+      "POST",
+      JSON.stringify({ place_id: newValue.place_id, token: token })
     );
+    if (res.ok) {
+      const body = await res.json();
+      const adr = himalaya(body.result.adr_address);
+      const origin = {};
+
+      for (const entry of Object.entries(adr))
+        if (entry[1].type === "element") {
+          if (entry[1].attributes[0].value === "country-name")
+            origin["country"] = entry[1].children[0].content;
+          else
+            origin[entry[1].attributes[0].value] =
+              entry[1].children[0].content;
+        }
+
+      setTeaData({ ...teaData, origin: origin });
+      handleBackToLayout();
+    }
   }
 
   return (

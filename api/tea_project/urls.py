@@ -32,6 +32,8 @@ from catalog.views import (
     VendorView,
     TeaViewSet,
     VisionParserView,
+    PlacesAutocompleteView,
+    PlacesDetailsView,
 )
 
 router = routers.SimpleRouter()
@@ -53,4 +55,10 @@ urlpatterns = [
     path("api/vendor/", VendorView.as_view(), name="vendor_list_create"),
     path("api/", include(router.urls)),
     path("api/parser/", VisionParserView.as_view(), name="parser"),
+    path(
+        "api/places/autocomplete/",
+        PlacesAutocompleteView.as_view(),
+        name="places_autocomplete",
+    ),
+    path("api/places/details/", PlacesDetailsView.as_view(), name="places_details"),
 ]
