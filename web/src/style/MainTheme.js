@@ -33,6 +33,7 @@ export const mainTheme = createMuiTheme({
     },
     subtitle1: {
       color: "#444",
+      fontSize: 14,
       [breakpoints.down("sm")]: {
         fontSize: 13,
       },
@@ -44,7 +45,7 @@ export const mainTheme = createMuiTheme({
     },
     body2: {
       color: "#666",
-      fontSize: 15,
+      fontSize: 14,
       [breakpoints.down("sm")]: {
         fontSize: 12,
       },

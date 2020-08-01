@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   gridItem: {
-    width: 200,
+    width: 240,
     padding: theme.spacing(2),
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,

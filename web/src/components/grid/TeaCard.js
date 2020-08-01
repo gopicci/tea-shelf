@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100px",
     objectFit: "cover",
     margin: theme.spacing(2),
+    marginRight: 0,
     borderRadius: 4,
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
@@ -69,13 +70,16 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     flexDirection: "column",
-    paddingLeft: 0,
     paddingBottom: theme.spacing(1),
   },
   topBox: {
     flexGrow: 1,
   },
-  subcategory: {
+  gridSubcategory: {
+    fontStyle: "italic",
+    paddingBottom: theme.spacing(4),
+  },
+  listSubcategory: {
     fontStyle: "italic",
   },
   bottomBox: {
@@ -122,7 +126,7 @@ export default function TeaCard({ tea, gridView, setRoute }) {
   const categories = useContext(CategoriesState);
 
   function handleCardClick() {
-    setRoute({route: "TEA_DETAILS", data: tea});
+    setRoute({ route: "TEA_DETAILS", data: tea });
   }
 
   return (
@@ -134,35 +138,38 @@ export default function TeaCard({ tea, gridView, setRoute }) {
       >
         <img
           className={gridView ? classes.gridImage : classes.listImage}
-          alt="tea"
+          alt=""
           src={tea.image ? tea.image : emptyImage}
           crossOrigin="anonymous"
         />
         <CardContent className={classes.content}>
           <Box className={classes.topBox}>
-            <Typography gutterBottom variant="h5" component="h2">
+            <Typography gutterBottom variant="h5">
               {tea.name}
             </Typography>
             <Typography
-              className={classes.subcategory}
+              className={
+                gridView ? classes.gridSubcategory : classes.listSubcategory
+              }
               gutterBottom
               variant="subtitle1"
-              component="h5"
             >
               {tea.year} {getSubcategoryName(tea.subcategory)}
             </Typography>
           </Box>
           <Box className={classes.bottomBox}>
-            {tea.rating > 0 &&
+            {tea.rating > 0 && (
               <Box className={classes.ratingBox}>
                 <StarRate className={classes.icon} />
                 <Typography
                   className={classes.rating}
                   variant="body2"
                   component="span"
-                >{tea.rating / 2}</Typography>
+                >
+                  {tea.rating / 2}
+                </Typography>
               </Box>
-            }
+            )}
             {tea.origin && (
               <>
                 <Typography
