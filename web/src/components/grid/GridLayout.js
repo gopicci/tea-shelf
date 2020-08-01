@@ -72,19 +72,72 @@ export default function GridLayout({ setRoute }) {
   const subcategories = useContext(SubcategoriesState);
   const vendors = useContext(VendorsState);
   const filterState = useContext(FilterState);
-  const teas = useContext(TeasState);
+  const teasState = useContext(TeasState);
   const gridView = useContext(GridViewState);
   const searchState = useContext(SearchState);
 
-  const [filteredTeas, setFilteredTeas] = useState(teas);
+  const [filteredTeas, setFilteredTeas] = useState(teasState);
+
+
+  function sortTeas(teas, sorting) {
+    if (teas)
+      switch (sorting) {
+        case "latest (default)":
+          return [...teas].sort(
+            (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
+          );
+        case "year":
+          return [...teas].sort((a, b) => {
+            if (b.year === null || a.year > b.year) return -1;
+            if (a.year === null || a.year < b.year) return 1;
+            return 0;
+          });
+        case "rating":
+          return [...teas].sort((a, b) => b.rating - a.rating);
+        case "alphabetical":
+          return [...teas].sort((a, b) => {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+          });
+        case "origin":
+          return [...teas].sort((a, b) => {
+            if (b.origin === null) return -1;
+            if (a.origin === null) return 1;
+            if (a.origin.country < b.origin.country) return -1;
+            if (a.origin.country > b.origin.country) return 1;
+            return 0;
+          });
+        case "vendor":
+          return [...teas].sort((a, b) => {
+            if (b.vendor === null) return -1;
+            if (a.vendor === null) return 1;
+            if (a.vendor.name < b.vendor.name) return -1;
+            if (a.vendor.name > b.vendor.name) return 1;
+            return 0;
+          });
+        default:
+          console.log("def");
+      }
+  }
+
+  useEffect(() => console.log(filteredTeas), [filteredTeas]);
 
   useEffect(() => {
-    let filtered;
+    // Sort teas
+    const sorted = sortTeas(
+      teasState,
+      Object.keys(filterState.sorting).find(
+        (k) => filterState.sorting[k] === true
+      )
+    );
 
+    let filtered;
     // Parse entries through selected filters
     if (filterState.active > 0)
       // At least 1 filter entry is checked
-      filtered = teas.filter((tea) => {
+      filtered = sorted.filter((tea) => {
+        console.log(Date.parse(tea.created_on));
         const category = categories.find(
           (category) => category.id === tea.category
         );
@@ -116,7 +169,7 @@ export default function GridLayout({ setRoute }) {
         }
         return false;
       });
-    else filtered = teas;
+    else filtered = sorted;
 
     // Parse remaining entries through search input
     if (searchState.length > 1) {
@@ -160,7 +213,7 @@ export default function GridLayout({ setRoute }) {
         })
       );
     } else setFilteredTeas(filtered);
-  }, [filterState, categories, subcategories, vendors, teas, searchState]);
+  }, [filterState, categories, subcategories, vendors, teasState, searchState]);
 
   const upSmall = useMediaQuery(theme.breakpoints.up("sm"));
 
