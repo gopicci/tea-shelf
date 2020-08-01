@@ -14,7 +14,7 @@ export const FilterDispatch = createContext(null);
 
 // Define sorting options
 const sorting = {
-  "latest (default)": true,
+  "date added": true,
   year: false,
   rating: false,
   alphabetical: false,
@@ -65,7 +65,7 @@ export default function FilterContext(props) {
         // Change sorting option status, keep only 1 checked at the time
         const newSort = JSON.parse(JSON.stringify(state));
         newSort.sorting = { ...initialState.sorting };
-        newSort.sorting["latest (default)"] = false;
+        newSort.sorting["date added"] = false;
         newSort.sorting[action.data.item] = true;
         return newSort;
       case "CLEAR":

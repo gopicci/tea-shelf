@@ -1,5 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Grid, useMediaQuery } from "@material-ui/core";
+import {
+  Box,
+  Grid,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
+import { ArrowDropUp, ArrowDropDown } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import TeaCard from "./TeaCard";
 import { getSubcategoryName } from "../../services/ParsingService";
@@ -55,6 +62,26 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.complex,
     }),
   },
+  sortByBox: {
+    display: "flex",
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingTop: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      paddingTop: theme.spacing(1),
+    },
+    "& .MuiButtonBase-root": {
+      padding: 0,
+    },
+  },
+  reverseButton: {
+    display: "flex",
+    cursor: "pointer",
+  },
+  sortByText: {
+    flexGrow: 1,
+    margin: "auto",
+  },
 }));
 
 export default function GridLayout({ setRoute }) {
@@ -77,12 +104,13 @@ export default function GridLayout({ setRoute }) {
   const searchState = useContext(SearchState);
 
   const [filteredTeas, setFilteredTeas] = useState(teasState);
-
+  const [sorting, setSorting] = useState("");
+  const [reversed, setReversed] = useState(false);
 
   function sortTeas(teas, sorting) {
     if (teas)
       switch (sorting) {
-        case "latest (default)":
+        case "date added":
           return [...teas].sort(
             (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
           );
@@ -125,12 +153,12 @@ export default function GridLayout({ setRoute }) {
 
   useEffect(() => {
     // Sort teas
-    const sorted = sortTeas(
-      teasState,
-      Object.keys(filterState.sorting).find(
-        (k) => filterState.sorting[k] === true
-      )
+    const sorting = Object.keys(filterState.sorting).find(
+      (k) => filterState.sorting[k] === true
     );
+    setSorting(sorting);
+    let sorted = sortTeas(teasState, sorting);
+    if (reversed) sorted = sorted.reverse();
 
     let filtered;
     // Parse entries through selected filters
@@ -213,32 +241,50 @@ export default function GridLayout({ setRoute }) {
         })
       );
     } else setFilteredTeas(filtered);
-  }, [filterState, categories, subcategories, vendors, teasState, searchState]);
+  }, [
+    filterState,
+    categories,
+    subcategories,
+    vendors,
+    teasState,
+    searchState,
+    reversed,
+  ]);
 
   const upSmall = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
-    <Grid
-      container
-      justify="center"
-      className={gridView ? classes.gridRoot : classes.listRoot}
-    >
-      {filteredTeas &&
-        filteredTeas.map((tea, i) => (
-          <Grid
-            item
-            className={
-              gridView && upSmall ? classes.gridItem : classes.listItem
-            }
-            key={i}
-          >
-            <TeaCard
-              tea={tea}
-              gridView={gridView && upSmall}
-              setRoute={setRoute}
-            />
-          </Grid>
-        ))}
-    </Grid>
+    <Box className={gridView ? classes.gridRoot : classes.listRoot}>
+      <Box className={classes.sortByBox}>
+        <Box
+          className={classes.reverseButton}
+          button
+          onClick={() => setReversed(!reversed)}
+        >
+          <Typography variant="caption" className={classes.sortByText}>
+            Sorting by {sorting}
+          </Typography>
+          {reversed ? <ArrowDropUp /> : <ArrowDropDown />}
+        </Box>
+      </Box>
+      <Grid container justify="center">
+        {filteredTeas &&
+          filteredTeas.map((tea, i) => (
+            <Grid
+              item
+              className={
+                gridView && upSmall ? classes.gridItem : classes.listItem
+              }
+              key={i}
+            >
+              <TeaCard
+                tea={tea}
+                gridView={gridView && upSmall}
+                setRoute={setRoute}
+              />
+            </Grid>
+          ))}
+      </Grid>
+    </Box>
   );
 }
