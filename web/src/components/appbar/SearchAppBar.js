@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   AppBar,
   Box,
@@ -19,10 +19,8 @@ import {
 } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
-
 import { getOfflineTeas, syncOffline } from "../../services/SyncService";
 import { APIRequest } from "../../services/AuthService";
-
 import {
   GridViewState,
   GridViewDispatch,
@@ -31,6 +29,7 @@ import { TeaDispatch } from "../statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "../statecontainers/SubcategoriesContext";
 import { SnackbarDispatch } from "../statecontainers/SnackbarContext";
 import { VendorsDispatch } from "../statecontainers/VendorsContext";
+import { SearchDispatch } from "../statecontainers/SearchContext";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -75,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputRoot: {
     color: "inherit",
+    width: "100%",
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -110,6 +110,7 @@ export default function SearchAppBar() {
 
   const [isSyncing, setSyncing] = useState(false);
   const [showCloud, setShowCloud] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const state = useContext(GridViewState);
   const gridViewDispatch = useContext(GridViewDispatch);
@@ -117,6 +118,19 @@ export default function SearchAppBar() {
   const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorDispatch = useContext(VendorsDispatch);
+  const searchDispatch = useContext(SearchDispatch);
+
+  useEffect(() => {
+    if (searchValue === "")
+      searchDispatch({
+        type: "CLEAR",
+      });
+    else
+      searchDispatch({
+        type: "SET",
+        data: searchValue,
+      });
+  }, [searchValue, searchDispatch]);
 
   function handleGridViewChange() {
     // Handle grid view switch
@@ -223,6 +237,9 @@ export default function SearchAppBar() {
               input: classes.inputInput,
             }}
             inputProps={{ "aria-label": "search" }}
+            onChange={(event) => {
+              setSearchValue(event.target.value);
+            }}
           />
         </Box>
         <Box className={classes.user}>

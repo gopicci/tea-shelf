@@ -7,6 +7,7 @@ import VendorsContext from "./VendorsContext";
 import TeasContext from "./TeasContext";
 import FilterContext from "./FilterContext";
 import SnackbarContext from "./SnackbarContext";
+import SearchContext from "./SearchContext";
 
 export default function MainStateContainer(props) {
   /**
@@ -20,7 +21,9 @@ export default function MainStateContainer(props) {
           <VendorsContext>
             <TeasContext>
               <FilterContext>
-                <GridViewContext>{props.children}</GridViewContext>
+                <SearchContext>
+                  <GridViewContext>{props.children}</GridViewContext>
+                </SearchContext>
               </FilterContext>
             </TeasContext>
           </VendorsContext>
