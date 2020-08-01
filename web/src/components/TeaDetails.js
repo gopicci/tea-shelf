@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   AppBar,
   Box,
@@ -8,6 +8,8 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Menu,
+  MenuItem,
   Switch,
   Toolbar,
   Typography,
@@ -25,6 +27,10 @@ import {
 } from "../services/ParsingService";
 import ReactCountryFlag from "react-country-flag";
 import InputBrewing from "./input/mobile/InputBrewing";
+import { APIRequest } from "../services/AuthService";
+import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
+import { TeaDispatch } from "./statecontainers/TeasContext";
+import localforage from "localforage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -151,10 +157,41 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
    */
 
   const classes = useStyles();
-
-  console.log(teaData)
+  const snackbarDispatch = useContext(SnackbarDispatch);
+  const teaDispatch = useContext(TeaDispatch);
 
   const [gongfu, setGongfu] = useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  function handleMenuClick(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleMenuClose() {
+    setAnchorEl(null);
+  }
+
+  async function handleDelete() {
+    try {
+      if (String(teaData.id).length > 5)
+        // Delete online tea
+        await APIRequest(`/tea/${teaData.id}/`, "DELETE");
+      else {
+        // Delete offline tea
+        const offlineTeas = await localforage.getItem("offline-teas");
+        let newOfflineTeas = [];
+        for (const tea of offlineTeas)
+          if (tea.id !== teaData.id) newOfflineTeas.push(tea);
+        await localforage.setItem("offline-teas", newOfflineTeas);
+      }
+      setRoute({ route: "MAIN" });
+      snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
+      teaDispatch({ type: "DELETE", data: teaData });
+    } catch (e) {
+      console.error(e);
+      snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
+    }
+  }
 
   function handleBack() {
     setRoute({ route: "MAIN" });
@@ -191,9 +228,26 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
               <ArrowBack />
             </IconButton>
           </Box>
-          <IconButton edge="start" color="inherit" aria-label="menu">
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            aria-controls="menu"
+            aria-haspopup="true"
+            onClick={handleMenuClick}
+          >
             <MoreVert />
           </IconButton>
+          <Menu
+            id="menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleMenuClose}>Archive</MenuItem>
+            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       {teaData && (
@@ -242,17 +296,18 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
             <Box className={classes.divider} />
             <Box className={classes.generic}>
               <Box className={classes.row}>
-                <Typography
-                  variant="caption"
-                  className={classes.brewingTitle}
-                >
+                <Typography variant="caption" className={classes.brewingTitle}>
                   Brewing instructions:
                 </Typography>
                 <FormGroup>
                   <FormControlLabel
                     value="start"
                     control={<Switch size="small" color="default" />}
-                    label={<Typography variant="caption" >{gongfu ? "Gongfu" : "Western"}</Typography>}
+                    label={
+                      <Typography variant="caption">
+                        {gongfu ? "Gongfu" : "Western"}
+                      </Typography>
+                    }
                     labelPlacement="start"
                     onChange={handleSwitch}
                   />
@@ -313,9 +368,15 @@ export default function TeaDetails({ setRoute, teaData, handleEdit }) {
                   </Typography>
                 ) : (
                   <Box className={classes.notesBox}>
-                      {teaData.notes.split("\n").map((s, key) => (
-                        <Typography variant="body1" className={classes.notes} key={key}>{s}</Typography>
-                      ))}
+                    {teaData.notes.split("\n").map((s, key) => (
+                      <Typography
+                        variant="body1"
+                        className={classes.notes}
+                        key={key}
+                      >
+                        {s}
+                      </Typography>
+                    ))}
                   </Box>
                 )}
               </Box>
