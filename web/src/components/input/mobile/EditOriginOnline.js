@@ -57,6 +57,8 @@ export default function EditOriginOnline({
   useEffect(() => setToken(uuidv4()), []);
 
   useEffect(() => {
+    let active = true;
+
     async function getOptions() {
       const res = await APIRequest(
         "/places/autocomplete/",
@@ -65,11 +67,16 @@ export default function EditOriginOnline({
       );
       if (res.ok) {
         const results = await res.json();
-        setOptions(results);
+        if (active)
+          setOptions(results);
       }
     }
     if (inputValue.length > 1) getOptions();
     if (inputValue === "") setOptions([]);
+
+    return () => {
+      active = false;
+    };
   }, [inputValue, token]);
 
   async function updateOrigin(newValue) {
