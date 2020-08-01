@@ -57,21 +57,27 @@ export default function EditSubcategory({
       return entry[1].translated_name.toLowerCase() === lcName;
     });
     if (match) {
-      // Match found, update also category
+      const subcategory = match[1];
+      // Match found, update also category, origin and brewings
       let data = {
         ...teaData,
-        subcategory: match[1],
-        category: match[1].category,
+        subcategory: subcategory,
+        category: subcategory.category,
       };
-      if (match[1].western_brewing)
+      if (subcategory.origin)
         data = {
           ...data,
-          western_brewing: brewingTimesToSeconds(match[1].western_brewing),
+          origin: subcategory.origin,
         };
-      if (match[1].gongfu_brewing)
+      if (subcategory.western_brewing)
         data = {
           ...data,
-          gongfu_brewing: brewingTimesToSeconds(match[1].gongfu_brewing),
+          western_brewing: brewingTimesToSeconds(subcategory.western_brewing),
+        };
+      if (subcategory.gongfu_brewing)
+        data = {
+          ...data,
+          gongfu_brewing: brewingTimesToSeconds(subcategory.gongfu_brewing),
         };
       setTeaData(data);
     } else setTeaData({ ...teaData, subcategory: { name: name } });

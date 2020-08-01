@@ -209,6 +209,7 @@ class SubcategorySerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source="user.pk")
     gongfu_brewing = BrewingSerializer(required=False, allow_null=True)
     western_brewing = BrewingSerializer(required=False, allow_null=True)
+    origin = OriginSerializer(required=False, allow_null=True)
 
     class Meta:
         model = Subcategory
