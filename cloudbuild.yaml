@@ -1,5 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-f', 'api/Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/api', './api']
+    timeout: 1200s
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/api']
