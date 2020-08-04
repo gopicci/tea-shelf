@@ -1,5 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/tea-shelf/api', './api']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/api', './api']
+    dir: 'api'
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/tea-shelf/api']
+    args: ['push', 'gcr.io/$PROJECT_ID/api']
