@@ -42,7 +42,7 @@ RUN ["chmod", "+x", "/usr/src/app/entrypoint.prod.sh"]
 
 COPY . /usr/src/app/
 
-RUN adduser -D simpleblog
-USER simpleblog
+RUN adduser -D teashelf
+USER teashelf
 
 ENTRYPOINT ["/usr/src/app/entrypoint.prod.sh"]
