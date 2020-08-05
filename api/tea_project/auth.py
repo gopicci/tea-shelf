@@ -17,6 +17,6 @@ def access_secret(project_id, secret_id, version_id="latest"):
     response = client.access_secret_version(name)
 
     # Return the secret payload.
-    payload = response.payload.data.decode('UTF-8')
+    payload = response.payload.data.decode("UTF-8")
 
-    return(payload)
+    return payload
