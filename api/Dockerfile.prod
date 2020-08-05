@@ -37,12 +37,7 @@ COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
-COPY ./entrypoint.prod.sh /usr/src/app/entrypoint.prod.sh
-RUN ["chmod", "+x", "/usr/src/app/entrypoint.prod.sh"]
-
 COPY . /usr/src/app/
 
 RUN adduser teashelf
 USER teashelf
-
-ENTRYPOINT ["/usr/src/app/entrypoint.prod.sh"]
