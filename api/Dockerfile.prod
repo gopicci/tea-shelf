@@ -41,3 +41,5 @@ COPY . /usr/src/app/
 
 RUN adduser teashelf
 USER teashelf
+
+RUN ["gunicorn", "tea_project.wsgi:application", "--bind", "0.0.0.0:8000"]
