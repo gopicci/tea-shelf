@@ -1,4 +1,4 @@
-def access_secret_version(project_id, secret_id, version_id):
+def access_secret(project_id, secret_id, version_id="latest"):
     """
     Access the payload for the given secret version if one exists. The version
     can be a version number as a string (e.g. "5") or an alias (e.g. "latest").
@@ -18,4 +18,5 @@ def access_secret_version(project_id, secret_id, version_id):
 
     # Return the secret payload.
     payload = response.payload.data.decode('UTF-8')
+
     return(payload)
