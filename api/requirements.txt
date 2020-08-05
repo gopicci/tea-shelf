@@ -7,6 +7,7 @@ djangorestframework==3.11.0
 djangorestframework-simplejwt==4.4.0
 drf-yasg==1.17.0
 google-api-core==1.22.0
+google-cloud-secret-manager==1.0.0
 google-cloud-storage==1.29.0
 google-cloud-vision==1.0.0
 googlemaps==4.4.2
