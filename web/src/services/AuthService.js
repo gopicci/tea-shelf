@@ -91,8 +91,11 @@ export const APIRequest = async (
    * @param timeout {int} Defines request timeout, default 5000ms
    */
 
-  let api_path = process.env.REACT_APP_API;
-  if (!api_path) api_path = "/api";
+  let api_path;
+  if (process.env.REACT_APP_API)
+    api_path = process.env.REACT_APP_API;
+  else
+    api_path = "/api";
 
   const res = await fetchTimeout(endpoint, method, body, timeout, api_path);
 
