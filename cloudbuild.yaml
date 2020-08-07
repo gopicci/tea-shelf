@@ -5,8 +5,8 @@ steps:
 - name: node
   entrypoint: npm
   args: ['run', 'build']
-  artifacts:
-    objects:
-      location: 'gs://[STORAGE_LOCATION]/'
-      paths: ['*']
+artifacts:
+  objects:
+    location: 'gs://[STORAGE_LOCATION]/'
+    paths: ['*']
 timeout: 1200s
