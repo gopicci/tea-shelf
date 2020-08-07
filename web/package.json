@@ -11,8 +11,6 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "autosuggest-highlight": "^3.1.1",
-    "cypress": "^4.11.0",
-    "eslint-plugin-cypress": "^2.11.1",
     "fontsource-roboto": "^2.1.4",
     "formik": "^2.1.4",
     "himalaya": "^1.1.0",
@@ -32,12 +30,6 @@
     "build": "react-scripts build && npm run build-sw",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "plugin:cypress/recommended"
-    ]
   },
   "browserslist": {
     "production": [
