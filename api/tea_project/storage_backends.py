@@ -10,6 +10,7 @@ class GoogleCloudMediaFileStorage(GoogleCloudStorage):
     """
 
     bucket_name = setting("GS_MEDIA_BUCKET_NAME")
+    location = setting("GS_MEDIA_LOCATION")
 
     def url(self, name):
         """
@@ -24,6 +25,7 @@ class GoogleCloudStaticFileStorage(GoogleCloudStorage):
     """
 
     bucket_name = setting('GS_STATIC_BUCKET_NAME')
+    location = setting("GS_STATIC_LOCATION")
 
     def url(self, name):
         """
