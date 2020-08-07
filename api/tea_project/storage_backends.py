@@ -16,3 +16,17 @@ class GoogleCloudMediaFileStorage(GoogleCloudStorage):
         Gives correct MEDIA_URL and not google generated url.
         """
         return urljoin(settings.MEDIA_URL, name)
+
+
+class GoogleCloudStaticFileStorage(GoogleCloudStorage):
+    """
+    Google file storage class which gives a media file path from STATIC_URL not google generated one.
+    """
+
+    bucket_name = setting('GS_STATIC_BUCKET_NAME')
+
+    def url(self, name):
+        """
+        Gives correct STATIC_URL and not google generated url.
+        """
+        return urljoin(settings.STATIC_URL, name)
