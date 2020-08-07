@@ -52,6 +52,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
   const classes = useStyles();
 
+  console.log(process.env.REACT_APP_API, process.env.REACT_APP_API === undefined, !process.env.REACT_APP_API)
+
   const onSubmit = async (values, actions) => {
     try {
       const response = await APIRequest("/login/", "POST", JSON.stringify({email: values.email, password: values.password}))
