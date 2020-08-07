@@ -45,7 +45,8 @@ export const fetchTimeout = async (
   endpoint,
   method,
   body = null,
-  timeout = 5000
+  timeout = 5000,
+  api_path
 ) => {
   /**
    * Race fetch and timeout, throw error if timeout responds first
@@ -54,6 +55,7 @@ export const fetchTimeout = async (
    * @param method {string} Request method
    * @param body {string} Optional request body
    * @param timeout {int} Defines request timeout, default 5000ms
+   * @param api_path {string} API base path
    */
   const token = getAccessToken();
   return Promise.race([
@@ -61,7 +63,7 @@ export const fetchTimeout = async (
     new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Request timed out")), timeout)
     ),
-    fetch(`${process.env.REACT_APP_API}${endpoint}`, {
+    fetch(`${api_path}${endpoint}`, {
       method: method,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -89,7 +91,10 @@ export const APIRequest = async (
    * @param timeout {int} Defines request timeout, default 5000ms
    */
 
-  const res = await fetchTimeout(endpoint, method, body, timeout);
+  let api_path = process.env.REACT_APP_API;
+  if (!api_path) api_path = "/api";
+
+  const res = await fetchTimeout(endpoint, method, body, timeout, api_path);
 
   if (res.ok) return res;
   else {
@@ -99,14 +104,11 @@ export const APIRequest = async (
     // Check if token is not valid
     if (data.code === "token_not_valid") {
       const refreshToken = getRefreshToken();
-      const refreshRes = await fetch(
-        `${process.env.REACT_APP_API}/token/refresh/`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refresh: refreshToken }),
-        }
-      );
+      const refreshRes = await fetch(`${api_path}/token/refresh/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh: refreshToken }),
+      });
       if (refreshRes.ok) {
         // Token has been refreshed, update auth storage data and rerun request
         const refreshData = await refreshRes.json();
