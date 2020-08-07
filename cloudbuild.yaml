@@ -1,8 +1,12 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-f', 'api/Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/api', './api']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/api']
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: [ 'compute', 'instance-groups', 'managed', 'rolling-action', 'restart', 'api-instance-group-1', '--zone=us-central1-a']
+- name: node
+  entrypoint: npm
+  args: ['install']
+- name: node
+  entrypoint: npm
+  args: ['run', 'build']
+  artifacts:
+    objects:
+      location: 'gs://[STORAGE_LOCATION]/'
+      paths: ['*']
 timeout: 1200s
