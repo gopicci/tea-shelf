@@ -92,8 +92,7 @@ export const APIRequest = async (
    */
 
   let api_path = process.env.REACT_APP_API;
-  console.log("ap", api_path);
-  if (api_path === undefined) api_path = "/api";
+  if (String(api_path) === "undefined") api_path = "/api";
 
   const res = await fetchTimeout(endpoint, method, body, timeout, api_path);
 
