@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Grid,
-  IconButton,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";

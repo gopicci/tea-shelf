@@ -180,8 +180,10 @@ export default function TeaCard({ tea, gridView, setRoute }) {
                   {getOriginShortName(tea.origin)}
                 </Typography>
                 <ReactCountryFlag
+                  svg
                   className={classes.countryFlag}
                   countryCode={getCountryCode(tea.origin.country)}
+                  alt=""
                   aria-label={tea.origin.country}
                 />
               </>
