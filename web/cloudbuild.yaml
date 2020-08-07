@@ -7,6 +7,5 @@ steps:
   args: ['run', 'build']
 artifacts:
   objects:
-    location: 'gs://[STORAGE_LOCATION]/'
+    location: 'gs://teashelf.app/'
     paths: ['*']
-timeout: 1200s
