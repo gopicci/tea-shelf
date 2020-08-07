@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
 import { Edit, Star } from "@material-ui/icons";
 import { ArrowBack, MoreVert } from "@material-ui/icons";
-import emptyImage from "../dev/empty.png";
+import emptyImage from "../../public/empty.png";
 import {
   getSubcategoryName,
   getOriginName,

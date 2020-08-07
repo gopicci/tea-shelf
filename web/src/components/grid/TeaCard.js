@@ -16,7 +16,7 @@ import {
   getCountryCode,
 } from "../../services/ParsingService";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
-import emptyImage from "../../dev/empty.png";
+import emptyImage from "../../../public/empty.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
