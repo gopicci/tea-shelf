@@ -3,4 +3,6 @@ steps:
   args: ['build', '-f', 'api/Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/api', './api']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/api']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [ 'compute', 'instance-groups', 'managed', 'rolling-action', 'restart', 'api-instance-group-1', '--zone=us-central1-a']
 timeout: 1200s
