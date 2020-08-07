@@ -3,7 +3,7 @@ steps:
   name: 'gcr.io/cloud-builders/gcloud'
   args: ['builds', 'submit', 'web', '--config', 'web/cloudbuild.yaml']
   waitFor: ['-']
-- id: 'build api'
-  name: 'gcr.io/cloud-builders/gcloud'
-  args: ['builds', 'submit', 'api', '--config', 'api/cloudbuild.yaml']
-  waitFor: ['-']
+#- id: 'build api'
+#  name: 'gcr.io/cloud-builders/gcloud'
+#  args: ['builds', 'submit', 'api', '--config', 'api/cloudbuild.yaml']
+#  waitFor: ['-']
