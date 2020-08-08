@@ -182,6 +182,10 @@ export default function TeaCard({ tea, gridView, setRoute }) {
                 <ReactCountryFlag
                   svg
                   className={classes.countryFlag}
+                  style={{
+                    width: "1.5em",
+                    height: "1.5em",
+                  }}
                   countryCode={getCountryCode(tea.origin.country)}
                   alt=""
                   aria-label={tea.origin.country}
