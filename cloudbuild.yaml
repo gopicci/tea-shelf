@@ -1,10 +1,6 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-f', 'api/Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/api', './api']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/api']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-f', 'nginx/Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/nginx', './nginx']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/nginx']
-timeout: 1200s
+
+- id: 'build nginx'
+  name: 'gcr.io/cloud-builders/gcloud'
+  args: ['builds', 'submit', 'nginx', '--config', 'nginx/cloudbuild.yaml']
+  waitFor: ['-']
