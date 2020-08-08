@@ -1,20 +1,18 @@
 import React from "react";
 import { Formik } from "formik";
 import {
-  Avatar,
   Box,
   Button,
   Container,
   CssBaseline,
   Grid,
   Link,
+  SvgIcon,
   TextField,
   Typography,
 } from "@material-ui/core";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { makeStyles } from "@material-ui/core/styles";
-
-import {APIRequest} from '../services/AuthService';
+import { APIRequest } from "../services/AuthService";
 
 function Copyright() {
   return (
@@ -36,9 +34,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+  logo: {
+    fontSize: theme.spacing(8),
+    marginBottom: theme.spacing(4),
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -54,9 +52,13 @@ export default function Login() {
 
   const onSubmit = async (values, actions) => {
     try {
-      const response = await APIRequest("/login/", "POST", JSON.stringify({email: values.email, password: values.password}))
+      const response = await APIRequest(
+        "/login/",
+        "POST",
+        JSON.stringify({ email: values.email, password: values.password })
+      );
 
-      const data = await response.json()
+      const data = await response.json();
 
       actions.setSubmitting(false);
 
@@ -85,9 +87,44 @@ export default function Login() {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
+        <SvgIcon
+          className={classes.logo}
+          shapeRendering="geometricPrecision"
+          viewBox="0 0 270.9 270.9"
+        >
+          <path
+            fill="#916f6f"
+            stroke="#916f6f"
+            stroke-width=".4"
+            d="M11 29h248v21H11zM11 220h248v21H11z"
+          />
+          <path
+            d="M73 60c-10 29 0 87 20 112 22 28 52 26 66 21s27-44 7-75c-19-30-60-52-93-58z"
+            fill="#338000"
+            stroke="green"
+            stroke-width=".5"
+          />
+          <path
+            d="M149 185c8 6 16 14 25 19s26 6 26 6l-2-10s-17-2-25-8l-27-21z"
+            fill="#338000"
+          />
+          <g>
+            <path
+              fill="#916f6f"
+              stroke="#916f6f"
+              stroke-width=".4"
+              d="M217 259V11h21v248z"
+            />
+          </g>
+          <g>
+            <path
+              fill="#916f6f"
+              stroke="#916f6f"
+              stroke-width=".4"
+              d="M33 259V11h21v248z"
+            />
+          </g>
+        </SvgIcon>
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
