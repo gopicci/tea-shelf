@@ -6,4 +6,4 @@ steps:
   entrypoint: npm
   args: ['run', 'build']
 - name: 'gcr.io/cloud-builders/gsutil'
-  args: ['-m', 'cp', '-r', 'build/*', 'gs://teashelf.app/']
+  args: ['-h', 'Cache-Control:no-cache,max-age=0', '-m', 'cp', '-r', 'build/*', 'gs://teashelf.app/']
