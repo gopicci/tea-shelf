@@ -190,17 +190,6 @@ export default function TeaCard({ tea, gridView, setRoute }) {
                   alt=""
                   aria-label={tea.origin.country}
                 />
-                <ReactCountryFlag
-                  svg
-                  style={{
-                    width: "2em",
-                    height: "2em",
-                  }}
-                  className={classes.countryFlag}
-                  countryCode={getCountryCode(tea.origin.country)}
-                  alt=""
-                  aria-label={tea.origin.country}
-                />
               </>
             )}
           </Box>
