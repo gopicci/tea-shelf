@@ -46,6 +46,8 @@ export async function syncOffline() {
    */
   const offlineTeas = await localforage.getItem("offline-teas");
 
+  if (!offlineTeas) return;
+
   let failed = [];
 
   const requests = offlineTeas.map(async (tea) => {
