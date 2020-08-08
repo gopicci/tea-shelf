@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 import googlemaps
@@ -186,7 +187,7 @@ class PlacesAutocompleteView(APIView):
     """
 
     def post(self, request):
-        gmaps = googlemaps.Client()
+        gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
         results = gmaps.places_autocomplete(
             request.data["input"],
             session_token=request.data["token"],
@@ -201,7 +202,7 @@ class PlacesDetailsView(APIView):
     """
 
     def post(self, request):
-        gmaps = googlemaps.Client()
+        gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
         results = gmaps.place(
             request.data["place_id"],
             session_token=request.data["token"],
