@@ -183,8 +183,8 @@ export default function TeaCard({ tea, gridView, setRoute }) {
                   svg
                   className={classes.countryFlag}
                   style={{
-                    width: "1.5em",
-                    height: "1.5em",
+                    width: "20px",
+                    height: "20px",
                   }}
                   countryCode={getCountryCode(tea.origin.country)}
                   alt=""
