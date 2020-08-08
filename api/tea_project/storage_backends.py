@@ -24,7 +24,7 @@ class GoogleCloudStaticFileStorage(GoogleCloudStorage):
     Google file storage class which gives a media file path from STATIC_URL not google generated one.
     """
 
-    bucket_name = setting('GS_STATIC_BUCKET_NAME')
+    bucket_name = setting("GS_STATIC_BUCKET_NAME")
     location = setting("GS_STATIC_LOCATION")
 
     def url(self, name):

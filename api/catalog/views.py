@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 import googlemaps
-import os
 from rest_framework.generics import (
     CreateAPIView,
     RetrieveAPIView,
