@@ -187,7 +187,7 @@ class PlacesAutocompleteView(APIView):
     """
 
     def post(self, request):
-        gmaps = googlemaps.Client(key=os.environ.get("GOOGLE_MAPS_API_KEY"))
+        gmaps = googlemaps.Client()
         results = gmaps.places_autocomplete(
             request.data["input"],
             session_token=request.data["token"],
@@ -202,7 +202,7 @@ class PlacesDetailsView(APIView):
     """
 
     def post(self, request):
-        gmaps = googlemaps.Client(key=os.environ.get("GOOGLE_MAPS_API_KEY"))
+        gmaps = googlemaps.Client()
         results = gmaps.place(
             request.data["place_id"],
             session_token=request.data["token"],
