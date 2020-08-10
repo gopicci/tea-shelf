@@ -267,7 +267,7 @@ class TeaSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """
-        Returns image relative path
+        Returns image relative path.
         """
         response = super(TeaSerializer, self).to_representation(instance)
         if instance.image:
@@ -275,6 +275,9 @@ class TeaSerializer(serializers.ModelSerializer):
         return response
 
     def extract_nested_fields(self, validated_data):
+        """
+        Extracts nested fields from validated data and removes null entries.
+        """
         nested_data = {}
 
         if "gongfu_brewing" in validated_data:
@@ -322,6 +325,9 @@ class TeaSerializer(serializers.ModelSerializer):
         return validated_data, nested_data
 
     def assign_nested_data(self, instance, nested_data):
+        """
+        Creates separate instances for nested fields and assigns them to tea instance.
+        """
         if "gongfu" in nested_data:
             gongfu_instance, _ = Brewing.objects.get_or_create(**nested_data["gongfu"])
             instance.gongfu_brewing = gongfu_instance
@@ -359,6 +365,10 @@ class TeaSerializer(serializers.ModelSerializer):
         return self.assign_nested_data(instance, nested_data)
 
     def update(self, instance, validated_data):
+        """
+        Nested update, removes null nested entries and creates separate instances
+        before feeding them to the tea instance.
+        """
         unnested_data, nested_data = self.extract_nested_fields(validated_data)
 
         for k, v in unnested_data.items():
