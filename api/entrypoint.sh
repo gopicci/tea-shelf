@@ -14,6 +14,6 @@ fi
 python manage.py flush --no-input
 python manage.py migrate
 
-sh entrypoint-dev.sh
+python manage.py loaddata data-dev
 
 exec "$@"
