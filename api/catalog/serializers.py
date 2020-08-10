@@ -265,6 +265,15 @@ class TeaSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("user",)
 
+    def to_representation(self, instance):
+        """
+        Returns image relative path
+        """
+        response = super(TeaSerializer, self).to_representation(instance)
+        if instance.image:
+            response['image'] = instance.image.url
+        return response
+
     def extract_nested_fields(self, validated_data):
         nested_data = {}
 
