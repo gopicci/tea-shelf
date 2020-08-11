@@ -271,7 +271,7 @@ class TeaSerializer(serializers.ModelSerializer):
         """
         response = super(TeaSerializer, self).to_representation(instance)
         if instance.image:
-            response['image'] = instance.image.url
+            response["image"] = instance.image.url
         return response
 
     def extract_nested_fields(self, validated_data):
