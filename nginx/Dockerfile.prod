@@ -9,7 +9,6 @@ COPY /ssl-renew /etc/periodic/weekly/
 
 RUN apk add --no-cache py-cryptography
 
-RUN rm /etc/nginx/conf.d/default.conf
 COPY /include.storage /etc/nginx/app/include.storage
 COPY /include.forwarded /etc/nginx/app/include.forwarded
-COPY /prod.conf /etc/nginx/conf.d
+COPY /prod.conf /etc/nginx/nginx.conf
