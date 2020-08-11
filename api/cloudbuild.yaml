@@ -4,4 +4,4 @@ steps:
 - name: gcr.io/cloud-builders/docker
   args: ['push', 'gcr.io/$PROJECT_ID/api']
 - name: gcr.io/cloud-builders/gcloud
-  args: [ 'compute', 'instances', 'reset', 'api-instance-1']
+  args: [ 'compute', 'instances', 'reset', 'api-instance-1', '--zone=us-central1-a']
