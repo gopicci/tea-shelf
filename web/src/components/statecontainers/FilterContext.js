@@ -91,7 +91,7 @@ export default function FilterContext(props) {
     let filters = { ...filtersDefinition.filters };
 
     for (const tea of teas) {
-      if (tea.category) {
+      if (categories && tea.category) {
         // Category defined, add if not present
         const categoryName = categories
           .find((category) => category.id === tea.category)
