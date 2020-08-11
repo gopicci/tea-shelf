@@ -3,3 +3,5 @@ steps:
   args: ['build', '-f', 'Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/api', '.']
 - name: gcr.io/cloud-builders/docker
   args: ['push', 'gcr.io/$PROJECT_ID/api']
+- name: gcr.io/cloud-builders/gcloud
+  args: [ 'compute', 'instances', 'reset', 'api-instance-1']
