@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import InputRouter from "./input/mobile/InputRouter";
-import TeaDetails from "./TeaDetails";
+import DetailsLayout from './details/mobile/DetailsLayout';
 import { APIRequest } from "../services/AuthService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
@@ -164,7 +164,7 @@ export default function Edit({
   return (
     <Box className={classes.root}>
       {details ? (
-        <TeaDetails {...props} setRoute={setRoute} />
+        <DetailsLayout {...props} setRoute={setRoute} />
       ) : (
         <InputRouter {...props} />
       )}
