@@ -67,6 +67,7 @@ export default function EditOriginOnline({
       );
       if (res.ok) {
         const results = await res.json();
+        console.log("autocomplete", results);
         if (active) setOptions(results);
       }
     }
@@ -86,6 +87,7 @@ export default function EditOriginOnline({
     );
     if (res.ok) {
       const body = await res.json();
+      console.log("details", body.result);
       const adr = himalaya(body.result.adr_address);
       const origin = {};
 
@@ -97,9 +99,14 @@ export default function EditOriginOnline({
             origin[entry[1].attributes[0].value] = entry[1].children[0].content;
         }
 
+      if (origin["extended-address"])
+        origin["locality"] = origin["extended-address"].split(',')[0];
+
+      origin["region"] = origin["region"].replace(" Province", "");
+
       origin["latitude"] = body.result.geometry.location.lat;
       origin["longitude"] = body.result.geometry.location.lng;
-
+      console.log("origin", origin);
       setTeaData({ ...teaData, origin: origin });
       handleBackToLayout();
     }

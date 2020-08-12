@@ -88,7 +88,13 @@ function originSerializer(origin) {
    */
   let serialized = {};
   for (const k of Object.keys(originModel))
-    if (origin[k]) serialized[k] = origin[k];
+    if (origin[k]) {
+      const value = origin[k];
+      if (typeof value === "string")
+        serialized[k] = value.replace("&#39;", "'");
+      else serialized[k] = value;
+    }
+
   return serialized;
 }
 

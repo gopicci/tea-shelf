@@ -128,8 +128,12 @@ def get_or_create_origin(validated_data):
     query_data = {"country": validated_data["country"], "is_public": True}
     if "region" in validated_data:
         query_data["region"] = validated_data["region"]
+    else:
+        query_data["region"] = ""
     if "locality" in validated_data:
         query_data["locality"] = validated_data["locality"]
+    else:
+        query_data["locality"] = ""
 
     try:
         instance = Origin.objects.get(**query_data)
