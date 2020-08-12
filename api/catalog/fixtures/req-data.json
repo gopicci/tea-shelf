@@ -1,0 +1,223 @@
+[
+{
+  "model": "catalog.brewing",
+  "pk": 1,
+  "fields": {
+    "temperature": 85,
+    "weight": 4.0,
+    "initial": "00:00:20",
+    "increments": "00:00:10"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 2,
+  "fields": {
+    "temperature": 85,
+    "weight": 0.6,
+    "initial": "00:03:00",
+    "increments": "00:01:00"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 3,
+  "fields": {
+    "temperature": 85,
+    "weight": 4.0,
+    "initial": "00:00:15",
+    "increments": "00:00:05"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 4,
+  "fields": {
+    "temperature": 80,
+    "weight": 3.5,
+    "initial": "00:00:15",
+    "increments": "00:00:03"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 5,
+  "fields": {
+    "temperature": 80,
+    "weight": 0.5,
+    "initial": "00:02:00",
+    "increments": "00:01:00"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 6,
+  "fields": {
+    "temperature": 99,
+    "weight": 5.0,
+    "initial": "00:00:20",
+    "increments": "00:00:05"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 7,
+  "fields": {
+    "temperature": 99,
+    "weight": 0.8,
+    "initial": "00:02:00",
+    "increments": "00:00:30"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 8,
+  "fields": {
+    "temperature": 95,
+    "weight": 4.5,
+    "initial": "00:00:15",
+    "increments": "00:00:05"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 9,
+  "fields": {
+    "temperature": 95,
+    "weight": 0.8,
+    "initial": "00:02:00",
+    "increments": "00:01:00"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 10,
+  "fields": {
+    "temperature": 99,
+    "weight": 5.0,
+    "initial": "00:00:10",
+    "increments": "00:00:05"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 11,
+  "fields": {
+    "temperature": 99,
+    "weight": 0.9,
+    "initial": "00:02:00",
+    "increments": "00:00:30"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 12,
+  "fields": {
+    "temperature": 95,
+    "weight": 5.0,
+    "initial": "00:00:20",
+    "increments": "00:00:05"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 13,
+  "fields": {
+    "temperature": 85,
+    "weight": 0.6,
+    "initial": "00:02:00",
+    "increments": "00:01:00"
+  }
+},
+{
+  "model": "catalog.brewing",
+  "pk": 14,
+  "fields": {
+    "temperature": 99,
+    "weight": 6.0,
+    "initial": "06:00:00",
+    "increments": "00:00:05"
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 1,
+  "fields": {
+    "name": "WHITE",
+    "gongfu_brewing": 1,
+    "western_brewing": 2
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 2,
+  "fields": {
+    "name": "YELLOW",
+    "gongfu_brewing": 3,
+    "western_brewing": 13
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 3,
+  "fields": {
+    "name": "GREEN",
+    "gongfu_brewing": 4,
+    "western_brewing": 5
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 4,
+  "fields": {
+    "name": "OOLONG",
+    "gongfu_brewing": 6,
+    "western_brewing": 7
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 5,
+  "fields": {
+    "name": "BLACK",
+    "gongfu_brewing": 8,
+    "western_brewing": 9
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 6,
+  "fields": {
+    "name": "FERMENTED",
+    "gongfu_brewing": 10,
+    "western_brewing": 11
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 7,
+  "fields": {
+    "name": "HERBAL",
+    "gongfu_brewing": 12,
+    "western_brewing": 9
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 8,
+  "fields": {
+    "name": "SCENTED",
+    "gongfu_brewing": null,
+    "western_brewing": null
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 9,
+  "fields": {
+    "name": "OTHER",
+    "gongfu_brewing": null,
+    "western_brewing": null
+  }
+}
+]
