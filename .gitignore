@@ -7,5 +7,5 @@ notes
 static
 media
 .idea
-fixtures
+data-dev*
 .dev*
