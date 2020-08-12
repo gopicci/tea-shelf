@@ -132,6 +132,8 @@ class Origin(models.Model):
     country = models.CharField(max_length=30)
     region = models.CharField(max_length=50, blank=True)
     locality = models.CharField(max_length=50, blank=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
 
     class Meta:
         ordering = ["country", "region", "locality"]

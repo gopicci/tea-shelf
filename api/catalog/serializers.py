@@ -120,6 +120,41 @@ class BrewingSerializer(serializers.ModelSerializer):
         return instance
 
 
+def get_or_create_origin(validated_data):
+    """
+    Checks if public origin instance exists or user already has it.
+    Updates instance with latitude and longitude if missing.
+    """
+    query_data = {"country": validated_data["country"], "is_public": True}
+    if "region" in validated_data:
+        query_data["region"] = validated_data["region"]
+    if "locality" in validated_data:
+        query_data["locality"] = validated_data["locality"]
+
+    try:
+        instance = Origin.objects.get(**query_data)
+    except Origin.DoesNotExist:
+        try:
+            query_data["is_public"] = False
+            query_data["user"] = validated_data["user"]
+            instance = Origin.objects.get(**query_data)
+        except Origin.DoesNotExist:
+            instance = None
+
+    if not instance:
+        instance = Origin(**validated_data)
+
+    if validated_data["latitude"] and not instance.latitude:
+        instance.latitude = validated_data["latitude"]
+
+    if validated_data["longitude"] and not instance.longitude:
+        instance.longitude = validated_data["longitude"]
+
+    instance.save()
+
+    return instance
+
+
 class OriginSerializer(serializers.ModelSerializer):
     """
     Origin serializer, passes request user on creation.
@@ -136,27 +171,7 @@ class OriginSerializer(serializers.ModelSerializer):
         """
         Checks if public origin exists or user already has it.
         """
-        query_data = {"country": validated_data["country"], "is_public": True}
-        if "region" in validated_data:
-            query_data["region"] = validated_data["region"]
-        if "locality" in validated_data:
-            query_data["locality"] = validated_data["locality"]
-
-        try:
-            instance = Origin.objects.get(**query_data)
-        except Origin.DoesNotExist:
-            try:
-                query_data["is_public"] = False
-                query_data["user"] = validated_data["user"]
-                instance = Origin.objects.get(**query_data)
-            except Origin.DoesNotExist:
-                instance = None
-
-        if not instance:
-            instance = Origin(**validated_data)
-            instance.save()
-
-        return instance
+        return get_or_create_origin(validated_data)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -283,11 +298,9 @@ class TeaSerializer(serializers.ModelSerializer):
         if "gongfu_brewing" in validated_data:
             nested_data["gongfu"] = validated_data.pop("gongfu_brewing")
             if nested_data["gongfu"]:
-                [
-                    nested_data["gongfu"].pop(k)
-                    for k, v in list(nested_data["gongfu"].items())
-                    if v is None
-                ]
+                for k, v in list(nested_data["gongfu"].items()):
+                    if v is None:
+                        nested_data["gongfu"].pop(k)
 
         if "western_brewing" in validated_data:
             nested_data["western"] = validated_data.pop("western_brewing")
@@ -300,11 +313,9 @@ class TeaSerializer(serializers.ModelSerializer):
             nested_data["origin"] = validated_data.pop("origin")
             if nested_data["origin"]:
                 nested_data["origin"]["user"] = validated_data["user"]
-                [
-                    nested_data["origin"].pop(k)
-                    for k, v in list(nested_data["origin"].items())
-                    if v is None
-                ]
+                for k, v in list(nested_data["origin"].items()):
+                    if v is None:
+                        nested_data["origin"].pop(k)
 
         if "subcategory" in validated_data:
             nested_data["subcategory"] = validated_data.pop("subcategory")
@@ -339,8 +350,7 @@ class TeaSerializer(serializers.ModelSerializer):
             instance.western_brewing = western_instance
 
         if "origin" in nested_data:
-            origin_instance, _ = Origin.objects.get_or_create(**nested_data["origin"])
-            instance.origin = origin_instance
+            instance.origin = get_or_create_origin(nested_data["origin"])
 
         if "subcategory" in nested_data:
             instance.subcategory = custom_get_or_create(

@@ -67,8 +67,7 @@ export default function EditOriginOnline({
       );
       if (res.ok) {
         const results = await res.json();
-        if (active)
-          setOptions(results);
+        if (active) setOptions(results);
       }
     }
     if (inputValue.length > 1) getOptions();
@@ -95,9 +94,11 @@ export default function EditOriginOnline({
           if (entry[1].attributes[0].value === "country-name")
             origin["country"] = entry[1].children[0].content;
           else
-            origin[entry[1].attributes[0].value] =
-              entry[1].children[0].content;
+            origin[entry[1].attributes[0].value] = entry[1].children[0].content;
         }
+
+      origin["latitude"] = body.result.geometry.location.lat;
+      origin["longitude"] = body.result.geometry.location.lng;
 
       setTeaData({ ...teaData, origin: origin });
       handleBackToLayout();

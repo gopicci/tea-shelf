@@ -206,6 +206,6 @@ class PlacesDetailsView(APIView):
         results = gmaps.place(
             request.data["place_id"],
             session_token=request.data["token"],
-            fields=["adr_address"],
+            fields=["adr_address", "geometry"],
         )
         return Response(results)

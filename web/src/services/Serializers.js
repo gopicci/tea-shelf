@@ -34,6 +34,8 @@ const originModel = {
   country: null,
   region: null,
   locality: null,
+  latitude: null,
+  longitude: null,
 };
 
 export function teaSerializer(tea) {
