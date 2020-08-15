@@ -12,12 +12,12 @@
     "@testing-library/user-event": "^7.2.1",
     "autosuggest-highlight": "^3.1.1",
     "cypress": "^4.11.0",
-    "d3-geo": "^1.12.1",
     "eslint-plugin-cypress": "^2.11.1",
     "fontsource-roboto": "^2.1.4",
     "formik": "^2.1.4",
     "himalaya": "^1.1.0",
     "localforage": "^1.7.4",
+    "material-ui-dropzone": "^3.3.1",
     "react": "^16.13.1",
     "react-country-flag": "^2.2.0",
     "react-dom": "^16.13.1",
@@ -26,7 +26,8 @@
     "react-webcam": "^5.2.0",
     "throttle": "^1.0.3",
     "uuid": "^8.3.0",
-    "whatwg-fetch": "^3.2.0"
+    "whatwg-fetch": "^3.2.0",
+    "yup": "^0.29.3"
   },
   "scripts": {
     "start": "react-scripts start",

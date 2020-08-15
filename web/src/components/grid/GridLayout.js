@@ -250,7 +250,7 @@ export default function GridLayout({ setRoute }) {
     reversed,
   ]);
 
-  const upSmall = useMediaQuery(theme.breakpoints.up("sm"));
+  const desktop = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
     <Box className={gridView ? classes.gridRoot : classes.listRoot}>
@@ -272,13 +272,13 @@ export default function GridLayout({ setRoute }) {
             <Grid
               item
               className={
-                gridView && upSmall ? classes.gridItem : classes.listItem
+                gridView && desktop ? classes.gridItem : classes.listItem
               }
               key={i}
             >
               <TeaCard
                 tea={tea}
-                gridView={gridView && upSmall}
+                gridView={gridView && desktop}
                 setRoute={setRoute}
               />
             </Grid>

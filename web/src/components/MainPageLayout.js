@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Fab, Toolbar } from "@material-ui/core";
+import React, { useState } from "react";
+import { Box, Dialog, Fab, Toolbar } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
@@ -8,6 +8,7 @@ import DrawerLayout from "./drawer/DrawerLayout";
 import GridLayout from "./grid/GridLayout";
 import FilterAccordion from "./filters/FilterAccordion";
 import FilterBar from "./filters/FilterBar";
+import Create from "./Create";
 import { mainTheme as theme } from "../style/MainTheme";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,29 +42,41 @@ export default function MainPageLayout({ setRoute }) {
 
   const classes = useStyles();
 
-  function handleCreate() {
-    setRoute({route: "CREATE"});
+  const [desktopCreate, setDesktopCreate] = useState(false);
+
+  function handleMobileCreate() {
+    setRoute({ route: "CREATE" });
   }
 
-  const upSmall = useMediaQuery(theme.breakpoints.up("sm"));
+  const desktop = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
     <>
       <SearchAppBar />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout />
+        <DrawerLayout setDesktopCreate={setDesktopCreate} />
         <Box className={classes.mainBox}>
-          {upSmall ? <FilterAccordion /> : <FilterBar setRoute={setRoute} />}
+          {desktop ? <FilterAccordion /> : <FilterBar setRoute={setRoute} />}
           <GridLayout setRoute={setRoute} />
         </Box>
-        <Fab
-          aria-label="add tea"
-          className={classes.addButton}
-          onClick={handleCreate}
-        >
-          <CameraAlt />
-        </Fab>
+        {desktop ? (
+          <Dialog
+            fullWidth={true}
+            open={desktopCreate}
+            onClose={() => setDesktopCreate(false)}
+          >
+            <Create desktop={true} setDesktopCreate={setDesktopCreate} />
+          </Dialog>
+        ) : (
+          <Fab
+            aria-label="add tea"
+            className={classes.addButton}
+            onClick={handleMobileCreate}
+          >
+            <CameraAlt />
+          </Fab>
+        )}
       </Box>
     </>
   );

@@ -13,6 +13,11 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.primary.main,
+    width: "100%",
+    height: "100vh",
+    display: "flex",
+    margin: 0,
+    flexDirection: "column",
   },
   imageBox: {
     height: "70%",
@@ -37,7 +42,7 @@ export default function CaptureImage({
   setTeaData,
   imageData,
   setImageData,
-  handleClose,
+  handleMobileClose,
   handleNext,
 }) {
   /**
@@ -117,7 +122,7 @@ export default function CaptureImage({
       <Box className={classes.controlsBox}>
         <IconButton
           className={classes.control}
-          onClick={handleClose}
+          onClick={handleMobileClose}
           color="inherit"
           aria-label="cancel"
         >

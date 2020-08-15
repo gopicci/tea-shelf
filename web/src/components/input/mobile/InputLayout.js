@@ -29,7 +29,7 @@ export default function InputLayout({
   teaData,
   handleEdit=null,
   handleCreate=null,
-  handleClose=null,
+  handleMobileClose=null,
   handlePrevious,
   setEditRoute,
 }) {
@@ -38,7 +38,7 @@ export default function InputLayout({
    *
    * @param teaData {json} Input tea data state
    * @param handleCreate {function} Handle tea posting process
-   * @param handleClose {function} Cancel process and reroute to main route
+   * @param handleMobileClose {function} Cancel process and reroute to main route
    * @param handlePrevious {function} Go back to previous stage (captureImage)
    * @param setEditRoute {function} Reroutes to input item
    */
@@ -52,7 +52,7 @@ export default function InputLayout({
   function handleSave() {
     if (handleCreate) {
       handleCreate();
-      handleClose();
+      handleMobileClose();
     } else {
       handleEdit();
       handlePrevious();

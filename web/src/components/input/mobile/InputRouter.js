@@ -78,5 +78,5 @@ export default function InputRouter(props) {
     }
   }
 
-  return <>{renderSwitch(editRoute)}</>;
+  return renderSwitch(editRoute);
 }

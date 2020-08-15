@@ -1,28 +1,19 @@
 import React, { useContext, useState } from "react";
-import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import CaptureImage from "./input/mobile/CaptureImage";
+import LoadImage from "./input/desktop/LoadImage";
 import InputRouter from "./input/mobile/InputRouter";
+import InputForm from './input/desktop/InputForm';
 import { APIRequest } from "../services/AuthService";
 import { generateUniqueId } from "../services/SyncService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
-import {teaModel, teaSerializer} from '../services/Serializers';
+import { teaModel, teaSerializer } from "../services/Serializers";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-}));
 
-export default function Create({ setRoute }) {
+export default function Create({ setRoute, desktop, setDesktopCreate }) {
   /**
    * Mobile tea entry creation process. Consists of 3 stages:
    * captureImage -> inputLayout -> handleCreate
@@ -30,9 +21,8 @@ export default function Create({ setRoute }) {
    * teaData tracks the input state.
    *
    * @param setRoute {function} Set main route
+   * @param desktop {bool} Desktop mode or mobile
    */
-
-  const classes = useStyles();
 
   const [teaData, setTeaData] = useState(teaModel);
   const [imageData, setImageData] = useState(null);
@@ -123,10 +113,16 @@ export default function Create({ setRoute }) {
     setStep(step - 1);
   }
 
-  function handleClose() {
+  function handleMobileClose() {
     setTeaData(teaModel);
     setStep(1);
     setRoute({ route: "MAIN" });
+  }
+
+  function handleDesktopClose() {
+    setTeaData(teaModel);
+    setStep(1);
+    setDesktopCreate(false);
   }
 
   const props = {
@@ -136,20 +132,22 @@ export default function Create({ setRoute }) {
     setTeaData,
     handleNext,
     handlePrevious,
-    handleClose,
+    handleMobileClose,
+    handleDesktopClose,
     handleCreate,
   };
+
 
   function renderSwitch(step) {
     switch (step) {
       case 1:
-        return <CaptureImage {...props} />;
+        return desktop ? <LoadImage {...props} /> : <CaptureImage {...props} />;
       case 2:
-        return <InputRouter {...props} />;
+        return desktop ? <InputForm {...props} /> : <InputRouter {...props} />;
       default:
-        return <CaptureImage {...props} />;
+        return desktop ? <LoadImage {...props} /> : <CaptureImage {...props} />;
     }
   }
 
-  return <Box className={classes.root}>{renderSwitch(step)}</Box>;
+  return renderSwitch(step)
 }

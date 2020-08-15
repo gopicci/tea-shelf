@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DrawerLayout() {
+export default function DrawerLayout({ setDesktopCreate }) {
   /**
    * Desktop left side drawer component.
    */
@@ -52,7 +52,7 @@ export default function DrawerLayout() {
       <div className={classes.drawerContainer}>
         <Toolbar />
         <List>
-          <ListItem button key="add">
+          <ListItem button key="add" onClick={() => setDesktopCreate(true)}>
             <ListItemIcon>
               <Add />
             </ListItemIcon>
