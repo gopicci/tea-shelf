@@ -5,7 +5,7 @@ export default function WeightAutocomplete({
   teaData,
   setTeaData,
   renderInput,
-  gongfu,
+  brewing,
 }) {
   /**
    * Mobile tea creation subcategory input component. Shows a list and autocomplete from
@@ -17,18 +17,14 @@ export default function WeightAutocomplete({
    * @param handleBackToLayout {function} Reroutes to input layout
    */
 
-  const brewing = gongfu ? "gongfu_brewing" : "western_brewing";
-
-  const max = gongfu ? 10 : 2
-  const increment = gongfu ? 0.5 : 0.1
+  const max = brewing === 'gongfu_brewing' ? 10 : 2
+  const increment = brewing === 'gongfu_brewing' ? 0.5 : 0.1
   const options = [...Array(max / increment + 1)]
     .map((_, b) => (b * increment).toFixed(1))
     .reverse();
 
   function handleOnChange(event, newValue) {
-    console.log(newValue)
     if (typeof newValue === "string") {
-      console.log(brewing, newValue)
       setTeaData({
         ...teaData,
         [brewing]: {
@@ -50,6 +46,7 @@ export default function WeightAutocomplete({
     <Autocomplete
       id="brewingWeight"
       onChange={handleOnChange}
+      onInputChange={handleOnChange}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys

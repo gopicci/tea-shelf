@@ -8,6 +8,7 @@ import {
 } from "../../../services/ParsingService";
 import { subcategoryModel } from '../../../services/Serializers';
 import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
+import { CategoriesState } from '../../statecontainers/CategoriesContext';
 
 const filter = createFilterOptions();
 
@@ -23,6 +24,7 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
    */
 
   const subcategories = useContext(SubcategoriesState);
+  const categories = useContext(CategoriesState);
 
   const options = Object.entries(subcategories)
     .map((entry) => {
@@ -41,6 +43,7 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
       });
       if (match) {
         const subcategory = match[1];
+        const category = Object.entries(categories).find(entry => entry[1].id === subcategory.category)[1];
         // Match found, update also category, origin and brewings
         let data = {
           ...teaData,
@@ -57,10 +60,20 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
             ...data,
             western_brewing: brewingTimesToSeconds(subcategory.western_brewing),
           };
+        else if (category.western_brewing)
+          data = {
+            ...data,
+            western_brewing: category.western_brewing,
+          };
         if (subcategory.gongfu_brewing)
           data = {
             ...data,
             gongfu_brewing: brewingTimesToSeconds(subcategory.gongfu_brewing),
+          };
+        else if (category.gongfu_brewing)
+          data = {
+            ...data,
+            gongfu_brewing: category.gongfu_brewing,
           };
         setTeaData(data);
       } else setTeaData({ ...teaData, subcategory: { name: name } });
@@ -114,6 +127,7 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
       }}
       renderOption={(option) => (option.inputValue ? option.label : option)}
       freeSolo
+      value={teaData.subcategory && teaData.subcategory.name ? String(teaData.subcategory.name) : ""}
       renderInput={renderInput}
     />
   );

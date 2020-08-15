@@ -6,8 +6,8 @@ export default function TempAutocomplete({
   teaData,
   setTeaData,
   renderInput,
-  imperial,
-  gongfu,
+  fahrenheit,
+  brewing,
 }) {
   /**
    * Mobile tea creation subcategory input component. Shows a list and autocomplete from
@@ -19,10 +19,8 @@ export default function TempAutocomplete({
    * @param handleBackToLayout {function} Reroutes to input layout
    */
 
-  const brewing = gongfu ? "gongfu_brewing" : "western_brewing";
-
   const options = [...Array(100)]
-    .map((_, b) => String(imperial ? celsiusToFahrenheit(b) : b))
+    .map((_, b) => String(fahrenheit ? celsiusToFahrenheit(b) : b))
     .reverse();
 
   function handleOnChange(event, newValue) {
@@ -47,11 +45,13 @@ export default function TempAutocomplete({
   return (
     <Autocomplete
       onChange={handleOnChange}
+      onInputChange={handleOnChange}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
       id="temperature"
       options={options}
+      freeSolo
       value={teaData[brewing].temperature ? String(teaData[brewing].temperature) : ""}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input

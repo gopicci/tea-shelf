@@ -23,6 +23,8 @@ import TempAutocomplete from "./TempAutocomplete";
 import WeightAutocomplete from "./WeightAutocomplete";
 import VendorAutocomplete from "./VendorAutocomplete";
 import OriginAutocomplete from "./OriginAutocomplete";
+import { brewingTimesToSeconds } from "../../../services/ParsingService";
+import { subcategoryModel } from "../../../services/Serializers";
 import { CategoriesState } from "../../statecontainers/CategoriesContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +44,16 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     padding: theme.spacing(1),
   },
+  justifyLeft: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "left",
+  },
+  justifyRight: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "right",
+  },
   divider: {
     position: "relative",
     flexGrow: 1,
@@ -56,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
   brewingSwitch: {
     position: "absolute",
-    right: theme.spacing(1),
+    right: theme.spacing(2),
     top: "50%",
     transform: "translateY(-50%)",
   },
@@ -87,9 +99,37 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 240,
     paddingRight: theme.spacing(2),
   },
-  measure: {
-    minWidth: 150,
+  weightMeasure: {
+    minWidth: 80,
     paddingRight: theme.spacing(2),
+  },
+  temperature: {
+    minWidth: 150,
+    maxWidth: 150,
+    paddingRight: theme.spacing(2),
+  },
+  degrees: {
+    minWidth: 60,
+  },
+  brewingWeight: {
+    minWidth: 150,
+    maxWidth: 150,
+  },
+  initial: {
+    minWidth: 150,
+    maxWidth: 150,
+    paddingRight: theme.spacing(2),
+  },
+  initialMeasure: {
+    minWidth: 60,
+  },
+  increments: {
+    minWidth: 150,
+    maxWidth: 150,
+    paddingRight: theme.spacing(2),
+  },
+  incrementsMeasure: {
+    minWidth: 60,
   },
   price: {
     flexGrow: 1,
@@ -100,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    margin: theme.spacing(2),
+    padding: theme.spacing(2),
   },
 }));
 
@@ -117,12 +157,15 @@ export default function InputForm({
 
   const categories = useContext(CategoriesState);
 
-  const [imperial, setImperial] = useState(false);
-
-  const [gongfu, setGongfu] = useState(true);
+  const [fahrenheit, setFahrenheit] = useState(false);
+  const [weightMeasure, setWeightMeasure] = useState("g");
+  const [initialMeasure, setInitialMeasure] = useState("s");
+  const [incrementsMeasure, setIncrementsMeasure] = useState("s");
+  const [brewing, setBrewing] = useState("gongfu_brewing");
 
   function handleSwitch() {
-    setGongfu(!gongfu);
+    if (brewing === "gongfu_brewing") setBrewing("western_brewing");
+    else setBrewing("gongfu_brewing");
   }
 
   const currentYear = new Date().getFullYear();
@@ -135,6 +178,44 @@ export default function InputForm({
   function initializeData(obj) {
     return JSON.parse(JSON.stringify(obj, (k, v) => (v === null ? "" : v)));
   }
+
+  const brewingValidation = Yup.object().shape({
+    fahrenheit: Yup.boolean(),
+    temperature: Yup.number().when("fahrenheit", {
+      is: true,
+      then: Yup.number()
+        .min(32, "Temperature too low")
+        .max(210, "Temperature too high")
+        .typeError("Must be a number")
+        .nullable(),
+      otherwise: Yup.number()
+        .min(0, "Temperature too low")
+        .max(99, "Temperature too high")
+        .typeError("Must be a number")
+        .nullable(),
+    }),
+    degrees: Yup.string().oneOf(
+      ["fahrenheit", "celsius"],
+      "Invalid temperature unit"
+    ),
+    weight: Yup.number()
+      .min(0, "Must be positive")
+      .max(100, "Number too high")
+      .typeError("Must be a number")
+      .nullable(),
+    initial: Yup.number()
+      .min(0, "Must be positive")
+      .max(999, "Number too high")
+      .typeError("Must be a number")
+      .nullable(),
+    initialMeasure: Yup.string().oneOf(["s", "m", "h"], "Invalid time unit"),
+    increments: Yup.number()
+      .min(0, "Must be positive")
+      .max(999, "Number too high")
+      .typeError("Must be a number")
+      .nullable(),
+    incrementsMeasure: Yup.string().oneOf(["s", "m", "h"], "Invalid time unit"),
+  });
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
@@ -173,49 +254,24 @@ export default function InputForm({
     }),
     weight: Yup.number()
       .min(0, "Weight must be positive")
-      .max(100000, "Weight too big")
+      .max(100000, "Weight too high")
       .typeError("Weight must be a number")
       .nullable(),
+    weightMeasure: Yup.string().oneOf(["g", "oz"], "Invalid measure"),
     price: Yup.number()
       .min(0, "Price must be positive")
       .max(3000, "Price too high")
       .typeError("Price must be a number")
       .nullable(),
-    gongfu_brewing: Yup.object().shape({
-      imperial: Yup.boolean(),
-      temperature: Yup.number()
-        .when("imperial", {
-          is: true,
-          then: Yup.number()
-            .min(32, "Temperature too low")
-            .max(210, "Temperature too high"),
-          otherwise: Yup.number()
-            .min(0, "Temperature too low")
-            .max(99, "Temperature too high"),
-        })
-        .nullable(),
-    }),
-    western_brewing: Yup.object().shape({
-      imperial: Yup.boolean(),
-      temperature: Yup.number()
-        .when("imperial", {
-          is: true,
-          then: Yup.number()
-            .min(32, "Temperature too low")
-            .max(210, "Temperature too high"),
-          otherwise: Yup.number()
-            .min(0, "Temperature too low")
-            .max(99, "Temperature too high"),
-        })
-        .nullable(),
-    }),
+    gongfu_brewing: brewingValidation,
+    western_brewing: brewingValidation,
   });
 
   function handleSave() {
     // convert weight to g into weight_left
-    // convert imperial temperature too
+    // convert fahrenheit temperature too
     // let grams = parseFloat(e.target.value);
-    // if (values.measure === "oz") grams = grams * 28.35;
+    // if (values.degrees === "oz") grams = grams * 28.35;
     // if (!isNaN(grams))
     //   setTeaData({
     //   ...teaData,
@@ -244,11 +300,11 @@ export default function InputForm({
           weight: "",
           gongfu_brewing: {
             ...teaData.gongfu_brewing,
-            imperial: imperial,
+            fahrenheit: fahrenheit,
           },
           western_brewing: {
             ...teaData.western_brewing,
-            imperial: imperial,
+            fahrenheit: fahrenheit,
           },
         }}
         validationSchema={validationSchema}
@@ -295,7 +351,19 @@ export default function InputForm({
                   value={values.category ? values.category : ""}
                   onChange={(e) => {
                     handleChange(e);
-                    setTeaData({ ...teaData, category: e.target.value });
+                    for (const entry of Object.entries(categories))
+                      if (entry[1].id === e.target.value)
+                        setTeaData({
+                          ...teaData,
+                          category: entry[1].id,
+                          subcategory: subcategoryModel,
+                          gongfu_brewing: brewingTimesToSeconds(
+                            entry[1].gongfu_brewing
+                          ),
+                          western_brewing: brewingTimesToSeconds(
+                            entry[1].western_brewing
+                          ),
+                        });
                   }}
                   onBlur={handleBlur}
                 >
@@ -421,9 +489,24 @@ export default function InputForm({
                 onBlur={handleBlur}
                 helperText={errors.weight && touched.weight && errors.weight}
               />
+              <FormControl
+                className={classes.weightMeasure}
+                variant="outlined"
+                size="small"
+              >
+                <Select
+                  name="weightMeasure"
+                  value={weightMeasure}
+                  onChange={(e) => setWeightMeasure(e.target.value)}
+                  onBlur={handleBlur}
+                >
+                  <MenuItem value="g">g</MenuItem>
+                  <MenuItem value="oz">oz</MenuItem>
+                </Select>
+              </FormControl>
               <TextField
                 name="price"
-                label={"Price per " + (imperial ? "oz" : "g")}
+                label={"Price per " + weightMeasure}
                 inputProps={{ maxLength: 10 }}
                 size="small"
                 variant="outlined"
@@ -446,7 +529,7 @@ export default function InputForm({
                   control={<Switch size="small" color="default" />}
                   label={
                     <Typography variant="caption">
-                      {gongfu ? "Gongfu" : "Western"}
+                      {brewing === "gongfu_brewing" ? "Gongfu" : "Western"}
                     </Typography>
                   }
                   labelPlacement="start"
@@ -455,87 +538,161 @@ export default function InputForm({
               </FormGroup>
             </Box>
             <Box className={classes.row}>
-              <TempAutocomplete
-                name="temperature"
-                teaData={teaData}
-                setTeaData={setTeaData}
-                imperial={imperial}
-                gongfu={gongfu}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={imperial ? "F" : "°C"}
-                    variant="outlined"
-                    size="small"
-                    className={classes.temperature}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={
-                      gongfu
-                        ? errors.gongfu_brewing &&
-                          touched.gongfu_brewing &&
-                          errors.gongfu_brewing.temperature &&
-                          touched.gongfu_brewing.temperature &&
-                          errors.gongfu_brewing.temperature
-                        : errors.gongfu_brewing &&
-                          touched.gongfu_brewing &&
-                          errors.western_brewing.temperature &&
-                          touched.western_brewing.temperature &&
-                          errors.western_brewing.temperature
+              <Box className={classes.justifyLeft}>
+                <TempAutocomplete
+                  name="temperature"
+                  teaData={teaData}
+                  setTeaData={setTeaData}
+                  fahrenheit={fahrenheit}
+                  brewing={brewing}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Temperature"
+                      variant="outlined"
+                      size="small"
+                      className={classes.temperature}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={
+                        errors[brewing] &&
+                        touched[brewing] &&
+                        errors[brewing].temperature &&
+                        touched[brewing].temperature &&
+                        errors[brewing].temperature
+                      }
+                    />
+                  )}
+                />
+                <FormControl
+                  className={classes.degrees}
+                  variant="outlined"
+                  size="small"
+                >
+                  <Select
+                    name="degrees"
+                    value={fahrenheit ? "fahrenheit" : "celsius"}
+                    onChange={(e) =>
+                      setFahrenheit(e.target.value === "fahrenheit")
                     }
-                  />
-                )}
-              />
+                    onBlur={handleBlur}
+                  >
+                    <MenuItem value="celsius">°C</MenuItem>
+                    <MenuItem value="fahrenheit">F</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
               <WeightAutocomplete
                 name="brewingWeight"
                 teaData={teaData}
                 setTeaData={setTeaData}
-                gongfu={gongfu}
+                brewing={brewing}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="g/100ml"
+                    label="Grams per 100ml"
                     variant="outlined"
                     size="small"
                     className={classes.brewingWeight}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     helperText={
-                      gongfu
-                        ? errors.gongfu_brewing &&
-                          touched.gongfu_brewing &&
-                          errors.gongfu_brewing.weight &&
-                          touched.gongfu_brewing.weight &&
-                          errors.gongfu_brewing.weight
-                        : errors.western_brewing &&
-                          touched.western_brewing &&
-                          errors.western_brewing.weight &&
-                          touched.western_brewing.weight &&
-                          errors.western_brewing.weight
+                      errors[brewing] &&
+                      touched[brewing] &&
+                      errors[brewing].temperature &&
+                      touched[brewing].temperature &&
+                      errors[brewing].temperature
                     }
                   />
                 )}
               />
             </Box>
+            <Box className={classes.row}>
+              <Box className={classes.justifyLeft}>
+                <TextField
+                  name="initial"
+                  label="Initial time"
+                  inputProps={{ maxLength: 3 }}
+                  size="small"
+                  variant="outlined"
+                  value={values[brewing].initial ? values[brewing].initial : ""}
+                  className={classes.initial}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setTeaData({
+                      ...teaData,
+                      [brewing]: {
+                        ...teaData[brewing],
+                        initial: e.target.value,
+                      },
+                    });
+                  }}
+                  onBlur={handleBlur}
+                  helperText={errors.weight && touched.weight && errors.weight}
+                />
+                <FormControl
+                  className={classes.initialMeasure}
+                  variant="outlined"
+                  size="small"
+                >
+                  <Select
+                    name="initialMeasure"
+                    value={initialMeasure}
+                    onChange={(e) => setInitialMeasure(e.target.value)}
+                    onBlur={handleBlur}
+                  >
+                    <MenuItem value="s">s</MenuItem>
+                    <MenuItem value="m">m</MenuItem>
+                    <MenuItem value="h">h</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+              <Box className={classes.justifyRight}>
+                <TextField
+                  name="increments"
+                  label="Increments"
+                  inputProps={{ maxLength: 3 }}
+                  size="small"
+                  variant="outlined"
+                  value={
+                    values[brewing].increments ? values[brewing].increments : ""
+                  }
+                  className={classes.increments}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setTeaData({
+                      ...teaData,
+                      [brewing]: {
+                        ...teaData[brewing],
+                        increments: e.target.value,
+                      },
+                    });
+                  }}
+                  onBlur={handleBlur}
+                  helperText={errors.weight && touched.weight && errors.weight}
+                />
+                <FormControl
+                  className={classes.incrementsMeasure}
+                  variant="outlined"
+                  size="small"
+                >
+                  <Select
+                    name="incrementsMeasure"
+                    value={incrementsMeasure}
+                    onChange={(e) => setIncrementsMeasure(e.target.value)}
+                    onBlur={handleBlur}
+                  >
+                    <MenuItem value="s">s</MenuItem>
+                    <MenuItem value="m">m</MenuItem>
+                    <MenuItem value="h">h</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Box>
             <Box className={classes.bottom}>
               <Button onClick={handlePrevious} aria-label="back">
                 Back
               </Button>
-              <FormControl
-                className={classes.measure}
-                variant="outlined"
-                size="small"
-              >
-                <Select
-                  name="measure"
-                  value={imperial ? "imperial" : "metric"}
-                  onChange={(e) => setImperial(e.target.value === "imperial")}
-                  onBlur={handleBlur}
-                >
-                  <MenuItem value="metric">Metric</MenuItem>
-                  <MenuItem value="imperial">Imperial</MenuItem>
-                </Select>
-              </FormControl>
               <Button onClick={submitForm} aria-label="Create">
                 Create
               </Button>
