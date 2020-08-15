@@ -143,46 +143,71 @@ export default function InputForm({
     category: Yup.number()
       .min(1, "Invalid category")
       .max(9, "Invalid category")
-      .required("Required"),
+      .required("Required")
+      .typeError("Required"),
     subcategory: Yup.object().shape({
-      name: Yup.string().max(50, "Too long, max length 50 characters"),
+      name: Yup.string()
+        .max(50, "Too long, max length 50 characters")
+        .nullable(),
     }),
-    year: Yup.mixed().oneOf(yearOptions, "Invalid year"),
+    year: Yup.string()
+      .oneOf([...yearOptions, null], "Invalid year")
+      .nullable(),
     origin: Yup.object().shape({
-      country: Yup.string().max(30, "Too long, max length 30 characters"),
+      country: Yup.string()
+        .max(30, "Too long, max length 30 characters")
+        .nullable(),
+      region: Yup.string()
+        .max(50, "Too long, max length 30 characters")
+        .nullable(),
+      locality: Yup.string()
+        .max(50, "Too long, max length 30 characters")
+        .nullable(),
+      latitude: Yup.number().nullable(),
+      longitude: Yup.number().nullable(),
     }),
     vendor: Yup.object().shape({
-      name: Yup.string().max(50, "Too long, max length 50 characters"),
+      name: Yup.string()
+        .max(50, "Too long, max length 50 characters")
+        .nullable(),
     }),
     weight: Yup.number()
       .min(0, "Weight must be positive")
-      .max(100000, "Weight too big"),
+      .max(100000, "Weight too big")
+      .typeError("Weight must be a number")
+      .nullable(),
     price: Yup.number()
       .min(0, "Price must be positive")
-      .max(3000, "Price too high"),
+      .max(3000, "Price too high")
+      .typeError("Price must be a number")
+      .nullable(),
     gongfu_brewing: Yup.object().shape({
       imperial: Yup.boolean(),
-      temperature: Yup.number().when("imperial", {
-        is: true,
-        then: Yup.number()
-          .min(32, "Temperature too low")
-          .max(210, "Temperature too high"),
-        otherwise: Yup.number()
-          .min(0, "Temperature too low")
-          .max(99, "Temperature too high"),
-      }),
+      temperature: Yup.number()
+        .when("imperial", {
+          is: true,
+          then: Yup.number()
+            .min(32, "Temperature too low")
+            .max(210, "Temperature too high"),
+          otherwise: Yup.number()
+            .min(0, "Temperature too low")
+            .max(99, "Temperature too high"),
+        })
+        .nullable(),
     }),
     western_brewing: Yup.object().shape({
       imperial: Yup.boolean(),
-      temperature: Yup.number().when("imperial", {
-        is: true,
-        then: Yup.number()
-          .min(32, "Temperature too low")
-          .max(210, "Temperature too high"),
-        otherwise: Yup.number()
-          .min(0, "Temperature too low")
-          .max(99, "Temperature too high"),
-      }),
+      temperature: Yup.number()
+        .when("imperial", {
+          is: true,
+          then: Yup.number()
+            .min(32, "Temperature too low")
+            .max(210, "Temperature too high"),
+          otherwise: Yup.number()
+            .min(0, "Temperature too low")
+            .max(99, "Temperature too high"),
+        })
+        .nullable(),
     }),
   });
 
@@ -214,9 +239,9 @@ export default function InputForm({
       />
       <Formik
         enableReinitialize
-        initialValues={initializeData({
+        initialValues={{
           ...teaData,
-          weight: null,
+          weight: "",
           gongfu_brewing: {
             ...teaData.gongfu_brewing,
             imperial: imperial,
@@ -225,7 +250,7 @@ export default function InputForm({
             ...teaData.western_brewing,
             imperial: imperial,
           },
-        })}
+        }}
         validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting }) => console.log(values, teaData)}
       >
@@ -248,7 +273,7 @@ export default function InputForm({
                 inputProps={{ maxLength: 50 }}
                 size="small"
                 variant="outlined"
-                value={values.name}
+                value={values.name ? values.name : ""}
                 className={classes.name}
                 onChange={(e) => {
                   handleChange(e);
@@ -267,7 +292,7 @@ export default function InputForm({
                 <Select
                   name="category"
                   label="Category"
-                  value={values.category}
+                  value={values.category ? values.category : ""}
                   onChange={(e) => {
                     handleChange(e);
                     setTeaData({ ...teaData, category: e.target.value });
@@ -320,9 +345,11 @@ export default function InputForm({
                 teaData={teaData}
                 setTeaData={setTeaData}
                 options={yearOptions}
+                updateFormValue={handleChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    name="year"
                     label="Year"
                     variant="outlined"
                     size="small"
@@ -349,7 +376,6 @@ export default function InputForm({
                     size="small"
                     className={classes.origin}
                     fullWidth
-                    onChange={handleChange}
                     onBlur={handleBlur}
                     helperText={
                       errors.origin && touched.origin && errors.origin.country
@@ -386,7 +412,7 @@ export default function InputForm({
                 inputProps={{ maxLength: 10 }}
                 size="small"
                 variant="outlined"
-                value={values.weight}
+                value={values.weight ? values.weight : ""}
                 className={classes.weight}
                 onChange={(e) => {
                   handleChange(e);
@@ -401,7 +427,7 @@ export default function InputForm({
                 inputProps={{ maxLength: 10 }}
                 size="small"
                 variant="outlined"
-                value={values.price}
+                value={values.price ? values.price : ""}
                 className={classes.price}
                 onChange={(e) => {
                   handleChange(e);
@@ -451,8 +477,8 @@ export default function InputForm({
                           errors.gongfu_brewing.temperature &&
                           touched.gongfu_brewing.temperature &&
                           errors.gongfu_brewing.temperature
-                        : errors.western_brewing &&
-                          touched.western_brewing &&
+                        : errors.gongfu_brewing &&
+                          touched.gongfu_brewing &&
                           errors.western_brewing.temperature &&
                           touched.western_brewing.temperature &&
                           errors.western_brewing.temperature

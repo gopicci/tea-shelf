@@ -8,6 +8,7 @@ import { parse as himalaya } from "himalaya";
 import { v4 as uuidv4 } from "uuid";
 import { APIRequest } from "../../../services/AuthService";
 import { getOriginName } from "../../../services/ParsingService";
+import { originModel } from '../../../services/Serializers';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -101,7 +102,7 @@ export default function OriginAutocomplete({
         console.log("origin", origin);
         setTeaData({ ...teaData, origin: origin });
       }
-    } else setTeaData({ ...teaData, origin: null });
+    } else setTeaData({ ...teaData, origin: originModel});
   }
 
   return (
@@ -110,16 +111,14 @@ export default function OriginAutocomplete({
       filterOptions={(x) => x}
       options={options}
       autoComplete
-      includeInputInList
       filterSelectedOptions
       onChange={(event, newValue) => {
-        setOptions(newValue ? [newValue, ...options] : options);
         updateOrigin(newValue);
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
-      getOptionLabel={() => teaData.origin ? getOriginName(teaData.origin) : ""}
+      getOptionLabel={() => teaData.origin.country ? getOriginName(teaData.origin) : ""}
       clearOnBlur
       freeSolo
       fullWidth

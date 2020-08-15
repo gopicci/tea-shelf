@@ -22,7 +22,7 @@ export default function WeightAutocomplete({
   const max = gongfu ? 10 : 2
   const increment = gongfu ? 0.5 : 0.1
   const options = [...Array(max / increment + 1)]
-    .map((_, b) => String((b * increment).toFixed(1)))
+    .map((_, b) => (b * increment).toFixed(1))
     .reverse();
 
   function handleOnChange(event, newValue) {
@@ -41,7 +41,7 @@ export default function WeightAutocomplete({
         ...teaData,
         [brewing]: {
           ...teaData[brewing],
-          weight: "",
+          weight: null,
         },
       });
   }
@@ -55,7 +55,7 @@ export default function WeightAutocomplete({
       handleHomeEndKeys
       freeSolo
       options={options}
-      value={teaData[brewing] && teaData[brewing].weight}
+      value={teaData[brewing].weight ? String(teaData[brewing].weight) : ""}
       renderOption={(option) => (option.inputValue ? option.label : option)}
       renderInput={renderInput}
     />

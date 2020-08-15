@@ -6,6 +6,7 @@ import {
   brewingTimesToSeconds,
   getSubcategoryName,
 } from "../../../services/ParsingService";
+import { subcategoryModel } from '../../../services/Serializers';
 import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
 
 const filter = createFilterOptions();
@@ -63,7 +64,7 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
           };
         setTeaData(data);
       } else setTeaData({ ...teaData, subcategory: { name: name } });
-    } else setTeaData({ ...teaData, subcategory: null });
+    } else setTeaData({ ...teaData, subcategory: subcategoryModel });
   }
 
   function handleOnChange(event, newValue) {

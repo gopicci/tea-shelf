@@ -1,28 +1,7 @@
 import { brewingTimesToSeconds } from "./ParsingService";
 
-// Defines tea data structure in API request format
-export const teaModel = {
-  id: null,
-  image: null,
-  name: "",
-  category: null,
-  subcategory: null,
-  origin: null,
-  vendor: null,
-  is_archived: false,
-  gongfu_brewing: null,
-  western_brewing: null,
-  year: null,
-  gongfu_preferred: false,
-  price: null,
-  weight_left: null,
-  weight_consumed: null,
-  rating: null,
-  notes: "",
-};
-
 // Defines brewing data structure in API request format
-const brewingModel = {
+export const brewingModel = {
   temperature: null,
   weight: null,
   initial: null,
@@ -30,12 +9,43 @@ const brewingModel = {
 };
 
 // Defines origin data structure in API request format
-const originModel = {
+export const originModel = {
   country: null,
   region: null,
   locality: null,
   latitude: null,
   longitude: null,
+};
+
+// Defines vendor data structure in API request format
+export const vendorModel = {
+  name: null,
+};
+
+// Defines subcategory data structure in API request format
+export const subcategoryModel = {
+  name: null,
+};
+
+// Defines tea data structure in API request format
+export const teaModel = {
+  id: null,
+  image: null,
+  name: "",
+  category: null,
+  subcategory: subcategoryModel,
+  origin: originModel,
+  vendor: vendorModel,
+  is_archived: false,
+  gongfu_brewing: brewingModel,
+  western_brewing: brewingModel,
+  year: null,
+  gongfu_preferred: false,
+  price: null,
+  weight_left: null,
+  weight_consumed: null,
+  rating: null,
+  notes: "",
 };
 
 export function teaSerializer(tea) {

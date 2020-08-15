@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
+import { vendorModel } from '../../../services/Serializers';
 import { VendorsState } from "../../statecontainers/VendorsContext";
 import { Grid, Typography } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
@@ -50,7 +51,7 @@ export default function VendorAutocomplete({
       );
       if (match) setTeaData({ ...teaData, vendor: match[1] });
       else setTeaData({ ...teaData, vendor: { name: name } });
-    } else setTeaData({ ...teaData, vendor: null });
+    } else setTeaData({ ...teaData, vendor: vendorModel });
   }
 
   function handleOnChange(event, newValue) {

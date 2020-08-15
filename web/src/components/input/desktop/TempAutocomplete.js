@@ -51,8 +51,8 @@ export default function TempAutocomplete({
       clearOnBlur
       handleHomeEndKeys
       id="temperature"
-      options={options ? options : []}
-      value={teaData[brewing] && teaData[brewing].temperature}
+      options={options}
+      value={teaData[brewing].temperature ? String(teaData[brewing].temperature) : ""}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
         if (typeof option === "string") {

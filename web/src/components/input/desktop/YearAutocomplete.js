@@ -6,6 +6,7 @@ export default function YearAutocomplete({
   setTeaData,
   renderInput,
   options,
+  updateFormValue,
 }) {
   /**
    * Mobile tea creation subcategory input component. Shows a list and autocomplete from
@@ -18,32 +19,25 @@ export default function YearAutocomplete({
    */
 
   function handleOnChange(event, newValue) {
+    console.log(newValue)
+    event.target.name = "year";
+    updateFormValue(event);
     if (typeof newValue === "string")
       setTeaData({ ...teaData, year: newValue });
-    else setTeaData({ ...teaData, year: null });
+    else setTeaData({ ...teaData, year: "" });
   }
 
   return (
     <Autocomplete
       id="year"
       onChange={handleOnChange}
+      onInputChange={handleOnChange}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
-      options={options ? options : []}
-      getOptionLabel={(option) => {
-        // Value selected with enter, right from the input
-        if (typeof option === "string") {
-          return option;
-        }
-        // Add "xxx" option created dynamically
-        if (option.inputValue) {
-          return option.inputValue;
-        }
-        // Regular option
-        return option;
-      }}
-      renderOption={(option) => (option.inputValue ? option.label : option)}
+      options={options}
+      freeSolo
+      value={teaData.year}
       renderInput={renderInput}
     />
   );
