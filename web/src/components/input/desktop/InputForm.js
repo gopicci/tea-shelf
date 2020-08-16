@@ -19,8 +19,7 @@ import { fade, makeStyles } from "@material-ui/core/styles";
 import emptyImage from "../../../empty.png";
 import SubAutocomplete from "./SubAutocomplete";
 import YearAutocomplete from "./YearAutocomplete";
-import TempAutocomplete from "./TempAutocomplete";
-import WeightAutocomplete from "./WeightAutocomplete";
+import FormBrewing from "./formBrewing";
 import VendorAutocomplete from "./VendorAutocomplete";
 import OriginAutocomplete from "./OriginAutocomplete";
 import {
@@ -163,8 +162,6 @@ export default function InputForm({
 
   const [fahrenheit, setFahrenheit] = useState(false);
   const [weightMeasure, setWeightMeasure] = useState("g");
-  const [initialMeasure, setInitialMeasure] = useState("s");
-  const [incrementsMeasure, setIncrementsMeasure] = useState("s");
   const [brewing, setBrewing] = useState("gongfu_brewing");
 
   function handleSwitch() {
@@ -267,18 +264,13 @@ export default function InputForm({
     western_brewing: brewingValidation,
   });
 
-  async function handleSave() {
+  async function handleSave(values) {
     // convert weight to g into weight_left
     // convert fahrenheit temperature too
-    // let grams = parseFloat(e.target.value);
-    // if (values.degrees === "oz") grams = grams * 28.35;
-    // if (!isNaN(grams))
-    //   setTeaData({
-    //   ...teaData,
-    //   weight_left: cropToNoZeroes(grams, 1),
-    // });
+
     if (handleCreate) {
-      let grams = parseFloat(teaData.weight);
+
+      let grams = parseFloat(values.weight);
       if (weightMeasure === "oz") grams = grams * 28.35;
       if (!isNaN(grams))
         await setTeaData({
@@ -286,7 +278,7 @@ export default function InputForm({
           weight_left: cropToNoZeroes(grams, 1),
         });
 
-      if (fahrenheit)
+      if (values.gongfu_brewing.fahrenheit)
         await setTeaData({
           ...teaData,
           gongfu_brewing: {
@@ -295,6 +287,11 @@ export default function InputForm({
               ...teaData.gongfu_brewing.temperature
             ),
           },
+        });
+
+      if (values.western_brewing.fahrenheit)
+        await setTeaData({
+          ...teaData,
           western_brewing: {
             ...teaData.western_brewing,
             temperature: fahrenheitToCelsius(
@@ -305,11 +302,19 @@ export default function InputForm({
 
       handleCreate();
       handleMobileClose();
+
+
     } else {
       handleEdit();
       handlePrevious();
     }
   }
+
+  const extraBrewingFields = {
+    fahrenheit: false,
+    initialMeasure: "s",
+    incrementsMeasure: "s",
+  };
 
   return (
     <Box className={classes.root}>
@@ -325,11 +330,11 @@ export default function InputForm({
           weight: "",
           gongfu_brewing: {
             ...teaData.gongfu_brewing,
-            fahrenheit: fahrenheit,
+            ...extraBrewingFields,
           },
           western_brewing: {
             ...teaData.western_brewing,
-            fahrenheit: fahrenheit,
+            ...extraBrewingFields,
           },
         }}
         validationSchema={validationSchema}
@@ -570,193 +575,20 @@ export default function InputForm({
                 />
               </FormGroup>
             </Box>
-            <Box className={classes.row}>
-              <Box className={classes.justifyLeft}>
-                <TempAutocomplete
-                  name="temperature"
-                  teaData={teaData}
-                  setTeaData={setTeaData}
-                  fahrenheit={fahrenheit}
-                  brewing={brewing}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Temperature"
-                      variant="outlined"
-                      size="small"
-                      className={classes.temperature}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={
-                        errors[brewing] &&
-                        touched[brewing] &&
-                        errors[brewing].temperature &&
-                        touched[brewing].temperature
-                      }
-                      helperText={
-                        errors[brewing] &&
-                        touched[brewing] &&
-                        errors[brewing].temperature &&
-                        touched[brewing].temperature &&
-                        errors[brewing].temperature
-                      }
-                    />
-                  )}
-                />
-                <FormControl
-                  className={classes.degrees}
-                  variant="outlined"
-                  size="small"
-                >
-                  <Select
-                    name="degrees"
-                    value={fahrenheit ? "fahrenheit" : "celsius"}
-                    onChange={(e) =>
-                      setFahrenheit(e.target.value === "fahrenheit")
-                    }
-                    onBlur={handleBlur}
-                  >
-                    <MenuItem value="celsius">°C</MenuItem>
-                    <MenuItem value="fahrenheit">F</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-              <WeightAutocomplete
-                name="brewingWeight"
-                teaData={teaData}
-                setTeaData={setTeaData}
-                brewing={brewing}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Grams per 100ml"
-                    variant="outlined"
-                    size="small"
-                    className={classes.brewingWeight}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={
-                      errors[brewing] &&
-                      touched[brewing] &&
-                      errors[brewing].weight &&
-                      touched[brewing].weight
-                    }
-                    helperText={
-                      errors[brewing] &&
-                      touched[brewing] &&
-                      errors[brewing].weight &&
-                      touched[brewing].weight &&
-                      errors[brewing].weight
-                    }
-                  />
-                )}
-              />
-            </Box>
-            <Box className={classes.row}>
-              <Box className={classes.justifyLeft}>
-                <TextField
-                  name="initial"
-                  label="Initial time"
-                  inputProps={{ maxLength: 3 }}
-                  size="small"
-                  variant="outlined"
-                  value={values[brewing].initial ? values[brewing].initial : ""}
-                  className={classes.initial}
-                  onChange={(e) => {
-                    handleChange(e);
-                    setTeaData({
-                      ...teaData,
-                      [brewing]: {
-                        ...teaData[brewing],
-                        initial: e.target.value,
-                      },
-                    });
-                  }}
-                  onBlur={handleBlur}
-                  error={
-                    errors[brewing] &&
-                    touched[brewing] &&
-                    errors[brewing].initial &&
-                    touched[brewing].initial
-                  }
-                  helperText={
-                    errors[brewing] &&
-                    touched[brewing] &&
-                    errors[brewing].initial &&
-                    touched[brewing].initial &&
-                    errors[brewing].initial
-                  }
-                />
-                <FormControl
-                  className={classes.initialMeasure}
-                  variant="outlined"
-                  size="small"
-                >
-                  <Select
-                    name="initialMeasure"
-                    value={initialMeasure}
-                    onChange={(e) => setInitialMeasure(e.target.value)}
-                    onBlur={handleBlur}
-                  >
-                    <MenuItem value="s">s</MenuItem>
-                    <MenuItem value="m">m</MenuItem>
-                    <MenuItem value="h">h</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-              <Box className={classes.justifyRight}>
-                <TextField
-                  name="increments"
-                  label="Increments"
-                  inputProps={{ maxLength: 3 }}
-                  size="small"
-                  variant="outlined"
-                  value={
-                    values[brewing].increments ? values[brewing].increments : ""
-                  }
-                  className={classes.increments}
-                  onChange={(e) => {
-                    handleChange(e);
-                    setTeaData({
-                      ...teaData,
-                      [brewing]: {
-                        ...teaData[brewing],
-                        increments: e.target.value,
-                      },
-                    });
-                  }}
-                  onBlur={handleBlur}
-                  error={
-                    errors[brewing] &&
-                    touched[brewing] &&
-                    errors[brewing].increments &&
-                    touched[brewing].increments
-                  }
-                  helperText={
-                    errors[brewing] &&
-                    touched[brewing] &&
-                    errors[brewing].increments &&
-                    touched[brewing].increments &&
-                    errors[brewing].increments
-                  }                />
-                <FormControl
-                  className={classes.incrementsMeasure}
-                  variant="outlined"
-                  size="small"
-                >
-                  <Select
-                    name="incrementsMeasure"
-                    value={incrementsMeasure}
-                    onChange={(e) => setIncrementsMeasure(e.target.value)}
-                    onBlur={handleBlur}
-                  >
-                    <MenuItem value="s">s</MenuItem>
-                    <MenuItem value="m">m</MenuItem>
-                    <MenuItem value="h">h</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </Box>
+            <FormBrewing
+              {...{
+                teaData,
+                setTeaData,
+                brewing,
+                classes,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                values,
+                setFieldValue,
+              }}
+            />
             <Box className={classes.bottom}>
               <Button onClick={handlePrevious} aria-label="back">
                 Back
