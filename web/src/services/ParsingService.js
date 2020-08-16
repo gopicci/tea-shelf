@@ -43,6 +43,13 @@ export function celsiusToFahrenheit(c) {
   return String(Math.round((parseInt(c) * 9) / 5 + 32));
 }
 
+export function fahrenheitToCelsius(f) {
+  /**
+   * Convert fahrenheit to celsius.
+   */
+  return String(Math.round((parseInt(f) - 32) * 5 / 9));
+}
+
 export function cropToNoZeroes(input, crop) {
   /**
    * Return string of float input trimmed to crop decimals.

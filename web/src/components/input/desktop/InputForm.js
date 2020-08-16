@@ -23,7 +23,11 @@ import TempAutocomplete from "./TempAutocomplete";
 import WeightAutocomplete from "./WeightAutocomplete";
 import VendorAutocomplete from "./VendorAutocomplete";
 import OriginAutocomplete from "./OriginAutocomplete";
-import { brewingTimesToSeconds } from "../../../services/ParsingService";
+import {
+  brewingTimesToSeconds,
+  cropToNoZeroes,
+  fahrenheitToCelsius,
+} from "../../../services/ParsingService";
 import { subcategoryModel } from "../../../services/Serializers";
 import { CategoriesState } from "../../statecontainers/CategoriesContext";
 
@@ -175,10 +179,6 @@ export default function InputForm({
   );
   yearOptions.unshift("Unknown");
 
-  function initializeData(obj) {
-    return JSON.parse(JSON.stringify(obj, (k, v) => (v === null ? "" : v)));
-  }
-
   const brewingValidation = Yup.object().shape({
     fahrenheit: Yup.boolean(),
     temperature: Yup.number().when("fahrenheit", {
@@ -267,7 +267,7 @@ export default function InputForm({
     western_brewing: brewingValidation,
   });
 
-  function handleSave() {
+  async function handleSave() {
     // convert weight to g into weight_left
     // convert fahrenheit temperature too
     // let grams = parseFloat(e.target.value);
@@ -278,6 +278,31 @@ export default function InputForm({
     //   weight_left: cropToNoZeroes(grams, 1),
     // });
     if (handleCreate) {
+      let grams = parseFloat(teaData.weight);
+      if (weightMeasure === "oz") grams = grams * 28.35;
+      if (!isNaN(grams))
+        await setTeaData({
+          ...teaData,
+          weight_left: cropToNoZeroes(grams, 1),
+        });
+
+      if (fahrenheit)
+        await setTeaData({
+          ...teaData,
+          gongfu_brewing: {
+            ...teaData.gongfu_brewing,
+            temperature: fahrenheitToCelsius(
+              ...teaData.gongfu_brewing.temperature
+            ),
+          },
+          western_brewing: {
+            ...teaData.western_brewing,
+            temperature: fahrenheitToCelsius(
+              ...teaData.western_brewing.temperature
+            ),
+          },
+        });
+
       handleCreate();
       handleMobileClose();
     } else {
@@ -336,6 +361,7 @@ export default function InputForm({
                   setTeaData({ ...teaData, name: e.target.value });
                 }}
                 onBlur={handleBlur}
+                error={errors.name && touched.name}
                 helperText={errors.name && touched.name && errors.name}
               />
               <FormControl
@@ -343,6 +369,7 @@ export default function InputForm({
                 required
                 variant="outlined"
                 size="small"
+                error={errors.category && touched.category}
               >
                 <InputLabel>Category</InputLabel>
                 <Select
@@ -400,6 +427,7 @@ export default function InputForm({
                     inputProps={{ ...params.inputProps, maxLength: 50 }}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={errors.subcategory && touched.subcategory}
                     helperText={
                       errors.subcategory &&
                       touched.subcategory &&
@@ -424,6 +452,7 @@ export default function InputForm({
                     className={classes.year}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={errors.year && touched.year}
                     helperText={errors.year && touched.year && errors.year}
                   />
                 )}
@@ -445,6 +474,7 @@ export default function InputForm({
                     className={classes.origin}
                     fullWidth
                     onBlur={handleBlur}
+                    error={errors.origin && touched.origin}
                     helperText={
                       errors.origin && touched.origin && errors.origin.country
                     }
@@ -466,6 +496,7 @@ export default function InputForm({
                     fullWidth
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={errors.vendor && touched.vendor}
                     helperText={
                       errors.vendor && touched.vendor && errors.vendor.name
                     }
@@ -487,6 +518,7 @@ export default function InputForm({
                   setTeaData({ ...teaData, weight: e.target.value });
                 }}
                 onBlur={handleBlur}
+                error={errors.weight && touched.weight}
                 helperText={errors.weight && touched.weight && errors.weight}
               />
               <FormControl
@@ -517,6 +549,7 @@ export default function InputForm({
                   setTeaData({ ...teaData, price: e.target.value });
                 }}
                 onBlur={handleBlur}
+                error={errors.price && touched.price}
                 helperText={errors.price && touched.price && errors.price}
               />
             </Box>
@@ -554,6 +587,12 @@ export default function InputForm({
                       className={classes.temperature}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      error={
+                        errors[brewing] &&
+                        touched[brewing] &&
+                        errors[brewing].temperature &&
+                        touched[brewing].temperature
+                      }
                       helperText={
                         errors[brewing] &&
                         touched[brewing] &&
@@ -596,12 +635,18 @@ export default function InputForm({
                     className={classes.brewingWeight}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={
+                      errors[brewing] &&
+                      touched[brewing] &&
+                      errors[brewing].weight &&
+                      touched[brewing].weight
+                    }
                     helperText={
                       errors[brewing] &&
                       touched[brewing] &&
-                      errors[brewing].temperature &&
-                      touched[brewing].temperature &&
-                      errors[brewing].temperature
+                      errors[brewing].weight &&
+                      touched[brewing].weight &&
+                      errors[brewing].weight
                     }
                   />
                 )}
@@ -628,7 +673,19 @@ export default function InputForm({
                     });
                   }}
                   onBlur={handleBlur}
-                  helperText={errors.weight && touched.weight && errors.weight}
+                  error={
+                    errors[brewing] &&
+                    touched[brewing] &&
+                    errors[brewing].initial &&
+                    touched[brewing].initial
+                  }
+                  helperText={
+                    errors[brewing] &&
+                    touched[brewing] &&
+                    errors[brewing].initial &&
+                    touched[brewing].initial &&
+                    errors[brewing].initial
+                  }
                 />
                 <FormControl
                   className={classes.initialMeasure}
@@ -669,8 +726,19 @@ export default function InputForm({
                     });
                   }}
                   onBlur={handleBlur}
-                  helperText={errors.weight && touched.weight && errors.weight}
-                />
+                  error={
+                    errors[brewing] &&
+                    touched[brewing] &&
+                    errors[brewing].increments &&
+                    touched[brewing].increments
+                  }
+                  helperText={
+                    errors[brewing] &&
+                    touched[brewing] &&
+                    errors[brewing].increments &&
+                    touched[brewing].increments &&
+                    errors[brewing].increments
+                  }                />
                 <FormControl
                   className={classes.incrementsMeasure}
                   variant="outlined"
