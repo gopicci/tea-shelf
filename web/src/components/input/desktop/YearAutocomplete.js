@@ -20,8 +20,10 @@ export default function YearAutocomplete({
 
   function handleOnChange(event, newValue) {
     console.log(newValue)
-    event.target.name = "year";
-    updateFormValue(event);
+    if (event) {
+      event.target.name = "year";
+      updateFormValue(event);
+    }
     if (typeof newValue === "string")
       setTeaData({ ...teaData, year: newValue });
     else setTeaData({ ...teaData, year: "" });

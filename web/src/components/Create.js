@@ -45,10 +45,17 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
 
       if (imageData) reqData["image"] = imageData;
 
-      if (reqData.subcategory)
-        if (!reqData.subcategory.category) customSubcategory = true;
+      // Clear nested fields
+      if (!reqData.subcategory.name)
+        reqData.subcategory = null;
+      else if (!reqData.subcategory.category) customSubcategory = true;
 
-      if (reqData.vendor) if (!reqData.vendor.popularity) customVendor = true;
+      if (!reqData.vendor.name)
+        reqData.vendor = null;
+      else if (!reqData.vendor.popularity) customVendor = true;
+
+      if (!reqData.origin.country)
+        reqData.origin = null;
 
       reqData = teaSerializer(reqData);
 
@@ -95,7 +102,7 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
         ]);
         snackbarDispatch({
           type: "WARNING",
-          data: "Offline mode, tea saved locally",
+          data: "Network error, tea saved locally",
         });
         teaDispatch({ type: "ADD", data: reqData });
         console.log("offline teas:", cache);

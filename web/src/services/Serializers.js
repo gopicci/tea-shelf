@@ -63,19 +63,21 @@ export function teaSerializer(tea) {
   if (serialized.year === "unknown") serialized.year = null;
 
   // Serialize nested fields
-  if (tea.gongfu_brewing)
+  if (brewingSerializer(tea.gongfu_brewing))
     serialized.gongfu_brewing = brewingSerializer(tea.gongfu_brewing);
-  if (tea.western_brewing)
+  if (brewingSerializer(tea.western_brewing))
     serialized.western_brewing = brewingSerializer(tea.western_brewing);
-  if (tea.origin) serialized.origin = originSerializer(tea.origin);
-  if (tea.subcategory)
+  if (tea.origin && tea.origin.country)
+    serialized.origin = originSerializer(tea.origin);
+  if (tea.subcategory && tea.subcategory.name)
     serialized.subcategory = {
       name: tea.subcategory.name,
       category: tea.category,
     };
-  if (tea.vendor) serialized.vendor = { name: tea.vendor.name };
+  if (tea.vendor && tea.vendor.name)
+    serialized.vendor = { name: tea.vendor.name };
 
-  return serialized;
+  return Object.keys(serialized).length === 0 ? null : serialized;
 }
 
 function brewingSerializer(brewing) {
@@ -87,7 +89,7 @@ function brewingSerializer(brewing) {
   let serialized = {};
   for (const k of Object.keys(brewingModel))
     if (brewing[k]) serialized[k] = brewing[k];
-  return serialized;
+  return Object.keys(serialized).length === 0 ? null : serialized;
 }
 
 function originSerializer(origin) {
@@ -105,7 +107,7 @@ function originSerializer(origin) {
       else serialized[k] = value;
     }
 
-  return serialized;
+  return Object.keys(serialized).length === 0 ? null : serialized;
 }
 
 export function visionParserSerializer(
@@ -126,7 +128,7 @@ export function visionParserSerializer(
 
   if (data.name) serialized.name = data.name;
 
-  if (data.year) serialized.year = data.year;
+  if (data.year && data.year !== "Unknown") serialized.year = data.year;
 
   if (data.category)
     serialized.category = Object.entries(categories).find(
@@ -158,5 +160,5 @@ export function visionParserSerializer(
       (entry) => entry[1].name === data.vendor
     )[1];
 
-  return serialized;
+  return Object.keys(serialized).length === 0 ? null : serialized;
 }

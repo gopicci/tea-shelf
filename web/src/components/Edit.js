@@ -142,7 +142,7 @@ export default function Edit({
 
         snackbarDispatch({
           type: "WARNING",
-          data: "Offline mode, tea saved locally",
+          data: "Network error, tea saved locally",
         });
         console.log("offline teas:", cache);
       }

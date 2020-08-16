@@ -153,14 +153,13 @@ export default function InputForm({
   setTeaData,
   handleEdit = null,
   handleCreate = null,
-  handleMobileClose = null,
+  handleDesktopClose = null,
   handlePrevious,
 }) {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
 
-  const [fahrenheit, setFahrenheit] = useState(false);
   const [weightMeasure, setWeightMeasure] = useState("g");
   const [brewing, setBrewing] = useState("gongfu_brewing");
 
@@ -249,7 +248,7 @@ export default function InputForm({
         .max(50, "Too long, max length 50 characters")
         .nullable(),
     }),
-    weight: Yup.number()
+    weight_left: Yup.number()
       .min(0, "Weight must be positive")
       .max(100000, "Weight too high")
       .typeError("Weight must be a number")
@@ -264,13 +263,37 @@ export default function InputForm({
     western_brewing: brewingValidation,
   });
 
+  async function brewingToSeconds(values, brewing, type, measure) {
+    if (values[brewing][measure] !== "s") {
+      let seconds;
+      if (values[brewing][measure] === "m")
+        seconds = parseInt(teaData[brewing][type]) * 60;
+      else seconds = parseInt(teaData[brewing][type]) * 3600;
+      return setTeaData({
+        ...teaData,
+        [brewing]: {
+          ...teaData[brewing],
+          [type]: seconds,
+        },
+      });
+    }
+  }
+
+  async function tempToCelsius(values, brewing) {
+    if (values[brewing].fahrenheit)
+      return setTeaData({
+        ...teaData,
+        [brewing]: {
+          ...teaData[brewing],
+          temperature: fahrenheitToCelsius(teaData[brewing].temperature),
+        },
+      });
+  }
+
   async function handleSave(values) {
-    // convert weight to g into weight_left
-    // convert fahrenheit temperature too
-
     if (handleCreate) {
-
-      let grams = parseFloat(values.weight);
+      // Convert weight to grams
+      let grams = parseFloat(teaData.weight_left);
       if (weightMeasure === "oz") grams = grams * 28.35;
       if (!isNaN(grams))
         await setTeaData({
@@ -278,35 +301,41 @@ export default function InputForm({
           weight_left: cropToNoZeroes(grams, 1),
         });
 
-      if (values.gongfu_brewing.fahrenheit)
-        await setTeaData({
-          ...teaData,
-          gongfu_brewing: {
-            ...teaData.gongfu_brewing,
-            temperature: fahrenheitToCelsius(
-              ...teaData.gongfu_brewing.temperature
-            ),
-          },
-        });
+      // Convert brewing temperature to celsius
+      await tempToCelsius(values, "gongfu_brewing");
+      await tempToCelsius(values, "western_brewing");
 
-      if (values.western_brewing.fahrenheit)
-        await setTeaData({
-          ...teaData,
-          western_brewing: {
-            ...teaData.western_brewing,
-            temperature: fahrenheitToCelsius(
-              ...teaData.western_brewing.temperature
-            ),
-          },
-        });
+      // Convert brewing times to seconds
+      await brewingToSeconds(
+        values,
+        "gongfu_brewing",
+        "initial",
+        "initialMeasure"
+      );
+      await brewingToSeconds(
+        values,
+        "gongfu_brewing",
+        "increments",
+        "incrementsMeasure"
+      );
+      await brewingToSeconds(
+        values,
+        "western_brewing",
+        "initial",
+        "initialMeasure"
+      );
+      await brewingToSeconds(
+        values,
+        "western_brewing",
+        "increments",
+        "incrementsMeasure"
+      );
 
       handleCreate();
-      handleMobileClose();
-
-
-    } else {
-      handleEdit();
-      handlePrevious();
+      handleDesktopClose();
+      //} else {
+      // handleEdit();
+      // handlePrevious();
     }
   }
 
@@ -327,7 +356,6 @@ export default function InputForm({
         enableReinitialize
         initialValues={{
           ...teaData,
-          weight: "",
           gongfu_brewing: {
             ...teaData.gongfu_brewing,
             ...extraBrewingFields,
@@ -338,7 +366,10 @@ export default function InputForm({
           },
         }}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => console.log(values, teaData)}
+        onSubmit={(values, { setSubmitting }) => {
+          console.log(values, teaData);
+          handleSave(values);
+        }}
       >
         {({
           values,
@@ -511,20 +542,24 @@ export default function InputForm({
             </Box>
             <Box className={classes.row}>
               <TextField
-                name="weight"
+                name="weight_left"
                 label="Weight"
                 inputProps={{ maxLength: 10 }}
                 size="small"
                 variant="outlined"
-                value={values.weight ? values.weight : ""}
+                value={teaData.weight_left ? teaData.weight_left : ""}
                 className={classes.weight}
                 onChange={(e) => {
                   handleChange(e);
-                  setTeaData({ ...teaData, weight: e.target.value });
+                  setTeaData({ ...teaData, weight_left: e.target.value });
                 }}
                 onBlur={handleBlur}
-                error={errors.weight && touched.weight}
-                helperText={errors.weight && touched.weight && errors.weight}
+                error={errors.weight_left && touched.weight_left}
+                helperText={
+                  errors.weight_left &&
+                  touched.weight_left &&
+                  errors.weight_left
+                }
               />
               <FormControl
                 className={classes.weightMeasure}

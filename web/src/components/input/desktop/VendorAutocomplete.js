@@ -61,7 +61,7 @@ export default function VendorAutocomplete({
       // Create a new value from the user input
       updateVendor(newValue.inputValue);
     } else {
-      updateVendor(newValue);
+      updateVendor(newValue.name);
     }
   }
 
