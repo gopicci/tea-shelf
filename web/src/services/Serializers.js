@@ -60,7 +60,7 @@ export function teaSerializer(tea) {
   for (const k of Object.keys(teaModel))
     if (tea[k] != null) serialized[k] = tea[k];
 
-  if (serialized.year === "unknown") serialized.year = null;
+  if (serialized.year.toLowerCase() === "unknown") serialized.year = null;
 
   // Serialize nested fields
   if (brewingSerializer(tea.gongfu_brewing))
@@ -128,7 +128,7 @@ export function visionParserSerializer(
 
   if (data.name) serialized.name = data.name;
 
-  if (data.year && data.year !== "Unknown") serialized.year = data.year;
+  if (data.year) serialized.year = data.year;
 
   if (data.category)
     serialized.category = Object.entries(categories).find(
