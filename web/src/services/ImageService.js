@@ -10,7 +10,8 @@ export const ImageDataToFile = async (imageData) => {
 };
 
 /**
- * Convert File format image to base64.
+ * Convert File format image to base64. Reencoding it from canvas is safer
+ * as certain jpgs have issues on Django.
  */
 export const FileToBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -18,7 +19,20 @@ export const FileToBase64 = (file) =>
     else {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
+      reader.onloadend = (e) => {
+        const img = new Image()
+        img.src = "" // onload event sometimes won't fire in webkit without this
+        img.onload = (e) => {
+          const canvas = document.createElement('canvas')
+          canvas.width = img.width
+          canvas.height = img.height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, img.width, img.height)
+          const dataUrl = canvas.toDataURL('image/jpeg', 90)
+          resolve(dataUrl);
+        };
+        img.src = reader.result;
+      }
       reader.onerror = (error) => reject(error);
     }
   });
