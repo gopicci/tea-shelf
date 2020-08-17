@@ -60,7 +60,12 @@ export function teaSerializer(tea) {
   for (const k of Object.keys(teaModel))
     if (tea[k] != null) serialized[k] = tea[k];
 
-  if (serialized.year.toLowerCase() === "unknown") serialized.year = null;
+  if (
+    serialized.year &&
+    typeof serialized.year === "string" &&
+    serialized.year.toLowerCase() === "unknown"
+  )
+    serialized.year = null;
 
   // Serialize nested fields
   if (brewingSerializer(tea.gongfu_brewing))

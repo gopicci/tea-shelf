@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import InputAppBar from "./InputAppBar";
 import CheckboxList from "../../generics/CheckboxList";
 import { brewingTimesToSeconds } from "../../../services/ParsingService";
+import { subcategoryModel } from '../../../services/Serializers';
 import { CategoriesState } from "../../statecontainers/CategoriesContext";
 
 export default function EditCategory({
@@ -28,7 +29,7 @@ export default function EditCategory({
         setTeaData({
           ...teaData,
           [field]: entry[1].id,
-          subcategory: null,
+          subcategory: subcategoryModel,
           gongfu_brewing: brewingTimesToSeconds(entry[1].gongfu_brewing),
           western_brewing: brewingTimesToSeconds(entry[1].western_brewing),
         });

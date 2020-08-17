@@ -102,7 +102,8 @@ export default function EditOriginOnline({
       if (origin["extended-address"])
         origin["locality"] = origin["extended-address"].split(',')[0];
 
-      origin["region"] = origin["region"].replace(" Province", "");
+      if (origin["region"])
+        origin["region"] = origin["region"].replace(" Province", "");
 
       origin["latitude"] = body.result.geometry.location.lat;
       origin["longitude"] = body.result.geometry.location.lng;

@@ -51,7 +51,7 @@ export default function InputLayout({
 
   function handleSave() {
     if (handleCreate) {
-      handleCreate();
+      handleCreate({...teaData});
       handleMobileClose();
     } else {
       handleEdit();
@@ -123,7 +123,7 @@ export default function InputLayout({
             key="origin"
             name="origin"
             value={
-              teaData.origin.name &&
+              teaData.origin.country &&
               getOriginName(teaData.origin).replace("&#39;", "'")
             }
             handleClick={handleClick}

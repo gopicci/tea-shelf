@@ -32,10 +32,9 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorsDispatch = useContext(VendorsDispatch);
 
-  async function handleCreate() {
+  async function handleCreate(data) {
     // Handle posting process
-
-    let reqData = { ...teaData };
+    let reqData = data;
 
     let customSubcategory = false;
     let customVendor = false;

@@ -263,75 +263,79 @@ export default function InputForm({
     western_brewing: brewingValidation,
   });
 
-  async function brewingToSeconds(values, brewing, type, measure) {
-    if (values[brewing][measure] !== "s") {
+  function brewingToSeconds(data, brewing, type, measure) {
+    if (data[brewing][measure] !== "s") {
       let seconds;
-      if (values[brewing][measure] === "m")
-        seconds = parseInt(teaData[brewing][type]) * 60;
-      else seconds = parseInt(teaData[brewing][type]) * 3600;
-      return setTeaData({
-        ...teaData,
+      if (data[brewing][measure] === "m")
+        seconds = parseInt(data[brewing][type]) * 60;
+      else seconds = parseInt(data[brewing][type]) * 3600;
+      return {
+        ...data,
         [brewing]: {
-          ...teaData[brewing],
+          ...data[brewing],
           [type]: seconds,
         },
-      });
-    }
+      };
+    } else return data;
   }
 
-  async function tempToCelsius(values, brewing) {
-    if (values[brewing].fahrenheit)
-      return setTeaData({
-        ...teaData,
+  function tempToCelsius(data, brewing) {
+    if (data[brewing].fahrenheit)
+      return {
+        ...data,
         [brewing]: {
-          ...teaData[brewing],
-          temperature: fahrenheitToCelsius(teaData[brewing].temperature),
+          ...data[brewing],
+          temperature: fahrenheitToCelsius(data[brewing].temperature),
         },
-      });
+      };
+    else return data;
   }
 
-  async function handleSave(values) {
+  function handleSave(values) {
     if (handleCreate) {
+
+      let data = {...values};
+
       // Convert weight to grams
-      let grams = parseFloat(teaData.weight_left);
+      let grams = parseFloat(data.weight_left);
       if (weightMeasure === "oz") grams = grams * 28.35;
       if (!isNaN(grams))
-        await setTeaData({
-          ...teaData,
+        data = {
+          ...data,
           weight_left: cropToNoZeroes(grams, 1),
-        });
+        };
 
       // Convert brewing temperature to celsius
-      await tempToCelsius(values, "gongfu_brewing");
-      await tempToCelsius(values, "western_brewing");
+      data = tempToCelsius(data, "gongfu_brewing");
+      data = tempToCelsius(data, "western_brewing");
 
       // Convert brewing times to seconds
-      await brewingToSeconds(
-        values,
+      data = brewingToSeconds(
+        data,
         "gongfu_brewing",
         "initial",
         "initialMeasure"
       );
-      await brewingToSeconds(
-        values,
+      data = brewingToSeconds(
+        data,
         "gongfu_brewing",
         "increments",
         "incrementsMeasure"
       );
-      await brewingToSeconds(
-        values,
+      data = brewingToSeconds(
+        data,
         "western_brewing",
         "initial",
         "initialMeasure"
       );
-      await brewingToSeconds(
-        values,
+      data = brewingToSeconds(
+        data,
         "western_brewing",
         "increments",
         "incrementsMeasure"
       );
 
-      handleCreate();
+      handleCreate(data);
       handleDesktopClose();
       //} else {
       // handleEdit();
