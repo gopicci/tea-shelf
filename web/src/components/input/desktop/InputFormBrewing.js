@@ -49,6 +49,7 @@ export default function InputFormBrewing({
               <TextField
                 {...params}
                 label="Temperature"
+                aria-label="temperature"
                 variant="outlined"
                 size="small"
                 className={classes.temperature}
@@ -77,6 +78,7 @@ export default function InputFormBrewing({
           >
             <Select
               name="degrees"
+              aria-label="degrees"
               value={teaData[brewing].fahrenheit ? "fahrenheit" : "celsius"}
               onChange={(e) => {
                 handleChange(e);
@@ -110,6 +112,7 @@ export default function InputFormBrewing({
             <TextField
               {...params}
               label="Grams per 100ml"
+              aria-label="brewing_weight"
               variant="outlined"
               size="small"
               className={classes.brewingWeight}
@@ -137,6 +140,7 @@ export default function InputFormBrewing({
           <TextField
             name="initial"
             label="Initial seconds"
+            aria-label="initial"
             inputProps={{ maxLength: 5 }}
             size="small"
             variant="outlined"
@@ -172,6 +176,7 @@ export default function InputFormBrewing({
           <TextField
             name="increments"
             label="Increments"
+            aria-label="increments"
             inputProps={{ maxLength: 5 }}
             size="small"
             variant="outlined"

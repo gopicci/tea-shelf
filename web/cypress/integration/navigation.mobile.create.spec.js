@@ -1,5 +1,7 @@
 import { login } from "./auth.spec";
 
+Cypress.config("viewportWidth", 500);
+
 describe("Create navigation", () => {
   it("Can add a basic tea.", () => {
     cy.server();

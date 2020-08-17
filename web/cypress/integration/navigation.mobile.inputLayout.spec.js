@@ -1,5 +1,7 @@
 import { login } from "./auth.spec";
 
+Cypress.config("viewportWidth", 500);
+
 describe("Create navigation", () => {
   it("Can open and close create page.", () => {
     cy.get('button[aria-label="add tea"]').click();

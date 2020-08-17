@@ -135,6 +135,7 @@ export default function InputForm({
                 required
                 name="name"
                 label="Name"
+                aria-label="name"
                 inputProps={{ maxLength: 50 }}
                 size="small"
                 variant="outlined"
@@ -159,6 +160,7 @@ export default function InputForm({
                 <Select
                   name="category"
                   label="Category"
+                  aria-label="category"
                   value={teaData.category ? teaData.category : ""}
                   onChange={(e) => {
                     handleChange(e);
@@ -204,6 +206,7 @@ export default function InputForm({
                   <TextField
                     {...params}
                     label="Subcategory"
+                    aria-label="subcategory"
                     className={classes.subcategory}
                     fullWidth
                     variant="outlined"
@@ -231,6 +234,7 @@ export default function InputForm({
                     {...params}
                     name="year"
                     label="Year"
+                    aria-label="year"
                     variant="outlined"
                     size="small"
                     className={classes.year}
@@ -252,6 +256,7 @@ export default function InputForm({
                   <TextField
                     {...params}
                     label="Origin"
+                    aria-label="origin"
                     variant="outlined"
                     inputProps={{ ...params.inputProps, maxLength: 130 }}
                     size="small"
@@ -273,6 +278,7 @@ export default function InputForm({
                   <TextField
                     {...params}
                     label="Vendor"
+                    aria-label="vendor"
                     variant="outlined"
                     inputProps={{ ...params.inputProps, maxLength: 50 }}
                     size="small"
@@ -292,6 +298,7 @@ export default function InputForm({
               <TextField
                 name="weight_left"
                 label="Weight"
+                aria-label="weight_left"
                 inputProps={{ maxLength: 10 }}
                 size="small"
                 variant="outlined"
@@ -316,6 +323,7 @@ export default function InputForm({
               >
                 <Select
                   name="weightMeasure"
+                  aria-label="weight_measure"
                   value={weightMeasure}
                   onChange={(e) => setWeightMeasure(e.target.value)}
                   onBlur={handleBlur}
@@ -327,6 +335,7 @@ export default function InputForm({
               <TextField
                 name="price"
                 label={"Price per " + weightMeasure}
+                aria-label="price"
                 inputProps={{ maxLength: 10 }}
                 size="small"
                 variant="outlined"
@@ -346,6 +355,7 @@ export default function InputForm({
               <FormGroup>
                 <FormControlLabel
                   className={classes.brewingSwitch}
+                  aria-label="switch_brewing"
                   value="start"
                   control={<Switch size="small" color="default" />}
                   label={
@@ -375,7 +385,7 @@ export default function InputForm({
               <Button onClick={handlePrevious} aria-label="back">
                 Back
               </Button>
-              <Button onClick={submitForm} aria-label="Create">
+              <Button onClick={submitForm} aria-label="create">
                 Create
               </Button>
             </Box>

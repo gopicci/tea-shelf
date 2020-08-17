@@ -53,7 +53,12 @@ export default function DrawerLayout({ setDesktopCreate }) {
       <div className={classes.drawerContainer}>
         <Toolbar />
         <List>
-          <ListItem button key="add" onClick={() => setDesktopCreate(true)}>
+          <ListItem
+            button
+            key="add"
+            onClick={() => setDesktopCreate(true)}
+            aria-label="add tea"
+          >
             <ListItemIcon>
               <Add />
             </ListItemIcon>
