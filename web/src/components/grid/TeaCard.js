@@ -113,14 +113,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TeaCard({ tea, gridView, setRoute }) {
-  /**
-   * Card component visualizing a single tea instance.
-   *
-   * @param tea {json} Tea instance data in API format
-   * @param gridView {bool} Grid view switch status
-   */
+/**
+ * Card component visualizing a single tea instance.
+ *
+ * @param tea {json} Tea instance data in API format
+ * @param gridView {boolean} Grid view switch status
+ * @param setRoute {function} Set main route
+ */
 
+export default function TeaCard({ tea, gridView, setRoute }) {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);

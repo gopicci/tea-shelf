@@ -7,11 +7,10 @@ import { genericReducer } from "../../services/SyncService";
 export const TeasState = createContext(null);
 export const TeaDispatch = createContext(null);
 
+/**
+ * Teas state and dispatch provider.
+ */
 export default function TeasContext(props) {
-  /**
-   * Teas state and dispatch provider.
-   */
-
   const [state, dispatch] = useReducer(genericReducer, null);
 
   useEffect(() => {

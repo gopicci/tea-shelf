@@ -10,17 +10,16 @@ const reducer = (state, action) => {
     case "SET":
       return action.data;
     case "CLEAR":
-      return initialState
+      return initialState;
     default:
       return action;
   }
 };
 
+/**
+ * Search bar status state and dispatch provider.
+ */
 export default function SearchContext(props) {
-  /**
-   * Search bar status state and dispatch provider.
-   */
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (

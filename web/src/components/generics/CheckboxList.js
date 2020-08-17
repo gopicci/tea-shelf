@@ -13,6 +13,15 @@ import { formListStyles } from "../../style/FormListStyles";
 
 import CheckboxListItem from "./CheckboxListItem";
 
+/**
+ * Generic checkbox list component.
+ *
+ * @param label {string} List title
+ * @param list {[{string: boolean}]} Checkbox list array in {name: checked} format
+ * @param handleChange {function} Function to handle items change
+ * @param isCollapsed {boolean} If true only first 3 items are shown with a showAll option
+ * @param reverse {boolean} If true list options are shown in reverse order
+ */
 export default function CheckboxList({
   label,
   list,
@@ -20,16 +29,6 @@ export default function CheckboxList({
   isCollapsed = false,
   reverse = false,
 }) {
-  /**
-   * Generic checkbox list component.
-   *
-   * @param label {string} List title
-   * @param list {[{string: boolean}]} Checkbox list array in {name: checked} format
-   * @param handleChange {function} Function to handle items change
-   * @param isCollapsed {bool} If true only first 3 items are shown with a showAll option
-   * @param reverse {bool} If true list options are shown in reverse order
-   */
-
   const formListClasses = formListStyles();
 
   const [open, setOpen] = useState(false);

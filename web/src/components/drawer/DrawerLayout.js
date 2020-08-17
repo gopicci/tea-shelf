@@ -34,11 +34,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Desktop left side drawer component.
+ *
+ * @param setDesktopCreate {function} Set desktop create dialog state
+ */
 export default function DrawerLayout({ setDesktopCreate }) {
-  /**
-   * Desktop left side drawer component.
-   */
-
   const classes = useStyles();
 
   return (

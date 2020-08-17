@@ -37,14 +37,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Filters list single checkbox item.
+ *
+ * @param name {string} Item name
+ * @param checked {boolean} Checked status
+ * @param handleChange {function} Function to handle item change
+ */
 export default function CheckboxListItem({ name, checked, handleChange }) {
-  /**
-   * Filters list single checkbox item.
-   *
-   * @param name {string} Item name
-   * @param checked {bool} Checked status
-   * @param handleChange {function} Function to handle item change
-   */
   const classes = useStyles();
   const formListClasses = formListStyles();
 

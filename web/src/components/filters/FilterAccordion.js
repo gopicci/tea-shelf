@@ -39,11 +39,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Desktop filters accordion component.
+ */
 export default function FilterAccordion() {
-  /**
-   * Desktop filters accordion component.
-   */
-
   const classes = useStyles();
 
   const state = useContext(FilterState);

@@ -23,21 +23,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea creation weight input component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param field {string} Input field name
+ * @param handleBackToLayout {function} Reroutes to input layout
+ */
+
 export default function EditWeightInput({
   teaData,
   setTeaData,
   field,
   handleBackToLayout,
 }) {
-  /**
-   * Mobile tea creation weight input component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param field {string} Input field name
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const classes = useStyles();
 
   const [text, setText] = useState("");

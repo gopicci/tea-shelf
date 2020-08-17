@@ -102,10 +102,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Search app bar component. Handles search, sync and grid view switch.
+ */
 export default function SearchAppBar() {
-  /**
-   * Search app bar component. Handles search, sync and grid view switch.
-   */
   const classes = useStyles();
 
   const [isSyncing, setSyncing] = useState(false);

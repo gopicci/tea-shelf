@@ -3,12 +3,12 @@ import { APIRequest } from "../../../services/AuthService";
 import EditOriginOnline from "./EditOriginOnline";
 import EditOriginOffline from "./EditOriginOffline";
 
+/**
+ * Mobile tea creation origin input router component. If API is unreachable
+ * return offline component, otherwise online.
+ *
+ */
 export default function EditOrigin(props) {
-  /**
-   * Mobile tea creation origin input router component. If API is unreachable
-   * return offline component, otherwise online.
-   *
-   */
   const [isOnline, setOnline] = useState(true);
 
   async function checkOnline() {

@@ -6,12 +6,11 @@ import { logout } from "../../services/AuthService";
 
 export const CategoriesState = createContext(null);
 
+/**
+ * Categories state provider. Categories are central to a lot of the app
+ * functions, they get loaded cache first otherwise user gets logged out.
+ */
 export default function CategoriesContext(props) {
-  /**
-   * Categories state provider. Categories are central to a lot of the app
-   * functions, they get loaded cache first otherwise user gets logged out.
-   */
-
   const [state, setState] = useState(null);
 
   useEffect(() => {

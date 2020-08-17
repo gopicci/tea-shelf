@@ -36,11 +36,11 @@ const filtersDefinition = {
   },
 };
 
+/**
+ * Filters status state and dispatch provider. Structure gets updated on teas state
+ * change, dispatch takes care of keeping track of the checked status.
+ */
 export default function FilterContext(props) {
-  /**
-   * Filters status state and dispatch provider. Structure gets updated on teas state
-   * change, dispatch takes care of keeping track of the checked status.
-   */
   const categories = useContext(CategoriesState);
   const teas = useContext(TeasState);
 

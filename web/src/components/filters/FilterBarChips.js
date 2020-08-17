@@ -2,11 +2,10 @@ import React, { useContext } from "react";
 import { Chip } from "@material-ui/core";
 import { FilterDispatch, FilterState } from "../statecontainers/FilterContext";
 
+/**
+ * Defines chips components for mobile filter bar based on filters state.
+ */
 export default function FilterBarChips() {
-  /**
-   * Defines chips components for mobile filter bar based on filters state.
-   */
-
   const state = useContext(FilterState);
   const dispatch = useContext(FilterDispatch);
 

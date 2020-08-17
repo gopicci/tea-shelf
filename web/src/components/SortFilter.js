@@ -29,6 +29,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile sort and filter page component.
+ *
+ * @param setRoute {function} Set main route
+ */
 export default function SortFilter({ setRoute }) {
   const classes = useStyles();
 
@@ -38,14 +43,14 @@ export default function SortFilter({ setRoute }) {
   console.log(state);
 
   function handleClose() {
-    setRoute({route: "MAIN"});
+    setRoute({ route: "MAIN" });
   }
 
   function handleReset() {
     dispatch({
       type: "RESET",
     });
-  };
+  }
 
   return (
     <Box className={classes.root}>

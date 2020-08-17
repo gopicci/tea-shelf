@@ -14,11 +14,10 @@ const reducer = (state, action) => {
   }
 };
 
+/**
+ * Grid view switch status state and dispatch provider.
+ */
 export default function GridViewContext(props) {
-  /**
-   * Grid view switch status state and dispatch provider.
-   */
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (

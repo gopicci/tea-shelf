@@ -47,6 +47,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Default login component
+ */
 export default function Login() {
   const classes = useStyles();
 

@@ -18,21 +18,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea creation layout list item.
+ *
+ * @param name {string} Item name
+ * @param value {string} Item value
+ * @param handleClick {function} Handles item click
+ * @param noTitle {boolean} If true value text capitalization is disabled
+ */
 export default function InputItem({
   name,
   value,
   handleClick,
   noTitle = false,
 }) {
-  /**
-   * Mobile tea creation layout list item.
-   *
-   * @param name {string} Item name
-   * @param value {string} Item value
-   * @param handleClick {function} Handles item click
-   * @param noTitle {bool} If true value text capitalization is disabled
-   */
-
   const classes = useStyles();
   const formListClasses = formListStyles();
 
@@ -49,7 +48,10 @@ export default function InputItem({
           <Typography variant={"body2"}>{name}</Typography>
         </Box>
         <Box className={classes.valueBox}>
-          <Typography variant={"body2"} className={noTitle ? classes.noTitle : ""}>
+          <Typography
+            variant={"body2"}
+            className={noTitle ? classes.noTitle : ""}
+          >
             {value}
           </Typography>
         </Box>

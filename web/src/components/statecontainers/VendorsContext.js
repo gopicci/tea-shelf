@@ -6,11 +6,10 @@ import { genericReducer } from "../../services/SyncService";
 export const VendorsState = createContext(null);
 export const VendorsDispatch = createContext(null);
 
+/**
+ * Vendors state and dispatch provider.
+ */
 export default function VendorsContext(props) {
-  /**
-   * Vendors state and dispatch provider.
-   */
-
   const [state, dispatch] = useReducer(genericReducer, null);
 
   useEffect(() => {

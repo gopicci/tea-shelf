@@ -13,11 +13,11 @@ import { getUser } from "./services/AuthService";
 import { mainTheme } from "./style/MainTheme";
 import "./App.css";
 
+/**
+ * Main app component. Checks if user is logged in and sets up main routes.
+ * Routes are wrapped in central state provider.
+ */
 function App() {
-  /**
-   * Main app component. Checks if user is logged in and sets up main routes.
-   * Routes are wrapped in central state provider.
-   */
   const isLoggedIn = getUser();
 
   const [route, setRoute] = useState({ route: "MAIN", data: null });
@@ -33,9 +33,13 @@ function App() {
       case "EDIT":
         return <Edit setRoute={setRoute} initialState={route.data} />;
       case "EDIT_NOTES":
-        return <Edit setRoute={setRoute} initialState={route.data} notes={true} />;
+        return (
+          <Edit setRoute={setRoute} initialState={route.data} notes={true} />
+        );
       case "TEA_DETAILS":
-        return <Edit setRoute={setRoute} initialState={route.data} details={true} />;
+        return (
+          <Edit setRoute={setRoute} initialState={route.data} details={true} />
+        );
       default:
         return <MainPageLayout setRoute={setRoute} />;
     }

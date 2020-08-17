@@ -6,11 +6,10 @@ import { genericReducer } from "../../services/SyncService";
 export const SubcategoriesState = createContext(null);
 export const SubcategoriesDispatch = createContext(null);
 
+/**
+ * Subcategories state and dispatch provider.
+ */
 export default function SubcategoriesContext(props) {
-  /**
-   * Subcategories state and dispatch provider.
-   */
-
   const [state, dispatch] = useReducer(genericReducer, null);
 
   useEffect(() => {

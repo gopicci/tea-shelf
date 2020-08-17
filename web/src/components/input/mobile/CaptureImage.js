@@ -37,6 +37,16 @@ const videoConstraints = {
   facingMode: "environment",
 };
 
+/**
+ * Mobile tea creation capture stage component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param imageData {string} Base64 image data
+ * @param setImageData {function} Set image data
+ * @param handleClose {function} Cancel process and reroute to main route
+ * @param handleNext {function} Go to next stage (inputLayout)
+ */
 export default function CaptureImage({
   teaData,
   setTeaData,
@@ -45,17 +55,6 @@ export default function CaptureImage({
   handleMobileClose,
   handleNext,
 }) {
-  /**
-   * Mobile tea creation capture stage component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param imageData {string} Base64 image data
-   * @param setImageData {function} Set image data
-   * @param handleClose {function} Cancel process and reroute to main route
-   * @param handleNext {function} Go to next stage (inputLayout)
-   */
-
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);

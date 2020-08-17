@@ -33,13 +33,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Defines layout for main landing page.
+ *
+ * @param setRoute {function} Set main route
+ */
 export default function MainPageLayout({ setRoute }) {
-  /**
-   * Defines layout for main landing page.
-   *
-   * @param setRoute {function} Set main route
-   */
-
   const classes = useStyles();
 
   const [desktopCreate, setDesktopCreate] = useState(false);

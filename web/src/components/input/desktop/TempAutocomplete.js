@@ -8,7 +8,7 @@ import { celsiusToFahrenheit } from "../../../services/ParsingService";
  * @param teaData {json} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param renderInput {component} Input component
- * @param fahrenheit {bool} Use fahrenheit or celsius
+ * @param fahrenheit {boolean} Use fahrenheit or celsius
  * @param brewing {string} Selected brewing: gongfu_brewing or western_brewing
  */
 export default function TempAutocomplete({

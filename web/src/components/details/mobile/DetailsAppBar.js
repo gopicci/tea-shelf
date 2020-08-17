@@ -21,13 +21,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea details page app bar.
+ *
+ * @param setRoute {function} Set main route
+ * @param teaData {json} Track the input state
+ */
 export default function DetailsAppbar({ setRoute, teaData }) {
-  /**
-   * Mobile tea details page app bar.
-   *
-   * @param setRoute {function} Set main route
-   * @param teaData {json} Track the input state
-   */
   const classes = useStyles();
   const detailsClasses = detailsMobileStyles();
 

@@ -16,12 +16,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Custom center top snackbar component used for major communications.
+ * Relies on central snackbar state and dispatch provider.
+ */
 export default function CustomSnackbar() {
-  /**
-   * Custom center top snackbar component used for major communications.
-   * Relies on central snackbar state and dispatch provider.
-   */
-
   const classes = useStyles();
 
   const state = useContext(SnackbarState);

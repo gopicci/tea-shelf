@@ -3,21 +3,20 @@ import CheckboxList from "../../generics/CheckboxList";
 import CheckboxListItem from "../../generics/CheckboxListItem";
 import InputAppBar from "./InputAppBar";
 
+/**
+ * Mobile tea creation year list input component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param field {string} Input field name
+ * @param handleBackToLayout {function} Reroutes to input layout
+ */
 export default function EditYear({
   teaData,
   setTeaData,
   field,
   handleBackToLayout,
 }) {
-  /**
-   * Mobile tea creation year list input component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param field {string} Input field name
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const length = 60;
   const currentYear = new Date().getFullYear();
   const years = [...Array(length)].map((_, b) => String(currentYear - b));

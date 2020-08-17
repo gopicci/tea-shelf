@@ -20,11 +20,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Defines chips components for desktop accordion based on filters state.
+ */
 export default function FilterAccordionChips() {
-  /**
-   * Defines chips components for desktop accordion based on filters state.
-   */
-
   const classes = useStyles();
 
   const state = useContext(FilterState);

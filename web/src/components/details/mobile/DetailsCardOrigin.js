@@ -30,12 +30,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea details page origin card.
+ *
+ * @param teaData {json} Track the input state
+ */
 export default function DetailsCardOrigin({ teaData }) {
-  /**
-   * Mobile tea details page origin card.
-   *
-   * @param teaData {json} Track the input state
-   */
   const classes = useStyles();
   const detailsClasses = detailsMobileStyles();
 

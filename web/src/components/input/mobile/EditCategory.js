@@ -2,24 +2,23 @@ import React, { useContext } from "react";
 import InputAppBar from "./InputAppBar";
 import CheckboxList from "../../generics/CheckboxList";
 import { brewingTimesToSeconds } from "../../../services/ParsingService";
-import { subcategoryModel } from '../../../services/Serializers';
+import { subcategoryModel } from "../../../services/Serializers";
 import { CategoriesState } from "../../statecontainers/CategoriesContext";
 
+/**
+ * Mobile tea creation category list input component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param field {string} Input field name
+ * @param handleBackToLayout {function} Reroutes to input layout
+ */
 export default function EditCategory({
   teaData,
   setTeaData,
   field,
   handleBackToLayout,
 }) {
-  /**
-   * Mobile tea creation category list input component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param field {string} Input field name
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const categories = useContext(CategoriesState);
 
   function handleChange(event) {

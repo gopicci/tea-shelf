@@ -3,7 +3,7 @@ import localforage from "localforage";
 import CaptureImage from "./input/mobile/CaptureImage";
 import LoadImage from "./input/desktop/LoadImage";
 import InputRouter from "./input/mobile/InputRouter";
-import InputForm from './input/desktop/InputForm';
+import InputForm from "./input/desktop/InputForm";
 import { APIRequest } from "../services/AuthService";
 import { generateUniqueId } from "../services/SyncService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
@@ -12,19 +12,17 @@ import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
 import { teaModel, teaSerializer } from "../services/Serializers";
 
-
+/**
+ * Mobile tea entry creation process. Consists of 3 stages:
+ * captureImage -> inputLayout -> handleCreate
+ *
+ * teaData tracks the input state.
+ *
+ * @param setRoute {function} Set main route
+ * @param desktop {boolean} Desktop mode or mobile
+ * @param setDesktopCreate {function} Desktop creation state
+ */
 export default function Create({ setRoute, desktop, setDesktopCreate }) {
-  /**
-   * Mobile tea entry creation process. Consists of 3 stages:
-   * captureImage -> inputLayout -> handleCreate
-   *
-   * teaData tracks the input state.
-   *
-   * @param setRoute {function} Set main route
-   * @param desktop {bool} Desktop mode or mobile
-   * @param setDesktopCreate {function} Desktop creation state
-   */
-
   const [teaData, setTeaData] = useState(teaModel);
   const [imageData, setImageData] = useState(null);
 
@@ -46,16 +44,13 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
       if (imageData) reqData["image"] = imageData;
 
       // Clear nested fields
-      if (!reqData.subcategory.name)
-        reqData.subcategory = null;
+      if (!reqData.subcategory.name) reqData.subcategory = null;
       else if (!reqData.subcategory.category) customSubcategory = true;
 
-      if (!reqData.vendor.name)
-        reqData.vendor = null;
+      if (!reqData.vendor.name) reqData.vendor = null;
       else if (!reqData.vendor.popularity) customVendor = true;
 
-      if (!reqData.origin.country)
-        reqData.origin = null;
+      if (!reqData.origin.country) reqData.origin = null;
 
       reqData = teaSerializer(reqData);
 
@@ -144,7 +139,6 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
     handleCreate,
   };
 
-
   function renderSwitch(step) {
     switch (step) {
       case 1:
@@ -156,5 +150,5 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
     }
   }
 
-  return renderSwitch(step)
+  return renderSwitch(step);
 }

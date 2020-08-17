@@ -33,17 +33,16 @@ function HideOnScroll(props) {
   );
 }
 
+/**
+ * Mobile filter bar component. Contains filters chips, hides on scroll.
+ *
+ * @param setRoute {function} Set main route
+ */
 export default function FilterBar({ setRoute }) {
-  /**
-   * Mobile filter bar component. Contains filters chips, hides on scroll.
-   *
-   * @param setRoute {function} Set main route
-   */
-
   const classes = useStyles();
 
   function handleButtonClick() {
-    setRoute({route: "FILTER"});
+    setRoute({ route: "FILTER" });
   }
 
   return (

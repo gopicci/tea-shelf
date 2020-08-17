@@ -25,33 +25,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Defines mobile tea creation input stage layout.
+ *
+ * @param teaData {json} Input tea data state
+ * @param handleEdit {function} Handle tea edit posting process
+ * @param handleCreate {function} Handle tea create posting process
+ * @param handleMobileClose {function} Cancel process and reroute to main route
+ * @param handlePrevious {function} Go back to previous stage (captureImage)
+ * @param setEditRoute {function} Reroutes to input item
+ */
 export default function InputLayout({
   teaData,
-  handleEdit=null,
-  handleCreate=null,
-  handleMobileClose=null,
+  handleEdit = null,
+  handleCreate = null,
+  handleMobileClose = null,
   handlePrevious,
   setEditRoute,
 }) {
-  /**
-   * Defines mobile tea creation input stage layout.
-   *
-   * @param teaData {json} Input tea data state
-   * @param handleCreate {function} Handle tea posting process
-   * @param handleMobileClose {function} Cancel process and reroute to main route
-   * @param handlePrevious {function} Go back to previous stage (captureImage)
-   * @param setEditRoute {function} Reroutes to input item
-   */
-
   const classes = useStyles();
   const formListClasses = formListStyles();
 
   const categories = useContext(CategoriesState);
 
-
   function handleSave() {
     if (handleCreate) {
-      handleCreate({...teaData});
+      handleCreate({ ...teaData });
       handleMobileClose();
     } else {
       handleEdit();
@@ -68,8 +67,8 @@ export default function InputLayout({
       <InputAppBar
         handleBackToLayout={handlePrevious}
         name="Tea"
-        actionName={handleCreate ? "Add" : "Edit" }
-        saveName={handleCreate ? "Create" : "Save" }
+        actionName={handleCreate ? "Add" : "Edit"}
+        saveName={handleCreate ? "Create" : "Save"}
         disableSave={!teaData.name || !teaData.category}
         handleSave={handleSave}
       />
@@ -109,7 +108,8 @@ export default function InputLayout({
             key="subcategory"
             name="subcategory"
             value={
-              teaData.subcategory.name && getSubcategoryName(teaData.subcategory)
+              teaData.subcategory.name &&
+              getSubcategoryName(teaData.subcategory)
             }
             handleClick={handleClick}
           />

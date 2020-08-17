@@ -13,21 +13,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea creation offline origin input component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param field {string} Input field name
+ * @param handleBackToLayout {function} Reroutes to input layout
+ */
 export default function EditOriginOffline({
   teaData,
   field,
   setTeaData,
   handleBackToLayout,
 }) {
-  /**
-   * Mobile tea creation offline origin input component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param field {string} Input field name
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const classes = useStyles();
 
   const [origin, setOrigin] = useState(teaData[field]);

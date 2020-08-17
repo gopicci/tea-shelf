@@ -19,6 +19,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea creation appbar component.
+ *
+ * @param name {string} Input name
+ * @param handleBackToLayout {function} Reroutes to input layout
+ * @param actionName {string} Define name of title action
+ * @param saveName {string} Define presence and name of save button
+ * @param disableAdd {boolean} Define if add button is disabled
+ * @param handleSave {function} Handles save click
+ */
 export default function InputAppBar({
   name,
   handleBackToLayout,
@@ -27,18 +37,6 @@ export default function InputAppBar({
   disableSave = true,
   handleSave = null,
 }) {
-  /**
-   * Mobile tea creation appbar component.
-   *
-   * @param name {string} Input name
-   * @param handleBackToLayout {function} Reroutes to input layout
-   * @param actionName {string} Define name of title action
-   * @param saveName {string} Define presence and name of save button
-   * @param disableAdd {bool} Define if add button is disabled
-   * @param handleAdd {function} Handles add click
-
-   */
-
   const classes = useStyles();
 
   return (

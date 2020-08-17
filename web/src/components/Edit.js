@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import InputRouter from "./input/mobile/InputRouter";
-import DetailsLayout from './details/mobile/DetailsLayout';
+import DetailsLayout from "./details/mobile/DetailsLayout";
 import { APIRequest } from "../services/AuthService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
@@ -21,23 +21,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea entry edit process.
+ *
+ * teaData tracks the input state.
+ *
+ * @param initialState {json} Initial input tea data
+ * @param setRoute {function} Set main route
+ * @param notes {boolean} Editing notes
+ * @param details {boolean} View tea details
+ */
 export default function Edit({
   setRoute,
   initialState,
   notes = false,
   details = false,
 }) {
-  /**
-   * Mobile tea entry edit process.
-   *
-   * teaData tracks the input state.
-   *
-   * @param initialState {json} Initial input tea data
-   * @param setRoute {function} Set main route
-   * @param notes {bool} Editing notes
-   * @param details {bool} View tea details
-   */
-
   const classes = useStyles();
 
   const [teaData, setTeaData] = useState(initialState);
@@ -65,8 +64,6 @@ export default function Edit({
       // Update context with request
       teaDispatch({ type: "EDIT", data: reqData });
       setTeaData({ ...reqData });
-
-
 
       image = reqData.image;
       delete reqData.image;

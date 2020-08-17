@@ -23,15 +23,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Main mobile tea details page layout.
+ *
+ * @param setRoute {function} Set main route
+ * @param teaData {json} Track the input state
+ * @param handleEdit {function} Handle state edits
+ */
 export default function TeaDetails({ setRoute, teaData, handleEdit }) {
-  /**
-   * Main mobile tea details page layout.
-   *
-   * @param setRoute {function} Set main route
-   * @param teaData {json} Track the input state
-   * @param handleEdit {function} Handle state edits
-   */
-
   const classes = useStyles();
 
   return (

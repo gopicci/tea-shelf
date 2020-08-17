@@ -33,19 +33,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea creation online origin input component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param handleBackToLayout {function} Reroutes to input layout
+ */
 export default function EditOriginOnline({
   teaData,
   setTeaData,
   handleBackToLayout,
 }) {
-  /**
-   * Mobile tea creation online origin input component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const classes = useStyles();
 
   const [value, setValue] = useState(null);
@@ -100,7 +99,7 @@ export default function EditOriginOnline({
         }
 
       if (origin["extended-address"])
-        origin["locality"] = origin["extended-address"].split(',')[0];
+        origin["locality"] = origin["extended-address"].split(",")[0];
 
       if (origin["region"])
         origin["region"] = origin["region"].replace(" Province", "");

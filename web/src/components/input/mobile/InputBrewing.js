@@ -1,7 +1,10 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import { celsiusToFahrenheit, parseHMSToSeconds } from "../../../services/ParsingService";
+import {
+  celsiusToFahrenheit,
+  parseHMSToSeconds,
+} from "../../../services/ParsingService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,15 +35,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Mobile tea creation layout list brewing item.
+ *
+ * @param name {string} Item name
+ * @param teaData {json} Input tea data state
+ * @param handleClick {function} Handles item click
+ */
 export default function InputBrewing({ name, teaData, handleClick }) {
-  /**
-   * Mobile tea creation layout list brewing item.
-   *
-   * @param name {string} Item name
-   * @param teaData {json} Input tea data state
-   * @param handleClick {function} Handles item click
-   */
-
   const classes = useStyles();
 
   function parseBrewingTimeTop(time) {

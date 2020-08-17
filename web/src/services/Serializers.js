@@ -1,6 +1,8 @@
 import { brewingTimesToSeconds } from "./ParsingService";
 
-// Defines brewing data structure in API request format
+/**
+ * Defines brewing data structure in API request format.
+ */
 export const brewingModel = {
   temperature: null,
   weight: null,
@@ -8,7 +10,9 @@ export const brewingModel = {
   increments: null,
 };
 
-// Defines origin data structure in API request format
+/**
+ * Defines origin data structure in API request format.
+ */
 export const originModel = {
   country: null,
   region: null,
@@ -17,17 +21,23 @@ export const originModel = {
   longitude: null,
 };
 
-// Defines vendor data structure in API request format
+/**
+ * Defines vendor data structure in API request format.
+ */
 export const vendorModel = {
   name: null,
 };
 
-// Defines subcategory data structure in API request format
+/**
+ * Defines subcategory data structure in API request format.
+ */
 export const subcategoryModel = {
   name: null,
 };
 
-// Defines tea data structure in API request format
+/**
+ * Defines tea data structure in API request format.
+ */
 export const teaModel = {
   id: null,
   image: null,
@@ -48,12 +58,12 @@ export const teaModel = {
   notes: "",
 };
 
+/**
+ * Serialize tea object data to fit an API request
+ *
+ * @param tea {json} Tea object
+ */
 export function teaSerializer(tea) {
-  /**
-   * Serialize tea object data to fit an API request
-   *
-   * @param tea {json} Tea object
-   */
   let serialized = {};
 
   // Drop non model entries
@@ -85,24 +95,24 @@ export function teaSerializer(tea) {
   return Object.keys(serialized).length === 0 ? null : serialized;
 }
 
+/**
+ * Serialize brewing object data to fit an API request
+ *
+ * @param brewing {json} Brewing object
+ */
 function brewingSerializer(brewing) {
-  /**
-   * Serialize brewing object data to fit an API request
-   *
-   * @param brewing {json} Brewing object
-   */
   let serialized = {};
   for (const k of Object.keys(brewingModel))
     if (brewing[k]) serialized[k] = brewing[k];
   return Object.keys(serialized).length === 0 ? null : serialized;
 }
 
+/**
+ * Serialize origin object data to fit an API request
+ *
+ * @param origin {json} Origin object
+ */
 function originSerializer(origin) {
-  /**
-   * Serialize origin object data to fit an API request
-   *
-   * @param origin {json} Origin object
-   */
   let serialized = {};
   for (const k of Object.keys(originModel))
     if (origin[k]) {
@@ -115,20 +125,20 @@ function originSerializer(origin) {
   return Object.keys(serialized).length === 0 ? null : serialized;
 }
 
+/**
+ * Serialize vision parser response to fit in tea object
+ *
+ * @param data {json} Vision parser response
+ * @param categories {json} Categories state
+ * @param subcategories {json} Subcategories state
+ * @param vendors {json} Vendors state
+ */
 export function visionParserSerializer(
   data,
   categories,
   subcategories,
   vendors
 ) {
-  /**
-   * Serialize vision parser response to fit in tea object
-   *
-   * @param data {json} Vision parser response
-   * @param categories {json} Categories state
-   * @param subcategories {json} Subcategories state
-   * @param vendors {json} Vendors state
-   */
   let serialized = {};
 
   if (data.name) serialized.name = data.name;

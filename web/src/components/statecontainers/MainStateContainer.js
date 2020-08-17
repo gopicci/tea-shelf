@@ -9,11 +9,10 @@ import FilterContext from "./FilterContext";
 import SnackbarContext from "./SnackbarContext";
 import SearchContext from "./SearchContext";
 
+/**
+ * Wraps central state providers.
+ */
 export default function MainStateContainer(props) {
-  /**
-   * Wraps central state providers.
-   */
-
   return (
     <SnackbarContext>
       <CategoriesContext>

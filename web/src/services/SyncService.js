@@ -1,10 +1,10 @@
 import { APIRequest } from "./AuthService";
 import localforage from "localforage";
 
+/**
+ * Generic object array state reducer, assumes id field on entries.
+ */
 export function genericReducer(state, action) {
-  /**
-   * Generic object array state reducer, assumes id field on entries.
-   */
   switch (action.type) {
     case "CLEAR":
       return null;
@@ -17,20 +17,19 @@ export function genericReducer(state, action) {
         item.id === action.data.id ? action.data : item
       );
     case "DELETE":
-      let newState = []
+      let newState = [];
       for (const item of state)
-          if (item.id !== action.data.id)
-            newState.push(item);
-      return newState
+        if (item.id !== action.data.id) newState.push(item);
+      return newState;
     default:
       return action;
   }
 }
 
+/**
+ * Generate unique id from array of objects with id field
+ */
 export function generateUniqueId(array) {
-  /**
-   * Generate unique id from array of objects with id field
-   */
   let i = 0;
   for (const item of array) {
     console.log("id", item.id);

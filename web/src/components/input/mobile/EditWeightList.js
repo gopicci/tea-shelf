@@ -4,6 +4,15 @@ import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
 import { formListStyles } from "../../../style/FormListStyles";
 
+/**
+ * Mobile tea creation weight list input component.
+ *
+ * @param data {{max: int , increments: int}} Weight list data
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param field {string} Input field name
+ * @param handleBackToLayout {function} Reroutes to input layout
+ */
 export default function EditWeightList({
   data,
   teaData,
@@ -11,16 +20,6 @@ export default function EditWeightList({
   field,
   handleBackToLayout,
 }) {
-  /**
-   * Mobile tea creation weight list input component.
-   *
-   * @param data {{max: int , increments: int}} Weight list data
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param field {string} Input field name
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const formListClasses = formListStyles();
 
   const crop = data.increment < 1 ? 1 : 0;

@@ -28,20 +28,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditNotes({
-  teaData,
-  handleEdit,
-  handlePrevious,
-}) {
-  /**
-   * Mobile tea creation text input component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleEdit {function} Handle edit save
-   * @param handlePrevious {function} Reroutes to tea details
-   */
-
+/**
+ * Mobile tea creation text input component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param handleEdit {function} Handle edit save
+ * @param handlePrevious {function} Reroutes to tea details
+ */
+export default function EditNotes({ teaData, handleEdit, handlePrevious }) {
   const classes = useStyles();
 
   const [text, setText] = useState(teaData.notes ? teaData.notes : "");
@@ -71,7 +65,12 @@ export default function EditNotes({
           <Typography variant="h6" className={classes.title}>
             {teaData.notes ? "Edit Notes" : "Add notes"}
           </Typography>
-          <Button color="inherit" disabled={!text} onClick={handleSave} aria-label="save">
+          <Button
+            color="inherit"
+            disabled={!text}
+            onClick={handleSave}
+            aria-label="save"
+          >
             SAVE
           </Button>
         </Toolbar>

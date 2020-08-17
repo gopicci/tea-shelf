@@ -1,10 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Box, Grid, Typography, useMediaQuery } from "@material-ui/core";
 import { ArrowDropUp, ArrowDropDown } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import TeaCard from "./TeaCard";
@@ -83,15 +78,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Grid component containing tea cards. Filters tea cards based on
+ * central filter state.
+ *
+ * @param setRoute {function} Set main route
+ */
 export default function GridLayout({ setRoute }) {
-  /**
-   * Grid component containing tea cards. Filters tea cards based on
-   * central filter state.
-   *
-   * @param tea {json} Tea instance data in API format
-   * @param gridView {bool} Grid view switch status
-   */
-
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
