@@ -2,6 +2,15 @@ import React from "react";
 import { Autocomplete } from "@material-ui/lab";
 import { celsiusToFahrenheit } from "../../../services/ParsingService";
 
+/**
+ * Desktop tea creation form temperature autocomplete component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param renderInput {component} Input component
+ * @param fahrenheit {bool} Use fahrenheit or celsius
+ * @param brewing {string} Selected brewing: gongfu_brewing or western_brewing
+ */
 export default function TempAutocomplete({
   teaData,
   setTeaData,
@@ -9,16 +18,6 @@ export default function TempAutocomplete({
   fahrenheit,
   brewing,
 }) {
-  /**
-   * Mobile tea creation subcategory input component. Shows a list and autocomplete from
-   * central subcategories state, with option to add extra.
-   * Updates category entry if different than ones in matching subcategory.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const options = [...Array(100)]
     .map((_, b) => String(fahrenheit ? celsiusToFahrenheit(b) : b))
     .reverse();
@@ -31,8 +30,8 @@ export default function TempAutocomplete({
           ...teaData[brewing],
           temperature: newValue,
         },
-      });}
-    else
+      });
+    } else
       setTeaData({
         ...teaData,
         [brewing]: {
@@ -52,17 +51,12 @@ export default function TempAutocomplete({
       id="temperature"
       options={options}
       freeSolo
-      value={teaData[brewing].temperature ? String(teaData[brewing].temperature) : ""}
+      value={
+        teaData[brewing].temperature ? String(teaData[brewing].temperature) : ""
+      }
       getOptionLabel={(option) => {
-        // Value selected with enter, right from the input
-        if (typeof option === "string") {
-          return option;
-        }
-        // Add "xxx" option created dynamically
-        if (option.inputValue) {
-          return option.inputValue;
-        }
-        // Regular option
+        if (typeof option === "string") return option;
+        if (option.inputValue) return option.inputValue;
         return option;
       }}
       renderOption={(option) => (option.inputValue ? option.label : option)}

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   FormControl,
@@ -7,9 +8,24 @@ import {
 } from "@material-ui/core";
 import TempAutocomplete from "./TempAutocomplete";
 import WeightAutocomplete from "./WeightAutocomplete";
-import React from "react";
+import {
+  celsiusToFahrenheit,
+  fahrenheitToCelsius,
+} from "../../../services/ParsingService";
 
-export default function FormBrewing({
+/**
+ * Desktop tea creation form brewing component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param brewing {string} Selected brewing: gongfu_brewing or western_brewing
+ * @param classes {json} Form makeStyle classes
+ * @param errors {json} Formik errors
+ * @param touched {json} Formik touched
+ * @param handleChange {function} Formik change handler
+ * @param handleBlur {function} Formik blur handler
+ */
+export default function InputFormBrewing({
   teaData,
   setTeaData,
   brewing,
@@ -18,8 +34,6 @@ export default function FormBrewing({
   touched,
   handleChange,
   handleBlur,
-  values,
-  setFieldValue,
 }) {
   return (
     <>
@@ -29,7 +43,7 @@ export default function FormBrewing({
             name="temperature"
             teaData={teaData}
             setTeaData={setTeaData}
-            fahrenheit={values[brewing].fahrenheit}
+            fahrenheit={teaData[brewing].fahrenheit}
             brewing={brewing}
             renderInput={(params) => (
               <TextField
@@ -63,13 +77,23 @@ export default function FormBrewing({
           >
             <Select
               name="degrees"
-              value={values[brewing].fahrenheit ? "fahrenheit" : "celsius"}
-              onChange={(e) =>
-                setFieldValue(brewing, {
-                  ...values[brewing],
-                  fahrenheit: e.target.value === "fahrenheit",
-                })
-              }
+              value={teaData[brewing].fahrenheit ? "fahrenheit" : "celsius"}
+              onChange={(e) => {
+                handleChange(e);
+                const fahrenheit = e.target.value === "fahrenheit";
+                let temp = teaData[brewing].temperature;
+                if (temp)
+                  if (fahrenheit) temp = celsiusToFahrenheit(temp);
+                  else temp = fahrenheitToCelsius(temp);
+                setTeaData({
+                  ...teaData,
+                  [brewing]: {
+                    ...teaData[brewing],
+                    fahrenheit: fahrenheit,
+                    temperature: temp,
+                  },
+                });
+              }}
               onBlur={handleBlur}
             >
               <MenuItem value="celsius">°C</MenuItem>
@@ -112,8 +136,8 @@ export default function FormBrewing({
         <Box className={classes.justifyLeft}>
           <TextField
             name="initial"
-            label="Initial time"
-            inputProps={{ maxLength: 3 }}
+            label="Initial seconds"
+            inputProps={{ maxLength: 5 }}
             size="small"
             variant="outlined"
             value={teaData[brewing].initial ? teaData[brewing].initial : ""}
@@ -143,33 +167,12 @@ export default function FormBrewing({
               errors[brewing].initial
             }
           />
-          <FormControl
-            className={classes.initialMeasure}
-            variant="outlined"
-            size="small"
-          >
-            <Select
-              name="initialMeasure"
-              value={values[brewing].initialMeasure}
-              onChange={(e) =>
-                setFieldValue(brewing, {
-                  ...values[brewing],
-                  initialMeasure: e.target.value,
-                })
-              }
-              onBlur={handleBlur}
-            >
-              <MenuItem value="s">s</MenuItem>
-              <MenuItem value="m">m</MenuItem>
-              <MenuItem value="h">h</MenuItem>
-            </Select>
-          </FormControl>
         </Box>
         <Box className={classes.justifyRight}>
           <TextField
             name="increments"
             label="Increments"
-            inputProps={{ maxLength: 3 }}
+            inputProps={{ maxLength: 5 }}
             size="small"
             variant="outlined"
             value={
@@ -201,27 +204,6 @@ export default function FormBrewing({
               errors[brewing].increments
             }
           />
-          <FormControl
-            className={classes.incrementsMeasure}
-            variant="outlined"
-            size="small"
-          >
-            <Select
-              name="incrementsMeasure"
-              value={values[brewing].incrementsMeasure}
-              onChange={(e) =>
-                setFieldValue(brewing, {
-                  ...values[brewing],
-                  incrementsMeasure: e.target.value,
-                })
-              }
-              onBlur={handleBlur}
-            >
-              <MenuItem value="s">s</MenuItem>
-              <MenuItem value="m">m</MenuItem>
-              <MenuItem value="h">h</MenuItem>
-            </Select>
-          </FormControl>
         </Box>
       </Box>
     </>

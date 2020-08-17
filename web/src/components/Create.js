@@ -22,6 +22,7 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
    *
    * @param setRoute {function} Set main route
    * @param desktop {bool} Desktop mode or mobile
+   * @param setDesktopCreate {function} Desktop creation state
    */
 
   const [teaData, setTeaData] = useState(teaModel);

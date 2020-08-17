@@ -1,24 +1,22 @@
 import React from "react";
 import { Autocomplete } from "@material-ui/lab";
 
+/**
+ * Desktop tea creation form brewing weight autocomplete component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param renderInput {component} Input component
+ * @param brewing {string} Selected brewing: gongfu_brewing or western_brewing
+ */
 export default function WeightAutocomplete({
   teaData,
   setTeaData,
   renderInput,
   brewing,
 }) {
-  /**
-   * Mobile tea creation subcategory input component. Shows a list and autocomplete from
-   * central subcategories state, with option to add extra.
-   * Updates category entry if different than ones in matching subcategory.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
-  const max = brewing === 'gongfu_brewing' ? 10 : 2
-  const increment = brewing === 'gongfu_brewing' ? 0.5 : 0.1
+  const max = brewing === "gongfu_brewing" ? 10 : 2;
+  const increment = brewing === "gongfu_brewing" ? 0.5 : 0.1;
   const options = [...Array(max / increment + 1)]
     .map((_, b) => (b * increment).toFixed(1))
     .reverse();
@@ -31,8 +29,8 @@ export default function WeightAutocomplete({
           ...teaData[brewing],
           weight: newValue,
         },
-      });}
-    else
+      });
+    } else
       setTeaData({
         ...teaData,
         [brewing]: {

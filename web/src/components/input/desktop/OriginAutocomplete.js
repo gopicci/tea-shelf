@@ -8,7 +8,7 @@ import { parse as himalaya } from "himalaya";
 import { v4 as uuidv4 } from "uuid";
 import { APIRequest } from "../../../services/AuthService";
 import { getOriginName } from "../../../services/ParsingService";
-import { originModel } from '../../../services/Serializers';
+import { originModel } from "../../../services/Serializers";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -24,19 +24,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Desktop tea creation form origin autocomplete component.
+ * Requests options from API, works only when online.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param renderInput {component} Input component
+ */
 export default function OriginAutocomplete({
   teaData,
   setTeaData,
   renderInput,
 }) {
-  /**
-   * Mobile tea creation online origin input component.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const classes = useStyles();
 
   const [inputValue, setInputValue] = useState("");
@@ -102,7 +102,7 @@ export default function OriginAutocomplete({
         console.log("origin", origin);
         setTeaData({ ...teaData, origin: origin });
       }
-    } else setTeaData({ ...teaData, origin: originModel});
+    } else setTeaData({ ...teaData, origin: originModel });
   }
 
   return (
@@ -118,7 +118,9 @@ export default function OriginAutocomplete({
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
-      getOptionLabel={() => teaData.origin.country ? getOriginName(teaData.origin) : ""}
+      getOptionLabel={() =>
+        teaData.origin.country ? getOriginName(teaData.origin) : ""
+      }
       clearOnBlur
       freeSolo
       fullWidth
@@ -139,10 +141,7 @@ export default function OriginAutocomplete({
             </Grid>
             <Grid item xs className={classes.listItem}>
               {parts.map((part, index) => (
-                <span
-                  key={index}
-                  className={classes.listItemName}
-                >
+                <span key={index} className={classes.listItemName}>
                   {part.text}
                 </span>
               ))}

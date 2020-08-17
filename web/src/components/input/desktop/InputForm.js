@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { Formik, Form } from "formik";
-import * as Yup from "yup";
 import {
   Box,
   Button,
@@ -15,11 +14,10 @@ import {
   FormControlLabel,
   Switch,
 } from "@material-ui/core";
-import { fade, makeStyles } from "@material-ui/core/styles";
 import emptyImage from "../../../empty.png";
 import SubAutocomplete from "./SubAutocomplete";
 import YearAutocomplete from "./YearAutocomplete";
-import FormBrewing from "./formBrewing";
+import InputFormBrewing from "./InputFormBrewing";
 import VendorAutocomplete from "./VendorAutocomplete";
 import OriginAutocomplete from "./OriginAutocomplete";
 import {
@@ -29,124 +27,20 @@ import {
 } from "../../../services/ParsingService";
 import { subcategoryModel } from "../../../services/Serializers";
 import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { validationSchema } from "./ValidationSchema";
+import { useStyles } from "../../../style/DesktopFormStyles";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  image: {
-    height: 200,
-    width: "100%",
-    objectFit: "cover",
-    marginBottom: theme.spacing(2),
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: theme.spacing(1),
-  },
-  justifyLeft: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "left",
-  },
-  justifyRight: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "right",
-  },
-  divider: {
-    position: "relative",
-    flexGrow: 1,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: theme.spacing(0.5),
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    backgroundColor: fade(theme.palette.background.main, 0.5),
-  },
-  brewingSwitch: {
-    position: "absolute",
-    right: theme.spacing(2),
-    top: "50%",
-    transform: "translateY(-50%)",
-  },
-  name: {
-    flexGrow: 1,
-    paddingRight: theme.spacing(2),
-  },
-  category: {
-    minWidth: 150,
-  },
-  subcategory: {
-    minWidth: 240,
-    paddingRight: theme.spacing(2),
-  },
-  year: {
-    minWidth: 150,
-  },
-  origin: {
-    minWidth: 240,
-    paddingRight: theme.spacing(1),
-  },
-  vendor: {
-    minWidth: 240,
-    paddingLeft: theme.spacing(1),
-  },
-  weight: {
-    flexGrow: 1,
-    minWidth: 240,
-    paddingRight: theme.spacing(2),
-  },
-  weightMeasure: {
-    minWidth: 80,
-    paddingRight: theme.spacing(2),
-  },
-  temperature: {
-    minWidth: 150,
-    maxWidth: 150,
-    paddingRight: theme.spacing(2),
-  },
-  degrees: {
-    minWidth: 60,
-  },
-  brewingWeight: {
-    minWidth: 150,
-    maxWidth: 150,
-  },
-  initial: {
-    minWidth: 150,
-    maxWidth: 150,
-    paddingRight: theme.spacing(2),
-  },
-  initialMeasure: {
-    minWidth: 60,
-  },
-  increments: {
-    minWidth: 150,
-    maxWidth: 150,
-    paddingRight: theme.spacing(2),
-  },
-  incrementsMeasure: {
-    minWidth: 60,
-  },
-  price: {
-    flexGrow: 1,
-    minWidth: 240,
-  },
-  bottom: {
-    flexGrow: 1,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: theme.spacing(2),
-  },
-}));
-
+/**
+ * Desktop tea creation form. Uses formik with external controlled state teaData.
+ *
+ * @param imageData {string} Base64 image data
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param handleEdit {function} Handle edit save
+ * @param handleCreate {function} Handle tea posting process
+ * @param handleDesktopClose {function} Cancel process and close dialog
+ * @param handlePrevious {function} Go back to previous stage (LoadImage)
+ */
 export default function InputForm({
   imageData,
   teaData,
@@ -163,11 +57,8 @@ export default function InputForm({
   const [weightMeasure, setWeightMeasure] = useState("g");
   const [brewing, setBrewing] = useState("gongfu_brewing");
 
-  function handleSwitch() {
-    if (brewing === "gongfu_brewing") setBrewing("western_brewing");
-    else setBrewing("gongfu_brewing");
-  }
-
+  // Defining year selection component options here
+  // because they're required by validation schema
   const currentYear = new Date().getFullYear();
   const yearOptionsLength = 60;
   const yearOptions = [...Array(yearOptionsLength)].map((_, b) =>
@@ -175,108 +66,9 @@ export default function InputForm({
   );
   yearOptions.unshift("Unknown");
 
-  const brewingValidation = Yup.object().shape({
-    fahrenheit: Yup.boolean(),
-    temperature: Yup.number().when("fahrenheit", {
-      is: true,
-      then: Yup.number()
-        .min(32, "Temperature too low")
-        .max(210, "Temperature too high")
-        .typeError("Must be a number")
-        .nullable(),
-      otherwise: Yup.number()
-        .min(0, "Temperature too low")
-        .max(99, "Temperature too high")
-        .typeError("Must be a number")
-        .nullable(),
-    }),
-    degrees: Yup.string().oneOf(
-      ["fahrenheit", "celsius"],
-      "Invalid temperature unit"
-    ),
-    weight: Yup.number()
-      .min(0, "Must be positive")
-      .max(100, "Number too high")
-      .typeError("Must be a number")
-      .nullable(),
-    initial: Yup.number()
-      .min(0, "Must be positive")
-      .max(999, "Number too high")
-      .typeError("Must be a number")
-      .nullable(),
-    initialMeasure: Yup.string().oneOf(["s", "m", "h"], "Invalid time unit"),
-    increments: Yup.number()
-      .min(0, "Must be positive")
-      .max(999, "Number too high")
-      .typeError("Must be a number")
-      .nullable(),
-    incrementsMeasure: Yup.string().oneOf(["s", "m", "h"], "Invalid time unit"),
-  });
-
-  const validationSchema = Yup.object().shape({
-    name: Yup.string()
-      .max(50, "Too long, max length 50 characters")
-      .required("Required"),
-    category: Yup.number()
-      .min(1, "Invalid category")
-      .max(9, "Invalid category")
-      .required("Required")
-      .typeError("Required"),
-    subcategory: Yup.object().shape({
-      name: Yup.string()
-        .max(50, "Too long, max length 50 characters")
-        .nullable(),
-    }),
-    year: Yup.string()
-      .oneOf([...yearOptions, null], "Invalid year")
-      .nullable(),
-    origin: Yup.object().shape({
-      country: Yup.string()
-        .max(30, "Too long, max length 30 characters")
-        .nullable(),
-      region: Yup.string()
-        .max(50, "Too long, max length 30 characters")
-        .nullable(),
-      locality: Yup.string()
-        .max(50, "Too long, max length 30 characters")
-        .nullable(),
-      latitude: Yup.number().nullable(),
-      longitude: Yup.number().nullable(),
-    }),
-    vendor: Yup.object().shape({
-      name: Yup.string()
-        .max(50, "Too long, max length 50 characters")
-        .nullable(),
-    }),
-    weight_left: Yup.number()
-      .min(0, "Weight must be positive")
-      .max(100000, "Weight too high")
-      .typeError("Weight must be a number")
-      .nullable(),
-    weightMeasure: Yup.string().oneOf(["g", "oz"], "Invalid measure"),
-    price: Yup.number()
-      .min(0, "Price must be positive")
-      .max(3000, "Price too high")
-      .typeError("Price must be a number")
-      .nullable(),
-    gongfu_brewing: brewingValidation,
-    western_brewing: brewingValidation,
-  });
-
-  function brewingToSeconds(data, brewing, type, measure) {
-    if (data[brewing][measure] !== "s") {
-      let seconds;
-      if (data[brewing][measure] === "m")
-        seconds = parseInt(data[brewing][type]) * 60;
-      else seconds = parseInt(data[brewing][type]) * 3600;
-      return {
-        ...data,
-        [brewing]: {
-          ...data[brewing],
-          [type]: seconds,
-        },
-      };
-    } else return data;
+  function handleSwitch() {
+    if (brewing === "gongfu_brewing") setBrewing("western_brewing");
+    else setBrewing("gongfu_brewing");
   }
 
   function tempToCelsius(data, brewing) {
@@ -291,10 +83,9 @@ export default function InputForm({
     else return data;
   }
 
-  function handleSave(values) {
+  function handleSave() {
     if (handleCreate) {
-
-      let data = {...values};
+      let data = { ...teaData };
 
       // Convert weight to grams
       let grams = parseFloat(data.weight_left);
@@ -309,32 +100,6 @@ export default function InputForm({
       data = tempToCelsius(data, "gongfu_brewing");
       data = tempToCelsius(data, "western_brewing");
 
-      // Convert brewing times to seconds
-      data = brewingToSeconds(
-        data,
-        "gongfu_brewing",
-        "initial",
-        "initialMeasure"
-      );
-      data = brewingToSeconds(
-        data,
-        "gongfu_brewing",
-        "increments",
-        "incrementsMeasure"
-      );
-      data = brewingToSeconds(
-        data,
-        "western_brewing",
-        "initial",
-        "initialMeasure"
-      );
-      data = brewingToSeconds(
-        data,
-        "western_brewing",
-        "increments",
-        "incrementsMeasure"
-      );
-
       handleCreate(data);
       handleDesktopClose();
       //} else {
@@ -342,12 +107,6 @@ export default function InputForm({
       // handlePrevious();
     }
   }
-
-  const extraBrewingFields = {
-    fahrenheit: false,
-    initialMeasure: "s",
-    incrementsMeasure: "s",
-  };
 
   return (
     <Box className={classes.root}>
@@ -358,27 +117,12 @@ export default function InputForm({
       />
       <Formik
         enableReinitialize
-        initialValues={{
-          ...teaData,
-          gongfu_brewing: {
-            ...teaData.gongfu_brewing,
-            ...extraBrewingFields,
-          },
-          western_brewing: {
-            ...teaData.western_brewing,
-            ...extraBrewingFields,
-          },
-        }}
-        validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log(values, teaData);
-          handleSave(values);
-        }}
+        initialValues={teaData}
+        validationSchema={() => validationSchema(yearOptions)}
+        onSubmit={handleSave}
       >
         {({
-          values,
           submitForm,
-          isSubmitting,
           setFieldValue,
           handleChange,
           handleBlur,
@@ -394,7 +138,7 @@ export default function InputForm({
                 inputProps={{ maxLength: 50 }}
                 size="small"
                 variant="outlined"
-                value={values.name ? values.name : ""}
+                value={teaData.name ? teaData.name : ""}
                 className={classes.name}
                 onChange={(e) => {
                   handleChange(e);
@@ -415,7 +159,7 @@ export default function InputForm({
                 <Select
                   name="category"
                   label="Category"
-                  value={values.category ? values.category : ""}
+                  value={teaData.category ? teaData.category : ""}
                   onChange={(e) => {
                     handleChange(e);
                     for (const entry of Object.entries(categories))
@@ -586,7 +330,7 @@ export default function InputForm({
                 inputProps={{ maxLength: 10 }}
                 size="small"
                 variant="outlined"
-                value={values.price ? values.price : ""}
+                value={teaData.price ? teaData.price : ""}
                 className={classes.price}
                 onChange={(e) => {
                   handleChange(e);
@@ -614,7 +358,7 @@ export default function InputForm({
                 />
               </FormGroup>
             </Box>
-            <FormBrewing
+            <InputFormBrewing
               {...{
                 teaData,
                 setTeaData,
@@ -624,7 +368,6 @@ export default function InputForm({
                 touched,
                 handleChange,
                 handleBlur,
-                values,
                 setFieldValue,
               }}
             />

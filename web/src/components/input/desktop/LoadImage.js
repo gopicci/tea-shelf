@@ -20,10 +20,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Desktop tea creation image loader, converts file to base64
+ * and moves to next step.
+ *
+ * @param setImageData {function} Set base64 image data state
+ * @param handleDesktopClose {function} Cancel process and close dialog
+ * @param handleNext {function} Go to next creation stage (InputForm)
+ */
 export default function LoadImage({
-  teaData,
-  setTeaData,
-  imageData,
   setImageData,
   handleDesktopClose,
   handleNext,
@@ -49,7 +54,9 @@ export default function LoadImage({
         onChange={(files) => handleChange(files)}
         filesLimit={1}
         showPreviewsInDropzone={false}
-        alertSnackbarProps={{anchorOrigin: { vertical: "top", horizontal: "center" }}}
+        alertSnackbarProps={{
+          anchorOrigin: { vertical: "top", horizontal: "center" },
+        }}
       />
       <Box className={classes.bottom}>
         <Button onClick={handleDesktopClose} aria-label="cancel">

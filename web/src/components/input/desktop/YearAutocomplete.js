@@ -1,6 +1,15 @@
 import React from "react";
 import { Autocomplete } from "@material-ui/lab";
 
+/**
+ * Desktop tea creation form year autocomplete component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param renderInput {component} Input component
+ * @param options {[string]} Options array
+ * @param updateFormValue {function} Formik change handler
+ */
 export default function YearAutocomplete({
   teaData,
   setTeaData,
@@ -8,15 +17,6 @@ export default function YearAutocomplete({
   options,
   updateFormValue,
 }) {
-  /**
-   * Mobile tea creation subcategory input component. Shows a list and autocomplete from
-   * central subcategories state, with option to add extra.
-   * Updates category entry if different than ones in matching subcategory.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
 
   function handleOnChange(event, newValue) {
     console.log(newValue)

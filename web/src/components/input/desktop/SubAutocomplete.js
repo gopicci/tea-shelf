@@ -6,23 +6,21 @@ import {
   brewingTimesToSeconds,
   getSubcategoryName,
 } from "../../../services/ParsingService";
-import { subcategoryModel } from '../../../services/Serializers';
+import { subcategoryModel } from "../../../services/Serializers";
 import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
-import { CategoriesState } from '../../statecontainers/CategoriesContext';
+import { CategoriesState } from "../../statecontainers/CategoriesContext";
 
 const filter = createFilterOptions();
 
+/**
+ * Desktop tea creation form subcategory autocomplete component.
+ * Modifies other teaData status with subcategory related data.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param renderInput {component} Input component
+ */
 export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
-  /**
-   * Mobile tea creation subcategory input component. Shows a list and autocomplete from
-   * central subcategories state, with option to add extra.
-   * Updates category entry if different than ones in matching subcategory.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
-
   const subcategories = useContext(SubcategoriesState);
   const categories = useContext(CategoriesState);
 
@@ -43,7 +41,9 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
       });
       if (match) {
         const subcategory = match[1];
-        const category = Object.entries(categories).find(entry => entry[1].id === subcategory.category)[1];
+        const category = Object.entries(categories).find(
+          (entry) => entry[1].id === subcategory.category
+        )[1];
         // Match found, update also category, origin and brewings
         let data = {
           ...teaData,
@@ -96,7 +96,6 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
       onChange={handleOnChange}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
-
         // Suggest the creation of a new value
         if (params.inputValue !== "") {
           filtered.push({
@@ -104,7 +103,6 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
             label: `Add "${params.inputValue}"`,
           });
         }
-
         return filtered;
       }}
       selectOnFocus
@@ -114,20 +112,17 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
       fullWidth
       options={options ? options : []}
       getOptionLabel={(option) => {
-        // Value selected with enter, right from the input
-        if (typeof option === "string") {
-          return option;
-        }
-        // Add "xxx" option created dynamically
-        if (option.inputValue) {
-          return option.inputValue;
-        }
-        // Regular option
+        if (typeof option === "string") return option;
+        if (option.inputValue) return option.inputValue;
         return option;
       }}
       renderOption={(option) => (option.inputValue ? option.label : option)}
       freeSolo
-      value={teaData.subcategory && teaData.subcategory.name ? String(teaData.subcategory.name) : ""}
+      value={
+        teaData.subcategory && teaData.subcategory.name
+          ? String(teaData.subcategory.name)
+          : ""
+      }
       renderInput={renderInput}
     />
   );

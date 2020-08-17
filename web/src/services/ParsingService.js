@@ -59,18 +59,27 @@ export function cropToNoZeroes(input, crop) {
   return parseFloat(input.toFixed(crop)).toString();
 }
 
+export function parseHMSToSeconds(time) {
+  const s = String(time);
+  if (s.includes(":")) {
+    // Input is API format dd hh:mm:ss
+    let days = 0;
+    if (s.includes(" ")) days = parseInt(s.slice(0, 2));
+    const a = s.slice(-8).split(":");
+    return parseInt(days * 24 * 3600 + +a[0] * 3600 + +a[1] * 60 + +a[2]);
+  } else return parseInt(time);
+}
+
 export function brewingTimesToSeconds(brewing) {
   /**
    * Convert brewing time from API hh:mm:ss format into seconds.
    */
   let newBrewing = { ...brewing };
   if (brewing.initial) {
-    const a = String(brewing.initial).split(":");
-    newBrewing.initial = (+a[0] * 3600 + +a[1] * 60 + +a[2]).toString();
+    newBrewing.initial = (parseHMSToSeconds(brewing.initial)).toString();
   }
   if (brewing.increments) {
-    const b = String(brewing.increments).split(":");
-    newBrewing.increments = (+b[0] * 3600 + +b[1] * 60 + +b[2]).toString();
+    newBrewing.increments = (parseHMSToSeconds(brewing.increments)).toString();
   }
   return newBrewing;
 }

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import { vendorModel } from '../../../services/Serializers';
+import { vendorModel } from "../../../services/Serializers";
 import { VendorsState } from "../../statecontainers/VendorsContext";
 import { Grid, Typography } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
@@ -25,20 +25,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Desktop tea creation form vendor autocomplete component.
+ *
+ * @param teaData {json} Input tea data state
+ * @param setTeaData {function} Set input tea data state
+ * @param renderInput {component} Input component
+ */
 export default function VendorAutocomplete({
   teaData,
   setTeaData,
   renderInput,
 }) {
-  /**
-   * Mobile tea creation subcategory input component. Shows a list and autocomplete from
-   * central subcategories state, with option to add extra.
-   * Updates category entry if different than ones in matching subcategory.
-   *
-   * @param teaData {json} Input tea data state
-   * @param setTeaData {function} Set input tea data state
-   * @param handleBackToLayout {function} Reroutes to input layout
-   */
   const classes = useStyles();
 
   const vendors = useContext(VendorsState);
@@ -71,7 +69,6 @@ export default function VendorAutocomplete({
       onChange={handleOnChange}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
-
         // Suggest the creation of a new value
         if (params.inputValue !== "") {
           filtered.push({
@@ -79,7 +76,6 @@ export default function VendorAutocomplete({
             label: `Add "${params.inputValue}"`,
           });
         }
-
         return filtered;
       }}
       selectOnFocus
@@ -89,15 +85,8 @@ export default function VendorAutocomplete({
       freeSolo
       options={vendors ? vendors : []}
       getOptionLabel={(option) => {
-        // Value selected with enter, right from the input
-        if (typeof option === "string") {
-          return option;
-        }
-        // Add "xxx" option created dynamically
-        if (option.inputValue) {
-          return option.inputValue;
-        }
-        // Regular option
+        if (typeof option === "string") return option;
+        if (option.inputValue) return option.inputValue;
         return option.name;
       }}
       renderInput={renderInput}
