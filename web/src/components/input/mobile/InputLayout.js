@@ -108,6 +108,7 @@ export default function InputLayout({
             key="subcategory"
             name="subcategory"
             value={
+              teaData.subcategory &&
               teaData.subcategory.name &&
               getSubcategoryName(teaData.subcategory)
             }
@@ -123,6 +124,7 @@ export default function InputLayout({
             key="origin"
             name="origin"
             value={
+              teaData.origin &&
               teaData.origin.country &&
               getOriginName(teaData.origin).replace("&#39;", "'")
             }
@@ -131,7 +133,7 @@ export default function InputLayout({
           <InputItem
             key="vendor"
             name="vendor"
-            value={teaData.vendor.name}
+            value={teaData.vendor && teaData.vendor.name}
             handleClick={handleClick}
           />
           <InputItem

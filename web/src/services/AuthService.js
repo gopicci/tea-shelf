@@ -70,7 +70,7 @@ export const fetchTimeout = async (
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: body,
+      body: body ? body : null,
     }),
   ]);
 };
