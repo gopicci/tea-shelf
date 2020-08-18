@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Button,
   Card,
   CardActionArea,
   Typography,
@@ -46,8 +45,8 @@ export default function DetailsCardNotes({ teaData, setRoute }) {
           </Typography>
 
           {!teaData.notes ? (
-            <Typography variant="caption" className={classes.center}>
-              <Button>Add notes</Button>
+            <Typography variant="button" className={classes.center}>
+              Add notes
             </Typography>
           ) : (
             <Box className={classes.notesBox}>

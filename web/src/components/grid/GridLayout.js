@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Grid, Typography, useMediaQuery } from "@material-ui/core";
+import { Box, Grid, Typography } from "@material-ui/core";
 import { ArrowDropUp, ArrowDropDown } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import TeaCard from "./TeaCard";
@@ -11,7 +11,6 @@ import { CategoriesState } from "../statecontainers/CategoriesContext";
 import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
 import { VendorsState } from "../statecontainers/VendorsContext";
 import { SearchState } from "../statecontainers/SearchContext";
-import { mainTheme as theme } from "../../style/MainTheme";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -83,8 +82,10 @@ const useStyles = makeStyles((theme) => ({
  * central filter state.
  *
  * @param setRoute {function} Set main route
+ * @param setDialog {function} Set dialog route state
+ * @param desktop {boolean} Desktop mode or mobile
  */
-export default function GridLayout({ setRoute }) {
+export default function GridLayout({ setRoute, setDialog, desktop }) {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
@@ -243,14 +244,11 @@ export default function GridLayout({ setRoute }) {
     reversed,
   ]);
 
-  const desktop = useMediaQuery(theme.breakpoints.up("sm"));
-
   return (
     <Box className={gridView ? classes.gridRoot : classes.listRoot}>
       <Box className={classes.sortByBox}>
         <Box
           className={classes.reverseButton}
-          button
           onClick={() => setReversed(!reversed)}
         >
           <Typography variant="caption" className={classes.sortByText}>
@@ -273,6 +271,8 @@ export default function GridLayout({ setRoute }) {
                 tea={tea}
                 gridView={gridView && desktop}
                 setRoute={setRoute}
+                setDialog={setDialog}
+                desktop={desktop}
               />
             </Grid>
           ))}

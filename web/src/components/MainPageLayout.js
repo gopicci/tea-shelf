@@ -10,6 +10,7 @@ import FilterAccordion from "./filters/FilterAccordion";
 import FilterBar from "./filters/FilterBar";
 import Create from "./Create";
 import { mainTheme as theme } from "../style/MainTheme";
+import Edit from "./Edit";
 
 const useStyles = makeStyles((theme) => ({
   page: {
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 export default function MainPageLayout({ setRoute }) {
   const classes = useStyles();
 
-  const [desktopCreate, setDesktopCreate] = useState(false);
+  const [dialog, setDialog] = useState({ route: "", data: null });
 
   function handleMobileCreate() {
     setRoute({ route: "CREATE" });
@@ -54,18 +55,30 @@ export default function MainPageLayout({ setRoute }) {
       <SearchAppBar />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout setDesktopCreate={setDesktopCreate} />
+        <DrawerLayout setDialog={setDialog} />
         <Box className={classes.mainBox}>
           {desktop ? <FilterAccordion /> : <FilterBar setRoute={setRoute} />}
-          <GridLayout setRoute={setRoute} />
+          <GridLayout
+            setRoute={setRoute}
+            setDialog={setDialog}
+            desktop={desktop}
+          />
         </Box>
         {desktop ? (
           <Dialog
             fullWidth={true}
-            open={desktopCreate}
-            onClose={() => setDesktopCreate(false)}
+            open={dialog.route !== ""}
+            onClose={() => setDialog({ route: "", data: null })}
           >
-            <Create desktop={true} setDesktopCreate={setDesktopCreate} />
+            {dialog.route === "CREATE" ? (
+              <Create desktop={true} setDialog={setDialog} />
+            ) : (
+              <Edit
+                setRoute={setRoute}
+                initialState={dialog.data}
+                details={true}
+              />
+            )}
           </Dialog>
         ) : (
           <Fab

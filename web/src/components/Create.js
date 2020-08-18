@@ -20,9 +20,9 @@ import { teaModel, teaSerializer } from "../services/Serializers";
  *
  * @param setRoute {function} Set main route
  * @param desktop {boolean} Desktop mode or mobile
- * @param setDesktopCreate {function} Desktop creation state
+ * @param setDialog {function} Set dialog route state
  */
-export default function Create({ setRoute, desktop, setDesktopCreate }) {
+export default function Create({ setRoute, desktop, setDialog }) {
   const [teaData, setTeaData] = useState(teaModel);
   const [imageData, setImageData] = useState(null);
 
@@ -124,7 +124,7 @@ export default function Create({ setRoute, desktop, setDesktopCreate }) {
   function handleDesktopClose() {
     setTeaData(teaModel);
     setStep(1);
-    setDesktopCreate(false);
+    setDialog("");
   }
 
   const props = {

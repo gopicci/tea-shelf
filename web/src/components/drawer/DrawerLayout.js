@@ -37,9 +37,9 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Desktop left side drawer component.
  *
- * @param setDesktopCreate {function} Set desktop create dialog state
+ * @param setDialog {function} Set dialog route state
  */
-export default function DrawerLayout({ setDesktopCreate }) {
+export default function DrawerLayout({ setDialog }) {
   const classes = useStyles();
 
   return (
@@ -56,7 +56,7 @@ export default function DrawerLayout({ setDesktopCreate }) {
           <ListItem
             button
             key="add"
-            onClick={() => setDesktopCreate(true)}
+            onClick={() => setDialog({ route: "CREATE", data: null })}
             aria-label="add tea"
           >
             <ListItemIcon>
