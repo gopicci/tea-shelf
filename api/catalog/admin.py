@@ -172,22 +172,6 @@ class SubcategoryNameInline(admin.TabularInline):
     model = SubcategoryName
     extra = 0
 
-
-class SubcategoryForm(ModelForm):
-    """
-    Custom WesternBrewing form returns instance on save if existing.
-    """
-
-    def clean(self):
-        pass
-
-    def save_m2m(self):
-        return self.save()
-
-    def save(self, commit=True):
-        return custom_get_or_create(Subcategory, self.cleaned_data)
-
-
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     """
@@ -217,7 +201,6 @@ class SubcategoryAdmin(admin.ModelAdmin):
     )
     inlines = [SubcategoryNameInline]
     actions = [make_public]
-    form = SubcategoryForm
 
     def get_changeform_initial_data(self, request):
         """
