@@ -172,6 +172,7 @@ class SubcategoryNameInline(admin.TabularInline):
     model = SubcategoryName
     extra = 0
 
+
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     """
