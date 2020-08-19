@@ -3,7 +3,8 @@ import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import InputRouter from "./input/mobile/InputRouter";
-import DetailsLayout from "./details/mobile/DetailsLayout";
+import DetailsLayoutMobile from "./details/mobile/DetailsLayout";
+import DetailsLayoutDesktop from "./details/desktop/DetailsLayout";
 import { APIRequest } from "../services/AuthService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
@@ -36,6 +37,8 @@ export default function Edit({
   initialState,
   notes = false,
   details = false,
+  desktop = false,
+  setDialog,
 }) {
   const classes = useStyles();
 
@@ -161,7 +164,11 @@ export default function Edit({
   return (
     <Box className={classes.root}>
       {details ? (
-        <DetailsLayout {...props} setRoute={setRoute} />
+        desktop ? (
+          <DetailsLayoutDesktop {...props} setDialog={setDialog} />
+        ) : (
+          <DetailsLayoutMobile {...props} setRoute={setRoute} />
+        )
       ) : (
         <InputRouter {...props} />
       )}

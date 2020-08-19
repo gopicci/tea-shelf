@@ -124,7 +124,7 @@ export default function Create({ setRoute, desktop, setDialog }) {
   function handleDesktopClose() {
     setTeaData(teaModel);
     setStep(1);
-    setDialog("");
+    setDialog({ route: "", data: null });
   }
 
   const props = {

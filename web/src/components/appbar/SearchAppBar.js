@@ -170,6 +170,20 @@ export default function SearchAppBar() {
       console.error(e);
       error = e;
     }
+    try {
+      // Download categories from API
+      const res = await APIRequest("/category/", "GET");
+      const body = await res.json();
+
+      // Update central categories state
+      subcategoriesDispatch({ type: "SET", data: body });
+
+      // Update categories cache
+      await localforage.setItem("categories", body);
+    } catch (e) {
+      console.error(e);
+      error = e;
+    }
 
     try {
       // Download subcategories from API

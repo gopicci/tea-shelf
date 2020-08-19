@@ -138,7 +138,9 @@ export default function GridLayout({ setRoute, setDialog, desktop }) {
             return 0;
           });
         default:
-          console.log("def");
+          return [...teas].sort(
+            (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
+          );
       }
   }
 
@@ -158,7 +160,6 @@ export default function GridLayout({ setRoute, setDialog, desktop }) {
     if (filterState.active > 0)
       // At least 1 filter entry is checked
       filtered = sorted.filter((tea) => {
-        console.log(Date.parse(tea.created_on));
         const category = categories.find(
           (category) => category.id === tea.category
         );

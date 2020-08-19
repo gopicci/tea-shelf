@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Dialog, Fab, Toolbar } from "@material-ui/core";
+import { Box, Fab, Toolbar } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
@@ -8,9 +8,9 @@ import DrawerLayout from "./drawer/DrawerLayout";
 import GridLayout from "./grid/GridLayout";
 import FilterAccordion from "./filters/FilterAccordion";
 import FilterBar from "./filters/FilterBar";
-import Create from "./Create";
+import CreateDialog from "./dialog/CreateDialog";
+import DetailsDialog from "./dialog/DetailsDialog";
 import { mainTheme as theme } from "../style/MainTheme";
-import Edit from "./Edit";
 
 const useStyles = makeStyles((theme) => ({
   page: {
@@ -64,23 +64,15 @@ export default function MainPageLayout({ setRoute }) {
             desktop={desktop}
           />
         </Box>
-        {desktop ? (
-          <Dialog
-            fullWidth={true}
-            open={dialog.route !== ""}
-            onClose={() => setDialog({ route: "", data: null })}
-          >
-            {dialog.route === "CREATE" ? (
-              <Create desktop={true} setDialog={setDialog} />
-            ) : (
-              <Edit
-                setRoute={setRoute}
-                initialState={dialog.data}
-                details={true}
-              />
-            )}
-          </Dialog>
-        ) : (
+        {desktop &&
+          (dialog.route === "CREATE" ? (
+            <CreateDialog setDialog={setDialog} />
+          ) : (
+            dialog.route === "TEA_DETAILS" && (
+              <DetailsDialog data={dialog.data} setDialog={setDialog} />
+            )
+          ))}
+        {!desktop && (
           <Fab
             aria-label="add tea"
             className={classes.addButton}
@@ -88,6 +80,7 @@ export default function MainPageLayout({ setRoute }) {
           >
             <CameraAlt />
           </Fab>
+        )}
         )}
       </Box>
     </>

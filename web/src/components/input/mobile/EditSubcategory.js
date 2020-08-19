@@ -78,6 +78,7 @@ export default function EditSubcategory({
           ...data,
           gongfu_brewing: brewingTimesToSeconds(subcategory.gongfu_brewing),
         };
+      console.log(data)
       setTeaData(data);
     } else setTeaData({ ...teaData, subcategory: { name: name } });
     handleBackToLayout();

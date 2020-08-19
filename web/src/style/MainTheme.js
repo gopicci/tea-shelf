@@ -16,11 +16,14 @@ export const mainTheme = createMuiTheme({
   },
   typography: {
     h1: {
+      fontSize: 32,
       [breakpoints.down("sm")]: {
         fontSize: 24,
       },
     },
     h2: {
+      fontSize: 20,
+      color: "#666",
       [breakpoints.down("sm")]: {
         fontSize: 18,
       },
