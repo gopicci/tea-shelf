@@ -180,6 +180,8 @@ class Category(models.Model):
         ("OTHER", "OTHER"),
     )
     name = models.CharField(max_length=20, choices=CATEGORIES)
+    description = models.TextField(blank=True)
+    description_source = models.CharField(max_length=50, blank=True)
     gongfu_brewing = models.ForeignKey(
         Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -203,6 +205,8 @@ class Subcategory(models.Model):
     translated_name = models.CharField(max_length=50, blank=True)
     origin = models.ForeignKey(Origin, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    description = models.TextField(blank=True)
+    description_source = models.CharField(max_length=50, blank=True)
 
     gongfu_brewing = models.ForeignKey(
         Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
