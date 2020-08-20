@@ -7,15 +7,6 @@ const useStyles = makeStyles((theme) => ({
   name: {
     margin: theme.spacing(1),
   },
-  countryFlag: {
-    paddingLeft: theme.spacing(0.5),
-    margin: "auto",
-  },
-  mapBox: {
-    flexGrow: 1,
-    margin: theme.spacing(2),
-    marginTop: 0,
-  },
 }));
 
 /**

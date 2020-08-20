@@ -6,6 +6,7 @@ import DetailsCardMain from "./DetailsCardMain";
 import DetailsCardNotes from "./DetailsCardNotes";
 import DetailsCardOrigin from "./DetailsCardOrigin";
 import DetailsCardVendor from './DetailsCardVendor';
+import DetailsCardDescription from './DetailsCardDescription';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,6 +48,7 @@ export default function TeaDetails({ setRouter, teaData, handleEdit }) {
           <DetailsCardNotes setRouter={setRouter} teaData={teaData} />
           {teaData.origin && <DetailsCardOrigin teaData={teaData} />}
           {teaData.vendor && <DetailsCardVendor teaData={teaData} />}
+          <DetailsCardDescription teaData={teaData} />
         </Box>
       )}
     </Box>

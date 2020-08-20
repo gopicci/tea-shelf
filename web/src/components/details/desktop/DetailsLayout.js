@@ -224,15 +224,15 @@ export default function DetailsLayout({ teaData, handleEdit, setRouter }) {
 
   let descriptionName;
   let description;
-  let description_source;
+  let descriptionSource;
   if (teaData.subcategory && teaData.subcategory.description) {
     descriptionName = teaData.subcategory.name;
     description = teaData.subcategory.description;
-    description_source = teaData.subcategory.description_source;
+    descriptionSource = teaData.subcategory.descriptionSource;
   } else {
     descriptionName = categoryName + " Tea";
     description = category.description;
-    description_source = category.description_source;
+    descriptionSource = category.descriptionSource;
   }
 
   function handleNotesChange(event) {
@@ -461,12 +461,12 @@ export default function DetailsLayout({ teaData, handleEdit, setRouter }) {
                     {s}
                   </Typography>
                 ))}
-                {description_source && (
+                {descriptionSource && (
                   <Typography className={classes.sourceLink}>
                     <Link
                       href="#"
                       onClick={() =>
-                        window.open("https://" + description_source, "_blank")
+                        window.open("https://" + descriptionSource, "_blank")
                       }
                       variant="body2"
                     >
