@@ -32,9 +32,9 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Mobile sort and filter page component.
  *
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  */
-export default function SortFilter({ setRoute }) {
+export default function SortFilter({ setRouter }) {
   const classes = useStyles();
 
   const state = useContext(FilterState);
@@ -43,7 +43,7 @@ export default function SortFilter({ setRoute }) {
   console.log(state);
 
   function handleClose() {
-    setRoute({ route: "MAIN" });
+    setRouter({ route: "MAIN" });
   }
 
   function handleReset() {

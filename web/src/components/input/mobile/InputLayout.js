@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
  * @param teaData {json} Input tea data state
  * @param handleEdit {function} Handle tea edit posting process
  * @param handleCreate {function} Handle tea create posting process
- * @param handleMobileClose {function} Cancel process and reroute to main route
+ * @param handleClose {function} Cancel process and reroute to main route
  * @param handlePrevious {function} Go back to previous stage (captureImage)
  * @param setEditRoute {function} Reroutes to input item
  */
@@ -39,7 +39,7 @@ export default function InputLayout({
   teaData,
   handleEdit = null,
   handleCreate = null,
-  handleMobileClose = null,
+  handleClose = null,
   handlePrevious,
   setEditRoute,
 }) {
@@ -51,7 +51,7 @@ export default function InputLayout({
   function handleSave() {
     if (handleCreate) {
       handleCreate({ ...teaData });
-      handleMobileClose();
+      handleClose();
     } else {
       handleEdit();
       handlePrevious();

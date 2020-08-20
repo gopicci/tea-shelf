@@ -68,11 +68,11 @@ const useStyles = makeStyles((theme) => ({
  * Mobile tea details page main card. Contains image, title, rating,
  * brewing instructions, weight, price.
  *
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  * @param teaData {json} Track the input state
  * @param handleEdit {function} Handle state edits
  */
-export default function DetailsCardMain({ teaData, setRoute, handleEdit }) {
+export default function DetailsCardMain({ teaData, setRouter, handleEdit }) {
   const classes = useStyles();
   const detailsClasses = detailsMobileStyles();
 
@@ -83,7 +83,7 @@ export default function DetailsCardMain({ teaData, setRoute, handleEdit }) {
   }
 
   function handleEditClick() {
-    setRoute({ route: "EDIT", data: teaData });
+    setRouter({ route: "EDIT", data: teaData });
   }
 
   function handleSwitch() {

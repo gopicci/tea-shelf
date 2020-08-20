@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Fab, Toolbar } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
 import SearchAppBar from "./appbar/SearchAppBar";
@@ -8,9 +7,7 @@ import DrawerLayout from "./drawer/DrawerLayout";
 import GridLayout from "./grid/GridLayout";
 import FilterAccordion from "./filters/FilterAccordion";
 import FilterBar from "./filters/FilterBar";
-import CreateDialog from "./dialog/CreateDialog";
-import DetailsDialog from "./dialog/DetailsDialog";
-import { mainTheme as theme } from "../style/MainTheme";
+import DialogLayout from "./dialog/DialogLayout";
 
 const useStyles = makeStyles((theme) => ({
   page: {
@@ -37,46 +34,36 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Defines layout for main landing page.
  *
- * @param setRoute {function} Set main route
+ * @param props {[]} Base app props for router management and mobile state
  */
-export default function MainPageLayout({ setRoute }) {
+export default function MainPageLayout(props) {
   const classes = useStyles();
 
-  const [dialog, setDialog] = useState({ route: "", data: null });
+  const { router, setRouter, isMobile } = props;
 
-  function handleMobileCreate() {
-    setRoute({ route: "CREATE" });
+  function handleCreate() {
+    setRouter({ route: "CREATE" });
   }
-
-  const desktop = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
     <>
       <SearchAppBar />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout setDialog={setDialog} />
+        <DrawerLayout {...props} />
         <Box className={classes.mainBox}>
-          {desktop ? <FilterAccordion /> : <FilterBar setRoute={setRoute} />}
-          <GridLayout
-            setRoute={setRoute}
-            setDialog={setDialog}
-            desktop={desktop}
-          />
+          {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
+          <GridLayout {...props} />
         </Box>
-        {desktop &&
-          (dialog.route === "CREATE" ? (
-            <CreateDialog setDialog={setDialog} />
-          ) : (
-            dialog.route === "TEA_DETAILS" && (
-              <DetailsDialog data={dialog.data} setDialog={setDialog} />
-            )
-          ))}
-        {!desktop && (
+        {!isMobile &&
+          ["CREATE", "TEA_DETAILS", "EDIT"].includes(router.route) && (
+            <DialogLayout {...props} />
+          )}
+        {isMobile && (
           <Fab
             aria-label="add tea"
             className={classes.addButton}
-            onClick={handleMobileCreate}
+            onClick={handleCreate}
           >
             <CameraAlt />
           </Fab>

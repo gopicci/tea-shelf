@@ -81,11 +81,11 @@ const useStyles = makeStyles((theme) => ({
  * Grid component containing tea cards. Filters tea cards based on
  * central filter state.
  *
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  * @param setDialog {function} Set dialog route state
- * @param desktop {boolean} Desktop mode or mobile
+ * @param isMobile {boolean} Mobile mode or desktop
  */
-export default function GridLayout({ setRoute, setDialog, desktop }) {
+export default function GridLayout({ setRouter, setDialog, isMobile }) {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
@@ -264,16 +264,16 @@ export default function GridLayout({ setRoute, setDialog, desktop }) {
             <Grid
               item
               className={
-                gridView && desktop ? classes.gridItem : classes.listItem
+                gridView && !isMobile ? classes.gridItem : classes.listItem
               }
               key={i}
             >
               <TeaCard
                 tea={tea}
-                gridView={gridView && desktop}
-                setRoute={setRoute}
+                gridView={gridView && !isMobile}
+                setRouter={setRouter}
                 setDialog={setDialog}
-                desktop={desktop}
+                isMobile={isMobile}
               />
             </Grid>
           ))}

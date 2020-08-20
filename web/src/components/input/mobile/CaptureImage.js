@@ -52,7 +52,7 @@ export default function CaptureImage({
   setTeaData,
   imageData,
   setImageData,
-  handleMobileClose,
+  handleClose,
   handleNext,
 }) {
   const classes = useStyles();
@@ -121,7 +121,7 @@ export default function CaptureImage({
       <Box className={classes.controlsBox}>
         <IconButton
           className={classes.control}
-          onClick={handleMobileClose}
+          onClick={handleClose}
           color="inherit"
           aria-label="cancel"
         >

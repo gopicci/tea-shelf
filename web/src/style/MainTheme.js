@@ -28,6 +28,19 @@ export const mainTheme = createMuiTheme({
         fontSize: 18,
       },
     },
+    h3: {
+      fontSize: 20,
+      [breakpoints.down("sm")]: {
+        fontSize: 18,
+      },
+    },
+    h4: {
+      fontSize: 16,
+      color: "#666",
+      [breakpoints.down("sm")]: {
+        fontSize: 14,
+      },
+    },
     h5: {
       fontSize: 17,
       [breakpoints.down("sm")]: {

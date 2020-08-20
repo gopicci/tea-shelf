@@ -38,7 +38,7 @@ import { useStyles } from "../../../style/DesktopFormStyles";
  * @param setTeaData {function} Set input tea data state
  * @param handleEdit {function} Handle edit save
  * @param handleCreate {function} Handle tea posting process
- * @param handleDesktopClose {function} Cancel process and close dialog
+ * @param handleClose {function}
  * @param handlePrevious {function} Go back to previous stage (LoadImage)
  */
 export default function InputForm({
@@ -47,7 +47,7 @@ export default function InputForm({
   setTeaData,
   handleEdit = null,
   handleCreate = null,
-  handleDesktopClose = null,
+  handleClose = null,
   handlePrevious,
 }) {
   const classes = useStyles();
@@ -84,27 +84,31 @@ export default function InputForm({
   }
 
   function handleSave() {
+    let data = { ...teaData };
+
+    // Convert weight to grams
+    let grams = parseFloat(data.weight_left);
+    if (weightMeasure === "oz") grams = grams * 28.35;
+    if (!isNaN(grams))
+      data = {
+        ...data,
+        weight_left: cropToNoZeroes(grams, 1),
+      };
+
+    // Convert brewing temperature to celsius
+    data = tempToCelsius(data, "gongfu_brewing");
+    data = tempToCelsius(data, "western_brewing");
+
+    // Convert brewing times from hh:mm:ss format to seconds
+    data["gongfu_brewing"] = brewingTimesToSeconds(data["gongfu_brewing"]);
+    data["western_brewing"] = brewingTimesToSeconds(data["western_brewing"]);
+
     if (handleCreate) {
-      let data = { ...teaData };
-
-      // Convert weight to grams
-      let grams = parseFloat(data.weight_left);
-      if (weightMeasure === "oz") grams = grams * 28.35;
-      if (!isNaN(grams))
-        data = {
-          ...data,
-          weight_left: cropToNoZeroes(grams, 1),
-        };
-
-      // Convert brewing temperature to celsius
-      data = tempToCelsius(data, "gongfu_brewing");
-      data = tempToCelsius(data, "western_brewing");
-
       handleCreate(data);
-      handleDesktopClose();
-      //} else {
-      // handleEdit();
-      // handlePrevious();
+      handleClose();
+    } else {
+      handleEdit();
+      handlePrevious();
     }
   }
 
@@ -170,12 +174,8 @@ export default function InputForm({
                           ...teaData,
                           category: entry[1].id,
                           subcategory: subcategoryModel,
-                          gongfu_brewing: brewingTimesToSeconds(
-                            entry[1].gongfu_brewing
-                          ),
-                          western_brewing: brewingTimesToSeconds(
-                            entry[1].western_brewing
-                          ),
+                          gongfu_brewing: entry[1].gongfu_brewing,
+                          western_brewing: entry[1].western_brewing,
                         });
                   }}
                   onBlur={handleBlur}
@@ -385,8 +385,8 @@ export default function InputForm({
               <Button onClick={handlePrevious} aria-label="back">
                 Back
               </Button>
-              <Button onClick={submitForm} aria-label="create">
-                Create
+              <Button onClick={submitForm} aria-label="save">
+                Save
               </Button>
             </Box>
           </Form>

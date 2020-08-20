@@ -27,24 +27,24 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Main mobile tea details page layout.
  *
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  * @param teaData {json} Track the input state
  * @param handleEdit {function} Handle state edits
  */
-export default function TeaDetails({ setRoute, teaData, handleEdit }) {
+export default function TeaDetails({ setRouter, teaData, handleEdit }) {
   const classes = useStyles();
 
   return (
     <Box className={classes.root}>
-      <DetailsAppBar setRoute={setRoute} teaData={teaData} />
+      <DetailsAppBar setRouter={setRouter} teaData={teaData} />
       {teaData && (
         <Box className={classes.page}>
           <DetailsCardMain
-            setRoute={setRoute}
+            setRouter={setRouter}
             teaData={teaData}
             handleEdit={handleEdit}
           />
-          <DetailsCardNotes setRoute={setRoute} teaData={teaData} />
+          <DetailsCardNotes setRouter={setRouter} teaData={teaData} />
           {teaData.origin && <DetailsCardOrigin teaData={teaData} />}
           {teaData.vendor && <DetailsCardVendor teaData={teaData} />}
         </Box>

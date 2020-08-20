@@ -1,10 +1,9 @@
 import React, { useContext, useState } from "react";
-import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import InputRouter from "./input/mobile/InputRouter";
 import DetailsLayoutMobile from "./details/mobile/DetailsLayout";
-import DetailsLayoutDesktop from "./details/desktop/DetailsLayout";
+import DetailsLayoutDesktop from './details/desktop/DetailsLayout';
+import InputForm from './input/desktop/InputForm';
 import { APIRequest } from "../services/AuthService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
@@ -12,37 +11,16 @@ import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
 import { teaSerializer } from "../services/Serializers";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100vh",
-    display: "flex",
-    margin: 0,
-    flexDirection: "column",
-  },
-}));
-
 /**
- * Mobile tea entry edit process.
+ * Handles tea editing process and routes to component that
+ * have editing capabilities.
  *
- * teaData tracks the input state.
- *
- * @param initialState {json} Initial input tea data
- * @param setRoute {function} Set main route
- * @param notes {boolean} Editing notes
- * @param details {boolean} View tea details
+ * @param router {json} Route info in {route: string, data: json} format
+ * @param setRouter {function} Set main route
+ * @param isMobile {boolean} Mobile mode or desktop
  */
-export default function Edit({
-  setRoute,
-  initialState,
-  notes = false,
-  details = false,
-  desktop = false,
-  setDialog,
-}) {
-  const classes = useStyles();
-
-  const [teaData, setTeaData] = useState(initialState);
+export default function Edit({ router, setRouter, isMobile = true }) {
+  const [teaData, setTeaData] = useState(router.data);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
@@ -114,9 +92,9 @@ export default function Edit({
       console.error(e);
       if (e.message === "Bad Request") {
         snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
-        // Revert context to initialState
-        teaDispatch({ type: "EDIT", data: initialState });
-        setTeaData(initialState);
+        // Revert context to initial state
+        teaDispatch({ type: "EDIT", data: router.data });
+        setTeaData(router.data);
       } else {
         console.log(e.message, "cache locally");
 
@@ -124,7 +102,7 @@ export default function Edit({
         if (!offlineTeas) await localforage.setItem("offline-teas", []);
 
         if (image) reqData["image"] = image;
-        if (!reqData.id) reqData["id"] = initialState["id"];
+        if (!reqData.id) reqData["id"] = router.data["id"];
 
         // Update context with request
         teaDispatch({ type: "EDIT", data: reqData });
@@ -132,7 +110,7 @@ export default function Edit({
 
         // If tea already present in cache remove before adding again
         for (const tea of offlineTeas)
-          if (tea.id === initialState.id)
+          if (tea.id === router.data.id)
             offlineTeas.splice(offlineTeas.indexOf(tea), 1);
 
         const cache = await localforage.setItem("offline-teas", [
@@ -150,28 +128,30 @@ export default function Edit({
   }
 
   function handlePrevious() {
-    setRoute({ route: "TEA_DETAILS", data: teaData });
+    setRouter({ route: "TEA_DETAILS", data: teaData });
   }
 
   const props = {
+    router,
+    setRouter,
     teaData,
     setTeaData,
     handlePrevious,
     handleEdit,
-    notes,
   };
 
-  return (
-    <Box className={classes.root}>
-      {details ? (
-        desktop ? (
-          <DetailsLayoutDesktop {...props} setDialog={setDialog} />
-        ) : (
-          <DetailsLayoutMobile {...props} setRoute={setRoute} />
-        )
-      ) : (
-        <InputRouter {...props} />
-      )}
-    </Box>
-  );
+  function renderSwitch() {
+    switch (router.route) {
+      case "TEA_DETAILS":
+        if (isMobile) return <DetailsLayoutMobile {...props} />;
+        else return <DetailsLayoutDesktop {...props} />;
+      case "EDIT":
+        if (isMobile) return <InputRouter {...props} />;
+        else return <InputForm {...props} />;
+      default:
+        return router.route;
+    }
+  }
+
+  return renderSwitch();
 }

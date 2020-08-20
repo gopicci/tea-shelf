@@ -11,7 +11,7 @@ describe("Create navigation", () => {
     cy.get('input[name="name"]').type("test");
     cy.get('div[aria-label="category"]').click();
     cy.get("li").contains("Oolong").click();
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.wait("@tea");
     cy.get("div").contains("Tea successfully created").should("exist");
   });
@@ -35,7 +35,7 @@ describe("Create navigation", () => {
     cy.get('div[aria-label="weight_measure"]').click();
     cy.get("li").contains("oz").click();
     cy.get('input[name="price"]').type("100");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.wait("@tea");
     cy.get("div").contains("Tea successfully created").should("exist");
 

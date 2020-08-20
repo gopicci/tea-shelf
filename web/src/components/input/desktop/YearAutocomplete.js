@@ -19,7 +19,6 @@ export default function YearAutocomplete({
 }) {
 
   function handleOnChange(event, newValue) {
-    console.log(newValue)
     if (event) {
       event.target.name = "year";
       updateFormValue(event);
@@ -39,7 +38,7 @@ export default function YearAutocomplete({
       handleHomeEndKeys
       options={options}
       freeSolo
-      value={teaData.year}
+      value={teaData.year && String(teaData.year)}
       renderInput={renderInput}
     />
   );

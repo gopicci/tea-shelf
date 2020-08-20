@@ -24,10 +24,10 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Mobile tea details page app bar.
  *
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  * @param teaData {json} Track the input state
  */
-export default function DetailsAppbar({ setRoute, teaData }) {
+export default function DetailsAppbar({ setRouter, teaData }) {
   const classes = useStyles();
   const detailsClasses = detailsMobileStyles();
 
@@ -36,7 +36,7 @@ export default function DetailsAppbar({ setRoute, teaData }) {
   const teaDispatch = useContext(TeaDispatch);
 
   function handleBack() {
-    setRoute({ route: "MAIN" });
+    setRouter({ route: "MAIN" });
   }
 
   function handleMenuClick(event) {
@@ -60,7 +60,7 @@ export default function DetailsAppbar({ setRoute, teaData }) {
           if (tea.id !== teaData.id) newOfflineTeas.push(tea);
         await localforage.setItem("offline-teas", newOfflineTeas);
       }
-      setRoute({ route: "MAIN" });
+      setRouter({ route: "MAIN" });
       snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
       teaDispatch({ type: "DELETE", data: teaData });
     } catch (e) {

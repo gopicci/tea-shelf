@@ -2,9 +2,12 @@ import React, { useContext, useState } from "react";
 import {
   Box,
   Button,
+  DialogActions,
+  DialogContent,
   FormControlLabel,
   FormGroup,
   Link,
+  Paper,
   Switch,
   TextField,
   Typography,
@@ -30,23 +33,25 @@ import {
 import { geography } from "../../../services/Geography";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  content: {
     display: "flex",
-    width: "100%",
-    flexGrow: 1,
-    margin: 0,
-    flexDirection: "column",
-  },
-  main: {
+    height: "100%",
     flexGrow: 1,
     flexDirection: "column",
-    justifyContent: "space-between",
     overflowY: "scroll",
-    margin: theme.spacing(2),
+    padding: theme.spacing(4),
+    margin: 0,
+  },
+  actions: {
+    margin: 0,
+    display: "flex",
+    flexGrow: 1,
+    justifyContent: "space-between",
   },
   row: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "center",
   },
   rowCenter: {
     display: "flex",
@@ -56,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   divider: {
-    width: `calc(100% - ${theme.spacing(4)}px)`,
+    width: `calc(100% - ${theme.spacing(2)}px)`,
     height: theme.spacing(1),
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(4),
@@ -70,14 +75,23 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: theme.spacing(36),
     objectFit: "cover",
     borderRadius: theme.spacing(0.75),
+    marginTop: theme.spacing(2),
   },
-  titleBox: {
+  topBox: {
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
     flexGrow: 1,
-    marginLeft: theme.spacing(2),
-    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginLeft: theme.spacing(4),
+    paddingBottom: theme.spacing(2),
+  },
+  column: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  vendor: {
+    marginBottom: theme.spacing(2),
   },
   title: {
     textTransform: "capitalize",
@@ -94,7 +108,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    margin: theme.spacing(2),
   },
   ratingBox: {
     display: "flex",
@@ -131,14 +144,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginBottom: theme.spacing(2),
   },
-  editNotesButton: {
-    marginTop: theme.spacing(2),
+  notesPaper: {
+    width: "66%",
+    marginTop: theme.spacing(12),
+    marginBottom: theme.spacing(10),
+    padding: theme.spacing(2),
+    boxShadow: "5px 5px 20px #ccc",
   },
-  originBox: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "50%",
+  notesText: {
+    paddingTop: theme.spacing(2),
+  },
+  doubleMargin: {
+    margin: theme.spacing(2),
   },
   countryFlag: {
     marginLeft: theme.spacing(2),
@@ -146,9 +163,28 @@ const useStyles = makeStyles((theme) => ({
   map: {
     marginTop: theme.spacing(2),
   },
+  aboutBox: {
+    display: "flex",
+    flexShrink: 0,
+    paddingTop: theme.spacing(2),
+    paddingRight: theme.spacing(4),
+  },
+  halfCenterBox: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "50%",
+  },
+  descriptionRow: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: theme.spacing(12),
+  },
+  sourceLink: {
+    textAlign: "right",
+  },
   bottom: {
-    position: "fixed",
-    bottom: theme.spacing(2),
     background: theme.palette.background.paper,
     display: "flex",
     flexDirection: "row",
@@ -164,7 +200,7 @@ const useStyles = makeStyles((theme) => ({
  * @param teaData {json} Track the input state
  * @param handleEdit {function} Handle state edits
  */
-export default function TeaDetails({ teaData, handleEdit, setDialog }) {
+export default function DetailsLayout({ teaData, handleEdit, setRouter }) {
   const classes = useStyles();
   const categories = useContext(CategoriesState);
 
@@ -172,19 +208,29 @@ export default function TeaDetails({ teaData, handleEdit, setDialog }) {
   const [notesEditing, setNotesEditing] = useState(false);
   const [notes, setNotes] = useState(teaData.notes ? teaData.notes : "");
 
+  const category = Object.entries(categories).find(
+    (entry) => entry[1].id === teaData.category
+  )[1];
+
+  const categoryName =
+    category.name.charAt(0) + category.name.slice(1).toLowerCase();
+
   let coordinates;
-  if (teaData.origin.longitude && teaData.origin.latitude)
+  if (teaData.origin && teaData.origin.longitude && teaData.origin.latitude)
     coordinates = [teaData.origin.longitude, teaData.origin.latitude];
 
+  let typeName = getSubcategoryName(teaData.subcategory);
+  if (!typeName) typeName = categoryName;
+
+  let descriptionName;
   let description;
   let description_source;
   if (teaData.subcategory && teaData.subcategory.description) {
+    descriptionName = teaData.subcategory.name;
     description = teaData.subcategory.description;
     description_source = teaData.subcategory.description_source;
   } else {
-    const category = Object.entries(categories).find(
-      (entry) => entry[1].id === teaData.category
-    )[1];
+    descriptionName = categoryName + " Tea";
     description = category.description;
     description_source = category.description_source;
   }
@@ -206,23 +252,53 @@ export default function TeaDetails({ teaData, handleEdit, setDialog }) {
     setGongfu(!gongfu);
   }
 
+  function handleClose() {
+    setRouter({ route: "MAIN" });
+  }
+
+  function handleEditClick() {
+    setRouter({ route: "EDIT", data: teaData });
+  }
+
   return (
-    <Box className={classes.root}>
-      {teaData && (
-        <Box className={classes.main}>
+    teaData && (
+      <>
+        <DialogContent className={classes.content}>
           <Box className={classes.row}>
             <img
               src={teaData.image ? teaData.image : emptyImage}
               alt=""
               className={classes.teaImage}
             />
-            <Box className={classes.titleBox}>
-              <Typography variant="h1" className={classes.title}>
-                {teaData.name}
-              </Typography>
-              <Typography variant="h2" className={classes.subtitle}>
-                {teaData.year} {getSubcategoryName(teaData.subcategory)}
-              </Typography>
+            <Box className={classes.topBox}>
+              <Box className={classes.column}>
+                {teaData.vendor &&
+                  (teaData.vendor.website ? (
+                    <Link
+                      href="#"
+                      onClick={() =>
+                        window.open(
+                          "https://" + teaData.vendor.website,
+                          "_blank"
+                        )
+                      }
+                      variant="body2"
+                      className={classes.vendor}
+                    >
+                      {teaData.vendor.name}
+                    </Link>
+                  ) : (
+                    <Typography variant="body2" className={classes.vendor}>
+                      {teaData.vendor.name}
+                    </Typography>
+                  ))}
+                <Typography variant="h1" className={classes.title}>
+                  {teaData.name}
+                </Typography>
+                <Typography variant="h2" className={classes.subtitle}>
+                  {teaData.year} {typeName}
+                </Typography>
+              </Box>
               <Box className={classes.rowSpace}>
                 <Box className={classes.ratingBox}>
                   {teaData.rating > 0 && (
@@ -270,76 +346,56 @@ export default function TeaDetails({ teaData, handleEdit, setDialog }) {
               </Box>
             </Box>
           </Box>
-          <Box className={classes.divider} />
-          {notesEditing ? (
-            <TextField
-              onChange={handleNotesChange}
-              id="notes"
-              label="Notes"
-              fullWidth
-              multiline
-              rows={4}
-              defaultValue={notes}
-              variant="outlined"
-            />
-          ) : (
-            notes && (
-              <>
-                <Typography variant="body2" className={classes.smallTitle}>
-                  Notes:
-                </Typography>
-                {notes.split("\n").map((s, key) => (
-                  <Typography
-                    variant="body2"
-                    className={classes.rowCenter}
-                    key={key}
-                  >
-                    {s}
-                  </Typography>
-                ))}{" "}
-              </>
-            )
-          )}
-          <Box className={classes.rowCenter}>
-            {notesEditing ? (
-              <Button
-                className={classes.editNotesButton}
-                onClick={handleNotesSave}
-              >
-                Save
-              </Button>
-            ) : (
-              <Button
-                className={classes.editNotesButton}
-                onClick={() => setNotesEditing(true)}
-              >
-                {notes ? "Edit" : "Add"} notes
-              </Button>
-            )}
-          </Box>
-          <Box className={classes.divider} />
           <Box className={classes.row}>
-            <Box className={classes.originBox}>
-              <Typography variant="body2" className={classes.smallTitle}>
-                Origin:
-              </Typography>
-              <Box className={classes.rowCenter}>
-                <Typography variant="body2">
-                  {getOriginName(teaData.origin)}
-                </Typography>
-                <ReactCountryFlag
-                  svg
-                  style={{
-                    width: "2em",
-                    height: "2em",
-                  }}
-                  countryCode={getCountryCode(teaData.origin.country)}
-                  alt=""
-                  aria-label={teaData.origin.country}
-                  className={classes.countryFlag}
+            <Paper className={classes.notesPaper}>
+              {notesEditing ? (
+                <TextField
+                  onChange={handleNotesChange}
+                  id="notes"
+                  label="Notes"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  defaultValue={notes}
+                  variant="outlined"
                 />
+              ) : (
+                notes && (
+                  <Box className={classes.notesText}>
+                    {notes.split("\n").map((s, key) => (
+                      <Typography
+                        variant="body2"
+                        className={classes.rowCenter}
+                        key={key}
+                      >
+                        {s}
+                      </Typography>
+                    ))}{" "}
+                  </Box>
+                )
+              )}
+              <Box className={classes.rowCenter}>
+                {notesEditing ? (
+                  <Button
+                    className={classes.doubleMargin}
+                    onClick={handleNotesSave}
+                  >
+                    Save
+                  </Button>
+                ) : (
+                  <Button
+                    className={classes.doubleMargin}
+                    onClick={() => setNotesEditing(true)}
+                  >
+                    {notes ? "Edit" : "Add"} notes
+                  </Button>
+                )}
               </Box>
-              {coordinates && (
+            </Paper>
+          </Box>
+          <Box className={classes.row}>
+            {coordinates && (
+              <Box className={classes.halfCenterBox}>
                 <ComposableMap
                   projection="geoMercator"
                   projectionConfig={{
@@ -368,13 +424,34 @@ export default function TeaDetails({ teaData, handleEdit, setDialog }) {
                     <circle r={10} fill="#F00" stroke="#fff" strokeWidth={2} />
                   </Marker>
                 </ComposableMap>
-              )}
-            </Box>
-            {description && (
-              <Box className={classes.originBox}>
-                <Typography variant="body2" className={classes.smallTitle}>
-                  Description:
+              </Box>
+            )}
+            {teaData.origin && (
+              <Box className={classes.halfCenterBox}>
+                <Typography variant="h4">Origin:</Typography>
+                <Typography variant="h3" className={classes.doubleMargin}>
+                  {getOriginName(teaData.origin)}
                 </Typography>
+                <ReactCountryFlag
+                  svg
+                  style={{
+                    width: "4em",
+                    height: "4em",
+                  }}
+                  countryCode={getCountryCode(teaData.origin.country)}
+                  alt=""
+                  aria-label={teaData.origin.country}
+                  className={classes.countryFlag}
+                />
+              </Box>
+            )}
+          </Box>
+          {description && (
+            <Box className={classes.descriptionRow}>
+              <Box className={classes.aboutBox}>
+                <Typography variant="h3">About {descriptionName}</Typography>
+              </Box>
+              <Box>
                 {description.split("\n").map((s, key) => (
                   <Typography
                     variant="body2"
@@ -385,34 +462,31 @@ export default function TeaDetails({ teaData, handleEdit, setDialog }) {
                   </Typography>
                 ))}
                 {description_source && (
-                  <Link
-                    href="#"
-                    onClick={() =>
-                      window.open("https://" + description_source, "_blank")
-                    }
-                    variant="body2"
-                  >
-                    View source
-                  </Link>
+                  <Typography className={classes.sourceLink}>
+                    <Link
+                      href="#"
+                      onClick={() =>
+                        window.open("https://" + description_source, "_blank")
+                      }
+                      variant="body2"
+                    >
+                      View source
+                    </Link>
+                  </Typography>
                 )}
               </Box>
-            )}
-          </Box>
-        </Box>
-      )}
-      <Box className={classes.bottom}>
-        <Button
-          onClick={() => setDialog({ route: "", data: null })}
-          aria-label="close"
-        >
-          Close
-        </Button>
-        <Button
-          aria-label="edit"
-        >
-          Edit
-        </Button>
-      </Box>
-    </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions className={classes.actions}>
+          <Button onClick={handleClose} aria-label="close">
+            Close
+          </Button>
+          <Button onClick={handleEditClick} aria-label="edit">
+            Edit
+          </Button>
+        </DialogActions>
+      </>
+    )
   );
 }

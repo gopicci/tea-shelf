@@ -27,15 +27,17 @@ const brewingValidation = Yup.object().shape({
     .max(100, "Number too high")
     .typeError("Must be a number")
     .nullable(),
-  initial: Yup.number()
-    .min(0, "Must be positive")
-    .max(86399, "Number too high")
-    .typeError("Must be a number")
+  initial: Yup.string()
+    .matches(
+      /^(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/,
+      "Must be in 23:59:59 format"
+    )
     .nullable(),
-  increments: Yup.number()
-    .min(0, "Must be positive")
-    .max(86399, "Number too high")
-    .typeError("Must be a number")
+  increments: Yup.string()
+    .matches(
+      /^(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/,
+      "Must be in 23:59:59 format"
+    )
     .nullable(),
 });
 

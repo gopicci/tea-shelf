@@ -6,10 +6,10 @@ describe("Input form navigation", () => {
   it("Cannot post without required fields.", () => {
     cy.get('div[aria-label="add tea"]').click();
     cy.get('button[aria-label="skip"]').click();
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Required").should("exist");
     cy.get('input[name="name"]').type("test");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Required").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
@@ -53,10 +53,10 @@ describe("Input form navigation", () => {
     cy.get('div[aria-label="add tea"]').click();
     cy.get('button[aria-label="skip"]').click();
     cy.get('input[id="year"]').type("test");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Invalid year").should("exist");
     cy.get('input[id="year"]').type("2001");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Invalid year").should("not.exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
@@ -71,16 +71,16 @@ describe("Input form navigation", () => {
     cy.get("label").contains("Price per g").should("not.exist");
     cy.get("label").contains("Price per oz").should("exist");
     cy.get('input[name="weight_left"]').type("13.3");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Weight").should("not.exist");
     cy.get('input[name="weight_left"]').type("a");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Weight must be a number").should("exist");
     cy.get('input[name="price"]').type("17");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Price").should("not.exist");
     cy.get('input[name="price"]').type("test");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Price must be a number").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
@@ -103,7 +103,7 @@ describe("Input form navigation", () => {
     cy.get('input[value="15"]').should("not.exist");
     cy.get('input[value="120"]').should("exist");
     cy.get('input[name="initial"]').click().clear().type("99999");
-    cy.get('button[aria-label="create"]').click();
+    cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Number too high").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();

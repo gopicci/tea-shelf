@@ -19,7 +19,7 @@ import EditNotes from "./EditNotes";
  */
 export default function InputRouter(props) {
   const [editRoute, setEditRoute] = useState(
-    props.notes ? "notes" : "input_layout"
+    props.route === "EDIT_NOTES" ? "notes" : "input_layout"
   );
 
   function handleBackToLayout() {

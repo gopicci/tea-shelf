@@ -25,12 +25,12 @@ const useStyles = makeStyles((theme) => ({
  * and moves to next step.
  *
  * @param setImageData {function} Set base64 image data state
- * @param handleDesktopClose {function} Cancel process and close dialog
+ * @param handleClose {function}
  * @param handleNext {function} Go to next creation stage (InputForm)
  */
 export default function LoadImage({
   setImageData,
-  handleDesktopClose,
+  handleClose,
   handleNext,
 }) {
   const classes = useStyles();
@@ -59,7 +59,7 @@ export default function LoadImage({
         }}
       />
       <Box className={classes.bottom}>
-        <Button onClick={handleDesktopClose} aria-label="cancel">
+        <Button onClick={handleClose} aria-label="cancel">
           Cancel
         </Button>
         <Button onClick={handleNext} aria-label="skip">

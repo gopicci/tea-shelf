@@ -118,26 +118,22 @@ const useStyles = makeStyles((theme) => ({
  *
  * @param tea {json} Tea instance data in API format
  * @param gridView {boolean} Grid view switch status
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  * @param setDialog {function} Set dialog route state
- * @param desktop {boolean} Desktop mode or mobile
  */
 export default function TeaCard({
   tea,
   gridView,
-  setRoute,
+  setRouter,
   setDialog,
-  desktop,
+  isMobile,
 }) {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
 
   function handleCardClick() {
-    if (desktop)
-      setDialog({ route: "TEA_DETAILS", data: tea });
-    else
-      setRoute({ route: "TEA_DETAILS", data: tea });
+      setRouter({ route: "TEA_DETAILS", data: tea });
   }
 
   return (

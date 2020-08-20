@@ -25,15 +25,15 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Mobile tea details page notes card.
  *
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  * @param teaData {json} Track the input state
  */
-export default function DetailsCardNotes({ teaData, setRoute }) {
+export default function DetailsCardNotes({ teaData, setRouter }) {
   const classes = useStyles();
   const detailsClasses = detailsMobileStyles();
 
   function handleEditNotes() {
-    setRoute({ route: "EDIT_NOTES", data: teaData });
+    setRouter({ route: "EDIT_NOTES", data: teaData });
   }
 
   return (

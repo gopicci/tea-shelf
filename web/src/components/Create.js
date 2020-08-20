@@ -18,11 +18,11 @@ import { teaModel, teaSerializer } from "../services/Serializers";
  *
  * teaData tracks the input state.
  *
- * @param setRoute {function} Set main route
+ * @param setRouter {function} Set main route
  * @param desktop {boolean} Desktop mode or mobile
  * @param setDialog {function} Set dialog route state
  */
-export default function Create({ setRoute, desktop, setDialog }) {
+export default function Create({ setRouter, isMobile }) {
   const [teaData, setTeaData] = useState(teaModel);
   const [imageData, setImageData] = useState(null);
 
@@ -115,16 +115,10 @@ export default function Create({ setRoute, desktop, setDialog }) {
     setStep(step - 1);
   }
 
-  function handleMobileClose() {
+  function handleClose() {
     setTeaData(teaModel);
     setStep(1);
-    setRoute({ route: "MAIN" });
-  }
-
-  function handleDesktopClose() {
-    setTeaData(teaModel);
-    setStep(1);
-    setDialog({ route: "", data: null });
+    setRouter({ route: "MAIN" });
   }
 
   const props = {
@@ -134,19 +128,18 @@ export default function Create({ setRoute, desktop, setDialog }) {
     setTeaData,
     handleNext,
     handlePrevious,
-    handleMobileClose,
-    handleDesktopClose,
+    handleClose,
     handleCreate,
   };
 
   function renderSwitch(step) {
     switch (step) {
       case 1:
-        return desktop ? <LoadImage {...props} /> : <CaptureImage {...props} />;
+        return isMobile ? <CaptureImage {...props} /> : <LoadImage {...props} /> ;
       case 2:
-        return desktop ? <InputForm {...props} /> : <InputRouter {...props} />;
+        return isMobile ? <InputRouter {...props} /> : <InputForm {...props} />;
       default:
-        return desktop ? <LoadImage {...props} /> : <CaptureImage {...props} />;
+        return isMobile ? <CaptureImage {...props} /> : <LoadImage {...props} />;
     }
   }
 

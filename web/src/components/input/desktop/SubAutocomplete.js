@@ -2,10 +2,7 @@ import React, { useContext } from "react";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import {
-  brewingTimesToSeconds,
-  getSubcategoryName,
-} from "../../../services/ParsingService";
+import { getSubcategoryName } from "../../../services/ParsingService";
 import { subcategoryModel } from "../../../services/Serializers";
 import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
 import { CategoriesState } from "../../statecontainers/CategoriesContext";
@@ -58,7 +55,7 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
         if (subcategory.western_brewing)
           data = {
             ...data,
-            western_brewing: brewingTimesToSeconds(subcategory.western_brewing),
+            western_brewing: subcategory.western_brewing,
           };
         else if (category.western_brewing)
           data = {
@@ -68,7 +65,7 @@ export default function SubAutocomplete({ teaData, setTeaData, renderInput }) {
         if (subcategory.gongfu_brewing)
           data = {
             ...data,
-            gongfu_brewing: brewingTimesToSeconds(subcategory.gongfu_brewing),
+            gongfu_brewing: subcategory.gongfu_brewing,
           };
         else if (category.gongfu_brewing)
           data = {

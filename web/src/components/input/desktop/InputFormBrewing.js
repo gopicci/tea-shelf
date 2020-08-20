@@ -139,12 +139,12 @@ export default function InputFormBrewing({
         <Box className={classes.justifyLeft}>
           <TextField
             name="initial"
-            label="Initial seconds"
+            label="Initial time"
             aria-label="initial"
-            inputProps={{ maxLength: 5 }}
+            inputProps={{ maxLength: 8 }}
             size="small"
             variant="outlined"
-            value={teaData[brewing].initial ? teaData[brewing].initial : ""}
+            value={teaData[brewing].initial ? teaData[brewing].initial : "00:00:00"}
             className={classes.initial}
             onChange={(e) => {
               handleChange(e);
@@ -177,11 +177,11 @@ export default function InputFormBrewing({
             name="increments"
             label="Increments"
             aria-label="increments"
-            inputProps={{ maxLength: 5 }}
+            inputProps={{ maxLength: 8 }}
             size="small"
             variant="outlined"
             value={
-              teaData[brewing].increments ? teaData[brewing].increments : ""
+              teaData[brewing].increments ? teaData[brewing].increments : "00:00:00"
             }
             className={classes.increments}
             onChange={(e) => {

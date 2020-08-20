@@ -10,8 +10,9 @@ import SortFilter from "./components/SortFilter";
 import CustomSnackbar from "./components/snackbar/CustomSnackbar";
 import MainStateContainer from "./components/statecontainers/MainStateContainer";
 import { getUser } from "./services/AuthService";
-import { mainTheme } from "./style/MainTheme";
+import { mainTheme as theme, mainTheme } from "./style/MainTheme";
 import "./App.css";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 /**
  * Main app component. Checks if user is logged in and sets up main routes.
@@ -20,28 +21,35 @@ import "./App.css";
 function App() {
   const isLoggedIn = getUser();
 
-  const [route, setRoute] = useState({ route: "MAIN", data: null });
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  function getRoute(route) {
-    switch (route.route) {
+  const [router, setRouter] = useState({ route: "MAIN", data: null });
+
+  function getRoute(router) {
+    const props = {
+      router,
+      setRouter,
+      isMobile,
+    };
+
+    switch (router.route) {
       case "MAIN":
-        return <MainPageLayout setRoute={setRoute} />;
+        return <MainPageLayout {...props} />;
       case "FILTER":
-        return <SortFilter setRoute={setRoute} />;
+        return <SortFilter {...props} />;
       case "CREATE":
-        return <Create setRoute={setRoute} />;
+        if (isMobile) return <Create {...props} />;
+        else return <MainPageLayout {...props} />;
       case "EDIT":
-        return <Edit setRoute={setRoute} initialState={route.data} />;
+        if (isMobile) return <Edit {...props} />;
+        else return <MainPageLayout {...props} />;
       case "EDIT_NOTES":
-        return (
-          <Edit setRoute={setRoute} initialState={route.data} notes={true} />
-        );
+        return <Edit {...props} />;
       case "TEA_DETAILS":
-        return (
-          <Edit setRoute={setRoute} initialState={route.data} details={true} />
-        );
+        if (isMobile) return <Edit {...props} />;
+        else return <MainPageLayout {...props} />;
       default:
-        return <MainPageLayout setRoute={setRoute} />;
+        return <MainPageLayout {...props} />;
     }
   }
 
@@ -51,7 +59,7 @@ function App() {
         <Login />
       ) : (
         <MainStateContainer>
-          {getRoute(route)}
+          {getRoute(router)}
           <CustomSnackbar />
         </MainStateContainer>
       )}
