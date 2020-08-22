@@ -1,3 +1,4 @@
+import React, {Dispatch, ReactElement, useContext} from 'react';
 import {
   AppBar,
   Box,
@@ -6,11 +7,11 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
-import { FilterDispatch, FilterState } from "./statecontainers/FilterContext";
 import FilterList from "./filters/FilterList";
+import { FilterDispatch, FilterState } from "./statecontainers/FilterContext";
+import { Route } from '../app';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,11 +31,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Mobile sort and filter page component.
+ * SortFilter props.
  *
- * @param setRouter {function} Set main route
+ * @memberOf SortFilter
  */
-export default function SortFilter({ setRouter }) {
+type Props = {
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+};
+
+/**
+ * Mobile only sort and filter page component.
+ *
+ * @component
+ */
+export default function SortFilter({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
   const state = useContext(FilterState);
@@ -43,13 +54,13 @@ export default function SortFilter({ setRouter }) {
   console.log(state);
 
   function handleClose() {
-    setRouter({ route: "MAIN" });
+    setRoute({ route: "MAIN" });
   }
 
   function handleReset() {
     dispatch({
       type: "RESET",
-    });
+    }: Dispatch<Action>);
   }
 
   return (

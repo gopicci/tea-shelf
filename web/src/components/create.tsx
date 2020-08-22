@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, {ReactElement, useContext, useState} from 'react';
 import localforage from "localforage";
 import CaptureImage from "./input/mobile/CaptureImage";
 import LoadImage from "./input/desktop/LoadImage";
@@ -6,23 +6,33 @@ import InputRouter from "./input/mobile/InputRouter";
 import InputForm from "./input/desktop/InputForm";
 import { APIRequest } from "../services/AuthService";
 import { generateUniqueId } from "../services/SyncService";
+import { teaModel, teaSerializer } from "../services/Serializers";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
 import { TeaDispatch } from "./statecontainers/TeasContext";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
-import { teaModel, teaSerializer } from "../services/Serializers";
+import {Route} from '../app';
 
 /**
- * Mobile tea entry creation process. Consists of 3 stages:
+ * Create props.
+ *
+ * @memberOf Create
+ */
+type Props = {
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+  /** Mobile mode or desktop */
+  isMobile: boolean;
+};
+
+
+/**
+ * Handles creation process, which consists of 3 stages:
  * captureImage -> inputLayout -> handleCreate
  *
- * teaData tracks the input state.
- *
- * @param setRouter {function} Set main route
- * @param desktop {boolean} Desktop mode or mobile
- * @param setDialog {function} Set dialog route state
+ * @component
  */
-export default function Create({ setRouter, isMobile }) {
+function Create({ setRoute, isMobile }: Props): ReactElement {
   const [teaData, setTeaData] = useState(teaModel);
   const [imageData, setImageData] = useState(null);
 
@@ -31,8 +41,12 @@ export default function Create({ setRouter, isMobile }) {
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorsDispatch = useContext(VendorsDispatch);
 
+  /**
+   * Handles posting process
+   *
+   * @param data {Object} Tea data
+   */
   async function handleCreate(data) {
-    // Handle posting process
     let reqData = data;
 
     let customSubcategory = false;
@@ -105,16 +119,37 @@ export default function Create({ setRouter, isMobile }) {
     }
   }
 
+  /**
+   * Sets creation process step.
+   *
+   * @callback setStep
+   * @param step {1|2}
+   */
   const [step, setStep] = useState(1);
 
+  /**
+   * Set next creation step.
+   *
+   * @callback handleNext
+   */
   function handleNext() {
     setStep(step + 1);
   }
 
+  /**
+   * Sets previous creation step.
+   *
+   * @callback handlePrevious
+   */
   function handlePrevious() {
     setStep(step - 1);
   }
 
+  /**
+   * Cancels creation process and returns to main route.
+   *
+   * @callback handleClose
+   */
   function handleClose() {
     setTeaData(teaModel);
     setStep(1);
@@ -135,13 +170,23 @@ export default function Create({ setRouter, isMobile }) {
   function renderSwitch(step) {
     switch (step) {
       case 1:
-        return isMobile ? <CaptureImage {...props} /> : <LoadImage {...props} /> ;
+        return isMobile ? (
+          <CaptureImage {...props} />
+        ) : (
+          <LoadImage {...props} />
+        );
       case 2:
         return isMobile ? <InputRouter {...props} /> : <InputForm {...props} />;
       default:
-        return isMobile ? <CaptureImage {...props} /> : <LoadImage {...props} />;
+        return isMobile ? (
+          <CaptureImage {...props} />
+        ) : (
+          <LoadImage {...props} />
+        );
     }
   }
 
   return renderSwitch(step);
 }
+
+export default Create;

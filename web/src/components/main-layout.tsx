@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Box, Fab, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
@@ -8,12 +8,13 @@ import GridLayout from "./grid/GridLayout";
 import FilterAccordion from "./filters/FilterAccordion";
 import FilterBar from "./filters/FilterBar";
 import DialogLayout from "./dialog/DialogLayout";
+import { Route } from "../app";
 
 const useStyles = makeStyles((theme) => ({
   page: {
     display: "flex",
     minHeight: "100vh",
-    backgroundColor: theme.palette.background.main,
+    backgroundColor: theme.palette.background.default,
   },
   mainBox: {
     [theme.breakpoints.down("sm")]: {
@@ -32,17 +33,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Defines layout for main landing page.
+ * MainLayout props.
  *
- * @param props {[]} Base app props for router management and mobile state
+ * @memberOf MainLayout
  */
-export default function MainPageLayout(props) {
+type Props = {
+  /** App's main route state */
+  route: Route;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+  /** Mobile mode or desktop */
+  isMobile: boolean;
+};
+
+/**
+ * Defines layout for app's main landing page.
+ *
+ * @component
+ */
+function MainLayout({ route, setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
 
-  const { router, setRouter, isMobile } = props;
-
+  /** Sets route to CREATE */
   function handleCreate() {
-    setRouter({ route: "CREATE" });
+    setRoute({ route: "CREATE" });
   }
 
   return (
@@ -50,15 +64,6 @@ export default function MainPageLayout(props) {
       <SearchAppBar />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout {...props} />
-        <Box className={classes.mainBox}>
-          {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
-          <GridLayout {...props} />
-        </Box>
-        {!isMobile &&
-          ["CREATE", "TEA_DETAILS", "EDIT"].includes(router.route) && (
-            <DialogLayout {...props} />
-          )}
         {isMobile && (
           <Fab
             aria-label="add tea"
@@ -68,8 +73,9 @@ export default function MainPageLayout(props) {
             <CameraAlt />
           </Fab>
         )}
-        )}
       </Box>
     </>
   );
 }
+
+export default MainLayout;
