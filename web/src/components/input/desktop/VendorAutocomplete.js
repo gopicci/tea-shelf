@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Desktop tea creation form vendor autocomplete component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param renderInput {component} Input component
  */

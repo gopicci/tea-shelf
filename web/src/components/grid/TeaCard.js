@@ -16,7 +16,7 @@ import {
   getCountryCode,
 } from "../../services/ParsingService";
 import { CategoriesState } from "../statecontainers/CategoriesContext";
-import emptyImage from "../../empty.png";
+import emptyImage from "../../media/empty.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -116,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Card component visualizing a single tea instance.
  *
- * @param tea {json} Tea instance data in API format
+ * @param tea {Object} Tea instance data in API format
  * @param gridView {boolean} Grid view switch status
  * @param setRouter {function} Set main route
  * @param setDialog {function} Set dialog route state

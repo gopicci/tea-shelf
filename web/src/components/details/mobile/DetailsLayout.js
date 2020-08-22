@@ -28,8 +28,8 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Main mobile tea details page layout.
  *
- * @param setRouter {function} Set main route
- * @param teaData {json} Track the input state
+ * @param setRouter {setRouter} Callback to set main route
+ * @param teaData {Object} Track the input state
  * @param handleEdit {function} Handle state edits
  */
 export default function TeaDetails({ setRouter, teaData, handleEdit }) {

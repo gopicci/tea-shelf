@@ -6,7 +6,7 @@ import InputAppBar from "./InputAppBar";
 /**
  * Mobile tea creation year list input component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param field {string} Input field name
  * @param handleBackToLayout {function} Reroutes to input layout

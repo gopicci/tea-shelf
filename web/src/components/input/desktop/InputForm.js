@@ -14,7 +14,7 @@ import {
   FormControlLabel,
   Switch,
 } from "@material-ui/core";
-import emptyImage from "../../../empty.png";
+import emptyImage from "../../../media/empty.png";
 import SubAutocomplete from "./SubAutocomplete";
 import YearAutocomplete from "./YearAutocomplete";
 import InputFormBrewing from "./InputFormBrewing";
@@ -34,7 +34,7 @@ import { useStyles } from "../../../style/DesktopFormStyles";
  * Desktop tea creation form. Uses formik with external controlled state teaData.
  *
  * @param imageData {string} Base64 image data
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param handleEdit {function} Handle edit save
  * @param handleCreate {function} Handle tea posting process

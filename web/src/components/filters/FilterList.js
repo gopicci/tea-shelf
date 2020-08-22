@@ -16,7 +16,7 @@ import { formListStyles } from "../../style/FormListStyles";
  * Filters checkbox list component. Uses central filter dispatch to handle change.
  *
  * @param entry {string} List name
- * @param list {[{string: boolean}]} Filter list array in {name: checked} format
+ * @param list {Array} Filter list array in {name: checked} format
  */
 export default function FilterList({ entry, list }) {
   const formListClasses = formListStyles();

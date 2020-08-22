@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Mobile tea details page origin card.
  *
- * @param teaData {json} Track the input state
+ * @param teaData {Object} Track the input state
  */
 export default function DetailsCardOrigin({ teaData }) {
   const classes = useStyles();

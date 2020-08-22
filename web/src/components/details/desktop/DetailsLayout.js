@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import emptyImage from "../../../empty.png";
+import emptyImage from "../../../media/empty.png";
 import {
   getCountryCode,
   getOriginName,
@@ -197,7 +197,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Main mobile tea details page layout.
  *
- * @param teaData {json} Track the input state
+ * @param teaData {Object} Track the input state
  * @param handleEdit {function} Handle state edits
  */
 export default function DetailsLayout({ teaData, handleEdit, setRouter }) {

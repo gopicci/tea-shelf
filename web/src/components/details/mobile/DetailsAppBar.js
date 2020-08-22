@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
  * Mobile tea details page app bar.
  *
  * @param setRouter {function} Set main route
- * @param teaData {json} Track the input state
+ * @param teaData {Object} Track the input state
  */
 export default function DetailsAppbar({ setRouter, teaData }) {
   const classes = useStyles();

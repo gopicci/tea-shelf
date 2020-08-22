@@ -44,7 +44,7 @@ const brewingValidation = Yup.object().shape({
 /**
  * Desktop tea creation form validation schema.
  *
- * @param yearOptions {[String]} Valid year selections
+ * @param yearOptions {Array} Valid year selections
  */
 export function validationSchema(yearOptions) {
   return Yup.object().shape({

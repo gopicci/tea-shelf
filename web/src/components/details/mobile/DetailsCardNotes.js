@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
  * Mobile tea details page notes card.
  *
  * @param setRouter {function} Set main route
- * @param teaData {json} Track the input state
+ * @param teaData {Object} Track the input state
  */
 export default function DetailsCardNotes({ teaData, setRouter }) {
   const classes = useStyles();

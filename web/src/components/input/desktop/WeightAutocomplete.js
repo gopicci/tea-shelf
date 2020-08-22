@@ -4,7 +4,7 @@ import { Autocomplete } from "@material-ui/lab";
 /**
  * Desktop tea creation form brewing weight autocomplete component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param renderInput {component} Input component
  * @param brewing {string} Selected brewing: gongfu_brewing or western_brewing

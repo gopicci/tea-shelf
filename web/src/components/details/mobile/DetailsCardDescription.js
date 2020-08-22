@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Mobile tea details page description card.
  *
- * @param teaData {json} Track the input state
+ * @param teaData {Object} Track the input state
  */
 export default function DetailsCardDescription({ teaData }) {
   const classes = useStyles();

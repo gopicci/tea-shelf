@@ -22,14 +22,14 @@ export const originModel = {
 };
 
 /**
- * Defines vendor data structure in API request format.
+ * Defines minimal vendor data structure in API request format.
  */
 export const vendorModel = {
   name: null,
 };
 
 /**
- * Defines subcategory data structure in API request format.
+ * Defines minimal subcategory data structure in API request format.
  */
 export const subcategoryModel = {
   name: null,
@@ -59,9 +59,9 @@ export const teaModel = {
 };
 
 /**
- * Serialize tea object data to fit an API request
+ * Serializes tea object data to fit an API request.
  *
- * @param tea {json} Tea object
+ * @param tea {Object} Tea object
  */
 export function teaSerializer(tea) {
   let serialized = {};
@@ -70,6 +70,7 @@ export function teaSerializer(tea) {
   for (const k of Object.keys(teaModel))
     if (tea[k] != null) serialized[k] = tea[k];
 
+  // Drop year if selected entry is "Unknown"
   if (
     serialized.year &&
     typeof serialized.year === "string" &&
@@ -96,9 +97,9 @@ export function teaSerializer(tea) {
 }
 
 /**
- * Serialize brewing object data to fit an API request
+ * Serializes brewing object data to fit an API request.
  *
- * @param brewing {json} Brewing object
+ * @param brewing {Object} Brewing object
  */
 function brewingSerializer(brewing) {
   let serialized = {};
@@ -108,9 +109,9 @@ function brewingSerializer(brewing) {
 }
 
 /**
- * Serialize origin object data to fit an API request
+ * Serializes origin object data to fit an API request.
  *
- * @param origin {json} Origin object
+ * @param origin {Object} Origin object
  */
 function originSerializer(origin) {
   let serialized = {};
@@ -126,12 +127,12 @@ function originSerializer(origin) {
 }
 
 /**
- * Serialize vision parser response to fit in tea object
+ * Serializes vision parser response to fit in tea object.
  *
- * @param data {json} Vision parser response
- * @param categories {json} Categories state
- * @param subcategories {json} Subcategories state
- * @param vendors {json} Vendors state
+ * @param data {Object} Vision parser response
+ * @param categories {Object} Central categories state
+ * @param subcategories {Object} Central subcategories state
+ * @param vendors {Object} Central vendors state
  */
 export function visionParserSerializer(
   data,

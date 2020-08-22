@@ -16,12 +16,12 @@ import {
 /**
  * Desktop tea creation form brewing component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param brewing {string} Selected brewing: gongfu_brewing or western_brewing
- * @param classes {json} Form makeStyle classes
- * @param errors {json} Formik errors
- * @param touched {json} Formik touched
+ * @param classes {Object} Form makeStyle classes
+ * @param errors {Object} Formik errors
+ * @param touched {Object} Formik touched
  * @param handleChange {function} Formik change handler
  * @param handleBlur {function} Formik blur handler
  */

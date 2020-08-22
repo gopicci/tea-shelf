@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
  * Mobile tea creation layout list brewing item.
  *
  * @param name {string} Item name
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param handleClick {function} Handles item click
  */
 export default function InputBrewing({ name, teaData, handleClick }) {

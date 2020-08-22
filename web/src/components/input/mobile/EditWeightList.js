@@ -8,7 +8,7 @@ import { formListStyles } from "../../../style/FormListStyles";
  * Mobile tea creation weight list input component.
  *
  * @param data {{max: int , increments: int}} Weight list data
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param field {string} Input field name
  * @param handleBackToLayout {function} Reroutes to input layout

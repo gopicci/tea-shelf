@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Mobile tea creation online origin input component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param handleBackToLayout {function} Reroutes to input layout
  */

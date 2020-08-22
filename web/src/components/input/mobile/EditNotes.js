@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Mobile tea creation text input component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param handleEdit {function} Handle edit save
  * @param handlePrevious {function} Reroutes to tea details
  */

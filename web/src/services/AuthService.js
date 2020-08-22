@@ -1,29 +1,35 @@
 /**
- * Get access token from local storage auth data.
+ * Gets access token from local storage auth data.
+ *
+ * @returns {string|undefined}
  */
-export const getAccessToken = () => {
+export function getAccessToken() {
   const auth = JSON.parse(window.localStorage.getItem("user.auth"));
   if (auth) {
     return auth.access;
   }
   return undefined;
-};
+}
 
 /**
- * Get refresh token from local storage auth data.
+ * Gets refresh token from local storage auth data.
+ *
+ * @returns {string|undefined}
  */
-export const getRefreshToken = () => {
+export function getRefreshToken() {
   const auth = JSON.parse(window.localStorage.getItem("user.auth"));
   if (auth) {
     return auth.refresh;
   }
   return undefined;
-};
+}
 
 /**
- * Get user info from local storage access token.
+ * Gets user info from local storage access token.
+ *
+ * @returns {Object|undefined}
  */
-export const getUser = () => {
+export function getUser() {
   const auth = JSON.parse(window.localStorage.getItem("user.auth"));
   if (auth) {
     const [, payload] = auth.access.split(".");
@@ -31,35 +37,35 @@ export const getUser = () => {
     return JSON.parse(decoded);
   }
   return undefined;
-};
+}
 
 /**
- * Remove local storage auth data.
+ * Removes local storage auth data.
  */
-export const logout = () => {
+export function logout() {
   window.localStorage.removeItem("user.auth");
   window.location.reload(false);
-};
+}
 
 /**
- * Race fetch and timeout, throw error if timeout responds first
+ * Races fetch and timeout, throws error if timeout responds first
  *
  * @param endpoint {string} API endpoint in "/endpoint/" format to be merged with base URL
  * @param method {string} Request method
  * @param body {string} Optional request body
- * @param timeout {int} Defines request timeout, default 5000ms
+ * @param timeout {number} Defines request timeout, default 5000ms
  * @param api_path {string} API base path
+ * @returns {Promise} Fetch/timeout race promise
  */
-export const fetchTimeout = async (
+export async function fetchTimeout(
   endpoint,
   method,
   body = "",
   timeout = 5000,
   api_path
-) => {
+) {
   const token = getAccessToken();
   return Promise.race([
-    // Race fetch and timeout, throw error if timeout responds first
     new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Request timed out")), timeout)
     ),
@@ -73,23 +79,20 @@ export const fetchTimeout = async (
       body: body ? body : null,
     }),
   ]);
-};
+}
 
 /**
  * Wrapper around fetch request to the API. Tries to refresh access token once if not valid.
- * If token refresh is successful it reruns the request, otherwise deletes the tokens.
+ * If token refresh is successful it reruns the request, otherwise deletes the tokens (logout).
  *
  * @param endpoint {string} API endpoint in "/endpoint/" format to be merged with base URL
  * @param method {string} Request method
  * @param body {string} Optional request body
- * @param timeout {int} Defines request timeout, default 5000ms
+ * @param timeout {number} Defines request timeout, default 5000ms
+ * @returns {Promise<Response>|undefined}
+ * @constructor
  */
-export const APIRequest = async (
-  endpoint,
-  method,
-  body = "",
-  timeout = 5000
-) => {
+export async function APIRequest(endpoint, method, body = "", timeout = 5000) {
   let api_path = process.env.REACT_APP_API;
   if (String(api_path) === "undefined") api_path = "/api";
 
@@ -128,4 +131,4 @@ export const APIRequest = async (
       throw Error(res.statusText);
     }
   }
-};
+}

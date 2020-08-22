@@ -13,7 +13,7 @@ const filter = createFilterOptions();
  * Desktop tea creation form subcategory autocomplete component.
  * Modifies other teaData status with subcategory related data.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param renderInput {component} Input component
  */

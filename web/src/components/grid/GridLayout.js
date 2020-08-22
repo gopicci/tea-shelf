@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
  * Grid component containing tea cards. Filters tea cards based on
  * central filter state.
  *
- * @param setRouter {function} Set main route
+ * @param setRouter {setRouter} Callback to set main route
  * @param setDialog {function} Set dialog route state
  * @param isMobile {boolean} Mobile mode or desktop
  */

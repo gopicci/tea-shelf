@@ -23,7 +23,7 @@ const filter = createFilterOptions();
  * Mobile tea creation vendor input component. Shows a list and autocomplete from
  * central vendors state, with option to add extra.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param handleBackToLayout {function} Reroutes to input layout
  */

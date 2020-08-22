@@ -1,7 +1,7 @@
 import React from "react";
 import { Dialog } from "@material-ui/core";
 import Edit from "../Edit";
-import Create from "../Create";
+import Create from "../create";
 
 export default function DialogLayout(props) {
   const { router, setRouter } = props;

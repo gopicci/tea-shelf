@@ -4,10 +4,10 @@ import { Autocomplete } from "@material-ui/lab";
 /**
  * Desktop tea creation form year autocomplete component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param renderInput {component} Input component
- * @param options {[string]} Options array
+ * @param options {Array} Options array
  * @param updateFormValue {function} Formik change handler
  */
 export default function YearAutocomplete({

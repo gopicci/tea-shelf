@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Defines mobile tea creation input stage layout.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param handleEdit {function} Handle tea edit posting process
  * @param handleCreate {function} Handle tea create posting process
  * @param handleClose {function} Cancel process and reroute to main route

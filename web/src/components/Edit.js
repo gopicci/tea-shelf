@@ -15,8 +15,8 @@ import { teaSerializer } from "../services/Serializers";
  * Handles tea editing process and routes to component that
  * have editing capabilities.
  *
- * @param router {json} Route info in {route: string, data: json} format
- * @param setRouter {function} Set main route
+ * @param router {Object} Route info in {route: string, data: json} format
+ * @param setRouter {setRouter} Callback to set main route
  * @param isMobile {boolean} Mobile mode or desktop
  */
 export default function Edit({ router, setRouter, isMobile = true }) {
@@ -127,6 +127,11 @@ export default function Edit({ router, setRouter, isMobile = true }) {
     }
   }
 
+  /**
+   * Returns to tea details route.
+   *
+   * @callback handlePrevious
+   */
   function handlePrevious() {
     setRouter({ route: "TEA_DETAILS", data: teaData });
   }

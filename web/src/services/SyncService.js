@@ -3,6 +3,9 @@ import localforage from "localforage";
 
 /**
  * Generic object array state reducer, assumes id field on entries.
+ *
+ * @param state {Array} Objects array
+ * @param action {{type: string, data: json}} Action type and data
  */
 export function genericReducer(state, action) {
   switch (action.type) {
@@ -27,22 +30,23 @@ export function genericReducer(state, action) {
 }
 
 /**
- * Generate unique id from array of objects with id field
+ * Generates new unique id from array of objects with id field.
+ *
+ * @param array {Array} Objects array
  */
 export function generateUniqueId(array) {
   let i = 0;
   for (const item of array) {
-    console.log("id", item.id);
     if (item.id === i) i += 1;
     else return i;
   }
   return i;
 }
 
+/**
+ * Syncs offline teas from storage.
+ */
 export async function syncOffline() {
-  /**
-   * Upload offline teas from storage.
-   */
   const offlineTeas = await localforage.getItem("offline-teas");
 
   if (!offlineTeas) return;
@@ -54,10 +58,8 @@ export async function syncOffline() {
       if (String(tea.id).length > 5) {
         let req = { ...tea };
         if (req.image) delete req.image;
-        console.log("a", JSON.stringify(req));
         await APIRequest(`/tea/${req.id}/`, "PUT", JSON.stringify(req));
       } else {
-        console.log("b", JSON.stringify(tea));
         await APIRequest("/tea/", "POST", JSON.stringify(tea));
       }
     } catch (e) {
@@ -76,12 +78,11 @@ export async function syncOffline() {
   }
 }
 
+/**
+ * Gets offline teas (not uploaded yet) from storage
+ * and returns serialized data to match an API response.
+ */
 export async function getOfflineTeas() {
-  /**
-   * Gets offline teas (not uploaded yet) from storage
-   * and return serialized data to match an API response.
-   */
-
   const cache = await localforage.getItem("offline-teas");
   if (!cache) return localforage.setItem("offline-teas", []);
   else

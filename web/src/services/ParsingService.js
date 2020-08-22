@@ -1,8 +1,11 @@
 import { countryCodes } from "./CountryCodes";
 
 /**
- * Attempt to build subcategory name in "name (translated_name)" format
- * or return subcategory name.
+ * Attempts to build subcategory name in "name (translated_name)" format
+ * or returns subcategory name.
+ *
+ * @param subcategory {Object} Subcategory object
+ * @returns {string|undefined}
  */
 export function getSubcategoryName(subcategory) {
   if (!subcategory) return;
@@ -12,12 +15,14 @@ export function getSubcategoryName(subcategory) {
 }
 
 /**
- * Build origin name towards an ideal "locality, region, country"
+ * Attempts to build origin name towards an ideal "locality, region, country"
  * format depending on available data.
+ *
+ * @param origin {Object} Origin object
+ * @returns {string|undefined}
  */
 export function getOriginName(origin) {
-  if (!origin) return;
-  if (!origin.country) return;
+  if (!origin || !origin.country) return;
   let name = "";
   if (origin.locality) name += origin.locality + ", ";
   if (origin.region) name += origin.region + ", ";
@@ -27,41 +32,57 @@ export function getOriginName(origin) {
 
 /**
  * Returns origin region if present, or locality, or country.
+ *
+ * @param origin {Object} Origin object
+ * @returns {string|undefined}
  */
 export function getOriginShortName(origin) {
-  if (!origin) return;
-  if (!origin.country) return;
+  if (!origin || !origin.country) return;
   if (origin.region) return origin.region;
   if (origin.locality) return origin.locality;
   return origin.country;
 }
 
 /**
- * Convert celsius to fahrenheit.
+ * Converts celsius to fahrenheit.
+ *
+ * @param c {string} Celsius degrees
+ * @returns {string}
  */
 export function celsiusToFahrenheit(c) {
   return String(Math.round((parseInt(c) * 9) / 5 + 32));
 }
 
 /**
- * Convert fahrenheit to celsius.
+ * Converts fahrenheit to celsius.
+ *
+ * @param f {string} Fahrenheit degrees
+ * @returns {string}
  */
 export function fahrenheitToCelsius(f) {
   return String(Math.round(((parseInt(f) - 32) * 5) / 9));
 }
 
 /**
- * Return string of float input trimmed to crop decimals.
+ * Converts float input to string with cropped decimals
+ * and no trailing zeroes.
  *
  * toFixed trims decimals but also converts to string
  * toString removes trailing zeroes
+ *
+ * @param input {number} Input float
+ * @param crop {number} Decimals to keep
+ * @returns {string}
  */
 export function cropToNoZeroes(input, crop) {
   return parseFloat(input.toFixed(crop)).toString();
 }
 
 /**
- * Get seconds out of hh:mm:ss format.
+ * Gets seconds out of API time format.
+ *
+ * @param time {string} Time in dd hh:mm:ss format
+ * @returns {number}
  */
 export function parseHMSToSeconds(time) {
   const s = String(time);
@@ -69,13 +90,21 @@ export function parseHMSToSeconds(time) {
     // Input is API format dd hh:mm:ss
     let days = 0;
     if (s.includes(" ")) days = parseInt(s.slice(0, 2));
-    const a = s.slice(-8).split(":");
-    return parseInt(days * 24 * 3600 + +a[0] * 3600 + +a[1] * 60 + +a[2]);
+    const { hours, minutes, seconds } = s.slice(-8).split(":");
+    return (
+      days * 24 * 3600 +
+      parseInt(hours) * 3600 +
+      parseInt(minutes) * 60 +
+      parseInt(seconds)
+    );
   } else return parseInt(time);
 }
 
 /**
- * Convert brewing time from API hh:mm:ss format into seconds.
+ * Converts brewing time from API dd hh:mm:ss format into seconds.
+ *
+ * @param brewing {Object}
+ * @returns {Object}
  */
 export function brewingTimesToSeconds(brewing) {
   let newBrewing = { ...brewing };
@@ -89,11 +118,14 @@ export function brewingTimesToSeconds(brewing) {
 }
 
 /**
- * Return country code from the country name/code.
+ * Returns country code from the country name/code.
+ *
+ * @param country {string} Country name or code
+ * @returns {string}
  */
-export function getCountryCode(countryName) {
-  if (!countryName) return "";
-  if (countryCodes[countryName]) return countryCodes[countryName];
-  if (Object.values(countryCodes).includes(countryName)) return countryName;
+export function getCountryCode(country) {
+  if (!country) return "";
+  if (countryCodes[country]) return countryCodes[country];
+  if (Object.values(countryCodes).includes(country)) return country;
   return "";
 }

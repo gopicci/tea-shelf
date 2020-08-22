@@ -17,7 +17,7 @@ import CheckboxListItem from "./CheckboxListItem";
  * Generic checkbox list component.
  *
  * @param label {string} List title
- * @param list {[{string: boolean}]} Checkbox list array in {name: checked} format
+ * @param list {Array} Checkbox list array in {name: checked} format
  * @param handleChange {function} Function to handle items change
  * @param isCollapsed {boolean} If true only first 3 items are shown with a showAll option
  * @param reverse {boolean} If true list options are shown in reverse order

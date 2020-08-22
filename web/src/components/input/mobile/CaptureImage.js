@@ -40,7 +40,7 @@ const videoConstraints = {
 /**
  * Mobile tea creation capture stage component.
  *
- * @param teaData {json} Input tea data state
+ * @param teaData {Object} Input tea data state
  * @param setTeaData {function} Set input tea data state
  * @param imageData {string} Base64 image data
  * @param setImageData {function} Set image data

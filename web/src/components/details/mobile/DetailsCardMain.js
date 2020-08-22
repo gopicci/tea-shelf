@@ -17,7 +17,7 @@ import {
 } from "../../../services/ParsingService";
 import InputBrewing from "../../input/mobile/InputBrewing";
 import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
-import emptyImage from "../../../empty.png";
+import emptyImage from "../../../media/empty.png";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
  * brewing instructions, weight, price.
  *
  * @param setRouter {function} Set main route
- * @param teaData {json} Track the input state
+ * @param teaData {Object} Track the input state
  * @param handleEdit {function} Handle state edits
  */
 export default function DetailsCardMain({ teaData, setRouter, handleEdit }) {
