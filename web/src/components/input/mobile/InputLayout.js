@@ -14,9 +14,9 @@ import InputBrewing from "./InputBrewing";
 import {
   cropToNoZeroes,
   getSubcategoryName,
-} from "../../../services/ParsingService";
-import { getOriginName } from "../../../services/ParsingService";
-import { CategoriesState } from "../../statecontainers/CategoriesContext";
+} from "../../../services/parsing-services";
+import { getOriginName } from "../../../services/parsing-services";
+import { CategoriesState } from "../../statecontainers/categories-context";
 import { formListStyles } from "../../../style/FormListStyles";
 
 const useStyles = makeStyles((theme) => ({

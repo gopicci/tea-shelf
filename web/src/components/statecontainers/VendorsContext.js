@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useReducer } from "react";
 import localforage from "localforage";
 import { APIRequest } from "../../services/AuthService";
-import { genericReducer } from "../../services/SyncService";
+import { genericReducer } from "../../services/sync-services";
 
 export const VendorsState = createContext(null);
 export const VendorsDispatch = createContext(null);

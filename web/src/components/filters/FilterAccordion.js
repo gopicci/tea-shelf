@@ -12,7 +12,7 @@ import { ExpandMore } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import FilterAccordionChips from "./FilterAccordionChips";
 import FilterList from "./FilterList";
-import { FilterDispatch, FilterState } from "../statecontainers/FilterContext";
+import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -90,7 +90,6 @@ export async function fetchTimeout(
  * @param body {string} Optional request body
  * @param timeout {number} Defines request timeout, default 5000ms
  * @returns {Promise<Response>|undefined}
- * @constructor
  */
 export async function APIRequest(endpoint, method, body = "", timeout = 5000) {
   let api_path = process.env.REACT_APP_API;

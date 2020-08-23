@@ -2,10 +2,10 @@ import React, { useContext } from "react";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import { getSubcategoryName } from "../../../services/ParsingService";
+import { getSubcategoryName } from "../../../services/parsing-services";
 import { subcategoryModel } from "../../../services/Serializers";
 import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
-import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { CategoriesState } from "../../statecontainers/categories-context";
 
 const filter = createFilterOptions();
 

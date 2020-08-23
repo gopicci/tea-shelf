@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import CheckboxListItem from "../generics/CheckboxListItem";
-import { FilterDispatch } from "../statecontainers/FilterContext";
+import { FilterDispatch } from "../statecontainers/filter-context";
 import { formListStyles } from "../../style/FormListStyles";
 
 /**

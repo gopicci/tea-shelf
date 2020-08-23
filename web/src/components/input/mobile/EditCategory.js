@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import InputAppBar from "./InputAppBar";
 import CheckboxList from "../../generics/CheckboxList";
-import { brewingTimesToSeconds } from "../../../services/ParsingService";
+import { brewingTimesToSeconds } from "../../../services/parsing-services";
 import { subcategoryModel } from "../../../services/Serializers";
-import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { CategoriesState } from "../../statecontainers/categories-context";
 
 /**
  * Mobile tea creation category list input component.

@@ -24,9 +24,9 @@ import {
   brewingTimesToSeconds,
   cropToNoZeroes,
   fahrenheitToCelsius,
-} from "../../../services/ParsingService";
+} from "../../../services/parsing-services";
 import { subcategoryModel } from "../../../services/Serializers";
-import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { CategoriesState } from "../../statecontainers/categories-context";
 import { validationSchema } from "./ValidationSchema";
 import { useStyles } from "../../../style/DesktopFormStyles";
 

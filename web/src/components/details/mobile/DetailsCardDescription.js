@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Box, Card, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
-import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { CategoriesState } from "../../statecontainers/categories-context";
 
 const useStyles = makeStyles((theme) => ({
   about: {

@@ -19,13 +19,13 @@ import {
 } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
-import { getOfflineTeas, syncOffline } from "../../services/SyncService";
+import { getOfflineTeas, syncOffline } from "../../services/sync-services";
 import { APIRequest } from "../../services/AuthService";
 import {
   GridViewState,
   GridViewDispatch,
 } from "../statecontainers/GridViewContext";
-import { TeaDispatch } from "../statecontainers/TeasContext";
+import { TeaDispatch } from "../statecontainers/tea-context";
 import { SubcategoriesDispatch } from "../statecontainers/SubcategoriesContext";
 import { SnackbarDispatch } from "../statecontainers/SnackbarContext";
 import { VendorsDispatch } from "../statecontainers/VendorsContext";

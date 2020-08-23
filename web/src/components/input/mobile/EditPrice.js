@@ -7,7 +7,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { cropToNoZeroes } from "../../../services/ParsingService";
+import { cropToNoZeroes } from "../../../services/parsing-services";
 import InputAppBar from "./InputAppBar";
 
 const useStyles = makeStyles((theme) => ({

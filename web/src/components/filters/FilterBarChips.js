@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Chip } from "@material-ui/core";
-import { FilterDispatch, FilterState } from "../statecontainers/FilterContext";
+import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
 
 /**
  * Defines chips components for mobile filter bar based on filters state.

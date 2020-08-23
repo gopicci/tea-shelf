@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Webcam from "react-webcam";
 import { APIRequest } from "../../../services/AuthService";
 import { visionParserSerializer } from "../../../services/Serializers";
-import { CategoriesState } from "../../statecontainers/CategoriesContext";
+import { CategoriesState } from "../../statecontainers/categories-context";
 import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
 import { VendorsState } from "../../statecontainers/VendorsContext";
 

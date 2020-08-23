@@ -11,7 +11,7 @@ import WeightAutocomplete from "./WeightAutocomplete";
 import {
   celsiusToFahrenheit,
   fahrenheitToCelsius,
-} from "../../../services/ParsingService";
+} from "../../../services/parsing-services";
 
 /**
  * Desktop tea creation form brewing component.

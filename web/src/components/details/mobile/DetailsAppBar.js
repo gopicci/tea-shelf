@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import { APIRequest } from "../../../services/AuthService";
 import { SnackbarDispatch } from "../../statecontainers/SnackbarContext";
-import { TeaDispatch } from "../../statecontainers/TeasContext";
+import { TeaDispatch } from "../../statecontainers/tea-context";
 import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
 
 const useStyles = makeStyles((theme) => ({

@@ -11,7 +11,7 @@ import {
 import {
   getCountryCode,
   getOriginName,
-} from "../../../services/ParsingService";
+} from "../../../services/parsing-services";
 import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
 import { geography } from "../../../services/Geography";
 

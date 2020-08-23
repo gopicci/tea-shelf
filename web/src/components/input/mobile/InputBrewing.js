@@ -4,7 +4,7 @@ import { fade, makeStyles } from "@material-ui/core/styles";
 import {
   celsiusToFahrenheit,
   parseHMSToSeconds,
-} from "../../../services/ParsingService";
+} from "../../../services/parsing-services";
 
 const useStyles = makeStyles((theme) => ({
   root: {

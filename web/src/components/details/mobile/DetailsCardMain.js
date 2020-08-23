@@ -14,7 +14,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   cropToNoZeroes,
   getSubcategoryName,
-} from "../../../services/ParsingService";
+} from "../../../services/parsing-services";
 import InputBrewing from "../../input/mobile/InputBrewing";
 import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
 import emptyImage from "../../../media/empty.png";

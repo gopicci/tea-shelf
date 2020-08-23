@@ -2,7 +2,7 @@ import React from "react";
 import { List } from "@material-ui/core";
 import InputAppBar from "./InputAppBar";
 import InputItem from "./InputItem";
-import { celsiusToFahrenheit } from "../../../services/ParsingService";
+import { celsiusToFahrenheit } from "../../../services/parsing-services";
 import { formListStyles } from "../../../style/FormListStyles";
 
 /**

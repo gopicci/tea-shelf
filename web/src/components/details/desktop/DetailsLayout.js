@@ -18,8 +18,8 @@ import {
   getCountryCode,
   getOriginName,
   getSubcategoryName,
-} from "../../../services/ParsingService";
-import { CategoriesState } from "../../statecontainers/CategoriesContext";
+} from "../../../services/parsing-services";
+import { CategoriesState } from "../../statecontainers/categories-context";
 import Rating from "@material-ui/lab/Rating";
 import { Star } from "@material-ui/icons";
 import InputBrewing from "../../input/mobile/InputBrewing";

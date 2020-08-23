@@ -7,7 +7,7 @@ import parse from "autosuggest-highlight/parse";
 import { parse as himalaya } from "himalaya";
 import { v4 as uuidv4 } from "uuid";
 import { APIRequest } from "../../../services/AuthService";
-import { getOriginName } from "../../../services/ParsingService";
+import { getOriginName } from "../../../services/parsing-services";
 import { originModel } from "../../../services/Serializers";
 
 const useStyles = makeStyles((theme) => ({

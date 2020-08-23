@@ -1,6 +1,6 @@
 import React from "react";
 import { Autocomplete } from "@material-ui/lab";
-import { celsiusToFahrenheit } from "../../../services/ParsingService";
+import { celsiusToFahrenheit } from "../../../services/parsing-services";
 
 /**
  * Desktop tea creation form temperature autocomplete component.

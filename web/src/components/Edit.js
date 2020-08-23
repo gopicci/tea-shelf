@@ -6,7 +6,7 @@ import DetailsLayoutDesktop from './details/desktop/DetailsLayout';
 import InputForm from './input/desktop/InputForm';
 import { APIRequest } from "../services/AuthService";
 import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
-import { TeaDispatch } from "./statecontainers/TeasContext";
+import { TeaDispatch } from "./statecontainers/tea-context";
 import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
 import { VendorsDispatch } from "./statecontainers/VendorsContext";
 import { teaSerializer } from "../services/Serializers";

@@ -1,4 +1,4 @@
-import { brewingTimesToSeconds } from "./ParsingService";
+import { brewingTimesToSeconds } from "./parsing-services";
 
 /**
  * Defines brewing data structure in API request format.

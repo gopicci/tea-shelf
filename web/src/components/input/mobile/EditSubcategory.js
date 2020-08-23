@@ -17,7 +17,7 @@ import { ArrowBack } from "@material-ui/icons";
 import {
   brewingTimesToSeconds,
   getSubcategoryName,
-} from "../../../services/ParsingService";
+} from "../../../services/parsing-services";
 import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
 import { formListStyles } from "../../../style/FormListStyles";
 

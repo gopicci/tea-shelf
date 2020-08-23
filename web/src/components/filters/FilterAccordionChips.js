@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box, Button, Chip, Typography } from "@material-ui/core";
-import { FilterDispatch, FilterState } from "../statecontainers/FilterContext";
+import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
 
 const useStyles = makeStyles((theme) => ({
   root: {
