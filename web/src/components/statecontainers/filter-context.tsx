@@ -1,19 +1,22 @@
 import React, {
   createContext,
+  Dispatch,
   useContext,
   useReducer,
   useEffect,
   useState,
+  ReactElement,
 } from "react";
-import { getSubcategoryName } from "../../services/ParsingService";
-import { CategoriesState } from "./CategoriesContext";
-import { TeasState } from "./TeasContext";
+import {
+  getCategoryName,
+  getSubcategoryName,
+} from "../../services/parsing-services";
+import { CategoriesState } from "./categories-context";
+import { TeasState } from "./tea-context";
+import { SortingOptions, Filters } from "../../services/models";
 
-export const FilterState = createContext(null);
-export const FilterDispatch = createContext(null);
-
-// Define sorting options
-const sorting = {
+// Define initial sorting state
+const initialSorting: SortingOptions = {
   "date added": true,
   year: false,
   rating: false,
@@ -23,8 +26,8 @@ const sorting = {
 };
 
 // Define initial filters structure
-const filtersDefinition = {
-  sorting: { ...sorting },
+const initialFilters: Filters = {
+  sorting: { ...initialSorting },
   active: 0,
   filters: {
     categories: {},
@@ -36,17 +39,33 @@ const filtersDefinition = {
   },
 };
 
+type Action =
+  | {
+      type: "CHECK_FILTER";
+      data: { entry: keyof typeof initialFilters.filters; item: string };
+    }
+  | { type: "CHECK_SORT"; data: { item: string } }
+  | { type: "CLEAR" }
+  | { type: "RESET" };
+
+export const FilterState = createContext<Filters>(initialFilters);
+export const FilterDispatch = createContext({} as Dispatch<Action>);
+
+type Props = {
+  children: ReactElement;
+};
+
 /**
  * Filters status state and dispatch provider. Structure gets updated on teas state
  * change, dispatch takes care of keeping track of the checked status.
  */
-export default function FilterContext(props) {
+function FilterContext({ children }: Props): ReactElement {
   const categories = useContext(CategoriesState);
   const teas = useContext(TeasState);
 
-  const [initialState, setInitialState] = useState(filtersDefinition);
+  const [initialState, setInitialState] = useState(initialFilters);
 
-  const reducer = (state, action) => {
+  function reducer(state: Filters, action: Action) {
     switch (action.type) {
       case "CHECK_FILTER":
         // Change filter checked status and number of overall checked filters
@@ -78,9 +97,9 @@ export default function FilterContext(props) {
         // Set all filters and sorting options to default state
         return initialState;
       default:
-        return action;
+        return initialState;
     }
-  };
+  }
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -88,14 +107,15 @@ export default function FilterContext(props) {
     // Update state structure on teas state change
     if (!teas) return;
 
-    let filters = { ...filtersDefinition.filters };
+    let filters = { ...initialFilters.filters };
 
     for (const tea of teas) {
-      if (categories && tea.category) {
+      if (categories.length && tea.category) {
         // Category defined, add if not present
-        const categoryName = categories
-          .find((category) => category.id === tea.category)
-          .name.toLowerCase();
+        const categoryName = getCategoryName(
+          categories,
+          tea.category
+        ).toLowerCase();
         if (!(categoryName in filters.categories))
           filters.categories = {
             ...filters.categories,
@@ -140,7 +160,7 @@ export default function FilterContext(props) {
       }
     }
 
-    setInitialState({ ...filtersDefinition, filters: filters });
+    setInitialState({ ...initialFilters, filters: filters });
   }, [teas, categories]);
 
   useEffect(() => {
@@ -152,9 +172,9 @@ export default function FilterContext(props) {
 
   return (
     <FilterDispatch.Provider value={dispatch}>
-      <FilterState.Provider value={state}>
-        {props.children}
-      </FilterState.Provider>
+      <FilterState.Provider value={state}>{children}</FilterState.Provider>
     </FilterDispatch.Provider>
   );
 }
+
+export default FilterContext;

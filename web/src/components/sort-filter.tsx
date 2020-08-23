@@ -10,7 +10,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
 import FilterList from "./filters/FilterList";
-import { FilterDispatch, FilterState } from "./statecontainers/FilterContext";
+import { FilterDispatch, FilterState } from "./statecontainers/filter-context";
 import { Route } from '../app';
 
 const useStyles = makeStyles((theme) => ({
@@ -60,7 +60,7 @@ export default function SortFilter({ setRoute }: Props): ReactElement {
   function handleReset() {
     dispatch({
       type: "RESET",
-    }: Dispatch<Action>);
+    });
   }
 
   return (

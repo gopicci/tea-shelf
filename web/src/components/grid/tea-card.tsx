@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { ReactElement, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Box,
@@ -14,9 +14,12 @@ import {
   getOriginShortName,
   getSubcategoryName,
   getCountryCode,
-} from "../../services/ParsingService";
-import { CategoriesState } from "../statecontainers/CategoriesContext";
+  getCategoryName,
+} from "../../services/parsing-services";
+import { CategoriesState } from "../statecontainers/categories-context";
 import emptyImage from "../../media/empty.png";
+import { Route } from "../../app";
+import { TeaModel } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -114,26 +117,35 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * TeaCard props.
+ *
+ * @memberOf TeaCard
+ */
+type Props = {
+  /** tea */
+  tea: TeaModel;
+  /** Grid or list mode */
+  gridView: boolean;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+};
+
+/**
  * Card component visualizing a single tea instance.
  *
- * @param tea {Object} Tea instance data in API format
- * @param gridView {boolean} Grid view switch status
- * @param setRouter {function} Set main route
- * @param setDialog {function} Set dialog route state
+ * @component
  */
 export default function TeaCard({
   tea,
   gridView,
-  setRouter,
-  setDialog,
-  isMobile,
-}) {
+  setRoute,
+}: Props): ReactElement {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
 
   function handleCardClick() {
-      setRouter({ route: "TEA_DETAILS", data: tea });
+    setRoute({ route: "TEA_DETAILS", payload: tea });
   }
 
   return (
@@ -165,7 +177,7 @@ export default function TeaCard({
             </Typography>
           </Box>
           <Box className={classes.bottomBox}>
-            {tea.rating > 0 && (
+            {tea.rating && tea.rating > 0 && (
               <Box className={classes.ratingBox}>
                 <StarRate className={classes.icon} />
                 <Typography
@@ -208,10 +220,7 @@ export default function TeaCard({
           variant="body2"
           component="span"
         >
-          {categories &&
-            Object.entries(categories).find(
-              (entry) => entry[1].id === tea.category
-            )[1].name}
+          {categories && getCategoryName(categories, tea.category)}
         </Typography>
         <MoreVert className={classes.icon} />
       </CardActions>

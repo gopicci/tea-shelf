@@ -1,4 +1,21 @@
 import { countryCodes } from "./CountryCodes";
+import { CategoryModel } from "./models";
+
+/**
+ * Gets category name from list of categories based on id.
+ * Returns an empty string if no correspondence is found.
+ *
+ * @param categories {CategoryModel[]} List of categories
+ * @param id {number} Category ID
+ * @returns {string}
+ */
+export function getCategoryName(categories: CategoryModel[], id: number) {
+  const category = Object.entries(categories).find(
+    (entry) => entry[1].id === id
+  );
+  if (category && category[1].name) return category[1].name;
+  else return "";
+}
 
 /**
  * Attempts to build subcategory name in "name (translated_name)" format

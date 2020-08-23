@@ -1,16 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {ReactElement, useContext, useEffect, useState} from 'react';
 import { Box, Grid, Typography } from "@material-ui/core";
 import { ArrowDropUp, ArrowDropDown } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import TeaCard from "./TeaCard";
-import { getSubcategoryName } from "../../services/ParsingService";
-import { TeasState } from "../statecontainers/TeasContext";
-import { FilterState } from "../statecontainers/FilterContext";
+import TeaCard from "./tea-card";
+import { getSubcategoryName } from "../../services/parsing-services";
+import { TeasState } from "../statecontainers/tea-context";
+import { FilterState } from "../statecontainers/filter-context";
 import { GridViewState } from "../statecontainers/GridViewContext";
-import { CategoriesState } from "../statecontainers/CategoriesContext";
+import { CategoriesState } from "../statecontainers/categories-context";
 import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
 import { VendorsState } from "../statecontainers/VendorsContext";
 import { SearchState } from "../statecontainers/SearchContext";
+import {Route} from '../../app';
+import { TeaModel} from '../../services/models';
+import {getCategoryName} from '../../services/parsing-services';
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -78,14 +81,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * GridLayout props.
+ *
+ * @memberOf GridLayout
+ */
+type Props = {
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+  /** Mobile mode or desktop */
+  isMobile: boolean;
+};
+
+
+/**
  * Grid component containing tea cards. Filters tea cards based on
  * central filter state.
  *
- * @param setRouter {setRouter} Callback to set main route
- * @param setDialog {function} Set dialog route state
- * @param isMobile {boolean} Mobile mode or desktop
+ * @component
  */
-export default function GridLayout({ setRouter, setDialog, isMobile }) {
+export default function GridLayout({ setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
@@ -96,12 +110,12 @@ export default function GridLayout({ setRouter, setDialog, isMobile }) {
   const gridView = useContext(GridViewState);
   const searchState = useContext(SearchState);
 
-  const [filteredTeas, setFilteredTeas] = useState(teasState);
-  const [sorting, setSorting] = useState("");
-  const [reversed, setReversed] = useState(false);
+  const [filteredTeas, setFilteredTeas] = useState<TeaModel[]>(teasState);
+  const [sorting, setSorting] = useState<string>("");
+  const [reversed, setReversed] = useState<boolean>(false);
 
-  function sortTeas(teas, sorting) {
-    if (teas)
+  function sortTeas(teas: TeaModel[], sorting:string) {
+    if (teas.length)
       switch (sorting) {
         case "date added":
           return [...teas].sort(
@@ -109,12 +123,16 @@ export default function GridLayout({ setRouter, setDialog, isMobile }) {
           );
         case "year":
           return [...teas].sort((a, b) => {
-            if (b.year === null || a.year > b.year) return -1;
-            if (a.year === null || a.year < b.year) return 1;
-            return 0;
+            if (!a.year) return 1;
+            if (!b.year) return -1;
+            return b.year - a.year;
           });
         case "rating":
-          return [...teas].sort((a, b) => b.rating - a.rating);
+          return [...teas].sort((a, b) => {
+            if (!a.rating) return 1;
+            if (!b.rating) return -1;
+            return b.rating - a.rating;
+          });
         case "alphabetical":
           return [...teas].sort((a, b) => {
             if (a.name < b.name) return -1;
@@ -123,18 +141,18 @@ export default function GridLayout({ setRouter, setDialog, isMobile }) {
           });
         case "origin":
           return [...teas].sort((a, b) => {
-            if (b.origin === null) return -1;
-            if (a.origin === null) return 1;
-            if (a.origin.country < b.origin.country) return -1;
+            if (!a.origin?.country) return 1;
+            if (!b.origin?.country) return -1;
             if (a.origin.country > b.origin.country) return 1;
+            if (a.origin.country < b.origin.country) return -1;
             return 0;
           });
         case "vendor":
           return [...teas].sort((a, b) => {
-            if (b.vendor === null) return -1;
-            if (a.vendor === null) return 1;
-            if (a.vendor.name < b.vendor.name) return -1;
+            if (!a.vendor?.name) return 1;
+            if (!b.vendor?.name) return -1;
             if (a.vendor.name > b.vendor.name) return 1;
+            if (a.vendor.name < b.vendor.name) return -1;
             return 0;
           });
         default:
@@ -148,22 +166,21 @@ export default function GridLayout({ setRouter, setDialog, isMobile }) {
 
   useEffect(() => {
     // Sort teas
-    const sorting = Object.keys(filterState.sorting).find(
-      (k) => filterState.sorting[k] === true
+    let sorting = Object.keys(filterState.sorting).find(
+      (k) => filterState.sorting[k]
     );
+    if (!sorting) sorting = "";
     setSorting(sorting);
     let sorted = sortTeas(teasState, sorting);
-    if (reversed) sorted = sorted.reverse();
+    if (sorted && reversed) sorted = sorted.reverse();
 
     let filtered;
     // Parse entries through selected filters
-    if (filterState.active > 0)
+    if (sorted && filterState.active)
       // At least 1 filter entry is checked
       filtered = sorted.filter((tea) => {
-        const category = categories.find(
-          (category) => category.id === tea.category
-        );
-        if (filterState.filters.categories[category.name.toLowerCase()])
+        const category = getCategoryName(categories, tea.category)
+        if (filterState.filters.categories[category.toLowerCase()])
           return true;
         if (
           tea.subcategory &&
@@ -193,48 +210,48 @@ export default function GridLayout({ setRouter, setDialog, isMobile }) {
       });
     else filtered = sorted;
 
-    // Parse remaining entries through search input
-    if (searchState.length > 1) {
-      const search = searchState.toLowerCase();
+    if (filtered) {
+      // Parse remaining entries through search input
+      if (searchState.length > 1) {
+        const search = searchState.toLowerCase();
 
-      setFilteredTeas(
-        filtered.filter((tea) => {
-          if (tea.name.toLowerCase().includes(search)) return true;
+        setFilteredTeas(
+          filtered.filter((tea) => {
+            if (tea.name.toLowerCase().includes(search)) return true;
 
-          const category = categories.find(
-            (category) => category.id === tea.category
-          );
-          if (category.name.toLowerCase().includes(search)) return true;
-          if (
-            tea.subcategory &&
-            tea.subcategory.name.toLowerCase().includes(search)
-          )
-            return true;
-
-          if (tea.vendor && tea.vendor.name.toLowerCase().includes(search))
-            return true;
-
-          if (tea.origin) {
+            const category = getCategoryName(categories, tea.category)
+            if (category.toLowerCase().includes(search)) return true;
             if (
-              tea.origin.country &&
-              tea.origin.country.toLowerCase().includes(search)
+              tea.subcategory &&
+              tea.subcategory.name.toLowerCase().includes(search)
             )
               return true;
-            if (
-              tea.origin.region &&
-              tea.origin.region.toLowerCase().includes(search)
-            )
+
+            if (tea.vendor && tea.vendor.name.toLowerCase().includes(search))
               return true;
-            if (
-              tea.origin.locality &&
-              tea.origin.locality.toLowerCase().includes(search)
-            )
-              return true;
-          }
-          return false;
-        })
-      );
-    } else setFilteredTeas(filtered);
+
+            if (tea.origin) {
+              if (
+                tea.origin.country &&
+                tea.origin.country.toLowerCase().includes(search)
+              )
+                return true;
+              if (
+                tea.origin.region &&
+                tea.origin.region.toLowerCase().includes(search)
+              )
+                return true;
+              if (
+                tea.origin.locality &&
+                tea.origin.locality.toLowerCase().includes(search)
+              )
+                return true;
+            }
+            return false;
+          })
+        );
+      } else setFilteredTeas(filtered);
+    }
   }, [
     filterState,
     categories,
@@ -271,9 +288,7 @@ export default function GridLayout({ setRouter, setDialog, isMobile }) {
               <TeaCard
                 tea={tea}
                 gridView={gridView && !isMobile}
-                setRouter={setRouter}
-                setDialog={setDialog}
-                isMobile={isMobile}
+                setRoute={setRoute}
               />
             </Grid>
           ))}

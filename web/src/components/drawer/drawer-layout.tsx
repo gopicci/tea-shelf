@@ -7,9 +7,10 @@ import {
   SvgIcon,
   Toolbar,
 } from "@material-ui/core";
-import React from "react";
+import React, { ReactElement } from "react";
 import { Add, Archive } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import { Route } from "../../app";
 
 const drawerWidth = 240;
 
@@ -35,11 +36,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Desktop left side drawer component.
+ * DrawerLayout props.
+ *
+ * @memberOf DrawerLayout
+ */
+type Props = {
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+};
+
+/**
+ * Desktop view left side drawer component.
  *
  * @param setRouter {function} Set main route
  */
-export default function DrawerLayout({ setRouter }) {
+export default function DrawerLayout({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
   return (
@@ -56,7 +67,7 @@ export default function DrawerLayout({ setRouter }) {
           <ListItem
             button
             key="add"
-            onClick={() => setRouter({ route: "CREATE" })}
+            onClick={() => setRoute({ route: "CREATE" })}
             aria-label="add tea"
           >
             <ListItemIcon>

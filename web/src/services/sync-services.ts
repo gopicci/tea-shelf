@@ -1,5 +1,6 @@
 import { APIRequest } from "./AuthService";
 import localforage from "localforage";
+import { TeaModel } from './models';
 
 /**
  * Generic object array state reducer, assumes id field on entries.
@@ -79,19 +80,14 @@ export async function syncOffline() {
 }
 
 /**
- * Gets offline teas (not uploaded yet) from storage
- * and returns serialized data to match an API response.
+ * Gets offline teas (not uploaded yet) from storage.
  */
 export async function getOfflineTeas() {
-  const cache = await localforage.getItem("offline-teas");
+  const cache = await localforage.getItem<TeaModel[]>("offline-teas");
   if (!cache) return localforage.setItem("offline-teas", []);
   else
     return Promise.all(
       cache
         .filter((entry) => entry.name && entry.category)
-        .map(async (entry) => {
-          entry.category = parseInt(entry.category);
-          return entry;
-        })
     );
 }
