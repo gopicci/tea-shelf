@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { APIRequest } from "../services/auth-services";
 
 function Copyright() {
   return (
@@ -35,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   logo: {
-    fontSize: theme.spacing(8),
+    fontSize: theme.spacing(12),
     marginBottom: theme.spacing(4),
   },
   form: {
@@ -58,15 +57,24 @@ function Login() {
   type Inputs = {
     email: string;
     password: string;
-  }
+  };
 
-  async function onSubmit (values: Inputs, actions: FormikHelpers<Inputs>): Promise<void> {
+  async function onSubmit(
+    values: Inputs,
+    actions: FormikHelpers<Inputs>
+  ): Promise<void> {
+    let api_path = process.env.REACT_APP_API;
+    if (api_path === undefined) api_path = "/api";
+
     try {
-      const response = await APIRequest(
-        "/login/",
-        "POST",
-        JSON.stringify({ email: values.email, password: values.password })
-      );
+      const response = await fetch(`${api_path}/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -91,7 +99,7 @@ function Login() {
     } catch (e) {
       console.error(e);
     }
-  };
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -100,7 +108,7 @@ function Login() {
         <SvgIcon
           className={classes.logo}
           shapeRendering="geometricPrecision"
-          viewBox="0 0 270.9 270.9"
+          viewBox="0 0 512 512"
         >
           <defs>
             <mask id="a" maskUnits="userSpaceOnUse">
@@ -149,9 +157,17 @@ function Login() {
             email: "",
             password: "",
           }}
-          onSubmit={onSubmit}
+          onSubmit={(values, actions) => onSubmit(values, actions)}
         >
-          {({ errors, handleChange, handleSubmit, isSubmitting, values }) => (
+          {({
+            errors,
+            handleChange,
+            handleSubmit,
+            isSubmitting,
+            values,
+            setSubmitting,
+            setFieldError,
+          }) => (
             <form className={classes.form} noValidate onSubmit={handleSubmit}>
               <TextField
                 margin="normal"
