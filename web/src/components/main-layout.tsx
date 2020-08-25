@@ -2,12 +2,11 @@ import React, { ReactElement } from "react";
 import { Box, Fab, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
-import SearchAppBar from "./appbar/SearchAppBar";
+import SearchAppBar from "./appbar/search-app-bar";
+import FilterBar from './filters/filter-bar';
+import FilterAccordion from './filters/filter-accordion';
 import DrawerLayout from "./drawer/drawer-layout";
 import GridLayout from "./grid/grid-layout";
-import FilterAccordion from "./filters/FilterAccordion";
-import FilterBar from "./filters/FilterBar";
-import DialogLayout from "./dialog/DialogLayout";
 import { Route } from "../app";
 
 const useStyles = makeStyles((theme) => ({
@@ -68,7 +67,7 @@ function MainLayout(props: Props): ReactElement {
       <Box className={classes.page}>
         <DrawerLayout setRoute={setRoute} />
         <Box className={classes.mainBox}>
-
+          {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
           <GridLayout {...props} />
         </Box>
         {isMobile && (

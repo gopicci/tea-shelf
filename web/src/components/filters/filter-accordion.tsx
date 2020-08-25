@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -10,9 +10,10 @@ import {
 } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import FilterAccordionChips from "./FilterAccordionChips";
-import FilterList from "./FilterList";
+import FilterAccordionChips from "./filter-accordion-chips";
+import FilterList from "./filter-list";
 import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
+import { Filters } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,9 +41,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Desktop filters accordion component.
+ * Desktop mode filters accordion component.
+ *
+ * @component
  */
-export default function FilterAccordion() {
+function FilterAccordion(): ReactElement {
   const classes = useStyles();
 
   const state = useContext(FilterState);
@@ -50,16 +53,18 @@ export default function FilterAccordion() {
 
   const [open, setOpen] = useState(false);
 
-  const handleExpansion = () => {
+  /** Toggles accordion expansion */
+  function handleExpansion(): void {
     setOpen(!open);
-  };
+  }
 
-  const handleReset = () => {
+  /** Resets filters state and closes accordion */
+  function handleReset(): void {
     dispatch({
       type: "RESET",
     });
     setOpen(!open);
-  };
+  }
 
   return (
     <Box className={classes.root}>
@@ -79,7 +84,7 @@ export default function FilterAccordion() {
             </Grid>
             {Object.entries(state.filters).map(([entry, list]) => (
               <Grid item className={classes.listItem} key={entry}>
-                <FilterList entry={entry} list={list} />
+                <FilterList entry={entry as keyof Filters["filters"]} list={list} />
               </Grid>
             ))}
           </Grid>
@@ -96,3 +101,5 @@ export default function FilterAccordion() {
     </Box>
   );
 }
+
+export default FilterAccordion;

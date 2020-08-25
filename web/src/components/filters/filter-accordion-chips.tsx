@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { MouseEvent, ReactElement, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box, Button, Chip, Typography } from "@material-ui/core";
 import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
+import { Filters } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,27 +22,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Defines chips components for desktop accordion based on filters state.
+ * Chips components for desktop accordion, based on filters state.
+ *
+ * @component
  */
-export default function FilterAccordionChips() {
+function FilterAccordionChips(): ReactElement {
   const classes = useStyles();
 
   const state = useContext(FilterState);
   const dispatch = useContext(FilterDispatch);
 
-  const handleDelete = (event, entry, item) => {
+  /**
+   * Deletes chip by updating global filter status
+   * to unchecked.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} event - Change event
+   * @param {keyof Filters["filters"]} entry - Filter group
+   * @param {string} item - Filter item
+   */
+  function handleDelete(
+    event: MouseEvent<HTMLDivElement>,
+    entry: keyof Filters["filters"],
+    item: string
+  ): void {
     dispatch({
       type: "CHECK_FILTER",
       data: { entry: entry, item: item },
     });
-  };
+  }
 
-  const handleReset = (event) => {
+  /**
+   * Update global filter status to uncheck all filters.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} event - Change event
+   */
+  function handleReset(event: MouseEvent<HTMLButtonElement>): void {
     event.stopPropagation();
     dispatch({
       type: "CLEAR",
     });
-  };
+  }
 
   return (
     <Box className={classes.root}>
@@ -67,12 +87,13 @@ export default function FilterAccordionChips() {
               checked && (
                 <Chip
                   key={item}
-                  name={item}
                   label={item}
-                  onClick={(e) => {
+                  onClick={(e: MouseEvent<HTMLDivElement>) => {
                     e.stopPropagation();
                   }}
-                  onDelete={(e) => handleDelete(e, entry, item)}
+                  onDelete={(e) =>
+                    handleDelete(e, entry as keyof Filters["filters"], item)
+                  }
                   size="small"
                 />
               )
@@ -81,3 +102,5 @@ export default function FilterAccordionChips() {
     </Box>
   );
 }
+
+export default FilterAccordionChips;

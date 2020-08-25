@@ -122,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
  * @memberOf TeaCard
  */
 type Props = {
-  /** tea */
+  /** Tea instance data */
   tea: TeaModel;
   /** Grid or list mode */
   gridView: boolean;
@@ -135,16 +135,13 @@ type Props = {
  *
  * @component
  */
-export default function TeaCard({
-  tea,
-  gridView,
-  setRoute,
-}: Props): ReactElement {
+function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
 
-  function handleCardClick() {
+  /** Sets main route to tea details */
+  function handleCardClick(): void {
     setRoute({ route: "TEA_DETAILS", payload: tea });
   }
 
@@ -173,11 +170,12 @@ export default function TeaCard({
               gutterBottom
               variant="subtitle1"
             >
-              {tea.year} {getSubcategoryName(tea.subcategory)}
+              {tea.year}{" "}
+              {tea.subcategory && getSubcategoryName(tea.subcategory)}
             </Typography>
           </Box>
           <Box className={classes.bottomBox}>
-            {tea.rating && tea.rating > 0 && (
+            {tea.rating !== undefined && tea.rating > 0 && (
               <Box className={classes.ratingBox}>
                 <StarRate className={classes.icon} />
                 <Typography
@@ -227,3 +225,5 @@ export default function TeaCard({
     </Card>
   );
 }
+
+export default TeaCard;

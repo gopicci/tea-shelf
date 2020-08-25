@@ -1,11 +1,11 @@
 /**
  * Converts image data into File format.
  *
- * @param imageData {string} Base64 encoded image data
+ * @param {string} imageData - Base64 encoded image data
  * @returns {Promise<File>}
- * @constructor
+ * @category Services
  */
-export async function ImageDataToFile(imageData) {
+export async function ImageDataToFile(imageData: string): Promise<File> {
   if (!imageData) return Promise.reject();
   else
     return fetch(imageData)
@@ -17,11 +17,11 @@ export async function ImageDataToFile(imageData) {
  * Converts image File to base64. Re-encoding it from canvas is safer as
  * Django base64 interpreter has issues with the encoding of certain jpg types.
  *
- * @param file {File} Image input in File format
+ * @param {File} file - Image input in File format
  * @returns {Promise<string>}
- * @constructor
+ * @category Services
  */
-export function FileToBase64(file) {
+export function FileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!file) return Promise.reject();
     else {
@@ -35,11 +35,11 @@ export function FileToBase64(file) {
           canvas.width = img.width;
           canvas.height = img.height;
           const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, img.width, img.height);
+          ctx?.drawImage(img, 0, 0, img.width, img.height);
           const dataUrl = canvas.toDataURL("image/jpeg", 90);
           resolve(dataUrl);
         };
-        img.src = reader.result;
+        if (typeof reader.result === "string") img.src = reader.result;
       };
       reader.onerror = (error) => reject(error);
     }

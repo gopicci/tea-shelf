@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { APIRequest } from "../services/AuthService";
+import { APIRequest } from "../services/auth-services";
 
 function Copyright() {
   return (
@@ -49,11 +49,18 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * Default login component
+ *
+ * @component
  */
-export default function Login() {
+function Login() {
   const classes = useStyles();
 
-  const onSubmit = async (values, actions) => {
+  type Inputs = {
+    email: string;
+    password: string;
+  }
+
+  async function onSubmit (values: Inputs, actions: FormikHelpers<Inputs>): Promise<void> {
     try {
       const response = await APIRequest(
         "/login/",
@@ -79,7 +86,7 @@ export default function Login() {
         console.error(response.statusText);
       } else {
         window.localStorage.setItem("user.auth", JSON.stringify(data));
-        window.location.reload(false);
+        window.location.reload();
       }
     } catch (e) {
       console.error(e);
@@ -95,38 +102,44 @@ export default function Login() {
           shapeRendering="geometricPrecision"
           viewBox="0 0 270.9 270.9"
         >
-          <path
-            fill="#916f6f"
-            stroke="#916f6f"
-            stroke-width=".4"
-            d="M11 29h248v21H11zM11 220h248v21H11z"
+          <defs>
+            <mask id="a" maskUnits="userSpaceOnUse">
+              <circle cx="256" cy="256" r="256" fill="#ececec" />
+            </mask>
+          </defs>
+          <circle r="256" cy="256" cx="256" fill="#f2f2f2" />
+          <circle
+            r="229.7"
+            cy="256"
+            cx="256"
+            fill="none"
+            stroke="red"
+            stroke-width="9"
           />
-          <path
-            d="M73 60c-10 29 0 87 20 112 22 28 52 26 66 21s27-44 7-75c-19-30-60-52-93-58z"
-            fill="#338000"
-            stroke="green"
-            stroke-width=".5"
+          <circle
+            r="165.5"
+            cy="256"
+            cx="256"
+            fill="none"
+            stroke="gray"
+            stroke-width="70.1"
+            stroke-dasharray="140 70"
+            stroke-dashoffset="182.3"
           />
-          <path
-            d="M149 185c8 6 16 14 25 19s26 6 26 6l-2-10s-17-2-25-8l-27-21z"
-            fill="#338000"
+          <circle
+            cx="256"
+            cy="256"
+            r="75.2"
+            fill="none"
+            stroke="red"
+            stroke-width="18"
           />
-          <g>
-            <path
-              fill="#916f6f"
-              stroke="#916f6f"
-              stroke-width=".4"
-              d="M217 259V11h21v248z"
-            />
-          </g>
-          <g>
-            <path
-              fill="#916f6f"
-              stroke="#916f6f"
-              stroke-width=".4"
-              d="M33 259V11h21v248z"
-            />
-          </g>
+          <circle r="50.8" cy="256" cx="256" fill="green" />
+          <path
+            mask="url(#a)"
+            d="M256-170l1 422-71 388c-2 10 684-20 684-30S690-220 660-240s-404 70-404 70z"
+            fill-opacity=".1"
+          />
         </SvgIcon>
         <Typography component="h1" variant="h5">
           Sign in
@@ -204,3 +217,5 @@ export default function Login() {
     </Container>
   );
 }
+
+export default Login;

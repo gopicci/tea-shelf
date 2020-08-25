@@ -1,7 +1,7 @@
 import React, { createContext, ReactElement, useEffect, useState } from "react";
 import localforage from "localforage";
-import { APIRequest } from "../../services/AuthService";
-import { logout } from "../../services/AuthService";
+import { APIRequest } from "../../services/auth-services";
+import { logout } from "../../services/auth-services";
 import { CategoryModel } from "../../services/models";
 
 export const CategoriesState = createContext<CategoryModel[]>([]);
@@ -18,15 +18,22 @@ type Props = {
 
 /**
  * Categories state provider. Categories are central to a lot of the app
- * functions, they get loaded cache first otherwise user gets logged out.
+ * functions, the state gets updated cache first and logs out user on error.
  *
  * @component
+ * @subcategory State containers
  */
 function CategoriesContext({ children }: Props): ReactElement {
   const [state, setState] = useState<CategoryModel[]>([]);
 
   useEffect(() => {
-    async function getCategories() {
+    /**
+     * Updates the state cache first on state changes.
+     * Logout on error.
+     *
+     * @memberOf CategoriesContext
+     */
+    async function getCategories(): Promise<void> {
       const localCategories = await localforage.getItem<CategoryModel[]>(
         "categories"
       );

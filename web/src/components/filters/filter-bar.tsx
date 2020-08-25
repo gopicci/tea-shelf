@@ -1,7 +1,8 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Button, Paper, Slide, useScrollTrigger } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import FilterBarChips from "./FilterBarChips";
+import FilterBarChips from "./filter-bar-chips";
+import { Route } from "../../app";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +23,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function HideOnScroll(props) {
-  const { children, window } = props;
-  const trigger = useScrollTrigger({ target: window ? window() : undefined });
+type HOSProps = {
+  children: ReactElement;
+};
+
+/**
+ * Hides children on scroll.
+ *
+ * @param {ReactElement} children
+ * @returns {ReactElement}
+ * @memberOf FilterBar
+ */
+function HideOnScroll({ children }: HOSProps): ReactElement {
+  const trigger = useScrollTrigger();
 
   return (
     <Slide appear={false} direction="down" in={!trigger}>
@@ -34,15 +45,26 @@ function HideOnScroll(props) {
 }
 
 /**
+ * FilterBar props.
+ *
+ * @memberOf FilterBar
+ */
+type Props = {
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+};
+
+/**
  * Mobile filter bar component. Contains filters chips, hides on scroll.
  *
- * @param setRouter {function} Set main route
+ * @component
  */
-export default function FilterBar({ setRouter }) {
+function FilterBar({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
-  function handleButtonClick() {
-    setRouter({ route: "FILTER" });
+  /** Sets main route to filter */
+  function handleButtonClick(): void {
+    setRoute({ route: "FILTER" });
   }
 
   return (
@@ -63,3 +85,5 @@ export default function FilterBar({ setRouter }) {
     </>
   );
 }
+
+export default FilterBar;

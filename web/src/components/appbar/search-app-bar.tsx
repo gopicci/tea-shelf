@@ -20,16 +20,16 @@ import {
 import { fade, makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
 import { getOfflineTeas, syncOffline } from "../../services/sync-services";
-import { APIRequest } from "../../services/AuthService";
+import { APIRequest } from "../../services/auth-services";
 import {
   GridViewState,
   GridViewDispatch,
-} from "../statecontainers/GridViewContext";
+} from "../statecontainers/grid-view-context";
 import { TeaDispatch } from "../statecontainers/tea-context";
-import { SubcategoriesDispatch } from "../statecontainers/SubcategoriesContext";
-import { SnackbarDispatch } from "../statecontainers/SnackbarContext";
-import { VendorsDispatch } from "../statecontainers/VendorsContext";
-import { SearchDispatch } from "../statecontainers/SearchContext";
+import { SubcategoriesDispatch } from "../statecontainers/subcategories-context";
+import { SnackbarDispatch } from "../statecontainers/snackbar-context";
+import { VendorsDispatch } from "../statecontainers/vendors-context";
+import { SearchDispatch } from "../statecontainers/search-context";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -104,8 +104,10 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * Search app bar component. Handles search, sync and grid view switch.
+ *
+ * @component
  */
-export default function SearchAppBar() {
+function SearchAppBar() {
   const classes = useStyles();
 
   const [isSyncing, setSyncing] = useState(false);
@@ -132,16 +134,15 @@ export default function SearchAppBar() {
       });
   }, [searchValue, searchDispatch]);
 
-  function handleGridViewChange() {
-    // Handle grid view switch
+  /** Switches grid view global state */
+  function handleGridViewChange(): void {
     gridViewDispatch({
       type: "SWITCH_VIEW",
     });
   }
 
-  async function handleRefresh() {
-    // Handle sync
-
+  /** Syncs global states and local caches with API */
+  async function handleRefresh(): Promise<void> {
     setSyncing(true);
     let error = null;
 
@@ -292,3 +293,5 @@ export default function SearchAppBar() {
     </AppBar>
   );
 }
+
+export default SearchAppBar;

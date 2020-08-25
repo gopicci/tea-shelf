@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {ChangeEvent, ReactElement, useState} from 'react';
 import {
   Collapse,
   FormGroup,
@@ -8,34 +8,47 @@ import {
   ListItem,
   Typography,
 } from "@material-ui/core";
-
 import { formListStyles } from "../../style/FormListStyles";
+import CheckboxListItem from "./checkbox-list-item";
 
-import CheckboxListItem from "./CheckboxListItem";
+/**
+ * CheckboxList props.
+ *
+ * @memberOf CheckboxList
+ */
+type Props = {
+  /** List title */
+  label: string;
+  /** Checkbox list array in {name: checked} format */
+  list: { [name: string]: boolean };
+  /** Callback to update items checked status */
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  /** If true only first 3 items are shown */
+  isCollapsed: boolean;
+  /** If true list options are shown in reverse order */
+  reverse: boolean;
+}
 
 /**
  * Generic checkbox list component.
  *
- * @param label {string} List title
- * @param list {Array} Checkbox list array in {name: checked} format
- * @param handleChange {function} Function to handle items change
- * @param isCollapsed {boolean} If true only first 3 items are shown with a showAll option
- * @param reverse {boolean} If true list options are shown in reverse order
+ * @component
  */
-export default function CheckboxList({
+function CheckboxList({
   label,
   list,
   handleChange,
   isCollapsed = false,
   reverse = false,
-}) {
+}: Props): ReactElement {
   const formListClasses = formListStyles();
 
   const [open, setOpen] = useState(false);
 
-  const handleShowAllClick = () => {
+  /** Shows complete list */
+  function handleShowAllClick(): void {
     setOpen(!open);
-  };
+  }
 
   const entries = reverse
     ? Object.entries(list).reverse()
@@ -96,3 +109,5 @@ export default function CheckboxList({
     </FormGroup>
   );
 }
+
+export default CheckboxListItem;

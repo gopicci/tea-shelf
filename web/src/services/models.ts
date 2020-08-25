@@ -29,19 +29,43 @@ export interface OriginModel {
 }
 
 /**
- * Defines minimal vendor data structure.
+ * Defines vendor data structure.
  */
 export interface VendorModel {
   /** Vendor name */
   name: string;
+  /** Vendor ID */
+  id: number;
+  /** Vendor website */
+  website?: string;
+  /** Vendor origin */
+  origin?: OriginModel;
+  /** Vendor popularity */
+  popularity?: number;
 }
 
 /**
- * Defines minimal subcategory data structure.
+ * Defines subcategory data structure.
  */
 export interface SubcategoryModel {
   /** Subcategory name */
   name: string;
+  /** Subcategory ID */
+  id: number;
+  /** Macro category */
+  category: CategoryModel;
+  /** English name */
+  translated_name?: string;
+  /** Origin */
+  origin?: OriginModel;
+  /** Gongfu brewing object */
+  gongfu_brewing?: BrewingModel;
+  /** Western brewing object object */
+  western_brewing?: BrewingModel;
+  /** Description */
+  description?: string;
+  /** Description source website */
+  description_source?: string;
 }
 
 /**
@@ -50,12 +74,12 @@ export interface SubcategoryModel {
 export interface TeaModel {
   /** Instance ID */
   id: string;
-  /** Tea image */
-  image?: string;
   /** Tea name */
   name: string;
   /** Category ID */
   category: number;
+  /** Tea image */
+  image?: string;
   /** Subcategory object */
   subcategory?: SubcategoryModel;
   /** Origin object */
@@ -125,11 +149,14 @@ export interface SortingOptions {
 }
 
 /**
- * Define filters data structure.
+ * Defines filters data structure.
  */
 export interface Filters {
+  /** Sorting options */
   sorting: SortingOptions;
+  /** Active filter status */
   active: number;
+  /** Filter groups */
   filters: {
     categories: { [name: string]: boolean };
     subcategories: { [name: string]: boolean };
@@ -138,4 +165,20 @@ export interface Filters {
     regions: { [name: string]: boolean };
     localities: { [name: string]: boolean };
   };
+}
+
+/**
+ * Defines vision parser response data structure.
+ */
+export interface VisionData {
+  /** Supposed tea name */
+  name?: string;
+  /** Supposed tea year */
+  year?: string;
+  /** Supposed tea category */
+  category?: string;
+  /** Supposed tea subcategory */
+  subcategory?: string;
+  /** Supposed tea vendor */
+  vendor?: string;
 }

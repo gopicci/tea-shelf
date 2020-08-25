@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, ReactElement } from "react";
 import {
   Box,
   Checkbox,
@@ -7,7 +7,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Check } from "@material-ui/icons";
-
 import { makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../style/FormListStyles";
 
@@ -38,13 +37,29 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Filters list single checkbox item.
+ * CheckboxListItem props.
  *
- * @param name {string} Item name
- * @param checked {boolean} Checked status
- * @param handleChange {function} Function to handle item change
+ * @memberOf CheckboxListItem
  */
-export default function CheckboxListItem({ name, checked, handleChange }) {
+type Props = {
+  /** Item name */
+  name: string;
+  /** Checked status */
+  checked: boolean;
+  /** Changes checked status */
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
+};
+
+/**
+ * Single item of a checkbox list.
+ *
+ * @component
+ */
+function CheckboxListItem({
+  name,
+  checked,
+  handleChange,
+}: Props): ReactElement {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
@@ -74,3 +89,5 @@ export default function CheckboxListItem({ name, checked, handleChange }) {
     </ListItem>
   );
 }
+
+export default CheckboxListItem;

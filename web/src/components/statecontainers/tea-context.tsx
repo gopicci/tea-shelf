@@ -1,60 +1,40 @@
 import React, {
   createContext,
   Dispatch,
+  ReactChild,
   ReactElement,
   useEffect,
   useReducer,
 } from "react";
 import localforage from "localforage";
 import { getOfflineTeas, syncOffline } from "../../services/sync-services";
-import { APIRequest } from "../../services/AuthService";
+import { APIRequest } from "../../services/auth-services";
 import { TeaModel } from "../../services/models";
-
-type Action =
-  | { type: "CLEAR" }
-  | { type: "SET"; data: TeaModel[] }
-  | { type: "ADD"; data: TeaModel }
-  | { type: "EDIT"; data: TeaModel }
-  | { type: "DELETE"; data: TeaModel };
-
-function reducer(state: TeaModel[], action: Action) {
-  switch (action.type) {
-    case "CLEAR":
-      return [];
-    case "SET":
-      return action.data;
-    case "ADD":
-      return state?.concat(action.data);
-    case "EDIT":
-      return state?.map((item) =>
-        item.id === action.data.id ? action.data : item
-      );
-    case "DELETE":
-      if (state.length < 2) return [];
-      let newState = [];
-      for (const item of state)
-        if (item.id !== action.data.id) newState.push(item);
-      return newState;
-    default:
-      return [];
-  }
-}
+import { genericReducer, genericAction } from "../../services/sync-services";
 
 export const TeasState = createContext<TeaModel[]>([]);
-export const TeaDispatch = createContext({} as Dispatch<Action>);
+export const TeaDispatch = createContext({} as Dispatch<genericAction>);
 
 type Props = {
-  children: ReactElement;
+  children: ReactChild;
 };
 
 /**
  * Teas state and dispatch provider.
+ *
+ * @component
+ * @subcategory State containers
  */
 function TeaContext({ children }: Props): ReactElement {
-  const [state, dispatch] = useReducer(reducer, []);
+  const [state, dispatch] = useReducer(genericReducer, []);
 
   useEffect(() => {
-    async function syncTeas() {
+    /**
+     * Updates the state cache first on state changes.
+     *
+     * @memberOf TeaContext
+     */
+    async function syncTeas(): Promise<void> {
       try {
         // Try to upload offline tea entries
         await syncOffline();
@@ -96,11 +76,11 @@ function TeaContext({ children }: Props): ReactElement {
         console.error(e);
       }
     }
-    if (!state) syncTeas();
+    if (!state.length) syncTeas();
   }, [state]);
 
   return (
-    <TeasState.Provider value={state}>
+    <TeasState.Provider value={state as TeaModel[]}>
       <TeaDispatch.Provider value={dispatch}>{children}</TeaDispatch.Provider>
     </TeasState.Provider>
   );

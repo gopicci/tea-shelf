@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { ChangeEvent, ReactElement, useContext, useState } from "react";
 import {
   Collapse,
   FormGroup,
@@ -8,22 +8,39 @@ import {
   ListItem,
   Typography,
 } from "@material-ui/core";
-import CheckboxListItem from "../generics/CheckboxListItem";
+import CheckboxListItem from "../generics/checkbox-list-item";
 import { FilterDispatch } from "../statecontainers/filter-context";
 import { formListStyles } from "../../style/FormListStyles";
+import { Filters } from "../../services/models";
 
 /**
- * Filters checkbox list component. Uses central filter dispatch to handle change.
+ * FilterList props.
  *
- * @param entry {string} List name
- * @param list {Array} Filter list array in {name: checked} format
+ * @memberOf FilterList
  */
-export default function FilterList({ entry, list }) {
+type Props = {
+  /** Filter list name, can be sorting or one of the filter model options */
+  entry: "sorting" | keyof Filters["filters"];
+  /** Filter list item in {name: checked} format */
+  list: { [name: string]: boolean };
+};
+
+/**
+ * Filters checkbox list component.
+ *
+ * @component
+ */
+function FilterList({ entry, list }: Props): ReactElement {
   const formListClasses = formListStyles();
 
   const dispatch = useContext(FilterDispatch);
 
-  const handleChange = (event) => {
+  /**
+   * Dispatches central filter state updates.
+   *
+   * @param {ChangeEvent} event - Filter changing event
+   */
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
     if (entry === "sorting")
       dispatch({
         type: "CHECK_SORT",
@@ -34,13 +51,14 @@ export default function FilterList({ entry, list }) {
         type: "CHECK_FILTER",
         data: { entry: entry, item: event.target.name },
       });
-  };
+  }
 
   const [open, setOpen] = useState(false);
 
-  const handleShowAllClick = () => {
+  /** Expands list to show all items */
+  function handleShowAllClick(): void {
     setOpen(!open);
-  };
+  }
 
   return (
     <FormGroup>
@@ -88,3 +106,5 @@ export default function FilterList({ entry, list }) {
     </FormGroup>
   );
 }
+
+export default FilterList;

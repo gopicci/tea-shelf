@@ -2,17 +2,14 @@ import React, { useState, ReactElement } from "react";
 import { ThemeProvider } from "@material-ui/styles";
 
 //import Register from "./components/Register";
-import Login from "./components/Login";
+import Login from "./components/login";
 import MainLayout from "./components/main-layout";
-import Create from "./components/create";
-import Edit from "./components/Edit";
-import SortFilter from "./components/sort-filter";
-import CustomSnackbar from "./components/snackbar/CustomSnackbar";
-import MainStateContainer from "./components/statecontainers/MainStateContainer";
-import { getUser } from "./services/AuthService";
+import SortFilter from './components/sort-filter';
+import CustomSnackbar from "./components/snackbar/custom-snackbar";
+import MainStateContainer from "./components/statecontainers/main-state-container";
+import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/MainTheme";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Test from "./Test";
 
 /**
  * Defines type for app's main routing state.
@@ -56,11 +53,8 @@ function App(): ReactElement {
     switch (route.route) {
       case "MAIN":
         return <MainLayout {...props} />;
-      //case "FILTER":
-      //  return <SortFilter {...props} />;
-      case "CREATE":
-        if (isMobile) return <Create {...props} />;
-        else return <MainLayout {...props} />;
+      case "FILTER":
+        return <SortFilter {...props} />;
       default:
         return <MainLayout {...props} />;
     }
@@ -72,8 +66,10 @@ function App(): ReactElement {
         <Login />
       ) : (
         <MainStateContainer>
-          {getRoute(route)}
-          <CustomSnackbar />
+          <>
+            {getRoute(route)}
+            <CustomSnackbar />
+          </>
         </MainStateContainer>
       )}
     </ThemeProvider>

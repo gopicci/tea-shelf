@@ -1,4 +1,4 @@
-import React, {ReactElement, useContext, useEffect, useState} from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@material-ui/core";
 import { ArrowDropUp, ArrowDropDown } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -6,14 +6,14 @@ import TeaCard from "./tea-card";
 import { getSubcategoryName } from "../../services/parsing-services";
 import { TeasState } from "../statecontainers/tea-context";
 import { FilterState } from "../statecontainers/filter-context";
-import { GridViewState } from "../statecontainers/GridViewContext";
+import { GridViewState } from "../statecontainers/grid-view-context";
 import { CategoriesState } from "../statecontainers/categories-context";
-import { SubcategoriesState } from "../statecontainers/SubcategoriesContext";
-import { VendorsState } from "../statecontainers/VendorsContext";
-import { SearchState } from "../statecontainers/SearchContext";
-import {Route} from '../../app';
-import { TeaModel} from '../../services/models';
-import {getCategoryName} from '../../services/parsing-services';
+import { SubcategoriesState } from "../statecontainers/subcategories-context";
+import { VendorsState } from "../statecontainers/vendors-context";
+import { SearchState } from "../statecontainers/search-context";
+import { Route } from "../../app";
+import { TeaModel } from "../../services/models";
+import { getCategoryName } from "../../services/parsing-services";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -92,14 +92,13 @@ type Props = {
   isMobile: boolean;
 };
 
-
 /**
  * Grid component containing tea cards. Filters tea cards based on
  * central filter state.
  *
  * @component
  */
-export default function GridLayout({ setRoute, isMobile }: Props): ReactElement {
+function GridLayout({ setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
@@ -114,144 +113,148 @@ export default function GridLayout({ setRoute, isMobile }: Props): ReactElement 
   const [sorting, setSorting] = useState<string>("");
   const [reversed, setReversed] = useState<boolean>(false);
 
-  function sortTeas(teas: TeaModel[], sorting:string) {
-    if (teas.length)
-      switch (sorting) {
-        case "date added":
-          return [...teas].sort(
-            (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
-          );
-        case "year":
-          return [...teas].sort((a, b) => {
-            if (!a.year) return 1;
-            if (!b.year) return -1;
-            return b.year - a.year;
-          });
-        case "rating":
-          return [...teas].sort((a, b) => {
-            if (!a.rating) return 1;
-            if (!b.rating) return -1;
-            return b.rating - a.rating;
-          });
-        case "alphabetical":
-          return [...teas].sort((a, b) => {
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-            return 0;
-          });
-        case "origin":
-          return [...teas].sort((a, b) => {
-            if (!a.origin?.country) return 1;
-            if (!b.origin?.country) return -1;
-            if (a.origin.country > b.origin.country) return 1;
-            if (a.origin.country < b.origin.country) return -1;
-            return 0;
-          });
-        case "vendor":
-          return [...teas].sort((a, b) => {
-            if (!a.vendor?.name) return 1;
-            if (!b.vendor?.name) return -1;
-            if (a.vendor.name > b.vendor.name) return 1;
-            if (a.vendor.name < b.vendor.name) return -1;
-            return 0;
-          });
-        default:
-          return [...teas].sort(
-            (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
-          );
-      }
+  /**
+   * Sort array of tea instances based on sorting type.
+   *
+   * @param {TeaModel[]} teas - Array of tea objects
+   * @param {string} sorting - Sorting type
+   * @returns {TeaModel[]} Sorted tea instances array
+   */
+  function sortTeas(teas: TeaModel[], sorting: string): TeaModel[] {
+    switch (sorting) {
+      case "date added":
+        return [...teas].sort(
+          (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
+        );
+      case "year":
+        return [...teas].sort((a, b) => {
+          if (!a.year) return 1;
+          if (!b.year) return -1;
+          return b.year - a.year;
+        });
+      case "rating":
+        return [...teas].sort((a, b) => {
+          if (!a.rating) return 1;
+          if (!b.rating) return -1;
+          return b.rating - a.rating;
+        });
+      case "alphabetical":
+        return [...teas].sort((a, b) => {
+          if (a.name < b.name) return -1;
+          if (a.name > b.name) return 1;
+          return 0;
+        });
+      case "origin":
+        return [...teas].sort((a, b) => {
+          if (!a.origin?.country) return 1;
+          if (!b.origin?.country) return -1;
+          if (a.origin.country > b.origin.country) return 1;
+          if (a.origin.country < b.origin.country) return -1;
+          return 0;
+        });
+      case "vendor":
+        return [...teas].sort((a, b) => {
+          if (!a.vendor?.name) return 1;
+          if (!b.vendor?.name) return -1;
+          if (a.vendor.name > b.vendor.name) return 1;
+          if (a.vendor.name < b.vendor.name) return -1;
+          return 0;
+        });
+      default:
+        return [...teas].sort(
+          (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
+        );
+    }
   }
 
-  useEffect(() => console.log(filteredTeas), [filteredTeas]);
+  useEffect(() => console.log("filteredTeas: ", filteredTeas), [filteredTeas]);
 
   useEffect(() => {
-    // Sort teas
-    let sorting = Object.keys(filterState.sorting).find(
-      (k) => filterState.sorting[k]
-    );
-    if (!sorting) sorting = "";
-    setSorting(sorting);
-    let sorted = sortTeas(teasState, sorting);
-    if (sorted && reversed) sorted = sorted.reverse();
+    /**
+     * Keeps visualized tea instances state sorted and filtered based on
+     * selected filters and search bar input.
+     */
+    function filterTeas(): void {
+      // Sort teas
+      let sorting = Object.keys(filterState.sorting).find(
+        (k) => filterState.sorting[k]
+      );
+      if (!sorting) sorting = "";
+      setSorting(sorting);
+      let sorted = sortTeas(teasState, sorting);
+      if (sorted && reversed) sorted = sorted.reverse();
 
-    let filtered;
-    // Parse entries through selected filters
-    if (sorted && filterState.active)
-      // At least 1 filter entry is checked
-      filtered = sorted.filter((tea) => {
-        const category = getCategoryName(categories, tea.category)
-        if (filterState.filters.categories[category.toLowerCase()])
-          return true;
-        if (
-          tea.subcategory &&
-          filterState.filters.subcategories[getSubcategoryName(tea.subcategory)]
-        )
-          return true;
-        if (tea.vendor && filterState.filters.vendors[tea.vendor.name])
-          return true;
-        if (tea.origin) {
-          if (
-            tea.origin.country &&
-            filterState.filters.countries[tea.origin.country]
-          )
+      // Parse entries through selected filters
+      let filtered;
+      if (filterState.active)
+        // At least 1 filter entry is checked
+        filtered = sorted.filter((tea) => {
+          const category = getCategoryName(categories, tea.category);
+          if (filterState.filters.categories[category.toLowerCase()])
             return true;
           if (
-            tea.origin.region &&
-            filterState.filters.regions[tea.origin.region]
+            tea.subcategory &&
+            filterState.filters.subcategories[
+              getSubcategoryName(tea.subcategory)
+            ]
           )
             return true;
-          if (
-            tea.origin.locality &&
-            filterState.filters.localities[tea.origin.locality]
-          )
+          if (tea.vendor && filterState.filters.vendors[tea.vendor.name])
             return true;
-        }
-        return false;
-      });
-    else filtered = sorted;
-
-    if (filtered) {
-      // Parse remaining entries through search input
-      if (searchState.length > 1) {
-        const search = searchState.toLowerCase();
-
-        setFilteredTeas(
-          filtered.filter((tea) => {
-            if (tea.name.toLowerCase().includes(search)) return true;
-
-            const category = getCategoryName(categories, tea.category)
-            if (category.toLowerCase().includes(search)) return true;
+          if (tea.origin) {
             if (
-              tea.subcategory &&
-              tea.subcategory.name.toLowerCase().includes(search)
+              tea.origin.country &&
+              filterState.filters.countries[tea.origin.country]
             )
               return true;
-
-            if (tea.vendor && tea.vendor.name.toLowerCase().includes(search))
+            if (
+              tea.origin.region &&
+              filterState.filters.regions[tea.origin.region]
+            )
               return true;
+            if (
+              tea.origin.locality &&
+              filterState.filters.localities[tea.origin.locality]
+            )
+              return true;
+          }
+          return false;
+        });
+      else filtered = sorted;
 
-            if (tea.origin) {
+      if (filtered) {
+        // Parse remaining entries through search input
+        if (searchState.length > 1) {
+          const search = searchState.toLowerCase();
+
+          setFilteredTeas(
+            filtered.filter((tea) => {
+              if (tea.name.toLowerCase().includes(search)) return true;
+
+              const category = getCategoryName(categories, tea.category);
+              if (category.toLowerCase().includes(search)) return true;
               if (
-                tea.origin.country &&
-                tea.origin.country.toLowerCase().includes(search)
+                tea.subcategory?.name.toLowerCase().includes(search) ||
+                tea.subcategory?.translated_name?.toLowerCase().includes(search)
               )
                 return true;
-              if (
-                tea.origin.region &&
-                tea.origin.region.toLowerCase().includes(search)
-              )
+
+              if (tea.vendor?.name.toLowerCase().includes(search)) return true;
+
+              if (tea.origin?.country?.toLowerCase().includes(search))
                 return true;
-              if (
-                tea.origin.locality &&
-                tea.origin.locality.toLowerCase().includes(search)
-              )
+              if (tea.origin?.region?.toLowerCase().includes(search))
                 return true;
-            }
-            return false;
-          })
-        );
-      } else setFilteredTeas(filtered);
+              if (tea.origin?.locality?.toLowerCase().includes(search))
+                return true;
+
+              return false;
+            })
+          );
+        } else setFilteredTeas(filtered);
+      }
     }
+    if (teasState.length) filterTeas();
   }, [
     filterState,
     categories,
@@ -296,3 +299,5 @@ export default function GridLayout({ setRoute, isMobile }: Props): ReactElement 
     </Box>
   );
 }
+
+export default GridLayout;

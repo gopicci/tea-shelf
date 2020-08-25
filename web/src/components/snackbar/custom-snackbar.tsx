@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   SnackbarState,
   SnackbarDispatch,
-} from "../statecontainers/SnackbarContext";
+} from "../statecontainers/snackbar-context";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,13 +19,16 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Custom center top snackbar component used for major communications.
  * Relies on central snackbar state and dispatch provider.
+ *
+ * @component
  */
-export default function CustomSnackbar() {
+function CustomSnackbar() {
   const classes = useStyles();
 
   const state = useContext(SnackbarState);
   const dispatch = useContext(SnackbarDispatch);
 
+  /** Resets snackbar state */
   function handleClose() {
     dispatch({ type: "RESET" });
   }
@@ -39,17 +42,17 @@ export default function CustomSnackbar() {
         onClose={handleClose}
         className={classes.root}
       >
-        {state.message && (
-          <MuiAlert
-            elevation={6}
-            variant="filled"
-            onClose={handleClose}
-            severity={state.severity}
-          >
-            {state.message}
-          </MuiAlert>
-        )}
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={handleClose}
+          severity={state.severity}
+        >
+          {state.message && state.message}
+        </MuiAlert>
       </Snackbar>
     </ClickAwayListener>
   );
 }
+
+export default CustomSnackbar;

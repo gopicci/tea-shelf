@@ -1,4 +1,4 @@
-import React, {Dispatch, ReactElement, useContext} from 'react';
+import React, {ReactElement, useContext} from 'react';
 import {
   AppBar,
   Box,
@@ -9,9 +9,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
-import FilterList from "./filters/FilterList";
+import FilterList from './filters/filter-list';
 import { FilterDispatch, FilterState } from "./statecontainers/filter-context";
 import { Route } from '../app';
+import {Filters} from '../services/models';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,7 +46,7 @@ type Props = {
  *
  * @component
  */
-export default function SortFilter({ setRoute }: Props): ReactElement {
+function SortFilter({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
   const state = useContext(FilterState);
@@ -53,10 +54,12 @@ export default function SortFilter({ setRoute }: Props): ReactElement {
 
   console.log(state);
 
+  /** Sets route to main */
   function handleClose() {
     setRoute({ route: "MAIN" });
   }
 
+  /** Resets filter state */
   function handleReset() {
     dispatch({
       type: "RESET",
@@ -86,9 +89,11 @@ export default function SortFilter({ setRoute }: Props): ReactElement {
       </AppBar>
       <Toolbar />
       <FilterList key="sortList" entry="sorting" list={state.sorting} />
-      {Object.entries(state.filters).map(([entry, list]) => (
-        <FilterList entry={entry} list={list} />
+      {Object.entries(state.filters).map(([entry , list]) => (
+        <FilterList entry={entry as keyof Filters["filters"]} list={list} />
       ))}
     </Box>
   );
 }
+
+export default SortFilter;

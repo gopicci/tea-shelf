@@ -1,73 +1,16 @@
 import { brewingTimesToSeconds } from "./parsing-services";
-
-/**
- * Defines brewing data structure in API request format.
- */
-export const brewingModel = {
-  temperature: null,
-  weight: null,
-  initial: null,
-  increments: null,
-};
-
-/**
- * Defines origin data structure in API request format.
- */
-export const originModel = {
-  country: null,
-  region: null,
-  locality: null,
-  latitude: null,
-  longitude: null,
-};
-
-/**
- * Defines minimal vendor data structure in API request format.
- */
-export const vendorModel = {
-  name: null,
-};
-
-/**
- * Defines minimal subcategory data structure in API request format.
- */
-export const subcategoryModel = {
-  name: null,
-};
-
-/**
- * Defines tea data structure in API request format.
- */
-export const teaModel = {
-  id: null,
-  image: null,
-  name: "",
-  category: null,
-  subcategory: subcategoryModel,
-  origin: originModel,
-  vendor: vendorModel,
-  is_archived: false,
-  gongfu_brewing: brewingModel,
-  western_brewing: brewingModel,
-  year: null,
-  gongfu_preferred: false,
-  price: null,
-  weight_left: null,
-  weight_consumed: null,
-  rating: null,
-  notes: "",
-};
+import {CategoryModel, SubcategoryModel, BrewingModel, VendorModel, OriginModel, TeaModel, VisionData} from './models';
 
 /**
  * Serializes tea object data to fit an API request.
  *
  * @param tea {Object} Tea object
- */
-export function teaSerializer(tea) {
-  let serialized = {};
+
+export function teaSerializer(tea: any) {
+  let serialized = tea;
 
   // Drop non model entries
-  for (const k of Object.keys(teaModel))
+  for (const k of Object.keys(TeaModel))
     if (tea[k] != null) serialized[k] = tea[k];
 
   // Drop year if selected entry is "Unknown"
@@ -100,7 +43,7 @@ export function teaSerializer(tea) {
  * Serializes brewing object data to fit an API request.
  *
  * @param brewing {Object} Brewing object
- */
+
 function brewingSerializer(brewing) {
   let serialized = {};
   for (const k of Object.keys(brewingModel))
@@ -112,7 +55,7 @@ function brewingSerializer(brewing) {
  * Serializes origin object data to fit an API request.
  *
  * @param origin {Object} Origin object
- */
+
 function originSerializer(origin) {
   let serialized = {};
   for (const k of Object.keys(originModel))
@@ -129,18 +72,18 @@ function originSerializer(origin) {
 /**
  * Serializes vision parser response to fit in tea object.
  *
- * @param data {Object} Vision parser response
- * @param categories {Object} Central categories state
- * @param subcategories {Object} Central subcategories state
- * @param vendors {Object} Central vendors state
- */
+ * @param {VisionData} data - Vision parser response
+ * @param {CategoryModel[]} categories - Central categories state
+ * @param {SubcategoryModel[]} subcategories - Central subcategories state
+ * @param {VendorModel[]} vendors - Central vendors state
+
 export function visionParserSerializer(
-  data,
-  categories,
-  subcategories,
-  vendors
+  data: VisionData,
+  categories: CategoryModel[],
+  subcategories: SubcategoryModel[],
+  vendors: VendorModel[]
 ) {
-  let serialized = {};
+  let serialized: VisionData = {};
 
   if (data.name) serialized.name = data.name;
 
@@ -178,3 +121,4 @@ export function visionParserSerializer(
 
   return Object.keys(serialized).length === 0 ? null : serialized;
 }
+*/
