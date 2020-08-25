@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Formik, FormikHelpers } from "formik";
 import {
   Box,
@@ -47,18 +47,33 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Default login component
+ * Login input values type.
+ *
+ * @memberOf Login
+ */
+type Inputs = {
+  /** Email input */
+  email: string;
+  /** Password input */
+  password: string;
+};
+
+/**
+ * App login component
  *
  * @component
  */
-function Login() {
+function Login(): ReactElement {
   const classes = useStyles();
 
-  type Inputs = {
-    email: string;
-    password: string;
-  };
-
+  /**
+   * Handles submitting. Posts values to API
+   * and updates form with errors. If response
+   * is ok saves tokens to cache and reload.
+   *
+   * @param {Inputs} values - Input values
+   * @param {FormikHelpers<Inputs>} actions - Formik callbacks
+   */
   async function onSubmit(
     values: Inputs,
     actions: FormikHelpers<Inputs>
