@@ -71,23 +71,23 @@ export function getOriginShortName(origin: OriginModel): string {
 /**
  * Converts celsius to fahrenheit.
  *
- * @param {string} c - Celsius degrees
- * @returns {string}
+ * @param {number} c - Celsius degrees
+ * @returns {number}
  * @category Services
  */
-export function celsiusToFahrenheit(c: string): string {
-  return String(Math.round((parseInt(c) * 9) / 5 + 32));
+export function celsiusToFahrenheit(c: number): number {
+  return Math.round((c * 9) / 5 + 32);
 }
 
 /**
  * Converts fahrenheit to celsius.
  *
- * @param {string} f - Fahrenheit degrees
- * @returns {string}
+ * @param {number} f - Fahrenheit degrees
+ * @returns {number}
  * @category Services
  */
-export function fahrenheitToCelsius(f: string): string {
-  return String(Math.round(((parseInt(f) - 32) * 5) / 9));
+export function fahrenheitToCelsius(f: number): number {
+  return Math.round(((f - 32) * 5) / 9);
 }
 
 /**

@@ -20,3 +20,5 @@ declare module "react-country-flag" {
   }) => React.ReactNode; // return should be HTMLImageElement or HTMLSpanElement but close enough for me.
   export default ReactCountryFlag;
 }
+
+declare module "himalaya";

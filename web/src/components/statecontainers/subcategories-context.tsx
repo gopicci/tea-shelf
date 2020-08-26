@@ -54,7 +54,7 @@ function SubcategoriesContext({
         console.error(e);
       }
     }
-    if (!state) getSubcategories();
+    if (!state.length) getSubcategories();
   }, [state]);
 
   return (

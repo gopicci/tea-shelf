@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
  * Relies on central snackbar state and dispatch provider.
  *
  * @component
+ * @subcategory Main
  */
 function CustomSnackbar() {
   const classes = useStyles();

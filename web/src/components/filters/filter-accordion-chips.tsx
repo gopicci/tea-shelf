@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
  * Chips components for desktop accordion, based on filters state.
  *
  * @component
+ * @subcategory Filters
  */
 function FilterAccordionChips(): ReactElement {
   const classes = useStyles();

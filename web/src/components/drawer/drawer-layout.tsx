@@ -48,9 +48,10 @@ type Props = {
 /**
  * Desktop view left side drawer component.
  *
- * @param setRouter {function} Set main route
+ * @component
+ * @subcategory Main
  */
-export default function DrawerLayout({ setRoute }: Props): ReactElement {
+function DrawerLayout({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
   return (
@@ -111,3 +112,5 @@ export default function DrawerLayout({ setRoute }: Props): ReactElement {
     </Drawer>
   );
 }
+
+export default DrawerLayout;

@@ -29,6 +29,7 @@ type Props = {
  * Filters checkbox list component.
  *
  * @component
+ * @subcategory Filters
  */
 function FilterList({ entry, list }: Props): ReactElement {
   const formListClasses = formListStyles();

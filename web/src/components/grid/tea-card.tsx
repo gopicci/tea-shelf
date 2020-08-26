@@ -120,6 +120,7 @@ const useStyles = makeStyles((theme) => ({
  * TeaCard props.
  *
  * @memberOf TeaCard
+ * @subcategory Main
  */
 type Props = {
   /** Tea instance data */

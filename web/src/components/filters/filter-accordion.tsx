@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
  * Desktop mode filters accordion component.
  *
  * @component
+ * @subcategory Filters
  */
 function FilterAccordion(): ReactElement {
   const classes = useStyles();

@@ -62,6 +62,7 @@ type Inputs = {
  * App login component
  *
  * @component
+ * @subcategory Main
  */
 function Login(): ReactElement {
   const classes = useStyles();

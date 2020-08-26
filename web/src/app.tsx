@@ -5,6 +5,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import Login from "./components/login";
 import MainLayout from "./components/main-layout";
 import SortFilter from './components/sort-filter';
+import Create from './components/create';
 import CustomSnackbar from "./components/snackbar/custom-snackbar";
 import MainStateContainer from "./components/statecontainers/main-state-container";
 import { getUser } from "./services/auth-services";
@@ -29,6 +30,7 @@ export type Route = {
  * Routes are wrapped in central state provider.
  *
  * @component
+ * @subcategory Main
  */
 function App(): ReactElement {
   const isLoggedIn = getUser();
@@ -55,6 +57,9 @@ function App(): ReactElement {
         return <MainLayout {...props} />;
       case "FILTER":
         return <SortFilter {...props} />;
+      case "CREATE":
+        if (isMobile) return <Create {...props} />;
+        else return <MainLayout {...props} />;
       default:
         return <MainLayout {...props} />;
     }

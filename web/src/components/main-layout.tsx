@@ -7,6 +7,7 @@ import FilterBar from './filters/filter-bar';
 import FilterAccordion from './filters/filter-accordion';
 import DrawerLayout from "./drawer/drawer-layout";
 import GridLayout from "./grid/grid-layout";
+import DialogLayout from './dialog/dialog-layout';
 import { Route } from "../app";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +50,7 @@ type Props = {
  * Defines layout for app's main landing page.
  *
  * @component
+ * @subcategory Main
  */
 function MainLayout(props: Props): ReactElement {
   const classes = useStyles();
@@ -70,6 +72,10 @@ function MainLayout(props: Props): ReactElement {
           {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
           <GridLayout {...props} />
         </Box>
+        {!isMobile &&
+          ["CREATE", "TEA_DETAILS", "EDIT"].includes(route.route) && (
+            <DialogLayout {...props} />
+          )}
         {isMobile && (
           <Fab
             aria-label="add tea"

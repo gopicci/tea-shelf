@@ -45,6 +45,7 @@ type Props = {
  * Mobile only sort and filter page component.
  *
  * @component
+ * @subcategory Main
  */
 function SortFilter({ setRoute }: Props): ReactElement {
   const classes = useStyles();

@@ -1,5 +1,5 @@
 /**
- * Defines brewing data structure.
+ * Brewing data structure, used in both gongfu and western brewing instances.
  */
 export interface BrewingModel {
   /** Temperature in Celsius degrees */
@@ -13,7 +13,7 @@ export interface BrewingModel {
 }
 
 /**
- * Defines origin data structure.
+ * Origin data structure.
  */
 export interface OriginModel {
   /** Country name */
@@ -29,7 +29,7 @@ export interface OriginModel {
 }
 
 /**
- * Defines vendor data structure.
+ * Vendor instance data structure.
  */
 export interface VendorModel {
   /** Vendor name */
@@ -45,7 +45,7 @@ export interface VendorModel {
 }
 
 /**
- * Defines subcategory data structure.
+ * Subcategory instance data structure.
  */
 export interface SubcategoryModel {
   /** Subcategory name */
@@ -53,7 +53,7 @@ export interface SubcategoryModel {
   /** Subcategory ID */
   id: number;
   /** Macro category */
-  category: CategoryModel;
+  category: number;
   /** English name */
   translated_name?: string;
   /** Origin */
@@ -69,11 +69,9 @@ export interface SubcategoryModel {
 }
 
 /**
- * Defines tea data structure.
+ * Defines structure of a tea creation request.
  */
-export interface TeaModel {
-  /** Instance ID */
-  id: string;
+export interface TeaRequest {
   /** Tea name */
   name: string;
   /** Category ID */
@@ -87,7 +85,7 @@ export interface TeaModel {
   /** Vendor object */
   vendor?: VendorModel;
   /** Defines if tea is archived */
-  is_archived: boolean;
+  is_archived?: boolean;
   /** Gongfu brewing object */
   gongfu_brewing?: BrewingModel;
   /** Western brewing object object */
@@ -95,7 +93,7 @@ export interface TeaModel {
   /** Tea year */
   year?: number;
   /** Default brewing preference */
-  gongfu_preferred: boolean;
+  gongfu_preferred?: boolean;
   /** Price per gram */
   price?: number;
   /** Weight left */
@@ -107,11 +105,19 @@ export interface TeaModel {
   /** Notes */
   notes?: string;
   /** Creation date */
-  created_on: string;
+  created_on?: string;
 }
 
 /**
- * Defines tea data structure.
+ * Tea instance data structure.
+ */
+export interface TeaModel extends TeaRequest {
+  /** Instance ID, UUID string if coming from API, number if generated offline */
+  id: string | number;
+}
+
+/**
+ * Category data structure.
  */
 export interface CategoryModel {
   /** Instance ID */
@@ -129,7 +135,7 @@ export interface CategoryModel {
 }
 
 /**
- * Defines teas sorting options.
+ * Defines sorting options.
  */
 export interface SortingOptions {
   /** Sort by date added */
@@ -149,7 +155,7 @@ export interface SortingOptions {
 }
 
 /**
- * Defines filters data structure.
+ * Filters and sorting data structure.
  */
 export interface Filters {
   /** Sorting options */
@@ -168,7 +174,7 @@ export interface Filters {
 }
 
 /**
- * Defines vision parser response data structure.
+ * Vision parser response data structure.
  */
 export interface VisionData {
   /** Supposed tea name */

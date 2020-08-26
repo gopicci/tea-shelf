@@ -48,7 +48,7 @@ function VendorsContext({ children }: Props): ReactElement {
         console.error(e);
       }
     }
-    if (!state) getVendors();
+    if (!state.length) getVendors();
   }, [state]);
 
   return (

@@ -7,6 +7,7 @@ import { Filters } from "../../services/models";
  * Defines chips components for mobile filter bar based on global filters state.
  *
  * @component
+ * @subcategory Filters
  */
 function FilterBarChips() {
   const state = useContext(FilterState);

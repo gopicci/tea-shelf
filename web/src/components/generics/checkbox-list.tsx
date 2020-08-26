@@ -33,6 +33,7 @@ type Props = {
  * Generic checkbox list component.
  *
  * @component
+ * @subcategory Helpers
  */
 function CheckboxList({
   label,

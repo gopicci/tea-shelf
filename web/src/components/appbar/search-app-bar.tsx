@@ -106,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
  * Search app bar component. Handles search, sync and grid view switch.
  *
  * @component
+ * @subcategory Main
  */
 function SearchAppBar() {
   const classes = useStyles();

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Box, Button } from "@material-ui/core";
 import { DropzoneArea } from "material-ui-dropzone";
-import { FileToBase64 } from "../../../services/ImageService";
+import { FileToBase64 } from "../../../services/image-services";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,25 +20,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  setImageData: (image: string) => void;
+  handleClose: () => void;
+  handleNext: () => void;
+};
+
 /**
  * Desktop tea creation image loader, converts file to base64
  * and moves to next step.
  *
- * @param setImageData {function} Set base64 image data state
- * @param handleClose {function}
- * @param handleNext {function} Go to next creation stage (InputForm)
+ * @component
+ * @subcategory Desktop input
  */
-export default function LoadImage({
+function LoadImage({
   setImageData,
   handleClose,
   handleNext,
-}) {
+}: Props): ReactElement {
   const classes = useStyles();
 
-  async function handleChange(files) {
+  /**
+   * Updates create request image state with uploaded file in base64 format.
+   *
+   * @param {File[]} files - Array of files
+   */
+  async function handleChange(files: File[]): Promise<void> {
     if (files.length > 0) {
       try {
-        await setImageData(await FileToBase64(files[0]));
+        setImageData(await FileToBase64(files[0]));
         handleNext();
       } catch (e) {
         console.error(e);
@@ -69,3 +79,5 @@ export default function LoadImage({
     </Box>
   );
 }
+
+export default LoadImage;

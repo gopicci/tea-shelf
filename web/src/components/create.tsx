@@ -1,17 +1,17 @@
 import React, {ReactElement, useContext, useState} from 'react';
 import localforage from "localforage";
-import CaptureImage from "./input/mobile/CaptureImage";
-import LoadImage from "./input/desktop/LoadImage";
-import InputRouter from "./input/mobile/InputRouter";
-import InputForm from "./input/desktop/InputForm";
-import { APIRequest } from "../services/AuthService";
+//import CaptureImage from "./input/mobile/CaptureImage";
+import LoadImage from "./input/desktop/load-image";
+//import InputRouter from "./input/mobile/InputRouter";
+import InputForm from "./input/desktop/input-form";
+import { APIRequest } from "../services/auth-services";
 import { generateUniqueId } from "../services/sync-services";
-import { teaModel, teaSerializer } from "../services/Serializers";
-import { SnackbarDispatch } from "./statecontainers/SnackbarContext";
+import { SnackbarDispatch} from './statecontainers/snackbar-context';
 import { TeaDispatch } from "./statecontainers/tea-context";
-import { SubcategoriesDispatch } from "./statecontainers/SubcategoriesContext";
-import { VendorsDispatch } from "./statecontainers/VendorsContext";
+import { SubcategoriesDispatch } from "./statecontainers/subcategories-context";
+import { VendorsDispatch } from "./statecontainers/vendors-context";
 import {Route} from '../app';
+import {TeaModel, TeaRequest} from '../services/models';
 
 /**
  * Create props.
@@ -31,10 +31,11 @@ type Props = {
  * captureImage -> inputLayout -> handleCreate
  *
  * @component
+ * @subcategory Main
  */
 function Create({ setRoute, isMobile }: Props): ReactElement {
-  const [teaData, setTeaData] = useState(teaModel);
-  const [imageData, setImageData] = useState(null);
+  const [teaData, setTeaData] = useState(undefined);
+  const [imageData, setImageData] = useState("");
 
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
@@ -46,27 +47,25 @@ function Create({ setRoute, isMobile }: Props): ReactElement {
    *
    * @param data {Object} Tea data
    */
-  async function handleCreate(data) {
+  async function handleCreate(data: TeaRequest): Promise<void> {
     let reqData = data;
 
     let customSubcategory = false;
     let customVendor = false;
 
     try {
-      delete reqData.id;
-
       if (imageData) reqData["image"] = imageData;
 
       // Clear nested fields
-      if (!reqData.subcategory.name) reqData.subcategory = null;
+      if (!reqData.subcategory?.name) reqData.subcategory = undefined;
       else if (!reqData.subcategory.category) customSubcategory = true;
 
-      if (!reqData.vendor.name) reqData.vendor = null;
+      if (!reqData.vendor?.name) reqData.vendor = undefined;
       else if (!reqData.vendor.popularity) customVendor = true;
 
-      if (!reqData.origin.country) reqData.origin = null;
+      if (!reqData.origin?.country) reqData.origin = undefined;
 
-      reqData = teaSerializer(reqData);
+      //reqData = teaSerializer(reqData);
 
       console.log(reqData);
       console.log(JSON.stringify(reqData));
@@ -101,19 +100,22 @@ function Create({ setRoute, isMobile }: Props): ReactElement {
         snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
       } else {
         console.log(e.message, "cache locally");
-        const offlineTeas = await localforage.getItem("offline-teas");
+        const offlineTeas = await localforage.getItem<TeaModel[]>("offline-teas");
 
-        reqData["id"] = generateUniqueId(offlineTeas);
+        const teaInstance: TeaModel = {
+          ...reqData,
+          id: generateUniqueId(offlineTeas)
+        };
 
-        const cache = await localforage.setItem("offline-teas", [
+        const cache = await localforage.setItem<TeaModel[]>("offline-teas", [
           ...offlineTeas,
-          reqData,
+          teaInstance,
         ]);
         snackbarDispatch({
           type: "WARNING",
           data: "Network error, tea saved locally",
         });
-        teaDispatch({ type: "ADD", data: reqData });
+        teaDispatch({ type: "ADD", data: teaInstance });
         console.log("offline teas:", cache);
       }
     }
@@ -132,7 +134,7 @@ function Create({ setRoute, isMobile }: Props): ReactElement {
    *
    * @callback handleNext
    */
-  function handleNext() {
+  function handleNext(): void {
     setStep(step + 1);
   }
 
@@ -141,7 +143,7 @@ function Create({ setRoute, isMobile }: Props): ReactElement {
    *
    * @callback handlePrevious
    */
-  function handlePrevious() {
+  function handlePrevious(): void {
     setStep(step - 1);
   }
 
@@ -150,39 +152,30 @@ function Create({ setRoute, isMobile }: Props): ReactElement {
    *
    * @callback handleClose
    */
-  function handleClose() {
-    setTeaData(teaModel);
+  function handleClose(): void {
+    //setTeaData(teaModel);
     setStep(1);
-    setRouter({ route: "MAIN" });
+    setRoute({ route: "MAIN" });
   }
 
   const props = {
     imageData,
     setImageData,
     teaData,
-    setTeaData,
     handleNext,
     handlePrevious,
     handleClose,
     handleCreate,
   };
 
-  function renderSwitch(step) {
+  function renderSwitch(step: number): ReactElement {
     switch (step) {
       case 1:
-        return isMobile ? (
-          <CaptureImage {...props} />
-        ) : (
-          <LoadImage {...props} />
-        );
+        return  <LoadImage {...props} />;
       case 2:
-        return isMobile ? <InputRouter {...props} /> : <InputForm {...props} />;
+        return <InputForm {...props} />;
       default:
-        return isMobile ? (
-          <CaptureImage {...props} />
-        ) : (
-          <LoadImage {...props} />
-        );
+        return <LoadImage {...props} />;
     }
   }
 

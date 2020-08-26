@@ -97,6 +97,7 @@ type Props = {
  * central filter state.
  *
  * @component
+ * @subcategory Main
  */
 function GridLayout({ setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
@@ -123,9 +124,11 @@ function GridLayout({ setRoute, isMobile }: Props): ReactElement {
   function sortTeas(teas: TeaModel[], sorting: string): TeaModel[] {
     switch (sorting) {
       case "date added":
-        return [...teas].sort(
-          (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
-        );
+        return [...teas].sort((a, b) => {
+          if (!a.created_on) return 1;
+          if (!b.created_on) return -1;
+          return Date.parse(b.created_on) - Date.parse(a.created_on);
+        });
       case "year":
         return [...teas].sort((a, b) => {
           if (!a.year) return 1;
@@ -161,9 +164,12 @@ function GridLayout({ setRoute, isMobile }: Props): ReactElement {
           return 0;
         });
       default:
-        return [...teas].sort(
-          (a, b) => Date.parse(b.created_on) - Date.parse(a.created_on)
-        );
+        // date added
+        return [...teas].sort((a, b) => {
+          if (!a.created_on) return 1;
+          if (!b.created_on) return -1;
+          return Date.parse(b.created_on) - Date.parse(a.created_on);
+        });
     }
   }
 

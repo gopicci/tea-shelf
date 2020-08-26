@@ -58,6 +58,7 @@ type Props = {
  * Mobile filter bar component. Contains filters chips, hides on scroll.
  *
  * @component
+ * @subcategory Filters
  */
 function FilterBar({ setRoute }: Props): ReactElement {
   const classes = useStyles();
