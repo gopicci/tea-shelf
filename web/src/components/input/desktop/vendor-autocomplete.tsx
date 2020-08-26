@@ -1,14 +1,13 @@
-import React, {ChangeEvent, ReactElement, useContext} from 'react';
+import React, { ChangeEvent, ReactElement, useContext } from "react";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { VendorsState } from "../../statecontainers/vendors-context";
-import {Grid, TextField, Typography} from '@material-ui/core';
-import {FormikProps} from 'formik';
-import {TeaRequest, VendorModel} from '../../../services/models';
-import {FilterOptionsState} from '@material-ui/lab';
-import {useStyles} from '../../../style/DesktopFormStyles';
-import {InputFormData} from './input-form';
+import { Grid, TextField, Typography } from "@material-ui/core";
+import { FormikProps } from "formik";
+import { InputFormModel, VendorModel } from "../../../services/models";
+import { FilterOptionsState } from "@material-ui/lab";
+import { useStyles } from "../../../style/DesktopFormStyles";
 
 const filter = createFilterOptions({
   stringify: (option: VendorModel) => option.name + " " + option.website,
@@ -21,23 +20,39 @@ type Option =
     }
   | VendorModel;
 
+/**
+ * VendorAutocomplete props.
+ *
+ * @memberOf VendorAutocomplete
+ */
+type Props = {
+  /** Formik form render methods and props */
+  formikProps: FormikProps<InputFormModel>;
+};
 
 /**
- * Desktop tea creation form vendor autocomplete component.
+ * Desktop tea editing form vendor autocomplete component.
+ *
+ * @component
+ * @subcategory Desktop input
  */
-function VendorAutocomplete(  {
-  values,
-  setFieldValue,
-  touched,
-  errors,
-  handleChange,
-  handleBlur,
-}: FormikProps<InputFormData>
-): ReactElement {
+function VendorAutocomplete({ formikProps }: Props): ReactElement {
+  const {
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    setFieldValue,
+  } = formikProps;
   const classes = useStyles();
 
   const vendors = useContext(VendorsState);
 
+  /**
+   * Updates vendor form field.
+   *
+   * @param {string} name - Vendor name
+   */
   function updateVendor(name: string): void {
     if (name) {
       // If input already exist add the object, otherwise add only the name
@@ -49,19 +64,29 @@ function VendorAutocomplete(  {
     } else setFieldValue("vendor", {});
   }
 
-  function handleOnChange(event: ChangeEvent<any>, newValue: Option|string|null): void {
+  /**
+   * Calls Formik ChangeEvent handler and parses value
+   * before updating vendor form field.
+   *
+   * @param {ChangeEvent<any>} event - onChange event
+   * @param {Option|string|null} value - Input value
+   */
+  function handleOnChange(
+    event: ChangeEvent<any>,
+    value: Option | string | null
+  ): void {
     if (event) {
       event.target.name = "vendor";
       handleChange(event);
     }
-    if (newValue) {
-      if (typeof newValue === "string") {
-        updateVendor(newValue)
-      } else if ("inputValue" in newValue) {
+    if (value) {
+      if (typeof value === "string") {
+        updateVendor(value);
+      } else if ("inputValue" in value) {
         // Create a new value from the user input
-        updateVendor(newValue.inputValue);
-      } else if ("name" in newValue) {
-        setFieldValue("vendor", newValue);
+        updateVendor(value.inputValue);
+      } else if ("name" in value) {
+        setFieldValue("vendor", value);
       }
     }
   }
@@ -90,7 +115,7 @@ function VendorAutocomplete(  {
       fullWidth
       freeSolo
       options={vendors ? vendors : []}
-      getOptionLabel={(option: Option|string) => {
+      getOptionLabel={(option: Option | string) => {
         if (typeof option === "string") return option;
         if ("inputValue" in option) return option.inputValue;
         else return option.name;
@@ -107,10 +132,8 @@ function VendorAutocomplete(  {
           fullWidth
           onChange={handleChange}
           onBlur={handleBlur}
-          error={!!(errors.vendor && touched.vendor)}
-          helperText={
-            errors.vendor && touched.vendor && errors.vendor
-          }
+          error={!!(touched.vendor && errors.vendor)}
+          helperText={touched.vendor && errors.vendor}
         />
       )}
       renderOption={(option) => {

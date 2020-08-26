@@ -1,4 +1,4 @@
-import React, {ReactElement, useState} from 'react';
+import React, { ReactElement } from "react";
 import {
   Box,
   FormControl,
@@ -6,39 +6,49 @@ import {
   Select,
   TextField,
 } from "@material-ui/core";
+import { FormikProps } from "formik";
 import TempAutocomplete from "./temp-autocomplete";
-import WeightAutocomplete from "./WeightAutocomplete";
+import WeightAutocomplete from "./weight-autocomplete";
+import { InputFormModel } from "../../../services/models";
 import {
   celsiusToFahrenheit,
   fahrenheitToCelsius,
 } from "../../../services/parsing-services";
-import {useStyles} from '../../../style/DesktopFormStyles';
-import {FormikProps} from 'formik';
-import {TeaRequest} from '../../../services/models';
-import {InputFormData} from './input-form';
-
-type Props = {
-    brewing: string;
-}
+import { useStyles } from "../../../style/DesktopFormStyles";
 
 /**
- * Desktop tea creation form brewing component.
+ * InputFormBrewing props.
+ *
+ * @memberOf InputFormBrewing
+ */
+type Props = {
+  /** Formik form render methods and props */
+  formikProps: FormikProps<InputFormModel>;
+};
+
+/**
+ * Desktop tea editing form brewing component. Groups inputs related
+ * to BrewingModel and gets used for both brewing types.
  *
  * @component
  * @subcategory Desktop input
  */
-function InputFormBrewing(formikProps: FormikProps<InputFormData>): ReactElement {
-  const {values, handleChange, handleBlur, errors, touched, setFieldValue} = formikProps;
+function InputFormBrewing({ formikProps }: Props): ReactElement {
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    setFieldValue,
+  } = formikProps;
   const classes = useStyles();
-
 
   return (
     <>
       <Box className={classes.row}>
         <Box className={classes.justifyLeft}>
-          <TempAutocomplete
-            {...formikProps}
-          />
+          <TempAutocomplete formikProps={formikProps} />
           <FormControl
             className={classes.degrees}
             variant="outlined"
@@ -47,7 +57,9 @@ function InputFormBrewing(formikProps: FormikProps<InputFormData>): ReactElement
             <Select
               name="degrees"
               aria-label="degrees"
-              value={values[values.brewing].fahrenheit ? "fahrenheit" : "celsius"}
+              value={
+                values[values.brewing].fahrenheit ? "fahrenheit" : "celsius"
+              }
               onChange={(e) => {
                 handleChange(e);
                 const fahrenheit = e.target.value === "fahrenheit";
@@ -56,8 +68,11 @@ function InputFormBrewing(formikProps: FormikProps<InputFormData>): ReactElement
                   if (fahrenheit) temp = celsiusToFahrenheit(temp);
                   else temp = fahrenheitToCelsius(temp);
                 setFieldValue(values.brewing + ".temperature", temp);
-                setFieldValue(values.brewing + ".fahrenheit", e.target.value === "fahrenheit");
-                console.log(e.target.value, values)
+                setFieldValue(
+                  values.brewing + ".fahrenheit",
+                  e.target.value === "fahrenheit"
+                );
+                console.log(e.target.value, values);
               }}
               onBlur={handleBlur}
             >
@@ -65,6 +80,65 @@ function InputFormBrewing(formikProps: FormikProps<InputFormData>): ReactElement
               <MenuItem value="fahrenheit">F</MenuItem>
             </Select>
           </FormControl>
+        </Box>
+        <WeightAutocomplete formikProps={formikProps} />
+      </Box>
+      <Box className={classes.row}>
+        <Box className={classes.justifyLeft}>
+          <TextField
+            name={values.brewing + ".initial"}
+            label="Initial time"
+            aria-label={values.brewing + "_initial"}
+            inputProps={{ maxLength: 8 }}
+            size="small"
+            variant="outlined"
+            value={
+              values[values.brewing]?.initial
+                ? String(values[values.brewing]?.initial)
+                : "00:00:00"
+            }
+            className={classes.initial}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={
+              !!(
+                touched[values.brewing]?.initial &&
+                errors[values.brewing]?.initial
+              )
+            }
+            helperText={
+              touched[values.brewing]?.initial &&
+              errors[values.brewing]?.initial
+            }
+          />
+        </Box>
+        <Box className={classes.justifyRight}>
+          <TextField
+            name={values.brewing + ".increments"}
+            label="Increments"
+            aria-label={values.brewing + "increments"}
+            inputProps={{ maxLength: 8 }}
+            size="small"
+            variant="outlined"
+            value={
+              values[values.brewing]?.increments
+                ? String(values[values.brewing]?.increments)
+                : "00:00:00"
+            }
+            className={classes.increments}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={
+              !!(
+                touched[values.brewing]?.increments &&
+                errors[values.brewing]?.increments
+              )
+            }
+            helperText={
+              touched[values.brewing]?.increments &&
+              errors[values.brewing]?.increments
+            }
+          />
         </Box>
       </Box>
     </>

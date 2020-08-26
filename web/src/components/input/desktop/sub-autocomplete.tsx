@@ -1,51 +1,47 @@
-import React, {
-  ChangeEvent,
-  FocusEvent,
-  ReactElement,
-  useContext,
-} from "react";
+import React, { ChangeEvent, ReactElement, useContext } from "react";
+import { TextField } from "@material-ui/core";
 import Autocomplete, {
   AutocompleteRenderInputParams,
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
+import { FilterOptionsState } from "@material-ui/lab";
+import { FormikProps } from "formik";
 import { getSubcategoryName } from "../../../services/parsing-services";
+import { InputFormModel, SubcategoryModel } from "../../../services/models";
 import { SubcategoriesState } from "../../statecontainers/subcategories-context";
 import { CategoriesState } from "../../statecontainers/categories-context";
-import {
-  TeaRequest,
-  SubcategoryModel,
-  CategoryModel,
-} from "../../../services/models";
-import { FilterOptionsState } from "@material-ui/lab";
-import { TextField } from "@material-ui/core";
 import { useStyles } from "../../../style/DesktopFormStyles";
-import { FormikProps } from "formik";
-import { InputFormData } from "./input-form";
 
-type Option =
-  | {
-      inputValue: string;
-      label: string;
-    }
-  | string;
+type Option = { inputValue: string; label: string } | string;
 
 const filter = createFilterOptions<Option>();
 
 /**
- * Desktop tea creation form subcategory autocomplete component.
- * Modifies other teaData status with subcategory related data.
+ * SubAutocomplete props.
+ *
+ * @memberOf SubAutocomplete
+ */
+type Props = {
+  /** Formik form render methods and props */
+  formikProps: FormikProps<InputFormModel>;
+};
+
+/**
+ * Desktop tea editing form subcategory autocomplete component.
+ * Modifies form fields with subcategory related data.
  *
  * @component
  * @subcategory Desktop input
  */
-function SubAutocomplete({
-  values,
-  setFieldValue,
-  touched,
-  errors,
-  handleChange,
-  handleBlur,
-}: FormikProps<InputFormData>): ReactElement {
+function SubAutocomplete({ formikProps }: Props): ReactElement {
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    setFieldValue,
+  } = formikProps;
   const classes = useStyles();
 
   const subcategories = useContext(SubcategoriesState);
@@ -57,6 +53,11 @@ function SubAutocomplete({
     })
     .sort();
 
+  /**
+   * Updates form values with subcategory data.
+   *
+   * @param {string} name - Subcategory input name
+   */
   function updateSubcategory(name: string): void {
     if (name) {
       // Look for a match in subcategories central state
@@ -107,19 +108,26 @@ function SubAutocomplete({
     } else setFieldValue("subcategory", {});
   }
 
+  /**
+   * Calls Formik ChangeEvent handler and parses value
+   * before updating subcategory related form fields.
+   *
+   * @param {ChangeEvent<any>} event - onChange event
+   * @param {Option|null} value - Input value
+   */
   function handleOnChange(
     event: ChangeEvent<any>,
-    newValue: Option | null
+    value: Option | null
   ): void {
     if (event) {
       event.target.name = "subcategory";
       handleChange(event);
     }
-    if (typeof newValue === "string") {
-      updateSubcategory(newValue);
-    } else if (newValue?.inputValue) {
+    if (typeof value === "string") {
+      updateSubcategory(value);
+    } else if (value?.inputValue) {
       // Create a new value from the user input
-      updateSubcategory(newValue.inputValue);
+      updateSubcategory(value.inputValue);
     }
   }
 
@@ -157,7 +165,9 @@ function SubAutocomplete({
         return String(option);
       }}
       freeSolo
-      value={values.subcategory?.name ? values.subcategory?.name : ""}
+      value={
+        values.subcategory?.name ? getSubcategoryName(values.subcategory) : ""
+      }
       renderInput={(params: AutocompleteRenderInputParams) => (
         <TextField
           {...params}
@@ -172,9 +182,7 @@ function SubAutocomplete({
           onChange={handleChange}
           onBlur={handleBlur}
           error={!!(touched.subcategory && errors.subcategory)}
-          helperText={
-            errors.subcategory && touched.subcategory && errors.subcategory
-          }
+          helperText={touched.subcategory && errors.subcategory}
         />
       )}
     />

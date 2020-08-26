@@ -1,37 +1,41 @@
-import React, {ChangeEvent, FocusEvent, ReactElement, useEffect, useState} from 'react';
-import {Grid, TextField, Typography} from '@material-ui/core';
+import React, { ReactElement, useEffect, useState } from "react";
+import { Grid, TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { LocationOn } from "@material-ui/icons";
+import { FormikProps } from "formik";
 import parse from "autosuggest-highlight/parse";
 import { parse as himalaya } from "himalaya";
 import { v4 as uuidv4 } from "uuid";
 import { APIRequest } from "../../../services/auth-services";
 import { getOriginName } from "../../../services/parsing-services";
-import {OriginModel, TeaRequest} from '../../../services/models';
-import {FormikProps} from 'formik';
-import {useStyles} from '../../../style/DesktopFormStyles';
-import {InputFormData} from './input-form';
-
+import { OriginModel, InputFormModel } from "../../../services/models";
+import { useStyles } from "../../../style/DesktopFormStyles";
 
 /**
- * Desktop tea creation form origin autocomplete component.
+ * OriginAutocomplete props.
+ *
+ * @memberOf OriginAutocomplete
+ */
+type Props = {
+  /** Formik form render methods and props */
+  formikProps: FormikProps<InputFormModel>;
+};
+
+/**
+ * Desktop tea editing form origin autocomplete component.
  * Requests options from API, works only when online.
  *
  * @component
  * @subcategory Desktop input
  */
-function OriginAutocomplete({
-  values,
-  setFieldValue,
-  touched,
-  errors,
-  handleChange,
-  handleBlur,
-}: FormikProps<InputFormData>): ReactElement {
+function OriginAutocomplete({ formikProps }: Props): ReactElement {
+  const { values, handleBlur, errors, touched, setFieldValue } = formikProps;
   const classes = useStyles();
 
-  const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [options, setOptions] = useState<
+    google.maps.places.AutocompletePrediction[]
+  >([]);
 
   const [token, setToken] = useState("");
 
@@ -40,62 +44,69 @@ function OriginAutocomplete({
   useEffect(() => {
     let active = true;
 
-    async function getOptions() {
+    /**
+     * Gets autocomplete options from API and updates state.
+     */
+    async function getOptions(): Promise<void> {
       const res = await APIRequest(
-        '/places/autocomplete/',
-        'POST',
-        JSON.stringify({input: inputValue, token: token})
+        "/places/autocomplete/",
+        "POST",
+        JSON.stringify({ input: inputValue, token: token })
       );
       if (res.ok) {
         const results = await res.json();
-        console.log('autocomplete', results);
         if (active) setOptions(results);
       }
     }
 
     if (inputValue.length > 1) getOptions();
-    if (inputValue === '') setOptions([]);
+    if (inputValue === "") setOptions([]);
 
     return () => {
       active = false;
     };
   }, [inputValue, token]);
 
-  async function updateOrigin(newValue: google.maps.places.AutocompletePrediction) {
-      const res = await APIRequest(
-        "/places/details/",
-        "POST",
-        JSON.stringify({ place_id: newValue.place_id, token: token })
-      );
-      if (res.ok) {
-        const body = await res.json();
-        console.log("details", body.result);
-        const adr: object = himalaya(body.result.adr_address);
-        const origin: OriginModel = { country: ""};
+  /**
+   * Gets selected place details from API, parses them and updates form values.
+   *
+   * @param {google.maps.places.AutocompletePrediction} place - Selected place from autocomplete entries
+   */
+  async function updateOrigin(
+    place: google.maps.places.AutocompletePrediction
+  ): Promise<void> {
+    const res = await APIRequest(
+      "/places/details/",
+      "POST",
+      JSON.stringify({ place_id: place.place_id, token: token })
+    );
+    if (res.ok) {
+      const body = await res.json();
+      const adr: object = himalaya(body.result.adr_address);
+      const origin: OriginModel = { country: "" };
 
-        let extendedAddress = "";
-        for (const entry of Object.entries(adr))
-          if (entry[1].type === "element") {
-            if (entry[1].attributes[0].value === "country-name")
-              origin["country"] = entry[1].children[0].content;
-            if (entry[1].attributes[0].value === "region")
-              origin["region"] = entry[1].children[0].content;
-            if (entry[1].attributes[0].value === "locality")
-              origin["locality"] = entry[1].children[0].content;
-            if (entry[1].attributes[0].value === "extended-address")
-              extendedAddress = entry[1].children[0].content;
-          }
+      let extendedAddress = "";
+      for (const entry of Object.entries(adr))
+        if (entry[1].type === "element") {
+          if (entry[1].attributes[0].value === "country-name")
+            origin["country"] = entry[1].children[0].content;
+          if (entry[1].attributes[0].value === "region")
+            origin["region"] = entry[1].children[0].content;
+          if (entry[1].attributes[0].value === "locality")
+            origin["locality"] = entry[1].children[0].content;
+          if (entry[1].attributes[0].value === "extended-address")
+            extendedAddress = entry[1].children[0].content;
+        }
 
-        if (extendedAddress) origin["locality"] = extendedAddress.split(",")[0];
+      if (extendedAddress) origin["locality"] = extendedAddress.split(",")[0];
 
-        if (origin["region"])
-          origin["region"] = origin["region"].replace(" Province", "");
+      if (origin["region"])
+        origin["region"] = origin["region"].replace(" Province", "");
 
-        origin["latitude"] = body.result.geometry.location.lat;
-        origin["longitude"] = body.result.geometry.location.lng;
-        console.log("origin", origin);
-        setFieldValue("origin", origin);
-      }
+      origin["latitude"] = body.result.geometry.location.lat;
+      origin["longitude"] = body.result.geometry.location.lng;
+      setFieldValue("origin", origin);
+    }
   }
 
   return (
@@ -106,10 +117,8 @@ function OriginAutocomplete({
       autoComplete
       filterSelectedOptions
       onChange={(event, newValue) => {
-        if (newValue && typeof newValue === "object")
-          updateOrigin(newValue);
-        else
-          setFieldValue("origin", null)
+        if (newValue && typeof newValue === "object") updateOrigin(newValue);
+        else setFieldValue("origin", null);
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
@@ -132,10 +141,8 @@ function OriginAutocomplete({
           className={classes.origin}
           fullWidth
           onBlur={handleBlur}
-          error={!!(errors.origin && touched.origin)}
-          helperText={
-            errors.origin && touched.origin && errors.origin
-          }
+          error={!!(touched.origin && errors.origin)}
+          helperText={touched.origin && errors.origin}
         />
       )}
       renderOption={(option) => {

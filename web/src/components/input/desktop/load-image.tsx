@@ -20,9 +20,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * LoadImage props.
+ *
+ * @memberOf LoadImage
+ */
 type Props = {
+  /** Sets imageData state, expects a base64 encoded image string */
   setImageData: (image: string) => void;
+  /** Closes dialog */
   handleClose: () => void;
+  /** Routes to next stage */
   handleNext: () => void;
 };
 

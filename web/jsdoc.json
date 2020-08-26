@@ -5,8 +5,7 @@
   },
   "source": {
     "include": ["src"],
-    "includePattern": "\\.(ts|tsx)$",
-    "excludePattern": "(^|\\/|\\\\)_"
+    "includePattern": "\\.(ts|tsx)$"
   },
   "sourceType": "script",
   "plugins": [

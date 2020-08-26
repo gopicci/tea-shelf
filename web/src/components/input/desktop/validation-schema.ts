@@ -57,7 +57,7 @@ export function validationSchema() {
       .max(50, "Too long, max length 50 characters")
       .required("Required"),
     category: Yup.number()
-      .min(1, "Invalid category")
+      .min(1, "Required")
       .max(9, "Invalid category")
       .required("Required")
       .typeError("Required"),

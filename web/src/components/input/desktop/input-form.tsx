@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  ReactElement,
-  ReactNode,
-  useContext,
-  useState,
-} from "react";
+import React, { ReactElement, useContext } from "react";
 import { Formik, Form, FormikValues, FormikProps } from "formik";
 import {
   Box,
@@ -19,45 +13,18 @@ import {
   FormGroup,
   FormControlLabel,
   Switch,
-  FilledTextFieldProps,
-  OutlinedTextFieldProps,
-  StandardTextFieldProps,
 } from "@material-ui/core";
-import emptyImage from "../../../media/empty.png";
 import SubAutocomplete from "./sub-autocomplete";
 import YearAutocomplete from "./year-autocomplete";
 import VendorAutocomplete from "./vendor-autocomplete";
 import OriginAutocomplete from "./origin-autocomplete";
-import {
-  brewingTimesToSeconds,
-  cropToNoZeroes,
-  fahrenheitToCelsius,
-} from "../../../services/parsing-services";
-import { CategoriesState } from "../../statecontainers/categories-context";
-import { validationSchema } from "./validation-schema";
-import { useStyles } from "../../../style/DesktopFormStyles";
-import {
-  BrewingModel,
-  OriginModel,
-  SubcategoryModel,
-  TeaModel,
-  TeaRequest,
-  VendorModel,
-} from "../../../services/models";
 import InputFormBrewing from "./input-form-brewing";
-
-interface FormBrewingData extends BrewingModel {
-  fahrenheit: boolean;
-}
-
-export interface InputFormData extends TeaModel {
-  //year: number|string;
-  brewing: "gongfu_brewing" | "western_brewing";
-  gongfu_brewing: FormBrewingData;
-  western_brewing: FormBrewingData;
-  measure: "g" | "oz";
-  [index: string]: any;
-}
+import { InputFormModel, TeaModel, TeaRequest } from "../../../services/models";
+import { CategoriesState } from "../../statecontainers/categories-context";
+import { useStyles } from "../../../style/DesktopFormStyles";
+import { validationSchema } from "./validation-schema";
+import emptyImage from "../../../media/empty.png";
+import { fahrenheitToCelsius } from "../../../services/parsing-services";
 
 /**
  * InputForm props.
@@ -69,18 +36,17 @@ type Props = {
   imageData?: string;
   /** Instance tea data state for initial values on edit mode */
   teaData?: TeaModel;
-  /** Handles edit save */
-  handleEdit?: (data: TeaModel) => void;
-  /** Handle tea posting process */
-  handleCreate?: (data: TeaRequest) => void;
+  /** Handles tea posting process */
+  handleEdit: (data: TeaRequest, id?: number | string) => void;
   /** Closes dialog */
   handleClose: () => void;
-  /** Return to previous stage */
+  /** Routes to previous stage */
   handlePrevious: () => void;
 };
 
 /**
- * Desktop tea creation form. Uses formik with external controlled state teaData.
+ * Desktop tea editing form component. Uses Formik for form handling and Yup for
+ * validation, serializes data before sending it to edit/create handlers.
  *
  * @component
  * @subcategory Desktop input
@@ -89,7 +55,6 @@ function InputForm({
   imageData,
   teaData,
   handleEdit,
-  handleCreate,
   handleClose,
   handlePrevious,
 }: Props): ReactElement {
@@ -97,9 +62,95 @@ function InputForm({
 
   const categories = useContext(CategoriesState);
 
+  /**
+   * Saving process. Serializes data, calls edit
+   * or create handlers and reroutes to main.
+   *
+   * @param {FormikValues} values - Formik form values
+   */
   function handleSave(values: FormikValues): void {
-    console.log(values);
+    let data: TeaRequest = { name: values.name, category: values.category };
+
+    if (imageData) data["image"] = imageData;
+
+    if (values.year && values.year !== "Unknown")
+      data["year"] = parseInt(values.year);
+
+    if (values.subcategory) data["subcategory"] = values.subcategory;
+    if (values.origin) data["origin"] = values.origin;
+    if (values.vendor) data["vendor"] = values.vendor;
+    if (values.price) data["price"] = values.price;
+
+    if (values.weight_left) {
+      let grams = parseFloat(values.weight_left);
+      if (values.measure === "oz") grams = grams * 28.35;
+      if (!isNaN(grams)) data["weight_left"] = grams;
+    }
+
+    data["gongfu_brewing"] = {};
+    data["western_brewing"] = {};
+    if (values.gongfu_brewing.temperature) {
+      if (values.gongfu_brewing.fahreiheit)
+        data["gongfu_brewing"]["temperature"] = fahrenheitToCelsius(
+          parseInt(values.gongfu_brewing.temperature)
+        );
+      else
+        data["gongfu_brewing"]["temperature"] = parseInt(
+          values.gongfu_brewing.temperature
+        );
+    }
+    if (values.western_brewing.temperature) {
+      if (values.western_brewing.fahreiheit)
+        data["western_brewing"]["temperature"] = fahrenheitToCelsius(
+          parseInt(values.western_brewing.temperature)
+        );
+      else
+        data["western_brewing"]["temperature"] = parseInt(
+          values.western_brewing.temperature
+        );
+    }
+    if (values.gongfu_brewing.weight)
+      data["gongfu_brewing"]["weight"] = parseFloat(
+        values.gongfu_brewing.weight
+      );
+    if (values.western_brewing.weight)
+      data["western_brewing"]["weight"] = parseFloat(
+        values.western_brewing.weight
+      );
+    if (values.gongfu_brewing.initial)
+      data["gongfu_brewing"]["initial"] = values.gongfu_brewing.initial;
+    if (values.western_brewing.initial)
+      data["western_brewing"]["initial"] = values.western_brewing.initial;
+    if (values.gongfu_brewing.increments)
+      data["gongfu_brewing"]["increments"] = values.gongfu_brewing.increments;
+    if (values.western_brewing.increments)
+      data["western_brewing"]["increments"] = values.western_brewing.increments;
+
+    if (values.id) {
+      handleEdit(data, values.id);
+      handlePrevious();
+    } else {
+      handleEdit(data);
+      handleClose();
+    }
   }
+
+  let initialValues: InputFormModel = {
+    ...teaData,
+    id: teaData?.id ? teaData?.id : "",
+    name: teaData?.name ? teaData?.name : "",
+    category: teaData?.category ? teaData?.category : 0,
+    western_brewing: {
+      ...teaData?.western_brewing,
+      fahrenheit: false,
+    },
+    gongfu_brewing: {
+      ...teaData?.gongfu_brewing,
+      fahrenheit: false,
+    },
+    brewing: "gongfu_brewing",
+    measure: "g",
+  };
 
   return (
     <Box className={classes.root}>
@@ -109,25 +160,11 @@ function InputForm({
         alt=""
       />
       <Formik
-        initialValues={
-          {
-            ...teaData,
-            western_brewing: {
-              ...teaData?.western_brewing,
-              fahrenheit: false,
-            },
-            gongfu_brewing: {
-              ...teaData?.gongfu_brewing,
-              fahrenheit: false,
-            },
-            brewing: "gongfu_brewing",
-            measure: "g",
-          } as InputFormData
-        }
+        initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => handleSave(values)}
+        onSubmit={handleSave}
       >
-        {(formikProps: FormikProps<InputFormData>) => {
+        {(formikProps: FormikProps<InputFormModel>) => {
           const {
             submitForm,
             values,
@@ -152,8 +189,8 @@ function InputForm({
                   className={classes.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={!!(errors.name && touched.name)}
-                  helperText={errors.name && touched.name && errors.name}
+                  error={!!(touched.name && errors.name)}
+                  helperText={touched.name && errors.name}
                 />
                 <FormControl
                   className={classes.category}
@@ -172,7 +209,7 @@ function InputForm({
                       handleChange(e);
                       for (const entry of Object.entries(categories))
                         if (entry[1].id === e.target.value) {
-                          setFieldValue("subcategory", {});
+                          setFieldValue("subcategory", undefined);
                           setFieldValue("gongfu_brewing", {
                             ...entry[1].gongfu_brewing,
                             fahrenheit: false,
@@ -202,12 +239,12 @@ function InputForm({
                 <Typography variant="caption">Optional</Typography>
               </Box>
               <Box className={classes.row}>
-                <SubAutocomplete {...formikProps} />
-                <YearAutocomplete {...formikProps} />
+                <SubAutocomplete formikProps={formikProps} />
+                <YearAutocomplete formikProps={formikProps} />
               </Box>
               <Box className={classes.row}>
-                <OriginAutocomplete {...formikProps} />
-                <VendorAutocomplete {...formikProps} />
+                <OriginAutocomplete formikProps={formikProps} />
+                <VendorAutocomplete formikProps={formikProps} />
               </Box>
               <Box className={classes.row}>
                 <TextField
@@ -221,12 +258,8 @@ function InputForm({
                   className={classes.weight}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={!!(errors.weight_left && touched.weight_left)}
-                  helperText={
-                    errors.weight_left &&
-                    touched.weight_left &&
-                    errors.weight_left
-                  }
+                  error={!!(touched.weight_left && errors.weight_left)}
+                  helperText={touched.weight_left && errors.weight_left}
                 />
                 <FormControl
                   className={classes.weightMeasure}
@@ -255,8 +288,8 @@ function InputForm({
                   className={classes.price}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={!!(errors.price && touched.price)}
-                  helperText={errors.price && touched.price && errors.price}
+                  error={!!(touched.price && errors.price)}
+                  helperText={touched.price && errors.price}
                 />
               </Box>
               <Box className={classes.divider}>
@@ -284,7 +317,7 @@ function InputForm({
                   />
                 </FormGroup>
               </Box>
-              <InputFormBrewing {...formikProps} />
+              <InputFormBrewing formikProps={formikProps} />
               <Box className={classes.bottom}>
                 <Button onClick={handlePrevious} aria-label="back">
                   Back

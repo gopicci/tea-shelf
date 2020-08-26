@@ -1,16 +1,17 @@
 import React, { useState, ReactElement } from "react";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { ThemeProvider } from "@material-ui/styles";
 
 //import Register from "./components/Register";
 import Login from "./components/login";
 import MainLayout from "./components/main-layout";
-import SortFilter from './components/sort-filter';
-import Create from './components/create';
+import SortFilter from "./components/filters/sort-filter";
+import Editor from "./components/editor";
 import CustomSnackbar from "./components/snackbar/custom-snackbar";
 import MainStateContainer from "./components/statecontainers/main-state-container";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/MainTheme";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { TeaModel } from "./services/models";
 
 /**
  * Defines type for app's main routing state.
@@ -22,7 +23,7 @@ export type Route = {
   /** Route name */
   route: "MAIN" | "FILTER" | "CREATE" | "EDIT" | "EDIT_NOTES" | "TEA_DETAILS";
   /** Optional route payload */
-  payload?: object;
+  payload?: TeaModel;
 };
 
 /**
@@ -58,7 +59,7 @@ function App(): ReactElement {
       case "FILTER":
         return <SortFilter {...props} />;
       case "CREATE":
-        if (isMobile) return <Create {...props} />;
+        if (isMobile) return <Editor {...props} />;
         else return <MainLayout {...props} />;
       default:
         return <MainLayout {...props} />;

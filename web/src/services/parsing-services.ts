@@ -128,6 +128,17 @@ export function parseHMSToSeconds(time: string): number {
 }
 
 /**
+ * Returns "hh:mm:ss" API time format from seconds.
+ *
+ * @param {number} seconds - Time in seconds
+ * @returns {string}
+ * @category Services
+ */
+export function parseSecondsToHMS(seconds: number): string{
+  return new Date(seconds * 1000).toISOString().substr(11, 8);
+}
+
+/**
  * Converts brewing time from API dd hh:mm:ss format into seconds.
  *
  * @param {BrewingModel} brewing - Brewing object

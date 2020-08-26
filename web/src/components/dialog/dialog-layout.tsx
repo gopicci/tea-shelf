@@ -1,7 +1,6 @@
 import React, { ReactElement } from "react";
 import { Dialog } from "@material-ui/core";
-//import Edit from "../Edit";
-import Create from "../create";
+import Editor from '../editor';
 import { Route } from "../../app";
 
 /**
@@ -40,7 +39,7 @@ function DialogLayout(props: Props): ReactElement {
       open={true}
       onClose={handleClose}
     >
-      {route.route === "CREATE" && <Create {...props} />}
+      <Editor {...props} />
     </Dialog>
   );
 }

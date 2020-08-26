@@ -9,10 +9,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
-import FilterList from './filters/filter-list';
-import { FilterDispatch, FilterState } from "./statecontainers/filter-context";
-import { Route } from '../app';
-import {Filters} from '../services/models';
+import FilterList from './filter-list';
+import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
+import { Route } from '../../app';
+import {Filters} from '../../services/models';
 
 const useStyles = makeStyles((theme) => ({
   root: {

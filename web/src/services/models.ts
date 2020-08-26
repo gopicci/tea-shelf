@@ -13,6 +13,14 @@ export interface BrewingModel {
 }
 
 /**
+ * Extending brewing model to include extra fields needed in forms.
+ */
+interface FormBrewingModel extends BrewingModel {
+  /** Fahrenheit or celsius measure switch */
+  fahrenheit: boolean;
+}
+
+/**
  * Origin data structure.
  */
 export interface OriginModel {
@@ -109,11 +117,27 @@ export interface TeaRequest {
 }
 
 /**
- * Tea instance data structure.
+ * Extension of TeaRequest that defines a tea instance data structure.
  */
 export interface TeaModel extends TeaRequest {
   /** Instance ID, UUID string if coming from API, number if generated offline */
   id: string | number;
+}
+
+
+/**
+ * Extension of tea model that includes extra fields needed in input forms.
+ */
+export interface InputFormModel extends TeaModel {
+  /** Brewing type, follows API naming convention */
+  brewing: "gongfu_brewing" | "western_brewing";
+  /** Gongfu brewing model includes measure */
+  gongfu_brewing: FormBrewingModel;
+  /** Western brewing model includes measure */
+  western_brewing: FormBrewingModel;
+  /** Weight measure */
+  measure: "g" | "oz";
+  [index: string]: any;
 }
 
 /**

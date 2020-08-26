@@ -2,14 +2,13 @@ import React, { ReactElement } from "react";
 import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { FormikProps } from "formik";
-import { celsiusToFahrenheit } from "../../../services/parsing-services";
 import { InputFormModel } from "../../../services/models";
 import { useStyles } from "../../../style/DesktopFormStyles";
 
 /**
- * TempAutocomplete props.
+ * WeightAutocomplete props.
  *
- * @memberOf TempAutocomplete
+ * @memberOf WeightAutocomplete
  */
 type Props = {
   /** Formik form render methods and props */
@@ -17,13 +16,13 @@ type Props = {
 };
 
 /**
- * Brewing temperature autocomplete component, part of desktop tea editing form.
- * Shows different temperature options based on measure form value.
+ * Brewing weight autocomplete component, part of desktop tea editing form.
+ * Shows different weight options based on brewing form value.
  *
  * @component
  * @subcategory Desktop input
  */
-function TempAutocomplete({ formikProps }: Props): ReactElement {
+function WeightAutocomplete({ formikProps }: Props): ReactElement {
   const {
     values,
     handleChange,
@@ -34,55 +33,53 @@ function TempAutocomplete({ formikProps }: Props): ReactElement {
   } = formikProps;
   const classes = useStyles();
 
-  const options = [...Array(100)]
-    .map((_, b) =>
-      String(values[values.brewing]?.fahrenheit ? celsiusToFahrenheit(b) : b)
-    )
+  const max = values.brewing === "gongfu_brewing" ? 10 : 2;
+  const increment = values.brewing === "gongfu_brewing" ? 0.5 : 0.1;
+  const options = [...Array(max / increment + 1)]
+    .map((_, b) => (b * increment).toFixed(1))
     .reverse();
 
   /**
-   * Sets brewing temperature field value.
+   * Sets brewing weight field value.
    *
-   * @param {string|null} value - Temperature input value
+   * @param {string|null} value - Weight input value
    */
   function handleOnChange(value: string | null): void {
-    setFieldValue(values.brewing + ".temperature", value);
+    setFieldValue(values.brewing + ".weight", value ? value : "");
   }
 
   return (
     <Autocomplete
-      id={values.brewing + ".temperature"}
+      id={values.brewing + ".weight"}
       onChange={(_, value) => handleOnChange(value)}
       onInputChange={(_, value) => handleOnChange(value)}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
-      options={options}
       freeSolo
+      options={options}
       value={
-        values[values.brewing]?.temperature
-          ? String(values[values.brewing]?.temperature)
+        values[values.brewing]?.weight
+          ? String(values[values.brewing]?.weight)
           : ""
       }
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Temperature"
-          aria-label={values.brewing + "_temperature"}
+          label="Grams per 100ml"
+          aria-label={values.brewing + "_weight"}
           variant="outlined"
           size="small"
-          className={classes.temperature}
+          className={classes.brewingWeight}
           onChange={handleChange}
           onBlur={handleBlur}
           error={
             !!(
-              touched[values.brewing]?.temperature &&
-              errors[values.brewing]?.temperature
+              touched[values.brewing]?.weight && errors[values.brewing]?.weight
             )
           }
           helperText={
-            touched[values.brewing]?.temperature &&
-            errors[values.brewing]?.temperature
+            touched[values.brewing]?.weight && errors[values.brewing]?.weight
           }
         />
       )}
@@ -90,4 +87,4 @@ function TempAutocomplete({ formikProps }: Props): ReactElement {
   );
 }
 
-export default TempAutocomplete;
+export default WeightAutocomplete;

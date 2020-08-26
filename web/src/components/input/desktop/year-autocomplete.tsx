@@ -1,43 +1,56 @@
-import React, { ChangeEvent, FocusEvent, ReactElement } from "react";
+import React, { ChangeEvent, ReactElement } from "react";
 import { Autocomplete } from "@material-ui/lab";
-import { TeaRequest } from "../../../services/models";
-import { FormikProps } from "formik";
 import { TextField } from "@material-ui/core";
+import { FormikProps } from "formik";
+import { InputFormModel } from "../../../services/models";
 import { useStyles } from "../../../style/DesktopFormStyles";
-import {InputFormData} from './input-form';
 
 const currentYear = new Date().getFullYear();
 const yearOptionsLength = 60;
 export const yearOptions = [...Array(yearOptionsLength)].map((_, b) =>
-    String(currentYear - b)
-  );
-  yearOptions.unshift("Unknown");
-
+  String(currentYear - b)
+);
+yearOptions.unshift("Unknown");
 
 /**
- * Desktop tea creation form year autocomplete component.
+ * YearAutocomplete props.
+ *
+ * @memberOf YearAutocomplete
+ */
+type Props = {
+  /** Formik form render methods and props */
+  formikProps: FormikProps<InputFormModel>;
+};
+
+/**
+ * Desktop tea editing form year autocomplete component.
  *
  * @component
  * @subcategory Desktop input
  */
-function YearAutocomplete(
-  {
+function YearAutocomplete({ formikProps }: Props): ReactElement {
+  const {
     values,
-    setFieldValue,
-    touched,
-    errors,
     handleChange,
     handleBlur,
-  }: FormikProps<InputFormData>
-): ReactElement {
+    errors,
+    touched,
+    setFieldValue,
+  } = formikProps;
   const classes = useStyles();
 
-  function handleOnChange(event: ChangeEvent<any>, newValue: string | null) {
+  /**
+   * Calls Formik ChangeEvent handler and sets year field value.
+   *
+   * @param {ChangeEvent<any>} event - onChange event
+   * @param {string} value - Input value
+   */
+  function handleOnChange(event: ChangeEvent<any>, value: string | null) {
     if (event) {
       event.target.name = "year";
       handleChange(event);
     }
-    setFieldValue("year", newValue ? newValue : "");
+    setFieldValue("year", value ? value : "");
   }
 
   return (
@@ -62,8 +75,8 @@ function YearAutocomplete(
           className={classes.year}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={!!(errors.year && touched.year)}
-          helperText={errors.year && touched.year && errors.year}
+          error={!!(touched.year && errors.year)}
+          helperText={touched.year && errors.year}
         />
       )}
     />

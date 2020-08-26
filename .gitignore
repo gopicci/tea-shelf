@@ -4,8 +4,8 @@ env
 notes
 .coverage
 .env*
-static
-media
+api/static
+api/media
 .idea
 data-dev*
 .dev*
