@@ -18,10 +18,8 @@ export function getCategoryName(
   categories: CategoryModel[],
   id: number
 ): string {
-  const category = Object.entries(categories).find(
-    (entry) => entry[1].id === id
-  );
-  if (category && category[1].name) return category[1].name;
+  const category = Object.values(categories).find((value) => value.id === id);
+  if (category?.name) return category.name;
   else return "";
 }
 
@@ -134,7 +132,7 @@ export function parseHMSToSeconds(time: string): number {
  * @returns {string}
  * @category Services
  */
-export function parseSecondsToHMS(seconds: number): string{
+export function parseSecondsToHMS(seconds: number): string {
   return new Date(seconds * 1000).toISOString().substr(11, 8);
 }
 

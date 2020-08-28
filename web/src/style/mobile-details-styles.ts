@@ -1,8 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { mainTheme as theme } from "./main-theme";
 
-import { mainTheme as theme } from "./MainTheme";
-
-export const detailsMobileStyles = makeStyles({
+export const mobileDetailsStyles = makeStyles({
   card: {
     display: "flex",
     flexShrink: 0,

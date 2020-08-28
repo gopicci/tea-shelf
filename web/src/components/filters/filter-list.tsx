@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import CheckboxListItem from "../generics/checkbox-list-item";
 import { FilterDispatch } from "../statecontainers/filter-context";
-import { formListStyles } from "../../style/FormListStyles";
+import { formListStyles } from "../../style/form-list-styles";
 import { Filters } from "../../services/models";
 
 /**

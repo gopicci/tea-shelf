@@ -8,7 +8,7 @@ import {
   ListItem,
   Typography,
 } from "@material-ui/core";
-import { formListStyles } from "../../style/FormListStyles";
+import { formListStyles } from "../../style/form-list-styles";
 import CheckboxListItem from "./checkbox-list-item";
 
 /**

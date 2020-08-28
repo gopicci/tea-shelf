@@ -221,11 +221,11 @@ export interface VisionData {
   /** Supposed tea name */
   name?: string;
   /** Supposed tea year */
-  year?: string;
-  /** Supposed tea category */
+  year?: number;
+  /** Supposed tea category name */
   category?: string;
-  /** Supposed tea subcategory */
+  /** Supposed tea subcategory name */
   subcategory?: string;
-  /** Supposed tea vendor */
+  /** Supposed tea vendor name */
   vendor?: string;
 }

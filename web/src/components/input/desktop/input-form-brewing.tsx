@@ -14,7 +14,7 @@ import {
   celsiusToFahrenheit,
   fahrenheitToCelsius,
 } from "../../../services/parsing-services";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 /**
  * InputFormBrewing props.
@@ -42,7 +42,7 @@ function InputFormBrewing({ formikProps }: Props): ReactElement {
     touched,
     setFieldValue,
   } = formikProps;
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   return (
     <>

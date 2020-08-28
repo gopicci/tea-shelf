@@ -3,7 +3,7 @@ import { Autocomplete } from "@material-ui/lab";
 import { TextField } from "@material-ui/core";
 import { FormikProps } from "formik";
 import { InputFormModel } from "../../../services/models";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 const currentYear = new Date().getFullYear();
 const yearOptionsLength = 60;
@@ -37,7 +37,7 @@ function YearAutocomplete({ formikProps }: Props): ReactElement {
     touched,
     setFieldValue,
   } = formikProps;
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   /**
    * Calls Formik ChangeEvent handler and sets year field value.

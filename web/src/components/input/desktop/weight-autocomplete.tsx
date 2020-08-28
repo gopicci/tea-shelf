@@ -3,7 +3,7 @@ import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { FormikProps } from "formik";
 import { InputFormModel } from "../../../services/models";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 /**
  * WeightAutocomplete props.
@@ -31,7 +31,7 @@ function WeightAutocomplete({ formikProps }: Props): ReactElement {
     touched,
     setFieldValue,
   } = formikProps;
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   const max = values.brewing === "gongfu_brewing" ? 10 : 2;
   const increment = values.brewing === "gongfu_brewing" ? 0.5 : 0.1;

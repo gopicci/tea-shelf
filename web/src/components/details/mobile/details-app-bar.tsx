@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { MouseEvent, ReactElement, useContext } from "react";
 import {
   AppBar,
   Box,
@@ -10,10 +10,12 @@ import {
 import { ArrowBack, MoreVert } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
-import { APIRequest } from "../../../services/AuthService";
-import { SnackbarDispatch } from "../../statecontainers/SnackbarContext";
+import { APIRequest } from "../../../services/auth-services";
+import { SnackbarDispatch } from "../../statecontainers/snackbar-context";
 import { TeaDispatch } from "../../statecontainers/tea-context";
-import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
+import { mobileDetailsStyles} from '../../../style/mobile-details-styles';
+import { Route } from "../../../app";
+import { TeaInstance } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -22,45 +24,69 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Mobile tea details page app bar.
+ * DetailsAppbar props.
  *
- * @param setRouter {function} Set main route
- * @param teaData {Object} Track the input state
+ * @memberOf DetailsAppbar
  */
-export default function DetailsAppbar({ setRouter, teaData }) {
-  const classes = useStyles();
-  const detailsClasses = detailsMobileStyles();
+type Props = {
+  /** Tea instance data */
+  teaData: TeaInstance;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+};
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+/**
+ * Mobile tea details app bar.
+ *
+ * @component
+ * @subcategory Details mobile
+ */
+function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
+  const classes = useStyles();
+  const detailsClasses = mobileDetailsStyles();
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | undefined>();
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
 
+  /** Routes back to main */
   function handleBack() {
-    setRouter({ route: "MAIN" });
+    setRoute({ route: "MAIN" });
   }
 
-  function handleMenuClick(event) {
+  /**
+   * Opens menu.
+   *
+   * @param {MouseEvent<HTMLElement>} event - Icon button click event
+   */
+  function handleMenuClick(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget);
   }
 
-  function handleMenuClose() {
-    setAnchorEl(null);
+  /** Closes menu. */
+  function handleMenuClose(): void {
+    setAnchorEl(undefined);
   }
 
-  async function handleDelete() {
+  /**
+   *  Deletes tea instance and routes to main.
+   */
+  async function handleDelete(): Promise<void> {
     try {
-      if (String(teaData.id).length > 5)
-        // Delete online tea
+      if (typeof teaData.id === "string")
+        // ID is UUID, delete online tea
         await APIRequest(`/tea/${teaData.id}/`, "DELETE");
       else {
-        // Delete offline tea
-        const offlineTeas = await localforage.getItem("offline-teas");
+        // ID is not UUID, delete offline tea
+        const offlineTeas = await localforage.getItem<TeaInstance[]>(
+          "offline-teas"
+        );
         let newOfflineTeas = [];
         for (const tea of offlineTeas)
           if (tea.id !== teaData.id) newOfflineTeas.push(tea);
         await localforage.setItem("offline-teas", newOfflineTeas);
       }
-      setRouter({ route: "MAIN" });
+      setRoute({ route: "MAIN" });
       snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
       teaDispatch({ type: "DELETE", data: teaData });
     } catch (e) {
@@ -107,3 +133,5 @@ export default function DetailsAppbar({ setRouter, teaData }) {
     </AppBar>
   );
 }
+
+export default DetailsAppbar;

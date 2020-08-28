@@ -10,7 +10,7 @@ import Editor from "./components/editor";
 import CustomSnackbar from "./components/snackbar/custom-snackbar";
 import MainStateContainer from "./components/statecontainers/main-state-container";
 import { getUser } from "./services/auth-services";
-import { mainTheme as theme, mainTheme } from "./style/MainTheme";
+import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { TeaInstance } from "./services/models";
 
 /**
@@ -62,6 +62,7 @@ function App(): ReactElement {
       case "EDIT":
       case "EDIT_NOTES":
       case "TEA_DETAILS":
+        console.log(route)
         if (isMobile) return <Editor {...props} />;
         else return <MainLayout {...props} />;
       default:

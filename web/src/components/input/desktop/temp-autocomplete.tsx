@@ -4,7 +4,7 @@ import { Autocomplete } from "@material-ui/lab";
 import { FormikProps } from "formik";
 import { celsiusToFahrenheit } from "../../../services/parsing-services";
 import { InputFormModel } from "../../../services/models";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 /**
  * TempAutocomplete props.
@@ -32,7 +32,7 @@ function TempAutocomplete({ formikProps }: Props): ReactElement {
     touched,
     setFieldValue,
   } = formikProps;
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   const options = [...Array(100)]
     .map((_, b) =>

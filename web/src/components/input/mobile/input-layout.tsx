@@ -18,7 +18,7 @@ import {
 } from "../../../services/parsing-services";
 import { getOriginName } from "../../../services/parsing-services";
 import { CategoriesState } from "../../statecontainers/categories-context";
-import { formListStyles } from "../../../style/FormListStyles";
+import { formListStyles } from "../../../style/form-list-styles";
 import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({

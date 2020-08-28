@@ -38,14 +38,14 @@ function EditCategory({
    * @param {ChangeEvent<HTMLInputElement>} event - Item select event
    */
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    for (const entry of Object.entries(categories))
-      if (entry[1].name.toLowerCase() === event.target.name.toLowerCase())
+    for (const category of Object.values(categories))
+      if (category.name.toLowerCase() === event.target.name.toLowerCase())
         setTeaData({
           ...teaData,
-          category: entry[1].id,
+          category: category.id,
           subcategory: undefined,
-          gongfu_brewing: entry[1].gongfu_brewing && entry[1].gongfu_brewing,
-          western_brewing: entry[1].western_brewing && entry[1].western_brewing,
+          gongfu_brewing: category.gongfu_brewing && category.gongfu_brewing,
+          western_brewing: category.western_brewing && category.western_brewing,
         });
     handleBackToLayout();
   }

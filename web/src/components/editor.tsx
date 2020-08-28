@@ -1,8 +1,8 @@
 import React, { ReactElement, useContext, useState } from "react";
 import localforage from "localforage";
 import MobileInput from "./input/mobile/mobile-input";
-import DetailsLayoutMobile from "./details/mobile/DetailsLayout";
-import DetailsLayoutDesktop from "./details/desktop/DetailsLayout";
+import MobileDetailsLayout from "./details/mobile/mobile-details-layout";
+import DesktopDetailsLayout from './details/desktop/desktop-details-layout';
 import InputForm from "./input/desktop/input-form";
 import CaptureImage from "./input/mobile/capture-image";
 import LoadImage from "./input/desktop/load-image";
@@ -14,10 +14,11 @@ import { VendorsDispatch } from "./statecontainers/vendors-context";
 import { Route } from "../app";
 import {
   SubcategoryModel,
-  TeaInstance, TeaModel,
+  TeaInstance,
+  TeaModel,
   TeaRequest,
   VendorModel,
-} from '../services/models';
+} from "../services/models";
 import { parseHMSToSeconds } from "../services/parsing-services";
 import { generateUniqueId } from "../services/sync-services";
 
@@ -43,7 +44,6 @@ type Props = {
  * @subcategory Main
  */
 function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
-  const [teaData, setTeaData] = useState(route.payload);
   const [imageData, setImageData] = useState("");
   const [visionData, setVisionData] = useState({} as TeaModel);
   const snackbarDispatch = useContext(SnackbarDispatch);
@@ -58,7 +58,7 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
    * @param {string|number} [id] - Instance ID for editing purposes
    */
   async function handleEdit(data: TeaRequest, id?: string | number) {
-    let request = { ...data };
+    let request = JSON.parse(JSON.stringify(data));
 
     let response;
     let image = "";
@@ -91,13 +91,18 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
 
         // Update context with request
         teaDispatch({ type: "EDIT", data: { ...request, id: id } });
-        setTeaData({ ...request, id: id });
 
         // Remove image data
         if (request.image) {
           image = request.image;
           delete request.image;
         }
+
+        // Remove null fields
+        Object.keys(request).forEach(
+          (key) => request[key] === null && delete request[key]
+        );
+
         console.log("r", request);
 
         if (typeof id === "string")
@@ -127,7 +132,6 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
       // Update context with response
       if (id) {
         teaDispatch({ type: "EDIT", data: body });
-        setTeaData({ ...body });
       } else teaDispatch({ type: "ADD", data: body });
 
       // If new subcategory was created update cache
@@ -148,6 +152,7 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         vendorsDispatch({ type: "SET", data: venGetData });
         await localforage.setItem<VendorModel[]>("vendors", venGetData);
       }
+
     } catch (e) {
       console.error(e);
       if (e.message === "Bad Request") {
@@ -155,12 +160,13 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         if (id && route.payload) {
           // Revert context to initial state
           teaDispatch({ type: "EDIT", data: route.payload });
-          setTeaData(route.payload);
         }
       } else {
         console.log(e.message, "cache locally");
 
-        let offlineTeas = await localforage.getItem<TeaInstance[]>("offline-teas");
+        let offlineTeas = await localforage.getItem<TeaInstance[]>(
+          "offline-teas"
+        );
         if (!offlineTeas) await localforage.setItem("offline-teas", []);
 
         if (image) request["image"] = image;
@@ -171,7 +177,6 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         // Update context with offline instance
         if (id) {
           teaDispatch({ type: "EDIT", data: teaInstance });
-          setTeaData({ ...teaInstance });
         } else teaDispatch({ type: "ADD", data: teaInstance });
 
         // If tea already present in cache remove before adding again
@@ -194,10 +199,12 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
 
   /**
    * Returns to tea details route or create route,
-   * depending on context.
+   * depending on payload.
+   *
+   * @param {TeaInstance} payload - Optional route payload
    */
-  function handlePrevious(): void {
-    if (route.payload) setRoute({ route: "TEA_DETAILS", payload: teaData });
+  function handlePrevious(payload?: TeaInstance): void {
+    if (payload) setRoute({ route: "TEA_DETAILS", payload: payload });
     else setRoute({ route: "CREATE" });
   }
 
@@ -212,7 +219,6 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
    * Clears state and reroutes to main.
    */
   function handleClose(): void {
-    setTeaData(undefined);
     setRoute({ route: "MAIN" });
   }
 
@@ -237,9 +243,9 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
   function renderSwitch(): ReactElement {
     switch (route.route) {
       case "TEA_DETAILS":
-        //if (isMobile) return <DetailsLayoutMobile {...props} />;
-        //else
-        return <DetailsLayoutDesktop {...props} />;
+      case "EDIT_NOTES":
+        if (isMobile) return <MobileDetailsLayout {...props} />;
+        else return <DesktopDetailsLayout {...props} />;
       case "EDIT":
         if (isMobile) return <MobileInput {...props} />;
         else return <InputForm {...props} />;
@@ -247,9 +253,8 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         if (isMobile) return <CaptureImage {...props} />;
         else return <LoadImage {...props} />;
       default:
-        //if (isMobile) return <DetailsLayoutMobile {...props} />;
-        //else
-        return <DetailsLayoutDesktop {...props} />;
+        if (isMobile) return <MobileDetailsLayout {...props} />;
+        else return <DesktopDetailsLayout {...props} />;
     }
   }
 

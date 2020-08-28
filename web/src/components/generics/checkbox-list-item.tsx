@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { Check } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { formListStyles } from "../../style/FormListStyles";
+import { formListStyles } from "../../style/form-list-styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {

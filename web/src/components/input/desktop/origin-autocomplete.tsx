@@ -7,7 +7,7 @@ import parse from "autosuggest-highlight/parse";
 import { v4 as uuidv4 } from "uuid";
 import { getOriginName } from "../../../services/parsing-services";
 import { InputFormModel } from "../../../services/models";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import {
   getAutocompleteOptions,
   getOriginFromPlace,
@@ -34,7 +34,7 @@ type Props = {
  */
 function OriginAutocomplete({ formikProps }: Props): ReactElement {
   const { values, handleBlur, errors, touched, setFieldValue } = formikProps;
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState<AutocompletePrediction[]>([]);

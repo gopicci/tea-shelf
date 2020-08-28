@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { ReactElement, useContext } from "react";
 import { Box, Card, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
+import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
+import { TeaInstance } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   about: {
@@ -11,33 +12,45 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * DetailsCardDescription props.
+ *
+ * @memberOf DetailsCardDescription
+ */
+type Props = {
+  /** Tea instance data */
+  teaData: TeaInstance;
+};
+
+/**
  * Mobile tea details page description card.
  *
- * @param teaData {Object} Track the input state
+ * @component
+ * @subcategory Details mobile
  */
-export default function DetailsCardDescription({ teaData }) {
+function DetailsCardDescription({ teaData }: Props): ReactElement {
   const classes = useStyles();
-  const detailsClasses = detailsMobileStyles();
+  const detailsClasses = mobileDetailsStyles();
+
   const categories = useContext(CategoriesState);
 
-  const category = Object.entries(categories).find(
-    (entry) => entry[1].id === teaData.category
-  )[1];
+  const category = Object.values(categories).find(
+    (value) => value.id === teaData.category
+  );
 
-  const categoryName =
-    category.name.charAt(0) + category.name.slice(1).toLowerCase();
+  let descriptionName = "";
+  let description = "";
+  let descriptionSource = "";
 
-  let descriptionName;
-  let description;
-  let descriptionSource;
   if (teaData.subcategory && teaData.subcategory.description) {
     descriptionName = teaData.subcategory.name;
     description = teaData.subcategory.description;
-    descriptionSource = teaData.subcategory.descriptionSource;
-  } else {
-    descriptionName = categoryName + " Tea";
+    if (teaData.subcategory.description_source)
+      descriptionSource = teaData.subcategory.description_source;
+  } else if (category && category.description && category.description_source) {
+    descriptionName = category.name.charAt(0) + category.name.slice(1).toLowerCase() + " Tea";
     description = category.description;
-    descriptionSource = category.descriptionSource;
+    if (category.description_source)
+      descriptionSource = category.description_source;
   }
 
   return (
@@ -46,7 +59,7 @@ export default function DetailsCardDescription({ teaData }) {
         <Typography variant="caption" display="block" className={classes.about}>
           About {descriptionName}:
         </Typography>
-        {description.split("\n").map((s, key) => (
+        {description && description.split("\n").map((s, key) => (
           <Typography variant="body2" key={key}>
             {s}
           </Typography>
@@ -66,3 +79,5 @@ export default function DetailsCardDescription({ teaData }) {
     </Card>
   );
 }
+
+export default DetailsCardDescription;

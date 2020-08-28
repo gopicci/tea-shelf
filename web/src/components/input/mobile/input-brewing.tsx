@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     padding: theme.spacing(1),
-    cursor: "pointer",
     textTransform: "none",
   },
   brewingButtonBoxText: {
@@ -47,7 +46,7 @@ type Props = {
   /** Tea input data state  */
   teaData: TeaRequest;
   /** Handles input item click */
-  handleClick: (event: MouseEvent) => void;
+  handleClick?: (event: MouseEvent) => void;
 };
 
 /**

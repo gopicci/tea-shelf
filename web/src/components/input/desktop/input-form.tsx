@@ -19,12 +19,17 @@ import YearAutocomplete from "./year-autocomplete";
 import VendorAutocomplete from "./vendor-autocomplete";
 import OriginAutocomplete from "./origin-autocomplete";
 import InputFormBrewing from "./input-form-brewing";
-import { InputFormModel, TeaInstance, TeaRequest } from "../../../services/models";
+import {
+  InputFormModel,
+  TeaInstance,
+  TeaRequest,
+} from '../../../services/models';
 import { CategoriesState } from "../../statecontainers/categories-context";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles} from '../../../style/desktop-form-styles';
 import { validationSchema } from "./validation-schema";
 import emptyImage from "../../../media/empty.png";
 import { fahrenheitToCelsius } from "../../../services/parsing-services";
+import {Route} from '../../../app';
 
 /**
  * InputForm props.
@@ -34,14 +39,14 @@ import { fahrenheitToCelsius } from "../../../services/parsing-services";
 type Props = {
   /** Base64 image data from load image stage */
   imageData?: string;
-  /** Instance tea data state for initial values on edit mode */
-  teaData?: TeaInstance;
+  /** App's main route state, might contain payload for initial values on edit mode */
+  route: Route;
   /** Handles tea posting process */
   handleEdit: (data: TeaRequest, id?: number | string) => void;
   /** Closes dialog */
   handleClose: () => void;
   /** Routes to previous stage */
-  handlePrevious: () => void;
+  handlePrevious: (payload?: TeaInstance) => void;
 };
 
 /**
@@ -53,14 +58,16 @@ type Props = {
  */
 function InputForm({
   imageData,
-  teaData,
+  route,
   handleEdit,
   handleClose,
   handlePrevious,
 }: Props): ReactElement {
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   const categories = useContext(CategoriesState);
+
+  const teaData = route.payload;
 
   /**
    * Saving process. Serializes data, calls edit
@@ -90,7 +97,7 @@ function InputForm({
     data["gongfu_brewing"] = {};
     data["western_brewing"] = {};
     if (values.gongfu_brewing.temperature) {
-      if (values.gongfu_brewing.fahreiheit)
+      if (values.gongfu_brewing.fahrenheit)
         data["gongfu_brewing"]["temperature"] = fahrenheitToCelsius(
           parseInt(values.gongfu_brewing.temperature)
         );
@@ -100,7 +107,7 @@ function InputForm({
         );
     }
     if (values.western_brewing.temperature) {
-      if (values.western_brewing.fahreiheit)
+      if (values.western_brewing.fahrenheit)
         data["western_brewing"]["temperature"] = fahrenheitToCelsius(
           parseInt(values.western_brewing.temperature)
         );
@@ -117,6 +124,7 @@ function InputForm({
       data["western_brewing"]["weight"] = parseFloat(
         values.western_brewing.weight
       );
+
     if (values.gongfu_brewing.initial)
       data["gongfu_brewing"]["initial"] = values.gongfu_brewing.initial;
     if (values.western_brewing.initial)
@@ -126,9 +134,10 @@ function InputForm({
     if (values.western_brewing.increments)
       data["western_brewing"]["increments"] = values.western_brewing.increments;
 
+
     if (values.id) {
       handleEdit(data, values.id);
-      handlePrevious();
+      handlePrevious({...data, id: values.id});
     } else {
       handleEdit(data);
       handleClose();
@@ -140,6 +149,7 @@ function InputForm({
     id: teaData?.id ? teaData?.id : "",
     name: teaData?.name ? teaData?.name : "",
     category: teaData?.category ? teaData?.category : 0,
+    year: teaData?.year ? teaData?.year : undefined,
     western_brewing: {
       ...teaData?.western_brewing,
       fahrenheit: false,
@@ -207,15 +217,15 @@ function InputForm({
                     value={values.category ? values.category : ""}
                     onChange={(e) => {
                       handleChange(e);
-                      for (const entry of Object.entries(categories))
-                        if (entry[1].id === e.target.value) {
+                      for (const category of Object.values(categories))
+                        if (category.id === e.target.value) {
                           setFieldValue("subcategory", undefined);
                           setFieldValue("gongfu_brewing", {
-                            ...entry[1].gongfu_brewing,
+                            ...category.gongfu_brewing,
                             fahrenheit: false,
                           });
                           setFieldValue("western_brewing", {
-                            ...entry[1].western_brewing,
+                            ...category.western_brewing,
                             fahrenheit: false,
                           });
                         }
@@ -223,10 +233,10 @@ function InputForm({
                     onBlur={handleBlur}
                   >
                     {categories &&
-                      Object.entries(categories).map((entry) => (
-                        <MenuItem key={entry[1].id} value={entry[1].id}>
-                          {entry[1].name.charAt(0) +
-                            entry[1].name.slice(1).toLowerCase()}
+                      Object.values(categories).map((category) => (
+                        <MenuItem key={category.id} value={category.id}>
+                          {category.name.charAt(0) +
+                            category.name.slice(1).toLowerCase()}
                         </MenuItem>
                       ))}
                   </Select>
@@ -319,7 +329,7 @@ function InputForm({
               </Box>
               <InputFormBrewing formikProps={formikProps} />
               <Box className={classes.bottom}>
-                <Button onClick={handlePrevious} aria-label="back">
+                <Button onClick={(_) => handlePrevious()} aria-label="back">
                   Back
                 </Button>
                 <Button onClick={submitForm} aria-label="save">

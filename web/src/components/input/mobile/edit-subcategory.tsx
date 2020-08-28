@@ -16,7 +16,7 @@ import Autocomplete, {
 import { ArrowBack } from "@material-ui/icons";
 import { getSubcategoryName } from "../../../services/parsing-services";
 import { SubcategoriesState } from "../../statecontainers/subcategories-context";
-import { formListStyles } from "../../../style/FormListStyles";
+import { formListStyles } from "../../../style/form-list-styles";
 import { TeaRequest } from "../../../services/models";
 import { FilterOptionsState } from "@material-ui/lab";
 
@@ -57,8 +57,8 @@ function EditSubcategory({
 
   const [inputValue, setInputValue] = useState("");
 
-  const options = Object.entries(subcategories).map((entry) => {
-    return getSubcategoryName(entry[1]);
+  const options = Object.values(subcategories).map((subcategory) => {
+    return getSubcategoryName(subcategory);
   });
 
   /**
@@ -69,14 +69,13 @@ function EditSubcategory({
    */
   function updateSubcategory(name: string): void {
     // Look for a match in subcategories context
-    const match = Object.entries(subcategories).find((entry) => {
+    const subcategory = Object.values(subcategories).find((value) => {
       const lcName = name.toLowerCase();
-      if (getSubcategoryName(entry[1]).toLowerCase() === lcName) return true;
-      if (entry[1].name.toLowerCase() === lcName) return true;
-      return entry[1].translated_name?.toLowerCase() === lcName;
+      if (getSubcategoryName(value).toLowerCase() === lcName) return true;
+      if (value.name.toLowerCase() === lcName) return true;
+      return value.translated_name?.toLowerCase() === lcName;
     });
-    if (match) {
-      const subcategory = match[1];
+    if (subcategory) {
       // Match found, update also category, origin and brewings
       let data = {
         ...teaData,

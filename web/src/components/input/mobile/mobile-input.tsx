@@ -1,5 +1,4 @@
 import React, { ReactElement, useEffect, useState } from "react";
-
 import InputLayout from "./input-layout";
 import EditName from "./edit-name";
 import EditYear from "./edit-year";
@@ -12,9 +11,8 @@ import EditWeightList from "./edit-weight-list";
 import EditWeightInput from "./edit-weight-input";
 import EditTime from "./edit-time";
 import EditPrice from "./edit-price";
-import EditNotes from "./edit-notes";
 import { Route } from "../../../app";
-import {TeaModel, TeaRequest} from '../../../services/models';
+import { TeaInstance, TeaModel, TeaRequest } from "../../../services/models";
 
 /**
  * Defines props passed to mobile input components.
@@ -47,7 +45,7 @@ type Props = {
   /** Closes editor and return to main route */
   handleClose: () => void;
   /** Routes to previous stage */
-  handlePrevious: () => void;
+  handlePrevious: (payload?: TeaInstance) => void;
 };
 
 /**
@@ -65,9 +63,7 @@ function MobileInput({
   handleClose,
   handlePrevious,
 }: Props): ReactElement {
-  const [editRoute, setEditRoute] = useState(
-    route.route === "EDIT_NOTES" ? "notes" : "input_layout"
-  );
+  const [editRoute, setEditRoute] = useState("input_layout");
 
   const [teaData, setTeaData] = useState<TeaRequest>({
     id: undefined,
@@ -78,19 +74,23 @@ function MobileInput({
   });
 
   useEffect(() => {
-    console.log(teaData)
-  },[teaData])
+    console.log(teaData);
+  }, [teaData]);
 
-
+  /**
+   * Checks field requirements, merges image data and
+   * calls edit handler.
+   */
   function handleSave(): void {
     if (!teaData.name || !teaData.category) return;
-    let data: TeaRequest = { name: teaData.name, category: teaData.category };
+
+    if (imageData) teaData.image = imageData;
 
     if (route.payload) {
-      handleEdit(data, route.payload.id);
-      handlePrevious();
+      handleEdit(teaData, route.payload.id);
+      handlePrevious({ ...teaData, id: route.payload.id });
     } else {
-      handleEdit(data);
+      handleEdit(teaData);
       handleClose();
     }
   }
@@ -109,7 +109,11 @@ function MobileInput({
           <InputLayout
             {...inputProps}
             handleSave={handleSave}
-            handlePrevious={handlePrevious}
+            handlePrevious={() =>
+              handlePrevious(
+                route.payload && { ...teaData, id: route.payload.id }
+              )
+            }
             setEditRoute={setEditRoute}
           />
         );
@@ -153,14 +157,6 @@ function MobileInput({
         return <EditWeightInput {...inputProps} />;
       case "price":
         return <EditPrice {...inputProps} />;
-      case "notes":
-        return (
-          <EditNotes
-            {...inputProps}
-            handleEdit={handleEdit}
-            handlePrevious={handlePrevious}
-          />
-        );
       default:
         return (
           <InputLayout

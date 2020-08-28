@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import {
   Box,
   Button,
@@ -15,9 +15,11 @@ import {
   cropToNoZeroes,
   getSubcategoryName,
 } from "../../../services/parsing-services";
-import InputBrewing from "../../input/mobile/InputBrewing";
-import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
+import InputBrewing from "../../input/mobile/input-brewing";
+import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import emptyImage from "../../../media/empty.png";
+import { Route } from "../../../app";
+import { TeaInstance, TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column-reverse",
     alignItems: "flex-end",
     minHeight: theme.spacing(10),
-    background: theme.palette.background.main,
+    background: theme.palette.background.default,
     paddingRight: theme.spacing(1),
   },
   editButton: {
@@ -65,28 +67,57 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * DetailsCardMain props.
+ *
+ * @memberOf DetailsCardMain
+ */
+type Props = {
+  /** Tea instance data */
+  teaData: TeaInstance;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+  /** Handles tea posting process */
+  handleEdit: (data: TeaRequest, id?: number | string) => void;
+};
+
+/**
  * Mobile tea details page main card. Contains image, title, rating,
  * brewing instructions, weight, price.
  *
- * @param setRouter {function} Set main route
- * @param teaData {Object} Track the input state
- * @param handleEdit {function} Handle state edits
+ * @component
+ * @subcategory Details mobile
  */
-export default function DetailsCardMain({ teaData, setRouter, handleEdit }) {
+function DetailsCardMain({
+  teaData,
+  setRoute,
+  handleEdit,
+}: Props): ReactElement {
   const classes = useStyles();
-  const detailsClasses = detailsMobileStyles();
+  const detailsClasses = mobileDetailsStyles();
 
+  const [rating, setRating] = useState(teaData.rating);
   const [gongfu, setGongfu] = useState(true);
 
-  function handleRatingChange(_, value) {
-    handleEdit({ ...teaData, rating: value * 2 });
+  /**
+   * Updates tea instance rating. API rating range is 0 to 10.
+   *
+   * @param {number} value - Star rating
+   */
+  function handleRatingChange(value: number | null): void {
+    handleEdit(
+      { ...teaData, rating: value ? value * 2 : undefined },
+      teaData.id
+    );
+    setRating(value ? value * 2 : undefined);
   }
 
-  function handleEditClick() {
-    setRouter({ route: "EDIT", data: teaData });
+  /** Routes to tea instance edit page. */
+  function handleEditClick(): void {
+    setRoute({ route: "EDIT", payload: teaData });
   }
 
-  function handleSwitch() {
+  /** Updates brewing switch state. */
+  function handleSwitch(): void {
     setGongfu(!gongfu);
   }
 
@@ -115,7 +146,8 @@ export default function DetailsCardMain({ teaData, setRouter, handleEdit }) {
       </Box>
       <Box className={detailsClasses.genericBox}>
         <Typography variant="h2">
-          {teaData.year} {getSubcategoryName(teaData.subcategory)}
+          {teaData.year}{" "}
+          {teaData.subcategory && getSubcategoryName(teaData.subcategory)}
         </Typography>
       </Box>
       <Box className={detailsClasses.divider} />
@@ -124,10 +156,10 @@ export default function DetailsCardMain({ teaData, setRouter, handleEdit }) {
         <Box className={detailsClasses.grow}>
           <Rating
             name="customized-empty"
-            value={teaData.rating / 2 || 0}
+            value={rating ? rating / 2 : 0}
             precision={0.5}
             size="large"
-            onChange={handleRatingChange}
+            onChange={(_, value) => handleRatingChange(value)}
             emptyIcon={<Star fontSize="inherit" />}
           />
         </Box>
@@ -156,34 +188,33 @@ export default function DetailsCardMain({ teaData, setRouter, handleEdit }) {
           <InputBrewing
             name={gongfu ? "gongfu" : "western"}
             teaData={teaData}
-            handleClick={null}
           />
         </Box>
       </Box>
-      {(teaData.weight_left > 0 || teaData.price > 0) && (
+      {!!(teaData.weight_left || teaData.price) && (
         <>
           <Box className={detailsClasses.divider} />
           <Box className={detailsClasses.genericBox}>
             <Box className={detailsClasses.row}>
-              {teaData.weight_left > 0 && (
+              {teaData.weight_left && (
                 <Typography
                   variant="caption"
                   className={detailsClasses.centerGrow}
                 >
                   Weight left:{" "}
-                  {teaData.weight_left +
+                  {cropToNoZeroes(teaData.weight_left) +
                     "g (" +
                     cropToNoZeroes(teaData.weight_left / 28.35, 2) +
                     "oz)"}
                 </Typography>
               )}
-              {teaData.price > 0 && (
+              {teaData.price && (
                 <Typography
                   variant="caption"
                   className={detailsClasses.centerGrow}
                 >
                   Price:{" "}
-                  {teaData.price +
+                  {cropToNoZeroes(teaData.price) +
                     "/g (" +
                     cropToNoZeroes(teaData.price * 28.35, 1) +
                     "/oz)"}
@@ -196,3 +227,5 @@ export default function DetailsCardMain({ teaData, setRouter, handleEdit }) {
     </Card>
   );
 }
+
+export default DetailsCardMain;

@@ -1,12 +1,9 @@
-import React from "react";
-import {
-  Box,
-  Card,
-  CardActionArea,
-  Typography,
-} from "@material-ui/core";
+import React, { ReactElement } from "react";
+import { Box, Card, CardActionArea, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
+import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
+import { TeaInstance } from "../../../services/models";
+import { Route } from "../../../app";
 
 const useStyles = makeStyles((theme) => ({
   notesBox: {
@@ -23,17 +20,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * DetailsCardNotes props.
+ *
+ * @memberOf DetailsCardNotes
+ */
+type Props = {
+  /** Tea instance data */
+  teaData: TeaInstance;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+};
+
+/**
  * Mobile tea details page notes card.
  *
- * @param setRouter {function} Set main route
- * @param teaData {Object} Track the input state
+ * @component
+ * @subcategory Details mobile
  */
-export default function DetailsCardNotes({ teaData, setRouter }) {
+function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
   const classes = useStyles();
-  const detailsClasses = detailsMobileStyles();
+  const detailsClasses = mobileDetailsStyles();
 
-  function handleEditNotes() {
-    setRouter({ route: "EDIT_NOTES", data: teaData });
+  /** Routes to notes editor. */
+  function handleEditNotes(): void {
+    setRoute({ route: "EDIT_NOTES", payload: teaData });
   }
 
   return (
@@ -45,7 +55,7 @@ export default function DetailsCardNotes({ teaData, setRouter }) {
           </Typography>
 
           {!teaData.notes ? (
-            <Typography variant="button" className={classes.center}>
+            <Typography variant="button" className={detailsClasses.center}>
               Add notes
             </Typography>
           ) : (
@@ -62,3 +72,5 @@ export default function DetailsCardNotes({ teaData, setRouter }) {
     </Card>
   );
 }
+
+export default DetailsCardNotes;

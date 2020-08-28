@@ -7,7 +7,7 @@ import { Grid, TextField, Typography } from "@material-ui/core";
 import { FormikProps } from "formik";
 import { InputFormModel, VendorModel } from "../../../services/models";
 import { FilterOptionsState } from "@material-ui/lab";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 const filter = createFilterOptions({
   stringify: (option: VendorModel) => option.name + " " + option.website,
@@ -44,7 +44,7 @@ function VendorAutocomplete({ formikProps }: Props): ReactElement {
     touched,
     setFieldValue,
   } = formikProps;
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   const vendors = useContext(VendorsState);
 

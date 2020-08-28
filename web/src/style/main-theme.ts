@@ -1,7 +1,7 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
+import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
-const breakpoints = createBreakpoints({})
+const breakpoints = createBreakpoints({});
 
 export const mainTheme = createMuiTheme({
   palette: {
@@ -11,7 +11,7 @@ export const mainTheme = createMuiTheme({
       dark: "#002838",
     },
     background: {
-      main: "#dadfe5",
+      default: "#dadfe5",
     },
   },
   typography: {

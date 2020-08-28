@@ -3,7 +3,7 @@ import { List } from "@material-ui/core";
 import InputAppBar from "./input-app-bar";
 import InputItem from "./input-item";
 import { celsiusToFahrenheit } from "../../../services/parsing-services";
-import { formListStyles } from "../../../style/FormListStyles";
+import { formListStyles } from "../../../style/form-list-styles";
 import { TeaRequest } from "../../../services/models";
 
 /**

@@ -49,16 +49,16 @@ export async function getOriginFromPlace(
     const origin: OriginModel = { country: "" };
 
     let extendedAddress = "";
-    for (const entry of Object.entries(adr))
-      if (entry[1].type === "element") {
-        if (entry[1].attributes[0].value === "country-name")
-          origin["country"] = entry[1].children[0].content;
-        if (entry[1].attributes[0].value === "region")
-          origin["region"] = entry[1].children[0].content;
-        if (entry[1].attributes[0].value === "locality")
-          origin["locality"] = entry[1].children[0].content;
-        if (entry[1].attributes[0].value === "extended-address")
-          extendedAddress = entry[1].children[0].content;
+    for (const value of Object.values(adr))
+      if (value.type === "element") {
+        if (value.attributes[0].value === "country-name")
+          origin["country"] = value.children[0].content;
+        if (value.attributes[0].value === "region")
+          origin["region"] = value.children[0].content;
+        if (value.attributes[0].value === "locality")
+          origin["locality"] = value.children[0].content;
+        if (value.attributes[0].value === "extended-address")
+          extendedAddress = value.children[0].content;
       }
 
     if (extendedAddress) origin["locality"] = extendedAddress.split(",")[0];

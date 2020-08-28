@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Box, Card, Typography } from "@material-ui/core";
 import ReactCountryFlag from "react-country-flag";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,13 +7,15 @@ import {
   Geographies,
   Geography,
   Marker,
+  Point,
 } from "react-simple-maps";
 import {
   getCountryCode,
   getOriginName,
 } from "../../../services/parsing-services";
-import { detailsMobileStyles } from "../../../style/DetailsMobileStyles";
-import { geography } from "../../../services/Geography";
+import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
+import { geography } from "../../../services/geography";
+import { OriginModel } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   name: {
@@ -31,17 +33,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * DetailsCardOrigin props.
+ *
+ * @memberOf DetailsCardOrigin
+ */
+type Props = {
+  origin: OriginModel;
+};
+
+/**
  * Mobile tea details page origin card.
  *
- * @param teaData {Object} Track the input state
+ * @component
+ * @subcategory Details mobile
  */
-export default function DetailsCardOrigin({ teaData }) {
+function DetailsCardOrigin({ origin }: Props): ReactElement {
   const classes = useStyles();
-  const detailsClasses = detailsMobileStyles();
+  const detailsClasses = mobileDetailsStyles();
 
-  let coordinates;
-  if (teaData.origin.longitude && teaData.origin.latitude)
-    coordinates = [teaData.origin.longitude, teaData.origin.latitude];
+  let coordinates: Point | undefined;
+  if (origin.longitude && origin.latitude)
+    coordinates = [origin.longitude, origin.latitude];
 
   return (
     <Card className={detailsClasses.card}>
@@ -50,7 +62,7 @@ export default function DetailsCardOrigin({ teaData }) {
           Origin:
         </Typography>
         <Typography variant="body2" className={classes.name}>
-          {getOriginName(teaData.origin)}
+          {getOriginName(origin)}
         </Typography>
         <ReactCountryFlag
           svg
@@ -59,13 +71,13 @@ export default function DetailsCardOrigin({ teaData }) {
             height: "2em",
           }}
           className={classes.countryFlag}
-          countryCode={getCountryCode(teaData.origin.country)}
+          countryCode={getCountryCode(origin.country)}
           alt=""
-          aria-label={teaData.origin.country}
+          aria-label={origin.country}
         />
       </Box>
       {coordinates && (
-        <Box className={detailsClasses.mapBox}>
+        <Box className={classes.mapBox}>
           <ComposableMap
             projection="geoMercator"
             projectionConfig={{
@@ -80,7 +92,7 @@ export default function DetailsCardOrigin({ teaData }) {
                     key={geo.rsmKey}
                     geography={geo}
                     fill={
-                      geo.properties.NAME === teaData.origin.country
+                      geo.properties.NAME === origin.country
                         ? "#ccc"
                         : "#EAEAEC"
                     }
@@ -98,3 +110,5 @@ export default function DetailsCardOrigin({ teaData }) {
     </Card>
   );
 }
+
+export default DetailsCardOrigin;

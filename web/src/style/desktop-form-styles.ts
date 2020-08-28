@@ -1,6 +1,7 @@
-import {fade, makeStyles} from '@material-ui/core/styles';
+import { fade, makeStyles } from "@material-ui/core/styles";
+import { mainTheme as theme } from "./main-theme";
 
-export const useStyles = makeStyles((theme) => ({
+export const desktopFormStyles = makeStyles({
   root: {
     display: "flex",
     flexDirection: "column",
@@ -37,7 +38,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0.5),
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    backgroundColor: fade(theme.palette.background.main, 0.5),
+    backgroundColor: fade(theme.palette.background.default, 0.5),
   },
   brewingSwitch: {
     position: "absolute",
@@ -107,4 +108,15 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     padding: theme.spacing(2),
   },
-}));
+  icon: {
+    color: theme.palette.text.secondary,
+    marginRight: theme.spacing(2),
+  },
+  listItem: {
+    paddingBottom: theme.spacing(1),
+    borderBottom: `solid 1px ${fade(theme.palette.common.black, 0.15)}`,
+  },
+  listItemName: {
+    fontWeight: 400,
+  },
+});

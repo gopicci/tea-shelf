@@ -1,4 +1,4 @@
-import React, {useState, useContext, ReactElement} from 'react';
+import React, { useState, useContext, ReactElement } from "react";
 import {
   InputAdornment,
   TextField,
@@ -14,10 +14,10 @@ import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { ArrowBack } from "@material-ui/icons";
-import { formListStyles } from "../../../style/FormListStyles";
+import { formListStyles } from "../../../style/form-list-styles";
 import { VendorsState } from "../../statecontainers/vendors-context";
-import { TeaRequest } from '../../../services/models';
-import {FilterOptionsState} from '@material-ui/lab';
+import { TeaRequest } from "../../../services/models";
+import { FilterOptionsState } from "@material-ui/lab";
 
 type Option = { inputValue: string; label: string } | string;
 
@@ -55,16 +55,14 @@ function EditVendor({
 
   const [inputValue, setInputValue] = useState("");
 
-  const options = Object.entries(vendors).map((entry) => {
-    return entry[1].name;
+  const options = Object.values(vendors).map((vendor) => {
+    return vendor.name;
   });
 
   function updateVendor(name: string): void {
     // If input already exist add the object, otherwise add only the name
-    const match = Object.entries(vendors).find(
-      (entry) => entry[1].name === name
-    );
-    if (match) setTeaData({ ...teaData, vendor: match[1] });
+    const vendor = Object.values(vendors).find((value) => value.name === name);
+    if (vendor) setTeaData({ ...teaData, vendor: vendor });
     else setTeaData({ ...teaData, vendor: { name: name } });
     handleBackToLayout();
   }

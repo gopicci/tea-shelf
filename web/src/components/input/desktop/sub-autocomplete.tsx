@@ -10,7 +10,7 @@ import { getSubcategoryName } from "../../../services/parsing-services";
 import { InputFormModel, SubcategoryModel } from "../../../services/models";
 import { SubcategoriesState } from "../../statecontainers/subcategories-context";
 import { CategoriesState } from "../../statecontainers/categories-context";
-import { useStyles } from "../../../style/DesktopFormStyles";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 type Option = { inputValue: string; label: string } | string;
 
@@ -42,7 +42,7 @@ function SubAutocomplete({ formikProps }: Props): ReactElement {
     touched,
     setFieldValue,
   } = formikProps;
-  const classes = useStyles();
+  const classes = desktopFormStyles();
 
   const subcategories = useContext(SubcategoriesState);
   const categories = useContext(CategoriesState);
@@ -115,10 +115,7 @@ function SubAutocomplete({ formikProps }: Props): ReactElement {
    * @param {ChangeEvent<any>} event - onChange event
    * @param {Option|null} value - Input value
    */
-  function handleOnChange(
-    event: ChangeEvent<any>,
-    value: Option | null
-  ): void {
+  function handleOnChange(event: ChangeEvent<any>, value: Option | null): void {
     if (event) {
       event.target.name = "subcategory";
       handleChange(event);

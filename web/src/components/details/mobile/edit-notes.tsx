@@ -10,7 +10,8 @@ import {
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { TeaRequest } from "../../../services/models";
+import { TeaInstance, TeaRequest } from "../../../services/models";
+import { Route } from "../../../app";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -35,24 +36,27 @@ const useStyles = makeStyles((theme) => ({
  * @memberOf EditNotes
  */
 type Props = {
-  /** Tea input data state  */
-  teaData: TeaRequest;
+  /** Tea instance data state  */
+  teaData: TeaInstance;
+  /** Sets tea instance data state */
+  setTeaData: (data: TeaInstance) => void;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
   /** Handles tea posting process */
   handleEdit: (data: TeaRequest, id?: number | string) => void;
-  /** Routes to previous stage */
-  handlePrevious: () => void;
 };
 
 /**
  * Mobile tea notes text input component.
  *
  * @component
- * @subcategory Mobile input
+ * @subcategory Details mobile
  */
 function EditNotes({
   teaData,
+  setTeaData,
+  setRoute,
   handleEdit,
-  handlePrevious,
 }: Props): ReactElement {
   const classes = useStyles();
 
@@ -68,11 +72,17 @@ function EditNotes({
   }
 
   /**
-   * Saves notes and routes back to tea details.
+   * Upload notes, updates state and routes back to tea details.
    */
   function handleSave(): void {
-    handleEdit({ ...teaData, notes: text });
+    handleEdit({ ...teaData, notes: text }, teaData.id);
+    setTeaData({ ...teaData, notes: text });
     handlePrevious();
+  }
+
+  /** Sets route to tea details. */
+  function handlePrevious(): void {
+    setRoute({ route: "TEA_DETAILS", payload: teaData });
   }
 
   return (

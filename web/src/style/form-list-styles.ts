@@ -1,6 +1,5 @@
 import { makeStyles, fade } from "@material-ui/core/styles";
-
-import { mainTheme as theme } from "./MainTheme";
+import { mainTheme as theme } from "./main-theme";
 
 export const formListStyles = makeStyles({
   formLabel: {
@@ -23,7 +22,7 @@ export const formListStyles = makeStyles({
     paddingBottom: 0,
     display: "flex",
     minWidth: 0,
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down("xs")]: {
       width: "100vw",
     },
     textTransform: "capitalize",
@@ -35,7 +34,7 @@ export const formListStyles = makeStyles({
     margin: 0,
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up("sm")]: {
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(1),
     },
@@ -43,7 +42,7 @@ export const formListStyles = makeStyles({
   },
   linkSmall: {
     flexGrow: 1,
-    textAlign: 'center',
+    textAlign: "center",
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     fontSize: theme.typography.caption.fontSize,
