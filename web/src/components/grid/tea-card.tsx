@@ -19,7 +19,7 @@ import {
 import { CategoriesState } from "../statecontainers/categories-context";
 import emptyImage from "../../media/empty.png";
 import { Route } from "../../app";
-import { TeaModel } from "../../services/models";
+import { TeaInstance } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
  */
 type Props = {
   /** Tea instance data */
-  tea: TeaModel;
+  tea: TeaInstance;
   /** Grid or list mode */
   gridView: boolean;
   /** Set app's main route */
@@ -135,6 +135,7 @@ type Props = {
  * Card component visualizing a single tea instance.
  *
  * @component
+ * @subcategory Main
  */
 function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
   const classes = useStyles();

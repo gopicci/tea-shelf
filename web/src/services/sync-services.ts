@@ -1,11 +1,11 @@
 import { APIRequest } from "./auth-services";
 import localforage from "localforage";
-import { TeaModel, SubcategoryModel, VendorModel } from "./models";
+import { TeaInstance, SubcategoryModel, VendorModel } from "./models";
 
 /**
  * Models allowed to be used in the generic services requiring an instance ID.
  */
-type genericModels = TeaModel | SubcategoryModel | VendorModel;
+type genericModels = TeaInstance | SubcategoryModel | VendorModel;
 
 /**
  * Generic reducer actions.
@@ -74,11 +74,11 @@ export function generateUniqueId(array: genericModels[]): number {
  * @category Services
  */
 export async function syncOffline(): Promise<void> {
-  const offlineTeas = await localforage.getItem<TeaModel[]>("offline-teas");
+  const offlineTeas = await localforage.getItem<TeaInstance[]>("offline-teas");
 
   if (!offlineTeas) return;
 
-  let failed: TeaModel[] = [];
+  let failed: TeaInstance[] = [];
 
   const requests = offlineTeas.map(async (tea) => {
     try {
@@ -99,7 +99,7 @@ export async function syncOffline(): Promise<void> {
   await Promise.allSettled(requests);
 
   if (failed.length) {
-    await localforage.setItem<TeaModel[]>("offline-teas", failed);
+    await localforage.setItem<TeaInstance[]>("offline-teas", failed);
     throw new Error("Error when uploading local entries");
   } else {
     await localforage.setItem("offline-teas", []);
@@ -109,11 +109,11 @@ export async function syncOffline(): Promise<void> {
 /**
  * Gets offline teas (not uploaded yet) from storage.
  *
- * @returns {Promise<TeaModel[]>}
+ * @returns {Promise<TeaInstance[]>}
  * @category Services
  */
-export async function getOfflineTeas(): Promise<TeaModel[]> {
-  const cache = await localforage.getItem<TeaModel[]>("offline-teas");
+export async function getOfflineTeas(): Promise<TeaInstance[]> {
+  const cache = await localforage.getItem<TeaInstance[]>("offline-teas");
   if (!cache) return localforage.setItem("offline-teas", []);
   else
     return Promise.all(cache.filter((entry) => entry.name && entry.category));

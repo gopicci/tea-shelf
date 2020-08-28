@@ -11,7 +11,7 @@ import CustomSnackbar from "./components/snackbar/custom-snackbar";
 import MainStateContainer from "./components/statecontainers/main-state-container";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/MainTheme";
-import { TeaModel } from "./services/models";
+import { TeaInstance } from "./services/models";
 
 /**
  * Defines type for app's main routing state.
@@ -23,7 +23,7 @@ export type Route = {
   /** Route name */
   route: "MAIN" | "FILTER" | "CREATE" | "EDIT" | "EDIT_NOTES" | "TEA_DETAILS";
   /** Optional route payload */
-  payload?: TeaModel;
+  payload?: TeaInstance;
 };
 
 /**
@@ -59,6 +59,9 @@ function App(): ReactElement {
       case "FILTER":
         return <SortFilter {...props} />;
       case "CREATE":
+      case "EDIT":
+      case "EDIT_NOTES":
+      case "TEA_DETAILS":
         if (isMobile) return <Editor {...props} />;
         else return <MainLayout {...props} />;
       default:

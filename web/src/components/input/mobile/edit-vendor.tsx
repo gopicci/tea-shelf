@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, {useState, useContext, ReactElement} from 'react';
 import {
   InputAdornment,
   TextField,
@@ -15,23 +15,40 @@ import Autocomplete, {
 } from "@material-ui/lab/Autocomplete";
 import { ArrowBack } from "@material-ui/icons";
 import { formListStyles } from "../../../style/FormListStyles";
-import { VendorsState } from "../../statecontainers/VendorsContext";
+import { VendorsState } from "../../statecontainers/vendors-context";
+import { TeaRequest } from '../../../services/models';
+import {FilterOptionsState} from '@material-ui/lab';
 
-const filter = createFilterOptions();
+type Option = { inputValue: string; label: string } | string;
+
+const filter = createFilterOptions<Option>();
+
+/**
+ * EditVendor props.
+ *
+ * @memberOf EditVendor
+ */
+type Props = {
+  /** Tea input data state  */
+  teaData: TeaRequest;
+  /** Sets tea data state */
+  setTeaData: (data: TeaRequest) => void;
+  /** Reroutes to input layout */
+  handleBackToLayout: () => void;
+};
 
 /**
  * Mobile tea creation vendor input component. Shows a list and autocomplete from
  * central vendors state, with option to add extra.
  *
- * @param teaData {Object} Input tea data state
- * @param setTeaData {function} Set input tea data state
- * @param handleBackToLayout {function} Reroutes to input layout
+ * @component
+ * @subcategory Mobile input
  */
-export default function EditVendor({
+function EditVendor({
   teaData,
   setTeaData,
   handleBackToLayout,
-}) {
+}: Props): ReactElement {
   const formListClasses = formListStyles();
 
   const vendors = useContext(VendorsState);
@@ -42,7 +59,7 @@ export default function EditVendor({
     return entry[1].name;
   });
 
-  function updateVendor(name) {
+  function updateVendor(name: string): void {
     // If input already exist add the object, otherwise add only the name
     const match = Object.entries(vendors).find(
       (entry) => entry[1].name === name
@@ -52,14 +69,18 @@ export default function EditVendor({
     handleBackToLayout();
   }
 
-  function handleOnChange(event, newValue) {
-    if (typeof newValue === "string") {
-      updateVendor(newValue);
-    } else if (newValue && newValue.inputValue) {
+  /**
+   * Parses input value before calling vendor
+   * update method.
+   *
+   * @param {Option} value - Input value
+   */
+  function handleOnChange(value: Option): void {
+    if (typeof value === "string") {
+      updateVendor(value);
+    } else if (value && value.inputValue) {
       // Create a new value from the user input
-      updateVendor(newValue.inputValue);
-    } else {
-      updateVendor(newValue);
+      updateVendor(value.inputValue);
     }
   }
 
@@ -67,11 +88,14 @@ export default function EditVendor({
     <>
       {options && (
         <Autocomplete
-          onChange={handleOnChange}
+          onChange={(_, value) => value && handleOnChange(value)}
           onInputChange={(event, newInputValue) => {
             setInputValue(newInputValue);
           }}
-          filterOptions={(options, params) => {
+          filterOptions={(
+            options: Option[],
+            params: FilterOptionsState<Option>
+          ) => {
             const filtered = filter(options, params);
 
             // Suggest the creation of a new value
@@ -90,19 +114,16 @@ export default function EditVendor({
           handleHomeEndKeys
           id="vendor-autocomplete"
           options={options}
-          getOptionLabel={(option) => {
-            // Value selected with enter, right from the input
-            if (typeof option === "string") {
-              return option;
-            }
-            // Add "xxx" option created dynamically
-            if (option.inputValue) {
-              return option.inputValue;
-            }
-            // Regular option
-            return option;
+          getOptionLabel={(option: Option): string => {
+            if (typeof option === "string") return option;
+            if (option.inputValue) return option.inputValue;
+            return String(option);
           }}
-          renderOption={(option) => (option.inputValue ? option.label : option)}
+          renderOption={(option: Option) => {
+            if (typeof option === "string") return option;
+            if (option.label) return option.label;
+            return String(option);
+          }}
           freeSolo
           ListboxProps={{ style: { maxHeight: "60vh" } }}
           PaperComponent={({ children }) => <Box>{children}</Box>}
@@ -160,3 +181,5 @@ export default function EditVendor({
     </>
   );
 }
+
+export default EditVendor;

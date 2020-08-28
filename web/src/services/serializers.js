@@ -31,7 +31,7 @@ export function visionParserSerializer(
     serialized.subcategory = subcategory;
 
     if (subcategory.origin) serialized.origin = subcategory.origin;
-
+/*
     if (subcategory.western_brewing)
       serialized.western_brewing = brewingTimesToSeconds(
         subcategory.western_brewing
@@ -41,6 +41,7 @@ export function visionParserSerializer(
       serialized.gongfu_brewing = brewingTimesToSeconds(
         subcategory.gongfu_brewing
       );
+ */
   }
 
   if (data.vendor)

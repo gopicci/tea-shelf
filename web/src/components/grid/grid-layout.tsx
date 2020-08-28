@@ -12,7 +12,7 @@ import { SubcategoriesState } from "../statecontainers/subcategories-context";
 import { VendorsState } from "../statecontainers/vendors-context";
 import { SearchState } from "../statecontainers/search-context";
 import { Route } from "../../app";
-import { TeaModel } from "../../services/models";
+import { TeaInstance } from "../../services/models";
 import { getCategoryName } from "../../services/parsing-services";
 
 const useStyles = makeStyles((theme) => ({
@@ -110,18 +110,18 @@ function GridLayout({ setRoute, isMobile }: Props): ReactElement {
   const gridView = useContext(GridViewState);
   const searchState = useContext(SearchState);
 
-  const [filteredTeas, setFilteredTeas] = useState<TeaModel[]>(teasState);
+  const [filteredTeas, setFilteredTeas] = useState<TeaInstance[]>(teasState);
   const [sorting, setSorting] = useState<string>("");
   const [reversed, setReversed] = useState<boolean>(false);
 
   /**
    * Sort array of tea instances based on sorting type.
    *
-   * @param {TeaModel[]} teas - Array of tea objects
+   * @param {TeaInstance[]} teas - Array of tea objects
    * @param {string} sorting - Sorting type
-   * @returns {TeaModel[]} Sorted tea instances array
+   * @returns {TeaInstance[]} Sorted tea instances array
    */
-  function sortTeas(teas: TeaModel[], sorting: string): TeaModel[] {
+  function sortTeas(teas: TeaInstance[], sorting: string): TeaInstance[] {
     switch (sorting) {
       case "date added":
         return [...teas].sort((a, b) => {

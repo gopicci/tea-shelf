@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import {
   AppBar,
   Button,
@@ -20,23 +20,40 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Mobile tea creation appbar component.
+ * InputAppBar props.
  *
- * @param name {string} Input name
- * @param handleBackToLayout {function} Reroutes to input layout
- * @param actionName {string} Define name of title action
- * @param saveName {string} Define presence and name of save button
- * @param disableAdd {boolean} Define if add button is disabled
- * @param handleSave {function} Handles save click
+ * @memberOf InputAppBar
  */
-export default function InputAppBar({
+type Props = {
+  /** Input name */
+  name: string;
+  /** Reroutes to input layout */
+  handleBackToLayout: () => void;
+  /** Defines name of title action */
+  actionName?: string;
+  /** Defines presence and name of save button */
+  saveName?: string;
+  /** Defines if add button is disabled */
+  disableSave?: boolean;
+  /** Handles save button click */
+  handleSave?: () => void;
+};
+
+/**
+ * Mobile tea editing appbar component. Used in a few
+ * components related to the tea creation/editing process.
+ *
+ * @component
+ * @subcategory Mobile input
+ */
+function InputAppBar({
   name,
   handleBackToLayout,
   actionName = "Edit",
-  saveName = null,
+  saveName,
   disableSave = true,
-  handleSave = null,
-}) {
+  handleSave,
+}: Props): ReactElement {
   const classes = useStyles();
 
   return (
@@ -68,3 +85,5 @@ export default function InputAppBar({
     </AppBar>
   );
 }
+
+export default InputAppBar;

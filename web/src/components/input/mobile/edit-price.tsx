@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, FocusEvent, ReactElement, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -7,8 +7,9 @@ import {
   TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import InputAppBar from "./input-app-bar";
 import { cropToNoZeroes } from "../../../services/parsing-services";
-import InputAppBar from "./InputAppBar";
+import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   mainBox: {
@@ -24,19 +25,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * EditPrice props.
+ *
+ * @memberOf EditPrice
+ */
+type Props = {
+  /** Tea input data state  */
+  teaData: TeaRequest;
+  /** Sets tea data state */
+  setTeaData: (data: TeaRequest) => void;
+  /** Reroutes to input layout */
+  handleBackToLayout: () => void;
+};
+
+/**
  * Mobile tea creation price input component.
  *
- * @param teaData {Object} Input tea data state
- * @param setTeaData {function} Set input tea data state
- * @param field {string} Input field name
- * @param handleBackToLayout {function} Reroutes to input layout
+ * @component
+ * @subcategory Mobile input
  */
-export default function EditPrice({
+function EditPrice({
   teaData,
   setTeaData,
-  field,
   handleBackToLayout,
-}) {
+}: Props): ReactElement {
   const classes = useStyles();
 
   const [textPrice, setTextPrice] = useState("");
@@ -45,18 +57,32 @@ export default function EditPrice({
   );
   const [inputType, setInputType] = useState("grams");
 
-  function handlePriceChange(event) {
+  /**
+   * Sets local price context on input change.
+   *
+   * @param {event: ChangeEvent<HTMLInputElement>} event - Price input change event
+   */
+  function handlePriceChange(event: ChangeEvent<HTMLInputElement>): void {
     const onlyNumbers = event.target.value.replace(/[^0-9.]/g, "");
     setTextPrice(onlyNumbers.slice(0, 5));
   }
 
-  function handleWeightChange(event) {
+  /**
+   * Sets local weight context on input change.
+   *
+   * @param {event: ChangeEvent<HTMLInputElement>} event - Weight input change event
+   */
+  function handleWeightChange(event: ChangeEvent<HTMLInputElement>): void {
     const onlyNumbers = event.target.value.replace(/[^0-9.]/g, "");
     setTextWeight(onlyNumbers.slice(0, 5));
   }
 
-  function handleRadioChange(event) {
-    // Update weight from C to F on radio select
+  /**
+   * Updates weight between Celsius and Fahrenheit on radio select.
+   *
+   * @param {event: ChangeEvent<HTMLInputElement>} event - Radio buttons change event
+   */
+  function handleRadioChange(event: ChangeEvent<HTMLInputElement>): void {
     if (event.target.value !== inputType) {
       setInputType(event.target.value);
       if (event.target.value === "grams")
@@ -65,8 +91,11 @@ export default function EditPrice({
     }
   }
 
-  function handleSave() {
-    // Add weight_left if it wasn't there yet
+  /**
+   * Updates input state with price, adds weight_left if not present and
+   * routes back to input layout.
+   */
+  function handleSave(): void {
     let grams = parseFloat(textWeight);
 
     if (inputType === "ounces") grams = grams * 28.35;
@@ -77,25 +106,32 @@ export default function EditPrice({
       if (!teaData.weight_left && grams > 1)
         setTeaData({
           ...teaData,
-          [field]: cropToNoZeroes(price, 2),
-          weight_left: cropToNoZeroes(grams, 1),
+          price: price,
+          weight_left: grams,
         });
       else
         setTeaData({
           ...teaData,
-          [field]: cropToNoZeroes(price, 2),
+          price: price,
         });
 
     handleBackToLayout();
   }
 
-  const handleFocus = (event) => event.target.select();
+  /**
+   * Select text on focus.
+   *
+   * @param {FocusEvent<HTMLInputElement>} event - Focus event
+   */
+  function handleFocus(event: FocusEvent<HTMLInputElement>): void {
+    event.target.select();
+  }
 
   return (
     <>
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
-        name={field}
+        name="price"
         saveName="Save"
         disableSave={!(textPrice && textWeight)}
         handleSave={handleSave}
@@ -146,3 +182,5 @@ export default function EditPrice({
     </>
   );
 }
+
+export default EditPrice;

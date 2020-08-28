@@ -1,13 +1,25 @@
-import React, { useRef, useCallback, useContext } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useContext,
+  ReactElement,
+} from "react";
 import { Box, IconButton } from "@material-ui/core";
-import { CameraAlt, Close, Done, Replay, SkipNext } from "@material-ui/icons";
+import {
+  CameraAlt,
+  Close,
+  Done,
+  Replay,
+  SkipNext,
+} from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import Webcam from "react-webcam";
-import { APIRequest } from "../../../services/AuthService";
-import { visionParserSerializer } from "../../../services/Serializers";
+import { APIRequest } from "../../../services/auth-services";
+import { visionParserSerializer } from "../../../services/serializers";
 import { CategoriesState } from "../../statecontainers/categories-context";
-import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
-import { VendorsState } from "../../statecontainers/VendorsContext";
+import { SubcategoriesState } from "../../statecontainers/subcategories-context";
+import { VendorsState } from "../../statecontainers/vendors-context";
+import { TeaModel } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,70 +50,88 @@ const videoConstraints = {
 };
 
 /**
- * Mobile tea creation capture stage component.
+ * CaptureImage props.
  *
- * @param teaData {Object} Input tea data state
- * @param setTeaData {function} Set input tea data state
- * @param imageData {string} Base64 image data
- * @param setImageData {function} Set image data
- * @param handleClose {function} Cancel process and reroute to main route
- * @param handleNext {function} Go to next stage (inputLayout)
+ * @memberOf CaptureImage
  */
-export default function CaptureImage({
-  teaData,
-  setTeaData,
+type Props = {
+  /** Capture image state as a base64 encoded string */
+  imageData: string;
+  /** Sets imageData state, expects a base64 encoded image string */
+  setImageData: (image: string) => void;
+  /** Sets vision state with data returning from vision parser */
+  setVisionData: (data: TeaModel) => void;
+  /** Closes editor and return to main route */
+  handleClose: () => void;
+  /** Routes to next stage */
+  handleNext: () => void;
+};
+
+/**
+ * Mobile image capture component, used as first stage of tea creation process.
+ * Once the image is capture it's run through vision parser API to extract data
+ * that will be used as default input state of next stage.
+ *
+ * @component
+ * @subcategory Mobile input
+ */
+function CaptureImage({
   imageData,
   setImageData,
+  setVisionData,
   handleClose,
   handleNext,
-}) {
+}: Props): ReactElement {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
   const subcategories = useContext(SubcategoriesState);
   const vendors = useContext(VendorsState);
 
-  const webcamRef = useRef(null);
+  const webcamRef = useRef<any>(null);
 
   const capture = useCallback(async () => {
-    // Get screenshot
-    const screenshot = webcamRef.current.getScreenshot();
+    if (webcamRef.current) {
+      // Get screenshot
+      const screenshot = webcamRef.current.getScreenshot();
 
-    // Update image data state
-    setImageData(screenshot);
+      if (screenshot) {
+        // Update image data state
+        setImageData(screenshot);
 
-    // Post image to API parser
-    const parserRes = await APIRequest(
-      "/parser/",
-      "POST",
-      JSON.stringify({ image: screenshot })
-    );
+        // Post image to API parser
+        const res = await APIRequest(
+          "/parser/",
+          "POST",
+          JSON.stringify({ image: screenshot })
+        );
 
-    if (parserRes.ok) {
-      // Update teaData with suggestions from parser
-      setTeaData({
-        ...teaData,
-        ...visionParserSerializer(
-          await parserRes.json(),
-          categories,
-          subcategories,
-          vendors
-        ),
-      });
+        if (res.ok) {
+          // Update visionData state with suggestions from parser
+          setVisionData({
+            ...visionParserSerializer(
+              await res.json(),
+              categories,
+              subcategories,
+              vendors
+            ),
+          });
+        }
+      }
     }
   }, [
     webcamRef,
     setImageData,
-    teaData,
-    setTeaData,
+    setVisionData,
     categories,
     subcategories,
     vendors,
   ]);
 
-  const replay = () => {
-    setImageData(null);
-  };
+  /** Empties image data */
+  function replay(): void {
+    setImageData("");
+  }
 
   return (
     <Box className={classes.root}>
@@ -170,3 +200,5 @@ export default function CaptureImage({
     </Box>
   );
 }
+
+export default CaptureImage;

@@ -19,7 +19,7 @@ import YearAutocomplete from "./year-autocomplete";
 import VendorAutocomplete from "./vendor-autocomplete";
 import OriginAutocomplete from "./origin-autocomplete";
 import InputFormBrewing from "./input-form-brewing";
-import { InputFormModel, TeaModel, TeaRequest } from "../../../services/models";
+import { InputFormModel, TeaInstance, TeaRequest } from "../../../services/models";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { useStyles } from "../../../style/DesktopFormStyles";
 import { validationSchema } from "./validation-schema";
@@ -35,7 +35,7 @@ type Props = {
   /** Base64 image data from load image stage */
   imageData?: string;
   /** Instance tea data state for initial values on edit mode */
-  teaData?: TeaModel;
+  teaData?: TeaInstance;
   /** Handles tea posting process */
   handleEdit: (data: TeaRequest, id?: number | string) => void;
   /** Closes dialog */

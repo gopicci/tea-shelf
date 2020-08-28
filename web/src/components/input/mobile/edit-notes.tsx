@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, ReactElement, useState } from "react";
 import {
   AppBar,
   Box,
@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -29,22 +30,47 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Mobile tea creation text input component.
+ * EditNotes props.
  *
- * @param teaData {Object} Input tea data state
- * @param handleEdit {function} Handle edit save
- * @param handlePrevious {function} Reroutes to tea details
+ * @memberOf EditNotes
  */
-export default function EditNotes({ teaData, handleEdit, handlePrevious }) {
+type Props = {
+  /** Tea input data state  */
+  teaData: TeaRequest;
+  /** Handles tea posting process */
+  handleEdit: (data: TeaRequest, id?: number | string) => void;
+  /** Routes to previous stage */
+  handlePrevious: () => void;
+};
+
+/**
+ * Mobile tea notes text input component.
+ *
+ * @component
+ * @subcategory Mobile input
+ */
+function EditNotes({
+  teaData,
+  handleEdit,
+  handlePrevious,
+}: Props): ReactElement {
   const classes = useStyles();
 
   const [text, setText] = useState(teaData.notes ? teaData.notes : "");
 
-  function handleChange(event) {
+  /**
+   * Updates local text input state.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} event - Item select event
+   */
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
     setText(event.target.value);
   }
 
-  function handleSave() {
+  /**
+   * Saves notes and routes back to tea details.
+   */
+  function handleSave(): void {
     handleEdit({ ...teaData, notes: text });
     handlePrevious();
   }
@@ -95,3 +121,5 @@ export default function EditNotes({ teaData, handleEdit, handlePrevious }) {
     </>
   );
 }
+
+export default EditNotes;

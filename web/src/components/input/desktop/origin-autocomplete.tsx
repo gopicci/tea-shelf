@@ -4,12 +4,16 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { LocationOn } from "@material-ui/icons";
 import { FormikProps } from "formik";
 import parse from "autosuggest-highlight/parse";
-import { parse as himalaya } from "himalaya";
 import { v4 as uuidv4 } from "uuid";
-import { APIRequest } from "../../../services/auth-services";
 import { getOriginName } from "../../../services/parsing-services";
-import { OriginModel, InputFormModel } from "../../../services/models";
+import { InputFormModel } from "../../../services/models";
 import { useStyles } from "../../../style/DesktopFormStyles";
+import {
+  getAutocompleteOptions,
+  getOriginFromPlace,
+} from "../../../services/origin-services";
+
+type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
 /**
  * OriginAutocomplete props.
@@ -33,9 +37,7 @@ function OriginAutocomplete({ formikProps }: Props): ReactElement {
   const classes = useStyles();
 
   const [inputValue, setInputValue] = useState("");
-  const [options, setOptions] = useState<
-    google.maps.places.AutocompletePrediction[]
-  >([]);
+  const [options, setOptions] = useState<AutocompletePrediction[]>([]);
 
   const [token, setToken] = useState("");
 
@@ -48,15 +50,8 @@ function OriginAutocomplete({ formikProps }: Props): ReactElement {
      * Gets autocomplete options from API and updates state.
      */
     async function getOptions(): Promise<void> {
-      const res = await APIRequest(
-        "/places/autocomplete/",
-        "POST",
-        JSON.stringify({ input: inputValue, token: token })
-      );
-      if (res.ok) {
-        const results = await res.json();
-        if (active) setOptions(results);
-      }
+      const results = await getAutocompleteOptions(inputValue, token);
+      if (active && results) setOptions(results);
     }
 
     if (inputValue.length > 1) getOptions();
@@ -70,43 +65,10 @@ function OriginAutocomplete({ formikProps }: Props): ReactElement {
   /**
    * Gets selected place details from API, parses them and updates form values.
    *
-   * @param {google.maps.places.AutocompletePrediction} place - Selected place from autocomplete entries
+   * @param {AutocompletePrediction} place - Selected place from autocomplete entries
    */
-  async function updateOrigin(
-    place: google.maps.places.AutocompletePrediction
-  ): Promise<void> {
-    const res = await APIRequest(
-      "/places/details/",
-      "POST",
-      JSON.stringify({ place_id: place.place_id, token: token })
-    );
-    if (res.ok) {
-      const body = await res.json();
-      const adr: object = himalaya(body.result.adr_address);
-      const origin: OriginModel = { country: "" };
-
-      let extendedAddress = "";
-      for (const entry of Object.entries(adr))
-        if (entry[1].type === "element") {
-          if (entry[1].attributes[0].value === "country-name")
-            origin["country"] = entry[1].children[0].content;
-          if (entry[1].attributes[0].value === "region")
-            origin["region"] = entry[1].children[0].content;
-          if (entry[1].attributes[0].value === "locality")
-            origin["locality"] = entry[1].children[0].content;
-          if (entry[1].attributes[0].value === "extended-address")
-            extendedAddress = entry[1].children[0].content;
-        }
-
-      if (extendedAddress) origin["locality"] = extendedAddress.split(",")[0];
-
-      if (origin["region"])
-        origin["region"] = origin["region"].replace(" Province", "");
-
-      origin["latitude"] = body.result.geometry.location.lat;
-      origin["longitude"] = body.result.geometry.location.lng;
-      setFieldValue("origin", origin);
-    }
+  async function updateOrigin(place: AutocompletePrediction): Promise<void> {
+    setFieldValue("origin", await getOriginFromPlace(place, token));
   }
 
   return (

@@ -1,10 +1,10 @@
 import React, { ReactElement, useContext, useState } from "react";
 import localforage from "localforage";
-import InputRouter from "./input/mobile/InputRouter";
+import MobileInput from "./input/mobile/mobile-input";
 import DetailsLayoutMobile from "./details/mobile/DetailsLayout";
 import DetailsLayoutDesktop from "./details/desktop/DetailsLayout";
 import InputForm from "./input/desktop/input-form";
-import CaptureImage from "./input/mobile/CaptureImage";
+import CaptureImage from "./input/mobile/capture-image";
 import LoadImage from "./input/desktop/load-image";
 import { APIRequest } from "../services/auth-services";
 import { SnackbarDispatch } from "./statecontainers/snackbar-context";
@@ -14,10 +14,10 @@ import { VendorsDispatch } from "./statecontainers/vendors-context";
 import { Route } from "../app";
 import {
   SubcategoryModel,
-  TeaModel,
+  TeaInstance, TeaModel,
   TeaRequest,
   VendorModel,
-} from "../services/models";
+} from '../services/models';
 import { parseHMSToSeconds } from "../services/parsing-services";
 import { generateUniqueId } from "../services/sync-services";
 
@@ -45,6 +45,7 @@ type Props = {
 function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
   const [teaData, setTeaData] = useState(route.payload);
   const [imageData, setImageData] = useState("");
+  const [visionData, setVisionData] = useState({} as TeaModel);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
@@ -159,13 +160,13 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
       } else {
         console.log(e.message, "cache locally");
 
-        let offlineTeas = await localforage.getItem<TeaModel[]>("offline-teas");
+        let offlineTeas = await localforage.getItem<TeaInstance[]>("offline-teas");
         if (!offlineTeas) await localforage.setItem("offline-teas", []);
 
         if (image) request["image"] = image;
         if (!id) id = generateUniqueId(offlineTeas);
 
-        let teaInstance: TeaModel = { ...request, id: id };
+        let teaInstance: TeaInstance = { ...request, id: id };
 
         // Update context with offline instance
         if (id) {
@@ -177,7 +178,7 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         for (const tea of offlineTeas)
           if (tea.id === id) offlineTeas.splice(offlineTeas.indexOf(tea), 1);
 
-        const cache = await localforage.setItem<TeaModel[]>("offline-teas", [
+        const cache = await localforage.setItem<TeaInstance[]>("offline-teas", [
           ...offlineTeas,
           teaInstance,
         ]);
@@ -218,10 +219,10 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
   const props = {
     route,
     setRoute,
-    teaData,
-    setTeaData,
     imageData,
     setImageData,
+    visionData,
+    setVisionData,
     handlePrevious,
     handleNext,
     handleEdit,
@@ -240,19 +241,11 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         //else
         return <DetailsLayoutDesktop {...props} />;
       case "EDIT":
-        if (route.payload) {
-          //if (isMobile) return <InputRouter {...props} />;
-          //else
-          return <InputForm {...props} />;
-        } else {
-          //if (isMobile) return <InputRouter {...props} />;
-          //else
-          return <InputForm {...props} />;
-        }
+        if (isMobile) return <MobileInput {...props} />;
+        else return <InputForm {...props} />;
       case "CREATE":
-        //if (isMobile) return <CaptureImage {...props} />;
-        //else
-        return <LoadImage {...props} />;
+        if (isMobile) return <CaptureImage {...props} />;
+        else return <LoadImage {...props} />;
       default:
         //if (isMobile) return <DetailsLayoutMobile {...props} />;
         //else

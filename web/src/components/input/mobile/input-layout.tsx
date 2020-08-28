@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { MouseEvent, ReactElement, useContext } from "react";
 import {
   Box,
   FormGroup,
@@ -8,16 +8,18 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InputAppBar from "./InputAppBar";
-import InputItem from "./InputItem";
-import InputBrewing from "./InputBrewing";
+import InputAppBar from "./input-app-bar";
+import InputItem from "./input-item";
+import InputBrewing from "./input-brewing";
 import {
   cropToNoZeroes,
+  getCategoryName,
   getSubcategoryName,
 } from "../../../services/parsing-services";
 import { getOriginName } from "../../../services/parsing-services";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { formListStyles } from "../../../style/FormListStyles";
+import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   nameBox: {
@@ -26,39 +28,39 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * InputLayout props.
+ *
+ * @memberOf InputLayout
+ */
+type Props = {
+  /** Instance tea data state for initial values on edit mode */
+  teaData: TeaRequest;
+  /** Save callback from MobileInput */
+  handleSave: () => void;
+  /** Routes to previous stage */
+  handlePrevious: () => void;
+  /** Sets edit route based in InputRouter routing table */
+  setEditRoute: (route: string) => void;
+};
+
+/**
  * Defines mobile tea creation input stage layout.
  *
- * @param teaData {Object} Input tea data state
- * @param handleEdit {function} Handle tea edit posting process
- * @param handleCreate {function} Handle tea create posting process
- * @param handleClose {function} Cancel process and reroute to main route
- * @param handlePrevious {function} Go back to previous stage (captureImage)
- * @param setEditRoute {function} Reroutes to input item
+ * @component
+ * @subcategory Mobile input
  */
-export default function InputLayout({
+function InputLayout({
   teaData,
-  handleEdit = null,
-  handleCreate = null,
-  handleClose = null,
+  handleSave,
   handlePrevious,
   setEditRoute,
-}) {
+}: Props): ReactElement {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
   const categories = useContext(CategoriesState);
 
-  function handleSave() {
-    if (handleCreate) {
-      handleCreate({ ...teaData });
-      handleClose();
-    } else {
-      handleEdit();
-      handlePrevious();
-    }
-  }
-
-  function handleClick(event) {
+  function handleClick(event: MouseEvent) {
     setEditRoute(event.currentTarget.id);
   }
 
@@ -67,8 +69,8 @@ export default function InputLayout({
       <InputAppBar
         handleBackToLayout={handlePrevious}
         name="Tea"
-        actionName={handleCreate ? "Add" : "Edit"}
-        saveName={handleCreate ? "Create" : "Save"}
+        actionName={teaData.id ? "Edit" : "Add"}
+        saveName={teaData.id ? "Save" : "Create"}
         disableSave={!teaData.name || !teaData.category}
         handleSave={handleSave}
       />
@@ -82,18 +84,16 @@ export default function InputLayout({
           <InputItem
             key="name"
             name="name"
-            value={teaData.name}
+            value={teaData.name ? teaData.name : ""}
             handleClick={handleClick}
           />
           <InputItem
             key="category"
             name="category"
             value={
-              categories &&
-              teaData.category &&
-              Object.entries(categories)
-                .find((entry) => entry[1].id === teaData.category)[1]
-                .name.toLowerCase()
+              categories && teaData.category
+                ? getCategoryName(categories, teaData.category).toLowerCase()
+                : ""
             }
             handleClick={handleClick}
           />
@@ -108,43 +108,44 @@ export default function InputLayout({
             key="subcategory"
             name="subcategory"
             value={
-              teaData.subcategory &&
-              teaData.subcategory.name &&
-              getSubcategoryName(teaData.subcategory)
+              teaData.subcategory?.name
+                ? getSubcategoryName(teaData.subcategory)
+                : ""
             }
             handleClick={handleClick}
           />
           <InputItem
             key="year"
             name="year"
-            value={teaData.year}
+            value={teaData.year ? String(teaData.year) : ""}
             handleClick={handleClick}
           />
           <InputItem
             key="origin"
             name="origin"
             value={
-              teaData.origin &&
-              teaData.origin.country &&
-              getOriginName(teaData.origin).replace("&#39;", "'")
+              teaData.origin?.country
+                ? getOriginName(teaData.origin).replace("&#39;", "'")
+                : ""
             }
             handleClick={handleClick}
           />
           <InputItem
             key="vendor"
             name="vendor"
-            value={teaData.vendor && teaData.vendor.name}
+            value={teaData.vendor?.name ? teaData.vendor.name : ""}
             handleClick={handleClick}
           />
           <InputItem
             key="weight"
             name="weight"
             value={
-              teaData.weight_left &&
-              teaData.weight_left +
-                "g - " +
-                cropToNoZeroes(teaData.weight_left / 28.35, 2) +
-                "oz"
+              teaData.weight_left
+                ? cropToNoZeroes(teaData.weight_left) +
+                  "g - " +
+                  cropToNoZeroes(teaData.weight_left / 28.35, 2) +
+                  "oz"
+                : ""
             }
             handleClick={handleClick}
           />
@@ -152,11 +153,12 @@ export default function InputLayout({
             key="price"
             name="price"
             value={
-              teaData.price &&
-              teaData.price +
-                "/g - " +
-                cropToNoZeroes(teaData.price * 28.35, 1) +
-                "/oz"
+              teaData.price
+                ? cropToNoZeroes(teaData.price, 2) +
+                  "/g - " +
+                  cropToNoZeroes(teaData.price * 28.35, 1) +
+                  "/oz"
+                : ""
             }
             handleClick={handleClick}
             noTitle={true}
@@ -199,3 +201,5 @@ export default function InputLayout({
     </>
   );
 }
+
+export default InputLayout;

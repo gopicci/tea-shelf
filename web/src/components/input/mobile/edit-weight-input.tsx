@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, FocusEvent, ReactElement, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -7,8 +7,8 @@ import {
   TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { cropToNoZeroes } from "../../../services/parsing-services";
-import InputAppBar from "./InputAppBar";
+import InputAppBar from "./input-app-bar";
+import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   mainBox: {
@@ -24,52 +24,82 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Mobile tea creation weight input component.
+ * EditWeightInput props.
  *
- * @param teaData {Object} Input tea data state
- * @param setTeaData {function} Set input tea data state
- * @param field {string} Input field name
- * @param handleBackToLayout {function} Reroutes to input layout
+ * @memberOf EditWeightInput
  */
+type Props = {
+  /** Tea input data state  */
+  teaData: TeaRequest;
+  /** Sets tea data state */
+  setTeaData: (data: TeaRequest) => void;
+  /** Reroutes to input layout */
+  handleBackToLayout: () => void;
+};
 
-export default function EditWeightInput({
+/**
+ * Mobile tea editing weight input component.
+ *
+ * @component
+ * @subcategory Mobile input
+ */
+function EditWeightInput({
   teaData,
   setTeaData,
-  field,
   handleBackToLayout,
-}) {
+}: Props): ReactElement {
   const classes = useStyles();
 
   const [text, setText] = useState("");
   const [inputType, setInputType] = useState("grams");
 
-  function handleChange(event) {
+  /**
+   * Updates local state on input text change, accepts numbers input only.
+   *
+   * @param {event: ChangeEvent<HTMLInputElement>} event - Text input change event
+   */
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
     const onlyNumbers = event.target.value.replace(/[^0-9.]/g, "");
     setText(onlyNumbers.slice(0, 5));
   }
 
-  function handleRadioChange(event) {
+  /**
+   * Updates input type on radio select.
+   *
+   * @param {event: ChangeEvent<HTMLInputElement>} event - Radio buttons change event
+   */
+  function handleRadioChange(event: ChangeEvent<HTMLInputElement>): void {
     setInputType(event.target.value);
   }
 
-  function handleSave() {
+  /**
+   * Updates input state with weight in grams and routes back to input layout.
+   */
+  function handleSave(): void {
     let grams = parseFloat(text);
     if (inputType === "ounces") grams = grams * 28.35;
     if (!isNaN(grams))
       setTeaData({
         ...teaData,
-        weight_left: cropToNoZeroes(grams, 1),
+        weight_left: grams,
       });
     handleBackToLayout();
   }
 
-  const handleFocus = (event) => event.target.select();
+  /**
+   * Select text on focus.
+   *
+   * @param {FocusEvent<HTMLInputElement>} event - Focus event
+   */
+  function handleFocus(event: FocusEvent<HTMLInputElement>): void {
+    event.target.select();
+  }
 
   return (
     <>
       <InputAppBar
         handleBackToLayout={handleBackToLayout}
-        name={field}
+        name="weight"
         saveName="Save"
         disableSave={!text}
         handleSave={handleSave}
@@ -108,3 +138,5 @@ export default function EditWeightInput({
     </>
   );
 }
+
+export default EditWeightInput;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEvent, ReactElement } from "react";
 import { Box, ListItem, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { formListStyles } from "../../../style/FormListStyles";
@@ -19,19 +19,33 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Mobile tea creation layout list item.
- *
- * @param name {string} Item name
- * @param value {string} Item value
- * @param handleClick {function} Handles item click
- * @param noTitle {boolean} If true value text capitalization is disabled
+ * InputItem props.
+ * 
+ * @memberOf InputItem
  */
-export default function InputItem({
+type Props = {
+  /** Item name */
+  name: string;
+  /** Item value */
+  value: string;
+  /** Handles item click */
+  handleClick: (event: MouseEvent) => void;
+  /** If true value text capitalization is disabled */
+  noTitle?: boolean;
+}
+
+/**
+ * Mobile tea editing layout list item.
+ *
+ * @component
+ * @subcategory Mobile input
+ */
+function InputItem({
   name,
   value,
   handleClick,
   noTitle = false,
-}) {
+}: Props): ReactElement {
   const classes = useStyles();
   const formListClasses = formListStyles();
 
@@ -59,3 +73,5 @@ export default function InputItem({
     </ListItem>
   );
 }
+
+export default InputItem;

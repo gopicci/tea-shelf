@@ -9,10 +9,10 @@ import React, {
 import localforage from "localforage";
 import { getOfflineTeas, syncOffline } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
-import { TeaModel } from "../../services/models";
+import { TeaInstance } from "../../services/models";
 import { genericReducer, genericAction } from "../../services/sync-services";
 
-export const TeasState = createContext<TeaModel[]>([]);
+export const TeasState = createContext<TeaInstance[]>([]);
 export const TeaDispatch = createContext({} as Dispatch<genericAction>);
 
 type Props = {
@@ -47,7 +47,7 @@ function TeaContext({ children }: Props): ReactElement {
         const offlineTeas = await getOfflineTeas();
 
         // Get cached teas if id not already on offline
-        let localTeas = await localforage.getItem<TeaModel[]>("teas");
+        let localTeas = await localforage.getItem<TeaInstance[]>("teas");
         if (!localTeas) localTeas = [];
         else
           localTeas = localTeas.filter(
@@ -63,15 +63,15 @@ function TeaContext({ children }: Props): ReactElement {
         if (!onlineTeas) onlineTeas = [];
         else
           onlineTeas = onlineTeas.filter(
-            (online: TeaModel) =>
-              !offlineTeas.some((offline: TeaModel) => offline.id === online.id)
+            (online: TeaInstance) =>
+              !offlineTeas.some((offline: TeaInstance) => offline.id === online.id)
           );
 
         // Update the state
         dispatch({ type: "SET", data: offlineTeas.concat(onlineTeas) });
 
         // Update the cache
-        await localforage.setItem<TeaModel[]>("teas", onlineTeas);
+        await localforage.setItem<TeaInstance[]>("teas", onlineTeas);
       } catch (e) {
         console.error(e);
       }
@@ -80,7 +80,7 @@ function TeaContext({ children }: Props): ReactElement {
   }, [state]);
 
   return (
-    <TeasState.Provider value={state as TeaModel[]}>
+    <TeasState.Provider value={state as TeaInstance[]}>
       <TeaDispatch.Provider value={dispatch}>{children}</TeaDispatch.Provider>
     </TeasState.Provider>
   );

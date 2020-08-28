@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, ReactElement } from "react";
 import {
   InputAdornment,
   TextField,
@@ -14,29 +14,43 @@ import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { ArrowBack } from "@material-ui/icons";
-import {
-  brewingTimesToSeconds,
-  getSubcategoryName,
-} from "../../../services/parsing-services";
-import { SubcategoriesState } from "../../statecontainers/SubcategoriesContext";
+import { getSubcategoryName } from "../../../services/parsing-services";
+import { SubcategoriesState } from "../../statecontainers/subcategories-context";
 import { formListStyles } from "../../../style/FormListStyles";
+import { TeaRequest } from "../../../services/models";
+import { FilterOptionsState } from "@material-ui/lab";
 
-const filter = createFilterOptions();
+type Option = { inputValue: string; label: string } | string;
+
+const filter = createFilterOptions<Option>();
+
+/**
+ * EditSubcategory props.
+ *
+ * @memberOf EditSubcategory
+ */
+type Props = {
+  /** Tea input data state  */
+  teaData: TeaRequest;
+  /** Sets tea data state */
+  setTeaData: (data: TeaRequest) => void;
+  /** Reroutes to input layout */
+  handleBackToLayout: () => void;
+};
 
 /**
  * Mobile tea creation subcategory input component. Shows a list and autocomplete from
  * central subcategories state, with option to add extra.
- * Updates category entry if different than ones in matching subcategory.
+ * Updates category, origin and brewing entries to match subcategory data.
  *
- * @param teaData {Object} Input tea data state
- * @param setTeaData {function} Set input tea data state
- * @param handleBackToLayout {function} Reroutes to input layout
+ * @component
+ * @subcategory Mobile input
  */
-export default function EditSubcategory({
+function EditSubcategory({
   teaData,
   setTeaData,
   handleBackToLayout,
-}) {
+}: Props): ReactElement {
   const formListClasses = formListStyles();
 
   const subcategories = useContext(SubcategoriesState);
@@ -47,13 +61,19 @@ export default function EditSubcategory({
     return getSubcategoryName(entry[1]);
   });
 
-  function updateSubcategory(name) {
-    // Look for a match in subcategories central state
+  /**
+   * Updates input state of subcategory and related
+   * fields. Routes back to input layout.
+   *
+   * @param {string} name - Subcategory name
+   */
+  function updateSubcategory(name: string): void {
+    // Look for a match in subcategories context
     const match = Object.entries(subcategories).find((entry) => {
       const lcName = name.toLowerCase();
       if (getSubcategoryName(entry[1]).toLowerCase() === lcName) return true;
       if (entry[1].name.toLowerCase() === lcName) return true;
-      return entry[1].translated_name.toLowerCase() === lcName;
+      return entry[1].translated_name?.toLowerCase() === lcName;
     });
     if (match) {
       const subcategory = match[1];
@@ -61,8 +81,12 @@ export default function EditSubcategory({
       let data = {
         ...teaData,
         subcategory: subcategory,
-        category: subcategory.category,
       };
+      if (subcategory.category)
+        data = {
+          ...data,
+          category: subcategory.category,
+        };
       if (subcategory.origin)
         data = {
           ...data,
@@ -71,27 +95,30 @@ export default function EditSubcategory({
       if (subcategory.western_brewing)
         data = {
           ...data,
-          western_brewing: brewingTimesToSeconds(subcategory.western_brewing),
+          western_brewing: subcategory.western_brewing,
         };
       if (subcategory.gongfu_brewing)
         data = {
           ...data,
-          gongfu_brewing: brewingTimesToSeconds(subcategory.gongfu_brewing),
+          gongfu_brewing: subcategory.gongfu_brewing,
         };
-      console.log(data)
       setTeaData(data);
     } else setTeaData({ ...teaData, subcategory: { name: name } });
     handleBackToLayout();
   }
 
-  function handleOnChange(event, newValue) {
-    if (typeof newValue === "string") {
-      updateSubcategory(newValue);
-    } else if (newValue && newValue.inputValue) {
+  /**
+   * Parses input value before calling subcategory
+   * update method.
+   *
+   * @param {Option} value - Input value
+   */
+  function handleOnChange(value: Option): void {
+    if (typeof value === "string") {
+      updateSubcategory(value);
+    } else if (value && value.inputValue) {
       // Create a new value from the user input
-      updateSubcategory(newValue.inputValue);
-    } else {
-      updateSubcategory(newValue);
+      updateSubcategory(value.inputValue);
     }
   }
 
@@ -99,11 +126,14 @@ export default function EditSubcategory({
     <>
       {options && (
         <Autocomplete
-          onChange={handleOnChange}
+          onChange={(_, value) => value && handleOnChange(value)}
           onInputChange={(event, newInputValue) => {
             setInputValue(newInputValue);
           }}
-          filterOptions={(options, params) => {
+          filterOptions={(
+            options: Option[],
+            params: FilterOptionsState<Option>
+          ) => {
             const filtered = filter(options, params);
 
             // Suggest the creation of a new value
@@ -122,19 +152,16 @@ export default function EditSubcategory({
           handleHomeEndKeys
           id="subcategory-autocomplete"
           options={options}
-          getOptionLabel={(option) => {
-            // Value selected with enter, right from the input
-            if (typeof option === "string") {
-              return option;
-            }
-            // Add "xxx" option created dynamically
-            if (option.inputValue) {
-              return option.inputValue;
-            }
-            // Regular option
-            return option;
+          getOptionLabel={(option: Option): string => {
+            if (typeof option === "string") return option;
+            if (option.inputValue) return option.inputValue;
+            return String(option);
           }}
-          renderOption={(option) => (option.inputValue ? option.label : option)}
+          renderOption={(option: Option) => {
+            if (typeof option === "string") return option;
+            if (option.label) return option.label;
+            return String(option);
+          }}
           freeSolo
           ListboxProps={{ style: { maxHeight: "60vh" } }}
           PaperComponent={({ children }) => <Box>{children}</Box>}
@@ -193,3 +220,5 @@ export default function EditSubcategory({
     </>
   );
 }
+
+export default EditSubcategory;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, FocusEvent, ReactElement, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -7,7 +7,9 @@ import {
   TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InputAppBar from "./InputAppBar";
+import InputAppBar from "./input-app-bar";
+import { TeaRequest } from "../../../services/models";
+import { parseSecondsToHMS } from "../../../services/parsing-services";
 
 const useStyles = makeStyles((theme) => ({
   mainBox: {
@@ -23,53 +25,90 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * EditTime props.
+ *
+ * @memberOf EditTime
+ */
+type Props = {
+  /** Tea input data state  */
+  teaData: TeaRequest;
+  /** Sets tea data state */
+  setTeaData: (data: TeaRequest) => void;
+  /** Reroutes to input layout */
+  handleBackToLayout: () => void;
+  /** Edit route name state */
+  route: string;
+};
+
+/**
  * Mobile tea creation brewing time list input component.
  *
- * @param teaData {Object} Input tea data state
- * @param setTeaData {function} Set input tea data state
- * @param field {string} Input field name
- * @param handleBackToLayout {function} Reroutes to input layout
+ * @component
+ * @subcategory Mobile input
  */
-export default function EditTime({
+function EditTime({
   teaData,
   setTeaData,
-  field,
   handleBackToLayout,
-}) {
+  route,
+}: Props): ReactElement {
   const classes = useStyles();
 
   const [text, setText] = useState("");
   const [inputType, setInputType] = useState("seconds");
 
-  const fields = field.split("_");
+  const fields = route.split("_");
 
-  function handleChange(event) {
+  /**
+   * Updates local state on input text change.
+   *
+   * @param {event: ChangeEvent<HTMLInputElement>} event - Text input change event
+   */
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
     const onlyNumbers = event.target.value.replace(/[^0-9]/g, "");
     setText(onlyNumbers.slice(0, 3));
   }
 
-  function handleRadioChange(event) {
+  /**
+   * Updates input type on radio select.
+   *
+   * @param {event: ChangeEvent<HTMLInputElement>} event - Radio buttons change event
+   */
+  function handleRadioChange(event: ChangeEvent<HTMLInputElement>): void {
     setInputType(event.target.value);
   }
 
-  function handleSave() {
+  /**
+   * Converts time to HH:MM:SS format, updates input state and
+   * returns to input layout.
+   */
+  function handleSave(): void {
     let timeInSeconds = parseInt(text);
     if (inputType === "minutes") timeInSeconds = timeInSeconds * 60;
     if (inputType === "hours") timeInSeconds = timeInSeconds * 3600;
+
+    const timeInHMS = parseSecondsToHMS(timeInSeconds);
 
     if (fields[0] === "gongfu" || fields[0] === "western")
       setTeaData({
         ...teaData,
         [fields[0] + "_brewing"]: {
           ...teaData[fields[0] + "_brewing"],
-          [fields[1]]: timeInSeconds,
+          [fields[1]]: timeInHMS,
         },
       });
-    else setTeaData({ ...teaData, [field]: timeInSeconds });
+    else setTeaData({ ...teaData, [route]: timeInHMS });
     handleBackToLayout();
   }
 
-  const handleFocus = (event) => event.target.select();
+  /**
+   * Select text on focus.
+   *
+   * @param {FocusEvent<HTMLInputElement>} event - Focus event
+   */
+  function handleFocus(event: FocusEvent<HTMLInputElement>): void {
+    event.target.select();
+  }
 
   return (
     <>
@@ -120,3 +159,5 @@ export default function EditTime({
     </>
   );
 }
+
+export default EditTime;

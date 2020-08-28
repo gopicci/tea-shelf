@@ -98,12 +98,12 @@ export function fahrenheitToCelsius(f: number): number {
  * toString removes trailing zeroes
  *
  * @param {number} input - Input float
- * @param {number} crop - Decimals to keep
+ * @param {number} [crop] - Decimals to keep
  * @returns {string}
  * @category Services
  */
-export function cropToNoZeroes(input: number, crop: number): string {
-  return parseFloat(input.toFixed(crop)).toString();
+export function cropToNoZeroes(input: number, crop?: number): string {
+  return parseFloat(input.toFixed(crop ? crop : 0)).toString();
 }
 
 /**

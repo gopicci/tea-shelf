@@ -43,7 +43,7 @@ export interface VendorModel {
   /** Vendor name */
   name: string;
   /** Vendor ID */
-  id: number;
+  id?: number;
   /** Vendor website */
   website?: string;
   /** Vendor origin */
@@ -59,9 +59,9 @@ export interface SubcategoryModel {
   /** Subcategory name */
   name: string;
   /** Subcategory ID */
-  id: number;
+  id?: number;
   /** Macro category */
-  category: number;
+  category?: number;
   /** English name */
   translated_name?: string;
   /** Origin */
@@ -77,13 +77,15 @@ export interface SubcategoryModel {
 }
 
 /**
- * Defines structure of a tea creation request.
+ * Defines a lazy structure of a tea, mimicking all API model fields but without requirements.
  */
-export interface TeaRequest {
+export interface TeaModel {
+  /** Instance ID, UUID string if coming from API, number if generated offline */
+  id?: string | number;
   /** Tea name */
-  name: string;
+  name?: string;
   /** Category ID */
-  category: number;
+  category?: number;
   /** Tea image */
   image?: string;
   /** Subcategory object */
@@ -114,12 +116,26 @@ export interface TeaRequest {
   notes?: string;
   /** Creation date */
   created_on?: string;
+  /** Enabling string indexing */
+  [index: string]: any;
 }
 
 /**
- * Extension of TeaRequest that defines a tea instance data structure.
+ * Extension of TeaModel that defines a tea creation request,
+ * requiring name and category.
  */
-export interface TeaModel extends TeaRequest {
+export interface TeaRequest extends TeaModel {
+  /** Tea name */
+  name: string;
+  /** Category ID */
+  category: number;
+}
+
+/**
+ * Extension of TeaRequest that defines a tea instance data structure,
+ * with required ID.
+ */
+export interface TeaInstance extends TeaRequest {
   /** Instance ID, UUID string if coming from API, number if generated offline */
   id: string | number;
 }
@@ -128,7 +144,7 @@ export interface TeaModel extends TeaRequest {
 /**
  * Extension of tea model that includes extra fields needed in input forms.
  */
-export interface InputFormModel extends TeaModel {
+export interface InputFormModel extends TeaInstance {
   /** Brewing type, follows API naming convention */
   brewing: "gongfu_brewing" | "western_brewing";
   /** Gongfu brewing model includes measure */
@@ -137,6 +153,7 @@ export interface InputFormModel extends TeaModel {
   western_brewing: FormBrewingModel;
   /** Weight measure */
   measure: "g" | "oz";
+  /** Enabling string indexing */
   [index: string]: any;
 }
 

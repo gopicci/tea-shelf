@@ -18,15 +18,15 @@ import CheckboxListItem from "./checkbox-list-item";
  */
 type Props = {
   /** List title */
-  label: string;
+  label?: string;
   /** Checkbox list array in {name: checked} format */
   list: { [name: string]: boolean };
   /** Callback to update items checked status */
   handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
   /** If true only first 3 items are shown */
-  isCollapsed: boolean;
+  isCollapsed?: boolean;
   /** If true list options are shown in reverse order */
-  reverse: boolean;
+  reverse?: boolean;
 }
 
 /**
@@ -111,4 +111,4 @@ function CheckboxList({
   );
 }
 
-export default CheckboxListItem;
+export default CheckboxList;

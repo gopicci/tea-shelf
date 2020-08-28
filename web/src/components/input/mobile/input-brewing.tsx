@@ -1,10 +1,11 @@
-import React from "react";
+import React, { MouseEvent, ReactElement } from "react";
 import { Box, Typography } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import {
   celsiusToFahrenheit,
   parseHMSToSeconds,
 } from "../../../services/parsing-services";
+import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,16 +37,29 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Mobile tea creation layout list brewing item.
+ * InputBrewing props.
  *
- * @param name {string} Item name
- * @param teaData {Object} Input tea data state
- * @param handleClick {function} Handles item click
+ * @memberOf InputBrewing
  */
-export default function InputBrewing({ name, teaData, handleClick }) {
+type Props = {
+  /** Brewing type */
+  name: "gongfu" | "western";
+  /** Tea input data state  */
+  teaData: TeaRequest;
+  /** Handles input item click */
+  handleClick: (event: MouseEvent) => void;
+};
+
+/**
+ * Mobile tea editing layout list brewing item.
+ *
+ * @component
+ * @subcategory Mobile input
+ */
+function InputBrewing({ name, teaData, handleClick }: Props): ReactElement {
   const classes = useStyles();
 
-  function parseBrewingTimeTop(time) {
+  function parseBrewingTimeTop(time: string): string {
     let seconds = parseHMSToSeconds(time);
     if (!seconds) return "";
     if (seconds <= 60) return seconds.toString();
@@ -60,7 +74,7 @@ export default function InputBrewing({ name, teaData, handleClick }) {
     }
   }
 
-  function parseBrewingTimeBottom(time) {
+  function parseBrewingTimeBottom(time: string): string {
     let seconds = parseHMSToSeconds(time);
     if (!seconds) return "";
     if (seconds <= 60) return "sec";
@@ -84,16 +98,14 @@ export default function InputBrewing({ name, teaData, handleClick }) {
         onClick={handleClick}
       >
         <Typography variant="body2" className={classes.brewingButtonBoxText}>
-          {teaData[name + "_brewing"] &&
-            teaData[name + "_brewing"].temperature &&
-            teaData[name + "_brewing"].temperature + "°c"}
+          {teaData[name + "_brewing"]?.temperature &&
+            teaData[name + "_brewing"]?.temperature + "°c"}
         </Typography>
         <Typography
           variant="body2"
           className={classes.brewingButtonBoxTextSmall}
         >
-          {teaData[name + "_brewing"] &&
-            teaData[name + "_brewing"].temperature &&
+          {teaData[name + "_brewing"]?.temperature &&
             celsiusToFahrenheit(teaData[name + "_brewing"].temperature) + "F"}
         </Typography>
       </Box>
@@ -103,16 +115,14 @@ export default function InputBrewing({ name, teaData, handleClick }) {
         onClick={handleClick}
       >
         <Typography variant="body2" className={classes.brewingButtonBoxText}>
-          {teaData[name + "_brewing"] &&
-            teaData[name + "_brewing"].weight &&
+          {teaData[name + "_brewing"]?.weight &&
             teaData[name + "_brewing"].weight + "g"}
         </Typography>
         <Typography
           variant="body2"
           className={classes.brewingButtonBoxTextSmall}
         >
-          {teaData[name + "_brewing"] &&
-            teaData[name + "_brewing"].weight &&
+          {teaData[name + "_brewing"]?.weight &&
             "/100ml"}
         </Typography>
       </Box>
@@ -122,14 +132,14 @@ export default function InputBrewing({ name, teaData, handleClick }) {
         onClick={handleClick}
       >
         <Typography variant="body2" className={classes.brewingButtonBoxText}>
-          {teaData[name + "_brewing"] &&
+          {teaData[name + "_brewing"]?.initial &&
             parseBrewingTimeTop(teaData[name + "_brewing"].initial)}
         </Typography>
         <Typography
           variant="body2"
           className={classes.brewingButtonBoxTextSmall}
         >
-          {teaData[name + "_brewing"] &&
+          {teaData[name + "_brewing"]?.initial &&
             parseBrewingTimeBottom(teaData[name + "_brewing"].initial)}
         </Typography>
       </Box>
@@ -139,18 +149,19 @@ export default function InputBrewing({ name, teaData, handleClick }) {
         onClick={handleClick}
       >
         <Typography variant="body2" className={classes.brewingButtonBoxText}>
-          {teaData[name + "_brewing"] &&
-            teaData[name + "_brewing"].increments &&
+          {teaData[name + "_brewing"]?.increments &&
             "+" + parseBrewingTimeTop(teaData[name + "_brewing"].increments)}
         </Typography>
         <Typography
           variant="body2"
           className={classes.brewingButtonBoxTextSmall}
         >
-          {teaData[name + "_brewing"] &&
+          {teaData[name + "_brewing"]?.increments &&
             parseBrewingTimeBottom(teaData[name + "_brewing"].increments)}
         </Typography>
       </Box>
     </Box>
   );
 }
+
+export default InputBrewing;
