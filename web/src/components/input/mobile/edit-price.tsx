@@ -53,7 +53,7 @@ function EditPrice({
 
   const [textPrice, setTextPrice] = useState("");
   const [textWeight, setTextWeight] = useState(
-    teaData.weight_left ? String(teaData.weight_left) : "1"
+    teaData.weight_left ? cropToNoZeroes(teaData.weight_left) : "1"
   );
   const [inputType, setInputType] = useState("grams");
 
