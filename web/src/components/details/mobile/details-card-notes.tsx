@@ -48,7 +48,7 @@ function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
 
   return (
     <Card className={detailsClasses.card}>
-      <CardActionArea onClick={handleEditNotes} aria-label="Edit notes">
+      <CardActionArea onClick={handleEditNotes} aria-label="edit notes">
         <Box className={detailsClasses.genericBox}>
           <Typography variant="caption" display="block">
             {teaData.notes && "Edit notes:"}

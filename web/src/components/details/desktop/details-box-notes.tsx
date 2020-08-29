@@ -74,14 +74,14 @@ function DetailsBoxNotes({ teaData, handleEdit }: Props): ReactElement {
         )}
         <Box className={classes.rowCenter}>
           {notesEditing ? (
-            <Button className={classes.doubleMargin} onClick={handleNotesSave} aria-label="Save notes">
+            <Button className={classes.doubleMargin} onClick={handleNotesSave} aria-label="save notes">
               Save
             </Button>
           ) : (
             <Button
               className={classes.doubleMargin}
               onClick={() => setNotesEditing(true)}
-              aria-label={notes ? "Edit notes" : "Add notes"}
+              aria-label={notes ? "edit notes" : "add notes"}
             >
               {notes ? "Edit" : "Add"} notes
             </Button>
