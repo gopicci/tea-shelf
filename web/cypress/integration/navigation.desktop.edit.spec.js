@@ -18,7 +18,7 @@ describe("Desktop editing", {viewportWidth: 1000}, () => {
     cy.get('button[aria-label="Close"]').click();
 
     cy.get('button[aria-label="test"]').first().click();
-    cy.get("span").contains("Add notes").should("exist");
+    cy.get("span").contains("add notes").should("exist");
 
     cy.server();
     cy.route("PUT", "**/api/tea/**").as("put");
@@ -29,7 +29,6 @@ describe("Desktop editing", {viewportWidth: 1000}, () => {
   });
 
   it("Can edit tea.", () => {
-
     cy.get('button[aria-label="test"]').first().click();
     cy.get('button[aria-label="edit"]').click();
     cy.get('input[name="name"]').type("test edit");
@@ -41,15 +40,16 @@ describe("Desktop editing", {viewportWidth: 1000}, () => {
     cy.wait("@put1");
     cy.get("div").contains("Tea successfully uploaded").should("exist");
     cy.get('button[aria-label="Close"]').click();
-    cy.get('button[aria-label="Add notes"]').click();
+
+    cy.get('button[aria-label="add notes"]').click();
     cy.get('textarea[id="notes"]').type("test notes");
     cy.server();
     cy.route("PUT", "**/api/tea/**").as("put2");
-    cy.get('button[aria-label="Save notes"]').click();
+    cy.get('button[aria-label="save notes"]').click();
     cy.wait("@put2");
     cy.get("div").contains("Tea successfully uploaded").should("exist");
     cy.get("p").contains("test notes").should("exist");
-    cy.get('button[aria-label="Edit notes"]').should("exist");
+    cy.get('button[aria-label="edit notes"]').should("exist");
     cy.get('button[aria-label="close"]').click();
   });
 
