@@ -1,8 +1,10 @@
-import { login } from "./auth.spec";
+describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
 
-Cypress.config("viewportWidth", 500);
+  before(() => {
+    cy.login();
+    cy.visit("/");
+  });
 
-describe("Create navigation", () => {
   it("Can open and close create page.", () => {
     cy.get('button[aria-label="add tea"]').click();
     cy.get('button[aria-label="add tea"]').should("not.exist");
@@ -181,12 +183,12 @@ describe("Create navigation", () => {
     cy.get('div[aria-label="weight"]').type("10");
     cy.get('input[value="ounces"]').click();
     cy.get('button[aria-label="Save"]').click();
-    cy.get("p").contains("283.5g - 10oz").should("exist");
+    cy.get("p").contains("284g - 10oz").should("exist");
     cy.get('div[id="weight"]').click();
     cy.get('button[aria-label="back"]').click();
-    cy.get("p").contains("283.5g - 10oz").should("exist");
+    cy.get("p").contains("284g - 10oz").should("exist");
     cy.get('div[id="price"]').click();
-    cy.get('input[value="283.5"]').should("exist");
+    cy.get('input[value="284"]').should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();

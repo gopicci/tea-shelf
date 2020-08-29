@@ -1,19 +1,7 @@
-Cypress.config("viewportWidth", 1000);
-
-describe("Input form navigation", () => {
-
-  it("Can log in.", () => {
-    const { email, password } = Cypress.env("credentials");
-
-    cy.server();
-    cy.route("POST", "**/api/login/**").as("login");
-
+describe("Desktop input form navigation", {viewportWidth: 1000},() => {
+  before(() => {
+    cy.login();
     cy.visit("/");
-    cy.get('input[name="email"]').type(email);
-    cy.get('input[name="password"]').type(password, { log: false });
-    cy.get("button").contains("Sign In").click();
-    cy.wait("@login");
-    cy.get("button").contains("Sign In").should("not.exist");
   });
 
   it("Cannot post without required fields.", () => {
@@ -115,7 +103,7 @@ describe("Input form navigation", () => {
     cy.get('input[value="95"]').should("exist");
     cy.get('input[value="00:00:15"]').should("not.exist");
     cy.get('input[value="00:02:00"]').should("exist");
-    cy.get('input[name="western_brewing.initial"]').click().clear().type("99999");
+    cy.get('input[name="western_brewing.initial"]').click().type(`{selectall}9`);
     cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Must be in 23:59:59 format").should("exist");
     cy.get('button[aria-label="back"]').click();

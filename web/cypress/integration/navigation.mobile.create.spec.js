@@ -1,8 +1,9 @@
-import { login } from "./auth.spec";
+describe("Mobile creation", {viewportWidth: 500}, () => {
+  before(() => {
+    cy.login();
+    cy.visit("/");
+  });
 
-Cypress.config("viewportWidth", 500);
-
-describe("Create navigation", () => {
   it("Can add a basic tea.", () => {
     cy.server();
     cy.route("POST", "**/api/tea/**").as("tea");
@@ -17,7 +18,7 @@ describe("Create navigation", () => {
     cy.get('button[aria-label="Create"]').should("not.be.disabled");
     cy.get('button[aria-label="Create"]').click();
     cy.wait("@tea");
-    cy.get("div").contains("Tea successfully created").should("exist");
+    cy.get("div").contains("Tea successfully uploaded").should("exist");
   });
 
   it("Can add a complex tea.", () => {
@@ -60,6 +61,6 @@ describe("Create navigation", () => {
 
     cy.get('button[aria-label="Create"]').click();
     cy.wait("@tea");
-    cy.get("div").contains("Tea successfully created").should("exist");
+    cy.get("div").contains("Tea successfully uploaded").should("exist");
   });
 });

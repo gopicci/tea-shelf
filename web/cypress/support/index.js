@@ -1,3 +1,5 @@
+import "cypress-localstorage-commands";
+
 // Delete window.fetch on every window load
 Cypress.on("window:before:load", (win) => {
   delete win.fetch;
@@ -23,4 +25,20 @@ beforeEach(() => {
 
 afterEach(() => {
   cy.saveLocalStorage();
+});
+
+const { email, password } = Cypress.env("credentials");
+const { baseURL } = Cypress.env("API");
+
+Cypress.Commands.add("login", () => {
+  cy.request({
+    method: "POST",
+    url: `${baseURL}/login/`,
+    body: {
+      email: email,
+      password: password,
+    },
+  }).then(res => {
+    cy.setLocalStorage("user.auth", JSON.stringify(res.body));
+  })
 });

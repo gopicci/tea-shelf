@@ -1,19 +1,7 @@
-Cypress.config("viewportWidth", 1000);
-
-describe("Create navigation", () => {
-
-  it("Can log in.", () => {
-    const { email, password } = Cypress.env("credentials");
-
-    cy.server();
-    cy.route("POST", "**/api/login/**").as("login");
-
+describe("Desktop creation", {viewportWidth: 1000}, () => {
+  before(() => {
+    cy.login();
     cy.visit("/");
-    cy.get('input[name="email"]').type(email);
-    cy.get('input[name="password"]').type(password, { log: false });
-    cy.get("button").contains("Sign In").click();
-    cy.wait("@login");
-    cy.get("button").contains("Sign In").should("not.exist");
   });
 
   it("Can add a basic tea.", () => {
@@ -50,7 +38,5 @@ describe("Create navigation", () => {
     cy.get('button[aria-label="save"]').click();
     cy.wait("@tea");
     cy.get("div").contains("Tea successfully uploaded").should("exist");
-
   });
-
 });
