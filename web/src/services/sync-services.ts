@@ -60,7 +60,7 @@ export function genericReducer(
  * @category Services
  */
 export function generateUniqueId(array: genericModels[]): number {
-  let i = 0;
+  let i = 1;
   for (const item of array) {
     if (item.id === i) i += 1;
     else return i;

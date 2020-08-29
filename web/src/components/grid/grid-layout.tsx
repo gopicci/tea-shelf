@@ -125,8 +125,8 @@ function GridLayout({ setRoute, isMobile }: Props): ReactElement {
     switch (sorting) {
       case "date added":
         return [...teas].sort((a, b) => {
-          if (!a.created_on) return 1;
-          if (!b.created_on) return -1;
+          if (!a.created_on) return -1;
+          if (!b.created_on) return 1;
           return Date.parse(b.created_on) - Date.parse(a.created_on);
         });
       case "year":

@@ -79,6 +79,7 @@ function InputForm({
     let data: TeaRequest = { name: values.name, category: values.category };
 
     if (imageData) data["image"] = imageData;
+    if (teaData?.image) data["image"] = teaData.image;
 
     if (values.year && values.year !== "Unknown")
       data["year"] = parseInt(values.year);
@@ -166,7 +167,7 @@ function InputForm({
     <Box className={classes.root}>
       <img
         className={classes.image}
-        src={imageData ? imageData : emptyImage}
+        src={imageData ? imageData : teaData?.image ? teaData.image : emptyImage}
         alt=""
       />
       <Formik

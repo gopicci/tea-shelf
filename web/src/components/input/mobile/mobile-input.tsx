@@ -86,6 +86,9 @@ function MobileInput({
 
     if (imageData) teaData.image = imageData;
 
+    if (teaData.subcategory && !teaData.subcategory.category)
+      teaData.subcategory.category = teaData.category;
+
     if (route.payload) {
       handleEdit(teaData, route.payload.id);
       handlePrevious({ ...teaData, id: route.payload.id });

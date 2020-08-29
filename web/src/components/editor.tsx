@@ -2,7 +2,7 @@ import React, { ReactElement, useContext, useState } from "react";
 import localforage from "localforage";
 import MobileInput from "./input/mobile/mobile-input";
 import MobileDetailsLayout from "./details/mobile/mobile-details-layout";
-import DesktopDetailsLayout from './details/desktop/desktop-details-layout';
+import DesktopDetailsLayout from "./details/desktop/desktop-details-layout";
 import InputForm from "./input/desktop/input-form";
 import CaptureImage from "./input/mobile/capture-image";
 import LoadImage from "./input/desktop/load-image";
@@ -19,7 +19,10 @@ import {
   TeaRequest,
   VendorModel,
 } from "../services/models";
-import { parseHMSToSeconds } from "../services/parsing-services";
+import {
+  brewingTimesToHMS,
+  brewingTimesToSeconds,
+} from "../services/parsing-services";
 import { generateUniqueId } from "../services/sync-services";
 
 /**
@@ -58,6 +61,7 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
    * @param {string|number} [id] - Instance ID for editing purposes
    */
   async function handleEdit(data: TeaRequest, id?: string | number) {
+    console.log("ID", id);
     let request = JSON.parse(JSON.stringify(data));
 
     let response;
@@ -69,22 +73,7 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
 
     try {
       // Convert brewing time from HH:MM:SS to seconds
-      if (request.gongfu_brewing?.initial)
-        request.gongfu_brewing.initial = String(
-          parseHMSToSeconds(request.gongfu_brewing.initial)
-        );
-      if (request.western_brewing?.initial)
-        request.western_brewing.initial = String(
-          parseHMSToSeconds(request.western_brewing.initial)
-        );
-      if (request.gongfu_brewing?.increments)
-        request.gongfu_brewing.increments = String(
-          parseHMSToSeconds(request.gongfu_brewing.increments)
-        );
-      if (request.western_brewing?.increments)
-        request.western_brewing.increments = String(
-          parseHMSToSeconds(request.western_brewing.increments)
-        );
+      request = brewingTimesToSeconds(request);
 
       if (id) {
         // Editing an existing tea instance
@@ -152,7 +141,6 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         vendorsDispatch({ type: "SET", data: venGetData });
         await localforage.setItem<VendorModel[]>("vendors", venGetData);
       }
-
     } catch (e) {
       console.error(e);
       if (e.message === "Bad Request") {
@@ -169,15 +157,15 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
         );
         if (!offlineTeas) await localforage.setItem("offline-teas", []);
 
-        if (image) request["image"] = image;
-        if (!id) id = generateUniqueId(offlineTeas);
+        request = brewingTimesToHMS(request);
 
-        let teaInstance: TeaInstance = { ...request, id: id };
-
-        // Update context with offline instance
         if (id) {
-          teaDispatch({ type: "EDIT", data: teaInstance });
-        } else teaDispatch({ type: "ADD", data: teaInstance });
+          if (image) request["image"] = image;
+          teaDispatch({ type: "EDIT", data: { ...request, id: id } });
+        } else {
+          id = generateUniqueId(offlineTeas);
+          teaDispatch({ type: "ADD", data: { ...request, id: id } });
+        }
 
         // If tea already present in cache remove before adding again
         for (const tea of offlineTeas)
@@ -185,7 +173,7 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
 
         const cache = await localforage.setItem<TeaInstance[]>("offline-teas", [
           ...offlineTeas,
-          teaInstance,
+          { ...request, id: id },
         ]);
 
         snackbarDispatch({
