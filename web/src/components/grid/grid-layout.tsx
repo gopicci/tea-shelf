@@ -86,6 +86,8 @@ const useStyles = makeStyles((theme) => ({
  * @memberOf GridLayout
  */
 type Props = {
+  /** App's main route state */
+  route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
   /** Mobile mode or desktop */
@@ -99,7 +101,7 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function GridLayout({ setRoute, isMobile }: Props): ReactElement {
+function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
 
   const categories = useContext(CategoriesState);
@@ -181,13 +183,19 @@ function GridLayout({ setRoute, isMobile }: Props): ReactElement {
      * selected filters and search bar input.
      */
     function filterTeas(): void {
+      // Parse archive
+      let teas = teasState.filter((tea) => {
+        if (route.route === "ARCHIVE") return tea.is_archived;
+        else return !tea.is_archived;
+      });
+
       // Sort teas
       let sorting = Object.keys(filterState.sorting).find(
         (k) => filterState.sorting[k]
       );
       if (!sorting) sorting = "";
       setSorting(sorting);
-      let sorted = sortTeas(teasState, sorting);
+      let sorted = sortTeas(teas, sorting);
       if (sorted && reversed) sorted = sorted.reverse();
 
       // Parse entries through selected filters
@@ -269,6 +277,7 @@ function GridLayout({ setRoute, isMobile }: Props): ReactElement {
     teasState,
     searchState,
     reversed,
+    route,
   ]);
 
   return (

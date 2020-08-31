@@ -41,6 +41,8 @@ const useStyles = makeStyles((theme) => ({
  * @memberOf DrawerLayout
  */
 type Props = {
+  /** App's main route state */
+  route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
 };
@@ -51,7 +53,7 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function DrawerLayout({ setRoute }: Props): ReactElement {
+function DrawerLayout({ route, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
   return (
@@ -76,7 +78,12 @@ function DrawerLayout({ setRoute }: Props): ReactElement {
             </ListItemIcon>
             <ListItemText primary="Add Tea" />
           </ListItem>
-          <ListItem button key="catalog">
+          <ListItem
+            button
+            key="catalog"
+            selected={route.route === "MAIN"}
+            onClick={() => setRoute({ route: "MAIN" })}
+          >
             <ListItemIcon>
               <SvgIcon
                 color="action"
@@ -87,9 +94,14 @@ function DrawerLayout({ setRoute }: Props): ReactElement {
                 <path d="M17.066 6.548c-.844-.42-1.846-.283-2.699.266H4.784c-.617.857-1.011 1.885-1.095 3-.104-.268-.152-.604-.127-1.028.07-1.178-.236-2.092-.911-2.719C1.615 5.105.161 5.265 0 5.287c0 0 .542.809.208 1.567 0 0 .869-.091 1.366.371.312.29.449.783.409 1.467-.071 1.195.237 2.111.917 2.722.322.29.683.466 1.03.573.74 2.421 2.991 4.182 5.653 4.182 2.245 0 4.197-1.251 5.199-3.093 1.229.104 2.567-.712 3.266-2.112.865-1.734.423-3.715-.982-4.416zm-.433 3.711c-.288.578-.771.978-1.242 1.102.067-.358.106-.727.106-1.104 0-.709-.13-1.386-.36-2.015.391-.256.821-.339 1.167-.167.615.307.767 1.307.329 2.184z" />
               </SvgIcon>
             </ListItemIcon>
-            <ListItemText primary="My teas" />
+            <ListItemText primary="Teas" />
           </ListItem>
-          <ListItem button key="archive">
+          <ListItem
+            button
+            key="archive"
+            selected={route.route === "ARCHIVE"}
+            onClick={() => setRoute({ route: "ARCHIVE" })}
+          >
             <ListItemIcon>
               <Archive />
             </ListItemIcon>

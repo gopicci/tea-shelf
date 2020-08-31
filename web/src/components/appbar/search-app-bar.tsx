@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, MouseEvent } from "react";
 import {
   AppBar,
   Box,
@@ -6,11 +6,13 @@ import {
   Typography,
   InputBase,
   IconButton,
+  MenuItem,
+  Menu,
 } from "@material-ui/core";
 import {
   AccountCircle,
-  Menu,
   Search,
+  Menu as MenuIcon,
   ViewStream,
   ViewModule,
 } from "@material-ui/icons";
@@ -21,6 +23,7 @@ import {
   GridViewDispatch,
 } from "../statecontainers/grid-view-context";
 import { SearchDispatch } from "../statecontainers/search-context";
+import { logout } from "../../services/auth-services";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -99,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
 function SearchAppBar() {
   const classes = useStyles();
 
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
   const [searchValue, setSearchValue] = useState("");
 
   const gridView = useContext(GridViewState);
@@ -124,6 +128,26 @@ function SearchAppBar() {
     });
   }
 
+  /**
+   * Opens menu.
+   *
+   * @param {MouseEvent<HTMLElement>} event - Icon button click event
+   */
+  function handleMenuClick(event: MouseEvent<HTMLElement>): void {
+    setAnchorEl(event.currentTarget);
+  }
+
+  /** Closes menu. */
+  function handleMenuClose(): void {
+    setAnchorEl(undefined);
+  }
+
+  /** Logout. */
+  function handleLogout(): void {
+    setAnchorEl(undefined);
+    logout();
+  }
+
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
@@ -133,7 +157,7 @@ function SearchAppBar() {
           color="inherit"
           aria-label="open drawer"
         >
-          <Menu />
+          <MenuIcon />
         </IconButton>
         <Typography className={classes.title} variant="h6" noWrap>
           Tea shelf
@@ -163,9 +187,22 @@ function SearchAppBar() {
           >
             {gridView ? <ViewStream /> : <ViewModule />}
           </IconButton>
-          <IconButton color="inherit" aria-label="account">
+          <IconButton
+            color="inherit"
+            aria-label="user menu"
+            onClick={handleMenuClick}
+          >
             <AccountCircle />
           </IconButton>
+          <Menu
+            id="menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>

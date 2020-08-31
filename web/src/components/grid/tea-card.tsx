@@ -8,7 +8,7 @@ import {
   CardContent,
   Typography,
 } from "@material-ui/core";
-import { StarRate, MoreVert } from "@material-ui/icons";
+import { StarRate, MoreVert, Archive } from "@material-ui/icons";
 import ReactCountryFlag from "react-country-flag";
 import {
   getOriginShortName,
@@ -222,7 +222,13 @@ function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
         >
           {categories && getCategoryName(categories, tea.category)}
         </Typography>
-        <MoreVert className={classes.icon} />
+        <Archive
+          button
+          className={classes.icon}
+          fontSize="small"
+          aria-label="archive"
+        />
+        <MoreVert button className={classes.icon} aria-label="more" />
       </CardActions>
     </Card>
   );

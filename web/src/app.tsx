@@ -21,7 +21,7 @@ import { TeaInstance } from "./services/models";
  */
 export type Route = {
   /** Route name */
-  route: "MAIN" | "FILTER" | "CREATE" | "EDIT" | "EDIT_NOTES" | "TEA_DETAILS";
+  route: "MAIN" | "FILTER" | "CREATE" | "EDIT" | "EDIT_NOTES" | "TEA_DETAILS" | "ARCHIVE";
   /** Optional route payload */
   payload?: TeaInstance;
 };
@@ -55,6 +55,7 @@ function App(): ReactElement {
 
     switch (route.route) {
       case "MAIN":
+      case "ARCHIVE":
         return <MainLayout {...props} />;
       case "FILTER":
         return <SortFilter {...props} />;

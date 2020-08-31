@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactElement, useContext } from "react";
+import React, { MouseEvent, ReactElement, useContext, useState } from "react";
 import {
   AppBar,
   Box,
@@ -45,7 +45,7 @@ function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
   const classes = useStyles();
   const detailsClasses = mobileDetailsStyles();
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | undefined>();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
 

@@ -67,7 +67,7 @@ function MainLayout(props: Props): ReactElement {
       <SearchAppBar />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout setRoute={setRoute} />
+        <DrawerLayout {...props} />
         <Box className={classes.mainBox}>
           {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
           <GridLayout {...props} />
