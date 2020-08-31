@@ -54,7 +54,7 @@ type Props = {
  * Single item of a checkbox list.
  *
  * @component
- * @subcategory Helpers
+ * @subcategory Generics
  */
 function CheckboxListItem({
   name,

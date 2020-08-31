@@ -6,7 +6,11 @@ import DesktopDetailsLayout from "./details/desktop/desktop-details-layout";
 import InputForm from "./input/desktop/input-form";
 import CaptureImage from "./input/mobile/capture-image";
 import LoadImage from "./input/desktop/load-image";
-import { generateUniqueId, uploadInstance } from "../services/sync-services";
+import {
+  generateUniqueId,
+  getOfflineTeas,
+  uploadInstance,
+} from "../services/sync-services";
 import { SnackbarDispatch } from "./statecontainers/snackbar-context";
 import { TeaDispatch } from "./statecontainers/tea-context";
 import {
@@ -69,10 +73,7 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
    */
   async function handleEdit(teaData: TeaRequest, id?: string | number) {
     try {
-      let offlineTeas = await localforage.getItem<TeaInstance[]>(
-        "offline-teas"
-      );
-      if (!offlineTeas) await localforage.setItem("offline-teas", []);
+      let offlineTeas = await getOfflineTeas();
 
       // Update context with request
       if (id) teaDispatch({ type: "EDIT", data: { ...teaData, id: id } });

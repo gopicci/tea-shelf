@@ -9,6 +9,7 @@ import {
 /**
  * Extracts data from a vision parser response and returns a tea object.
  *
+ * @category Services
  * @param {VisionData} data - Vision parser response
  * @param {CategoryModel[]} categories - Categories state
  * @param {SubcategoryModel[]} subcategories - Subcategories state

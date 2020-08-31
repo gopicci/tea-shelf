@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import {
   AppBar,
   Box,
-  CircularProgress,
   Toolbar,
   Typography,
   InputBase,
@@ -10,28 +9,18 @@ import {
 } from "@material-ui/core";
 import {
   AccountCircle,
-  CloudDone,
   Menu,
-  Refresh,
   Search,
   ViewStream,
   ViewModule,
 } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import localforage from "localforage";
-import { uploadOffline } from "../../services/sync-services";
-import { APIRequest } from "../../services/auth-services";
+import SyncButton from "./sync-button";
 import {
   GridViewState,
   GridViewDispatch,
 } from "../statecontainers/grid-view-context";
-import { TeaDispatch } from "../statecontainers/tea-context";
-import { SubcategoriesDispatch } from "../statecontainers/subcategories-context";
-import { SnackbarDispatch } from "../statecontainers/snackbar-context";
-import { VendorsDispatch } from "../statecontainers/vendors-context";
 import { SearchDispatch } from "../statecontainers/search-context";
-import { SyncState, SyncDispatch } from "../statecontainers/sync-context";
-import { TeaInstance } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -99,13 +88,10 @@ const useStyles = makeStyles((theme) => ({
       display: "block",
     },
   },
-  circularProgress: {
-    color: theme.palette.common.white,
-  },
 }));
 
 /**
- * Search app bar component. Handles search, sync and grid view switch.
+ * Search app bar component. Handles search and grid view switch.
  *
  * @component
  * @subcategory Main
@@ -113,17 +99,10 @@ const useStyles = makeStyles((theme) => ({
 function SearchAppBar() {
   const classes = useStyles();
 
-  const [isSyncing, setSyncing] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
   const gridView = useContext(GridViewState);
-  const sync = useContext(SyncState);
-  const syncDispatch = useContext(SyncDispatch);
   const gridViewDispatch = useContext(GridViewDispatch);
-  const snackbarDispatch = useContext(SnackbarDispatch);
-  const teaDispatch = useContext(TeaDispatch);
-  const subcategoriesDispatch = useContext(SubcategoriesDispatch);
-  const vendorDispatch = useContext(VendorsDispatch);
   const searchDispatch = useContext(SearchDispatch);
 
   useEffect(() => {
@@ -138,103 +117,12 @@ function SearchAppBar() {
       });
   }, [searchValue, searchDispatch]);
 
-  /** Switches grid view global state */
+  /** Switches grid view global state. */
   function handleGridViewChange(): void {
     gridViewDispatch({
       type: "SWITCH_VIEW",
     });
   }
-
-  /** Syncs global states and local caches with API */
-  async function handleRefresh(): Promise<void> {
-    setSyncing(true);
-    let error = null;
-
-    try {
-      // Try to upload offline tea entries
-      await uploadOffline();
-    } catch (e) {
-      console.error(e);
-      error = e;
-    }
-
-    try {
-      // Get remaining offline teas
-      const offlineTeas = await localforage.getItem<TeaInstance[]>(
-        "offline-teas"
-      );
-
-      // Download teas from API
-      const res = await APIRequest("/tea/", "GET");
-      const body = await res.json();
-
-      // Update central teas state
-      teaDispatch({ type: "SET", data: offlineTeas.concat(body) });
-
-      // Update teas cache
-      await localforage.setItem("teas", body);
-    } catch (e) {
-      console.error(e);
-      error = e;
-    }
-    try {
-      // Download categories from API
-      const res = await APIRequest("/category/", "GET");
-      const body = await res.json();
-
-      // Update central categories state
-      subcategoriesDispatch({ type: "SET", data: body });
-
-      // Update categories cache
-      await localforage.setItem("categories", body);
-    } catch (e) {
-      console.error(e);
-      error = e;
-    }
-
-    try {
-      // Download subcategories from API
-      const res = await APIRequest("/subcategory/", "GET");
-      const body = await res.json();
-
-      // Update central subcategories state
-      subcategoriesDispatch({ type: "SET", data: body });
-
-      // Update subcategories cache
-      await localforage.setItem("subcategories", body);
-    } catch (e) {
-      console.error(e);
-      error = e;
-    }
-
-    try {
-      // Download vendors from API
-      const res = await APIRequest("/vendor/", "GET");
-      const body = await res.json();
-
-      // Update central vendors state
-      vendorDispatch({ type: "SET", data: body });
-
-      // Update vendors cache
-      await localforage.setItem("vendors", body);
-    } catch (e) {
-      console.error(e);
-      error = e;
-    }
-    setSyncing(false);
-
-    // Update global sync context
-    if (error) {
-      syncDispatch({ type: "SET_NOT_SYNCED" });
-      snackbarDispatch({ type: "ERROR", data: error.message });
-    } else {
-      syncDispatch({ type: "SET_SYNCED" });
-    }
-  }
-
-  useEffect(() => {
-    handleRefresh();
-  }, []);
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -267,27 +155,7 @@ function SearchAppBar() {
           />
         </Box>
         <Box className={classes.user}>
-          {isSyncing ? (
-            <IconButton color="inherit" aria-label="refresh">
-              <CircularProgress
-                className={classes.circularProgress}
-                size={20}
-                thickness={5}
-              />
-            </IconButton>
-          ) : sync ? (
-            <IconButton color="inherit" aria-label="refresh">
-              <CloudDone />
-            </IconButton>
-          ) : (
-            <IconButton
-              color="inherit"
-              aria-label="refresh"
-              onClick={handleRefresh}
-            >
-              <Refresh />
-            </IconButton>
-          )}
+          <SyncButton />
           <IconButton
             onClick={handleGridViewChange}
             color="inherit"

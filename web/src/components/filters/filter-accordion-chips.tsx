@@ -38,7 +38,7 @@ function FilterAccordionChips(): ReactElement {
    * to unchecked.
    *
    * @param {ChangeEvent<HTMLInputElement>} event - Change event
-   * @param {keyof Filters["filters"]} entry - Filter group
+   * @param {Filters} entry - Filter group (keyof Filters["filters"])
    * @param {string} item - Filter item
    */
   function handleDelete(
