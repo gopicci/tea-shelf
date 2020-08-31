@@ -223,12 +223,11 @@ function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
           {categories && getCategoryName(categories, tea.category)}
         </Typography>
         <Archive
-          button
           className={classes.icon}
           fontSize="small"
           aria-label="archive"
         />
-        <MoreVert button className={classes.icon} aria-label="more" />
+        <MoreVert className={classes.icon} aria-label="more" />
       </CardActions>
     </Card>
   );
