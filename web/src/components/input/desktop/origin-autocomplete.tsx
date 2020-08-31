@@ -8,10 +8,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getOriginName } from "../../../services/parsing-services";
 import { InputFormModel } from "../../../services/models";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
-import {
-  getAutocompleteOptions,
-  getOriginFromPlace,
-} from "../../../services/origin-services";
+import { getOriginFromPlace } from "../../../services/origin-services";
+import { APIRequest } from "../../../services/auth-services";
 
 type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
@@ -50,8 +48,19 @@ function OriginAutocomplete({ formikProps }: Props): ReactElement {
      * Gets autocomplete options from API and updates state.
      */
     async function getOptions(): Promise<void> {
-      const results = await getAutocompleteOptions(inputValue, token);
-      if (active && results) setOptions(results);
+      try {
+        const response = await APIRequest(
+          "/places/autocomplete/",
+          "POST",
+          JSON.stringify({ input: inputValue, token: token })
+        );
+        if (response.ok) {
+          const results = await response.json();
+          if (active && results) setOptions(results);
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     if (inputValue.length > 1) getOptions();

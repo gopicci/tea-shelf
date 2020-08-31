@@ -1,13 +1,14 @@
-import React, { ReactElement, useContext } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { Button, DialogActions, DialogContent } from "@material-ui/core";
 import DetailsBoxMain from "./details-box-main";
 import DetailsBoxNotes from "./details-box-notes";
 import DetailsBoxOrigin from "./details-box-origin";
 import DetailsBoxDescription from "./details-box-description";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
-import { Route } from "../../../app";
-import { TeaRequest } from "../../../services/models";
 import { CategoriesState } from "../../statecontainers/categories-context";
+import { TeasState } from "../../statecontainers/tea-context";
+import { Route } from "../../../app";
+import { TeaInstance, TeaRequest } from "../../../services/models";
 
 /**
  * DesktopDetailsLayout props.
@@ -36,8 +37,13 @@ function DesktopDetailsLayout({
 }: Props): ReactElement {
   const classes = desktopDetailsStyles();
   const categories = useContext(CategoriesState);
+  const teas = useContext(TeasState);
 
-  const teaData = route.payload;
+  const [teaData, setTeaData] = useState<TeaInstance | undefined>();
+
+  useEffect(() => {
+    setTeaData(Object.values(teas).find((tea) => tea.id === route.payload?.id));
+  }, [route.payload, teas]);
 
   const category = Object.values(categories).find(
     (value) => value.id === teaData?.category

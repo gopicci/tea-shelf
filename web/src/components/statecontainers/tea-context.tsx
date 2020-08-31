@@ -7,7 +7,7 @@ import React, {
   useReducer,
 } from "react";
 import localforage from "localforage";
-import { getOfflineTeas, syncOffline } from "../../services/sync-services";
+import { uploadOffline } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import { TeaInstance } from "../../services/models";
 import { genericReducer, genericAction } from "../../services/sync-services";
@@ -37,14 +37,16 @@ function TeaContext({ children }: Props): ReactElement {
     async function syncTeas(): Promise<void> {
       try {
         // Try to upload offline tea entries
-        await syncOffline();
+        await uploadOffline();
       } catch (e) {
         console.error(e);
       }
 
       try {
         // Get offline teas (not yet uploaded)
-        const offlineTeas = await getOfflineTeas();
+        const offlineTeas = await localforage.getItem<TeaInstance[]>(
+          "offline-teas"
+        );
 
         // Get cached teas if id not already on offline
         let localTeas = await localforage.getItem<TeaInstance[]>("teas");
@@ -64,7 +66,9 @@ function TeaContext({ children }: Props): ReactElement {
         else
           onlineTeas = onlineTeas.filter(
             (online: TeaInstance) =>
-              !offlineTeas.some((offline: TeaInstance) => offline.id === online.id)
+              !offlineTeas.some(
+                (offline: TeaInstance) => offline.id === online.id
+              )
           );
 
         // Update the state

@@ -19,7 +19,7 @@ import {
 } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import localforage from "localforage";
-import { getOfflineTeas, syncOffline } from "../../services/sync-services";
+import { uploadOffline } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import {
   GridViewState,
@@ -30,6 +30,8 @@ import { SubcategoriesDispatch } from "../statecontainers/subcategories-context"
 import { SnackbarDispatch } from "../statecontainers/snackbar-context";
 import { VendorsDispatch } from "../statecontainers/vendors-context";
 import { SearchDispatch } from "../statecontainers/search-context";
+import { SyncState, SyncDispatch } from "../statecontainers/sync-context";
+import { TeaInstance } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -112,10 +114,11 @@ function SearchAppBar() {
   const classes = useStyles();
 
   const [isSyncing, setSyncing] = useState(false);
-  const [showCloud, setShowCloud] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const state = useContext(GridViewState);
+  const gridView = useContext(GridViewState);
+  const sync = useContext(SyncState);
+  const syncDispatch = useContext(SyncDispatch);
   const gridViewDispatch = useContext(GridViewDispatch);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
@@ -149,7 +152,7 @@ function SearchAppBar() {
 
     try {
       // Try to upload offline tea entries
-      await syncOffline();
+      await uploadOffline();
     } catch (e) {
       console.error(e);
       error = e;
@@ -157,7 +160,9 @@ function SearchAppBar() {
 
     try {
       // Get remaining offline teas
-      const offlineTeas = await getOfflineTeas();
+      const offlineTeas = await localforage.getItem<TeaInstance[]>(
+        "offline-teas"
+      );
 
       // Download teas from API
       const res = await APIRequest("/tea/", "GET");
@@ -218,15 +223,18 @@ function SearchAppBar() {
     }
     setSyncing(false);
 
+    // Update global sync context
     if (error) {
+      syncDispatch({ type: "SET_NOT_SYNCED" });
       snackbarDispatch({ type: "ERROR", data: error.message });
     } else {
-      // If no errors show cloud icon for 2 sec
-      setShowCloud(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setShowCloud(false);
+      syncDispatch({ type: "SET_SYNCED" });
     }
   }
+
+  useEffect(() => {
+    handleRefresh();
+  }, []);
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -263,10 +271,11 @@ function SearchAppBar() {
             <IconButton color="inherit" aria-label="refresh">
               <CircularProgress
                 className={classes.circularProgress}
-                size="sm"
+                size={20}
+                thickness={5}
               />
             </IconButton>
-          ) : showCloud ? (
+          ) : sync ? (
             <IconButton color="inherit" aria-label="refresh">
               <CloudDone />
             </IconButton>
@@ -284,7 +293,7 @@ function SearchAppBar() {
             color="inherit"
             aria-label="switch view"
           >
-            {state ? <ViewStream /> : <ViewModule />}
+            {gridView ? <ViewStream /> : <ViewModule />}
           </IconButton>
           <IconButton color="inherit" aria-label="account">
             <AccountCircle />

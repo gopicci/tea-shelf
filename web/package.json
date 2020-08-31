@@ -18,6 +18,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-simple-maps": "^1.0.3",
     "@types/uuid": "^8.3.0",
+    "@types/validator": "^13.1.0",
     "@types/yup": "^0.29.6",
     "autosuggest-highlight": "^3.1.1",
     "better-docs": "^2.3.0",
@@ -40,6 +41,7 @@
     "throttle": "^1.0.3",
     "typescript": "^4.0.2",
     "uuid": "^8.3.0",
+    "validator": "^13.1.1",
     "whatwg-fetch": "^3.2.0",
     "yup": "^0.29.3"
   },

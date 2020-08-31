@@ -80,6 +80,8 @@ function InputForm({
 
     if (imageData) data["image"] = imageData;
     if (teaData?.image) data["image"] = teaData.image;
+    if (teaData?.rating) data["rating"] = teaData.rating;
+    if (teaData?.notes) data["notes"] = teaData.notes;
 
     if (values.year && values.year !== "Unknown")
       data["year"] = parseInt(values.year);

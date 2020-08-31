@@ -1,6 +1,8 @@
 import { APIRequest } from "./auth-services";
 import localforage from "localforage";
+import validator from "validator";
 import { TeaInstance, SubcategoryModel, VendorModel } from "./models";
+import { brewingTimesToSeconds } from "./parsing-services";
 
 /**
  * Models allowed to be used in the generic services requiring an instance ID.
@@ -69,30 +71,56 @@ export function generateUniqueId(array: genericModels[]): number {
 }
 
 /**
- * Syncs offline teas from storage to API.
+ * Uploads a tea instance, returns a response promise.
+ *
+ * @category Services
+ * @returns {Promise<Response>}
+ */
+export async function uploadInstance(tea: TeaInstance): Promise<Response> {
+  let request = JSON.parse(JSON.stringify(tea));
+  request = brewingTimesToSeconds(request);
+  // Remove null fields
+  Object.keys(request).forEach(
+    (key) => request[key] === null && delete request[key]
+  );
+
+  // String UUID means API generated, instance has been previously uploaded
+  if (typeof tea.id === "string" && validator.isUUID(tea.id)) {
+    // Remove image from PUT request
+    if (request.image) delete request.image;
+    return APIRequest(
+      `/tea/${request.id}/`,
+      "PUT",
+      JSON.stringify(request)
+    );
+  } else {
+    return APIRequest("/tea/", "POST", JSON.stringify(tea));
+  }
+
+}
+
+/**
+ * Tries to upload offline teas from storage to API. If successful releases
+ * the cache.
  *
  * @category Services
  */
-export async function syncOffline(): Promise<void> {
+export async function uploadOffline(): Promise<void> {
   const offlineTeas = await localforage.getItem<TeaInstance[]>("offline-teas");
 
   if (!offlineTeas) return;
 
   let failed: TeaInstance[] = [];
 
+  let error = "";
+
   const requests = offlineTeas.map(async (tea) => {
     try {
-      // Long ID means API generated, instance has been previously uploaded
-      if (String(tea.id).length > 5) {
-        let req = { ...tea };
-        if (req.image) delete req.image;
-        await APIRequest(`/tea/${req.id}/`, "PUT", JSON.stringify(req));
-      } else {
-        await APIRequest("/tea/", "POST", JSON.stringify(tea));
-      }
+      await uploadInstance(tea);
     } catch (e) {
-      failed.push(tea);
-      console.error(e);
+      // Save failed instance if proper
+      if (e.message !== "Bad Request") failed.push(tea);
+      error = e.message;
     }
   });
 
@@ -100,7 +128,7 @@ export async function syncOffline(): Promise<void> {
 
   if (failed.length) {
     await localforage.setItem<TeaInstance[]>("offline-teas", failed);
-    throw new Error("Error when uploading local entries");
+    throw new Error(error);
   } else {
     await localforage.setItem("offline-teas", []);
   }
@@ -116,5 +144,5 @@ export async function getOfflineTeas(): Promise<TeaInstance[]> {
   const cache = await localforage.getItem<TeaInstance[]>("offline-teas");
   if (!cache) return localforage.setItem("offline-teas", []);
   else
-    return Promise.all(cache.filter((entry) => entry.name && entry.category));
+    return Promise.all(cache);
 }

@@ -13,11 +13,9 @@ import { fade, makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import { v4 as uuidv4 } from "uuid";
 import { TeaRequest } from "../../../services/models";
-import {
-  getAutocompleteOptions,
-  getOriginFromPlace,
-} from "../../../services/origin-services";
-import {getOriginName} from '../../../services/parsing-services';
+import { getOriginFromPlace } from "../../../services/origin-services";
+import { getOriginName } from "../../../services/parsing-services";
+import { APIRequest } from "../../../services/auth-services";
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -80,8 +78,19 @@ function EditOriginOnline({
      * Gets autocomplete options from API and updates state.
      */
     async function getOptions(): Promise<void> {
-      const results = await getAutocompleteOptions(inputValue, token);
-      if (active && results) setOptions(results);
+      try {
+        const response = await APIRequest(
+          "/places/autocomplete/",
+          "POST",
+          JSON.stringify({ input: inputValue, token: token })
+        );
+        if (response.ok) {
+          const results = await response.json();
+          if (active && results) setOptions(results);
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     if (inputValue.length > 1) getOptions();
@@ -100,8 +109,8 @@ function EditOriginOnline({
   async function updateOrigin(place?: AutocompletePrediction): Promise<void> {
     if (place) {
       const origin = await getOriginFromPlace(place, token);
-      if (origin) setTeaData({...teaData, origin: origin});
-    } else setTeaData({...teaData, origin: undefined});
+      if (origin) setTeaData({ ...teaData, origin: origin });
+    } else setTeaData({ ...teaData, origin: undefined });
     handleBackToLayout();
   }
 

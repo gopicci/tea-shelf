@@ -1,4 +1,4 @@
-import React, {ReactElement, useState} from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DetailsAppBar from "./details-app-bar";
@@ -7,9 +7,10 @@ import DetailsCardNotes from "./details-card-notes";
 import DetailsCardOrigin from "./details-card-origin";
 import DetailsCardVendor from "./details-card-vendor";
 import DetailsCardDescription from "./details-card-description";
+import EditNotes from "./edit-notes";
+import { TeasState } from "../../statecontainers/tea-context";
 import { Route } from "../../../app";
-import {TeaInstance, TeaRequest} from '../../../services/models';
-import EditNotes from './edit-notes';
+import { TeaInstance, TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,22 +49,30 @@ type Props = {
  * @component
  * @subcategory Details mobile
  */
-function MobileDetailsLayout({ route, setRoute, handleEdit }: Props): ReactElement {
+function MobileDetailsLayout({
+  route,
+  setRoute,
+  handleEdit,
+}: Props): ReactElement {
   const classes = useStyles();
 
-  const [teaData, setTeaData] = useState<TeaInstance>(route.payload as TeaInstance);
+  const teas = useContext(TeasState);
+
+  const [teaData, setTeaData] = useState<TeaInstance | undefined>();
+
+  useEffect(() => {
+    setTeaData(Object.values(teas).find((tea) => tea.id === route.payload?.id));
+  }, [route.payload, teas]);
 
   return (
     <>
-      {teaData && route.route === "EDIT_NOTES" ? (
+      {teaData && (route.route === "EDIT_NOTES" ? (
         <EditNotes
           teaData={teaData}
-          setTeaData={setTeaData}
           handleEdit={handleEdit}
           setRoute={setRoute}
-          />
-        )
-        : (
+        />
+      ) : (
         <Box className={classes.root}>
           <DetailsAppBar setRoute={setRoute} teaData={teaData} />
           <Box className={classes.page}>
@@ -78,7 +87,7 @@ function MobileDetailsLayout({ route, setRoute, handleEdit }: Props): ReactEleme
             <DetailsCardDescription teaData={teaData} />
           </Box>
         </Box>
-      )}
+      ))}
     </>
   );
 }

@@ -5,28 +5,6 @@ import { parse as himalaya } from "himalaya";
 type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
 /**
- * Gets places autocomplete options from API.
- *
- * @category Services
- * @param {string} inputValue - Request input value
- * @param {string} token - UUIDv4 maps session token
- * @returns {Promise<AutocompletePrediction[]|void>}
- */
-export async function getAutocompleteOptions(
-  inputValue: string,
-  token: string
-): Promise<AutocompletePrediction[] | void> {
-  const res = await APIRequest(
-    "/places/autocomplete/",
-    "POST",
-    JSON.stringify({ input: inputValue, token: token })
-  );
-  if (res.ok) {
-    return res.json();
-  }
-}
-
-/**
  * Gets selected place details from API, parses them and returns an OriginModel.
  *
  * @category Services

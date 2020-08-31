@@ -95,7 +95,7 @@ function DetailsCardMain({
   const classes = useStyles();
   const detailsClasses = mobileDetailsStyles();
 
-  const [rating, setRating] = useState(teaData.rating);
+  const [rating, setRating] = useState(teaData?.rating);
   const [gongfu, setGongfu] = useState(true);
 
   /**

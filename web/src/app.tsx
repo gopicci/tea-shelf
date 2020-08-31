@@ -62,7 +62,6 @@ function App(): ReactElement {
       case "EDIT":
       case "EDIT_NOTES":
       case "TEA_DETAILS":
-        console.log(route)
         if (isMobile) return <Editor {...props} />;
         else return <MainLayout {...props} />;
       default:

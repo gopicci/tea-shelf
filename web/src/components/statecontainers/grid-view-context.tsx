@@ -7,7 +7,7 @@ import React, {
 } from "react";
 
 /**
- * Search reducer action type
+ * Grid view switch reducer action type
  *
  * @memberOf GridViewContext
  */

@@ -1,5 +1,5 @@
 import React, { ReactChild, ReactElement } from "react";
-
+import SyncContext from "./sync-context";
 import GridViewContext from "./grid-view-context";
 import CategoriesContext from "./categories-context";
 import SubcategoriesContext from "./subcategories-context";
@@ -21,21 +21,23 @@ type Props = {
  */
 function MainStateContainer({ children }: Props): ReactElement {
   return (
-    <SnackbarContext>
-      <CategoriesContext>
-        <SubcategoriesContext>
-          <VendorsContext>
-            <TeaContext>
-              <FilterContext>
-                <SearchContext>
-                  <GridViewContext>{children}</GridViewContext>
-                </SearchContext>
-              </FilterContext>
-            </TeaContext>
-          </VendorsContext>
-        </SubcategoriesContext>
-      </CategoriesContext>
-    </SnackbarContext>
+    <SyncContext>
+      <SnackbarContext>
+        <CategoriesContext>
+          <SubcategoriesContext>
+            <VendorsContext>
+              <TeaContext>
+                <FilterContext>
+                  <SearchContext>
+                    <GridViewContext>{children}</GridViewContext>
+                  </SearchContext>
+                </FilterContext>
+              </TeaContext>
+            </VendorsContext>
+          </SubcategoriesContext>
+        </CategoriesContext>
+      </SnackbarContext>
+    </SyncContext>
   );
 }
 

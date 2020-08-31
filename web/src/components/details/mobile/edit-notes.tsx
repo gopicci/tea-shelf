@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactElement, useState } from "react";
+import React, {ChangeEvent, ReactElement, useEffect, useState} from 'react';
 import {
   AppBar,
   Box,
@@ -38,8 +38,6 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Tea instance data state  */
   teaData: TeaInstance;
-  /** Sets tea instance data state */
-  setTeaData: (data: TeaInstance) => void;
   /** Set app's main route */
   setRoute: (route: Route) => void;
   /** Handles tea posting process */
@@ -54,29 +52,29 @@ type Props = {
  */
 function EditNotes({
   teaData,
-  setTeaData,
   setRoute,
   handleEdit,
 }: Props): ReactElement {
   const classes = useStyles();
 
-  const [text, setText] = useState(teaData.notes ? teaData.notes : "");
+  const [notes, setNotes] = useState(teaData.notes ? teaData.notes : "");
+
+  useEffect(() => setNotes(teaData.notes ? teaData.notes : ""), [teaData]);
 
   /**
-   * Updates local text input state.
+   * Updates local notes input state.
    *
    * @param {ChangeEvent<HTMLInputElement>} event - Item select event
    */
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    setText(event.target.value);
+    setNotes(event.target.value);
   }
 
   /**
    * Upload notes, updates state and routes back to tea details.
    */
   function handleSave(): void {
-    handleEdit({ ...teaData, notes: text }, teaData.id);
-    setTeaData({ ...teaData, notes: text });
+    handleEdit({ ...teaData, notes: notes }, teaData.id);
     handlePrevious();
   }
 
@@ -103,7 +101,7 @@ function EditNotes({
           </Typography>
           <Button
             color="inherit"
-            disabled={!text}
+            disabled={!notes}
             onClick={handleSave}
             aria-label="save"
           >
@@ -121,12 +119,12 @@ function EditNotes({
           multiline
           autoFocus
           fullWidth
-          defaultValue={text}
+          defaultValue={notes}
           aria-label="name input"
         />
       </Box>
       <Box className={classes.counter}>
-        <Typography>{text.length} / 3000</Typography>
+        <Typography>{notes.length} / 3000</Typography>
       </Box>
     </>
   );
