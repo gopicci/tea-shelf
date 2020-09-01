@@ -8,7 +8,7 @@ describe("Desktop editing", {viewportWidth: 1000}, () => {
     cy.server();
     cy.route("POST", "**/api/tea/**").as("tea");
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('button[aria-label="skip"]').click();
+    cy.get('button').contains("skip").click();
     cy.get('input[name="name"]').type("test");
     cy.get('div[aria-label="category"]').click();
     cy.get("li").contains("Oolong").click();
