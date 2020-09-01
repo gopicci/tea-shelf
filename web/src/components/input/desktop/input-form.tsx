@@ -131,7 +131,7 @@ function InputForm({ imageData, route, setRoute, setImageLoadDone }: Props): Rea
       handleEdit(data, values.id);
       setRoute({ route: "TEA_DETAILS", payload: { ...data, id: values.id } });
     } else {
-      handleEdit(data);
+      handleEdit(data, undefined, "Tea successfully added.");
       setRoute({ route: "MAIN" });
     }
   }

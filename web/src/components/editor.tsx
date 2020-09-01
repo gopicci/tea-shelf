@@ -33,7 +33,19 @@ type Props = {
   children: ReactChild;
 };
 
-export type HandleEdit = (data: TeaRequest, id?: number | string) => void;
+/**
+ * handleEdit function type.
+ *
+ * @memberOf Editor
+ */
+export type HandleEdit = (
+  /** Request data. */
+  data: TeaRequest,
+  /** Optional ID for editing request. */
+  id?: number | string,
+  /** Optional snackbar success message */
+  message?: string
+) => void;
 
 export const EditorContext = createContext({} as HandleEdit);
 
@@ -55,11 +67,12 @@ function Editor({ children }: Props): ReactElement {
   /**
    * Handles tea instance edit/creation process. Updates state and saves instance locally
    * first. Then tries to sync local cache with API.
-   *
-   * @param {TeaRequest} teaData - Request data
-   * @param {string|number} [id] - Instance ID for editing purposes
    */
-  async function handleEdit(teaData: TeaRequest, id?: string | number) {
+  const handleEdit: HandleEdit = async (
+    teaData,
+    id,
+    message
+  ): Promise<void> => {
     try {
       let offlineTeas = await getOfflineTeas();
 
@@ -69,7 +82,7 @@ function Editor({ children }: Props): ReactElement {
         id = generateUniqueId(offlineTeas);
         teaDispatch({ type: "ADD", data: { ...teaData, id: id } });
       }
-      console.log("id", id);
+
       // If tea already present in cache remove before adding again
       for (const tea of offlineTeas)
         if (tea.id === id) offlineTeas.splice(offlineTeas.indexOf(tea), 1);
@@ -112,8 +125,10 @@ function Editor({ children }: Props): ReactElement {
       const body = await response.json();
 
       // Update context
-      teaDispatch({ type: "DELETE", data: { ...teaData, id } });
-      teaDispatch({ type: "ADD", data: { ...teaData, id: body.id } });
+      teaDispatch({
+        type: "EDIT_ID",
+        data: { instance: { ...teaData, id }, newID: body.id },
+      });
 
       // Delete offline entry
       for (const tea of offlineTeas)
@@ -123,11 +138,11 @@ function Editor({ children }: Props): ReactElement {
       // Update sync status
       syncDispatch({ type: "SET_SYNCED" });
 
-      // Notify on successful creation
-      if (typeof id === "string" && validator.isUUID(id))
+      // Notify on success
+      if (message)
         snackbarDispatch({
           type: "SUCCESS",
-          data: "Tea successfully created.",
+          data: message,
         });
     } catch (e) {
       if (e.message === "Bad Request")
@@ -138,7 +153,7 @@ function Editor({ children }: Props): ReactElement {
           data: "Network error, tea saved locally.",
         });
     }
-  }
+  };
 
   return (
     <EditorContext.Provider value={handleEdit}>

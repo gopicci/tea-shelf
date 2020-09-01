@@ -13,10 +13,20 @@ type genericModels = TeaInstance | SubcategoryModel | VendorModel;
  * Generic reducer actions.
  */
 export type genericAction =
+  /** Clear state and returns an empty array */
   | { type: "CLEAR" }
+  /** Set state with array input */
   | { type: "SET"; data: genericModels[] }
+  /** Adds a new instance to the array */
   | { type: "ADD"; data: genericModels }
+  /** Edits an instance on the array */
   | { type: "EDIT"; data: genericModels }
+  /** Updates the ID of an instance on the array */
+  | {
+      type: "EDIT_ID";
+      data: { instance: genericModels; newID: number | string; };
+    }
+  /** Deletes an instance from the array */
   | { type: "DELETE"; data: genericModels };
 
 /**
@@ -42,6 +52,12 @@ export function genericReducer(
     case "EDIT":
       return state?.map((item) =>
         item.id === action.data.id ? action.data : item
+      );
+    case "EDIT_ID":
+      return state?.map((item) =>
+        item.id === action.data.instance.id
+          ? { ...action.data.instance, id: action.data.newID }
+          : item
       );
     case "DELETE":
       if (state.length < 2) return [];
@@ -88,15 +104,10 @@ export async function uploadInstance(tea: TeaInstance): Promise<Response> {
   if (typeof tea.id === "string" && validator.isUUID(tea.id)) {
     // Remove image from PUT request
     if (request.image) delete request.image;
-    return APIRequest(
-      `/tea/${request.id}/`,
-      "PUT",
-      JSON.stringify(request)
-    );
+    return APIRequest(`/tea/${request.id}/`, "PUT", JSON.stringify(request));
   } else {
     return APIRequest("/tea/", "POST", JSON.stringify(tea));
   }
-
 }
 
 /**
@@ -143,6 +154,5 @@ export async function uploadOffline(): Promise<void> {
 export async function getOfflineTeas(): Promise<TeaInstance[]> {
   const cache = await localforage.getItem<TeaInstance[]>("offline-teas");
   if (!cache) return localforage.setItem("offline-teas", []);
-  else
-    return Promise.all(cache);
+  else return Promise.all(cache);
 }

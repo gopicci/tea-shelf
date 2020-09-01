@@ -96,7 +96,7 @@ function MobileInput({
         payload: { ...teaData, id: route.payload.id },
       });
     } else {
-      handleEdit(teaData);
+      handleEdit(teaData, undefined, "Tea successfully added.");
       setRoute({ route: "MAIN" });
     }
   }

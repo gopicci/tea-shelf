@@ -43,7 +43,7 @@ export interface VendorModel {
   /** Vendor name */
   name: string;
   /** Vendor ID */
-  id?: number;
+  id?: number | string;
   /** Vendor website */
   website?: string;
   /** Vendor origin */
@@ -59,7 +59,7 @@ export interface SubcategoryModel {
   /** Subcategory name */
   name: string;
   /** Subcategory ID */
-  id?: number;
+  id?: number | string;
   /** Macro category */
   category?: number;
   /** English name */
