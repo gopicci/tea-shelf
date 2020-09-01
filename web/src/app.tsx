@@ -9,6 +9,9 @@ import SortFilter from "./components/filters/sort-filter";
 import Editor from "./components/editor";
 import CustomSnackbar from "./components/snackbar/custom-snackbar";
 import MainStateContainer from "./components/statecontainers/main-state-container";
+import Create from "./components/create";
+import MobileDetailsLayout from "./components/details/mobile/mobile-details-layout";
+import MobileInput from "./components/input/mobile/mobile-input";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { TeaInstance } from "./services/models";
@@ -21,7 +24,14 @@ import { TeaInstance } from "./services/models";
  */
 export type Route = {
   /** Route name */
-  route: "MAIN" | "FILTER" | "CREATE" | "EDIT" | "EDIT_NOTES" | "TEA_DETAILS" | "ARCHIVE";
+  route:
+    | "MAIN"
+    | "FILTER"
+    | "CREATE"
+    | "EDIT"
+    | "EDIT_NOTES"
+    | "TEA_DETAILS"
+    | "ARCHIVE";
   /** Optional route payload */
   payload?: TeaInstance;
 };
@@ -60,10 +70,16 @@ function App(): ReactElement {
       case "FILTER":
         return <SortFilter {...props} />;
       case "CREATE":
+        if (isMobile) return <Create {...props} />;
+        else return <MainLayout {...props} />;
       case "EDIT":
+        if (isMobile) return <MobileInput {...props} />;
+        else return <MainLayout {...props} />;
       case "EDIT_NOTES":
+        if (isMobile) return <MobileDetailsLayout {...props} />;
+        else return <MainLayout {...props} />;
       case "TEA_DETAILS":
-        if (isMobile) return <Editor {...props} />;
+        if (isMobile) return <MobileDetailsLayout {...props} />;
         else return <MainLayout {...props} />;
       default:
         return <MainLayout {...props} />;
@@ -77,7 +93,7 @@ function App(): ReactElement {
       ) : (
         <MainStateContainer>
           <>
-            {getRoute(route)}
+            <Editor>{getRoute(route)}</Editor>
             <CustomSnackbar />
           </>
         </MainStateContainer>

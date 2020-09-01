@@ -30,8 +30,8 @@ type Props = {
   setImageData: (image: string) => void;
   /** Closes dialog */
   handleClose: () => void;
-  /** Routes to next stage */
-  handleNext: () => void;
+  /** When set to true routes to input creation stage */
+  setImageLoadDone: (state: boolean) => void;
 };
 
 /**
@@ -44,7 +44,7 @@ type Props = {
 function LoadImage({
   setImageData,
   handleClose,
-  handleNext,
+  setImageLoadDone,
 }: Props): ReactElement {
   const classes = useStyles();
 
@@ -57,7 +57,7 @@ function LoadImage({
     if (files.length > 0) {
       try {
         setImageData(await FileToBase64(files[0]));
-        handleNext();
+        setImageLoadDone(true);
       } catch (e) {
         console.error(e);
       }
@@ -80,7 +80,7 @@ function LoadImage({
         <Button onClick={handleClose} aria-label="cancel">
           Cancel
         </Button>
-        <Button onClick={handleNext} aria-label="skip">
+        <Button onClick={() => setImageLoadDone(true)} aria-label="skip">
           Skip
         </Button>
       </Box>

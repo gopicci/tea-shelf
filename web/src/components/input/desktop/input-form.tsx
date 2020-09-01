@@ -19,17 +19,14 @@ import YearAutocomplete from "./year-autocomplete";
 import VendorAutocomplete from "./vendor-autocomplete";
 import OriginAutocomplete from "./origin-autocomplete";
 import InputFormBrewing from "./input-form-brewing";
-import {
-  InputFormModel,
-  TeaInstance,
-  TeaRequest,
-} from '../../../services/models';
-import { CategoriesState } from "../../statecontainers/categories-context";
-import { desktopFormStyles} from '../../../style/desktop-form-styles';
-import { validationSchema } from "./validation-schema";
-import emptyImage from "../../../media/empty.png";
 import { fahrenheitToCelsius } from "../../../services/parsing-services";
-import {Route} from '../../../app';
+import { validationSchema } from "./validation-schema";
+import { CategoriesState } from "../../statecontainers/categories-context";
+import { EditorContext, HandleEdit } from "../../editor";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
+import { Route } from "../../../app";
+import { InputFormModel, TeaRequest } from "../../../services/models";
+import emptyImage from "../../../media/empty.png";
 
 /**
  * InputForm props.
@@ -41,12 +38,10 @@ type Props = {
   imageData?: string;
   /** App's main route state, might contain payload for initial values on edit mode */
   route: Route;
-  /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
-  /** Closes dialog */
-  handleClose: () => void;
-  /** Routes to previous stage */
-  handlePrevious: (payload?: TeaInstance) => void;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+  /** When set to false routes to image load creation stage */
+  setImageLoadDone?: (state: boolean) => void;
 };
 
 /**
@@ -56,15 +51,10 @@ type Props = {
  * @component
  * @subcategory Desktop input
  */
-function InputForm({
-  imageData,
-  route,
-  handleEdit,
-  handleClose,
-  handlePrevious,
-}: Props): ReactElement {
+function InputForm({ imageData, route, setRoute, setImageLoadDone }: Props): ReactElement {
   const classes = desktopFormStyles();
 
+  const handleEdit: HandleEdit = useContext(EditorContext);
   const categories = useContext(CategoriesState);
 
   const teaData = route.payload;
@@ -137,14 +127,19 @@ function InputForm({
     if (values.western_brewing.increments)
       data["western_brewing"]["increments"] = values.western_brewing.increments;
 
-
     if (values.id) {
       handleEdit(data, values.id);
-      handlePrevious({...data, id: values.id});
+      setRoute({ route: "TEA_DETAILS", payload: { ...data, id: values.id } });
     } else {
       handleEdit(data);
-      handleClose();
+      setRoute({ route: "MAIN" });
     }
+  }
+
+  /** Goes back to previous route. */
+  function handlePrevious() {
+    if (setImageLoadDone) setImageLoadDone(false);
+    else setRoute({route: "TEA_DETAILS", payload: route.payload});
   }
 
   let initialValues: InputFormModel = {
@@ -169,7 +164,9 @@ function InputForm({
     <Box className={classes.root}>
       <img
         className={classes.image}
-        src={imageData ? imageData : teaData?.image ? teaData.image : emptyImage}
+        src={
+          imageData ? imageData : teaData?.image ? teaData.image : emptyImage
+        }
         alt=""
       />
       <Formik
@@ -332,7 +329,7 @@ function InputForm({
               </Box>
               <InputFormBrewing formikProps={formikProps} />
               <Box className={classes.bottom}>
-                <Button onClick={(_) => handlePrevious()} aria-label="back">
+                <Button onClick={handlePrevious} aria-label="back">
                   Back
                 </Button>
                 <Button onClick={submitForm} aria-label="save">

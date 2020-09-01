@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import InputLayout from "./input-layout";
 import EditName from "./edit-name";
 import EditYear from "./edit-year";
@@ -11,8 +11,9 @@ import EditWeightList from "./edit-weight-list";
 import EditWeightInput from "./edit-weight-input";
 import EditTime from "./edit-time";
 import EditPrice from "./edit-price";
+import { EditorContext, HandleEdit } from "../../editor";
 import { Route } from "../../../app";
-import { TeaInstance, TeaModel, TeaRequest } from "../../../services/models";
+import { TeaModel, TeaRequest } from "../../../services/models";
 
 /**
  * Defines props passed to mobile input components.
@@ -36,16 +37,14 @@ export type InputProps = {
 type Props = {
   /** App's main route state */
   route: Route;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+  /** When set to false routes to image load creation stage */
+  setImageLoadDone?: (state: boolean) => void;
   /** Base64 image data from capture image stage */
   imageData?: string;
   /** Vision parser state with data extracted from the captured image */
   visionData?: TeaModel;
-  /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
-  /** Closes editor and return to main route */
-  handleClose: () => void;
-  /** Routes to previous stage */
-  handlePrevious: (payload?: TeaInstance) => void;
 };
 
 /**
@@ -57,12 +56,13 @@ type Props = {
  */
 function MobileInput({
   route,
+  setRoute,
+  setImageLoadDone,
   imageData,
   visionData,
-  handleEdit,
-  handleClose,
-  handlePrevious,
 }: Props): ReactElement {
+  const handleEdit: HandleEdit = useContext(EditorContext);
+
   const [editRoute, setEditRoute] = useState("input_layout");
 
   const [teaData, setTeaData] = useState<TeaRequest>({
@@ -91,11 +91,20 @@ function MobileInput({
 
     if (route.payload) {
       handleEdit(teaData, route.payload.id);
-      handlePrevious({ ...teaData, id: route.payload.id });
+      setRoute({
+        route: "TEA_DETAILS",
+        payload: { ...teaData, id: route.payload.id },
+      });
     } else {
       handleEdit(teaData);
-      handleClose();
+      setRoute({ route: "MAIN" });
     }
+  }
+
+  /** Goes back to previous route. */
+  function handlePrevious() {
+    if (setImageLoadDone) setImageLoadDone(false);
+    else setRoute({ route: "TEA_DETAILS", payload: route.payload });
   }
 
   /** Sets edit route to input layout component */
@@ -112,11 +121,7 @@ function MobileInput({
           <InputLayout
             {...inputProps}
             handleSave={handleSave}
-            handlePrevious={() =>
-              handlePrevious(
-                route.payload && { ...teaData, id: route.payload.id }
-              )
-            }
+            handlePrevious={handlePrevious}
             setEditRoute={setEditRoute}
           />
         );

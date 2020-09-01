@@ -1,11 +1,11 @@
-import React, { ReactElement, useContext, useState } from "react";
+import React, {
+  createContext,
+  ReactChild,
+  ReactElement,
+  useContext,
+} from "react";
 import localforage from "localforage";
-import MobileInput from "./input/mobile/mobile-input";
-import MobileDetailsLayout from "./details/mobile/mobile-details-layout";
-import DesktopDetailsLayout from "./details/desktop/desktop-details-layout";
-import InputForm from "./input/desktop/input-form";
-import CaptureImage from "./input/mobile/capture-image";
-import LoadImage from "./input/desktop/load-image";
+import validator from "validator";
 import {
   generateUniqueId,
   getOfflineTeas,
@@ -22,40 +22,28 @@ import {
   VendorsState,
 } from "./statecontainers/vendors-context";
 import { SyncDispatch } from "./statecontainers/sync-context";
-import { Route } from "../app";
 import {
   SubcategoryModel,
   TeaInstance,
-  TeaModel,
   TeaRequest,
   VendorModel,
 } from "../services/models";
-import validator from "validator";
 
-/**
- * Editor props.
- *
- * @memberOf Editor
- */
 type Props = {
-  /** App's main route state */
-  route: Route;
-  /** Set app's main route */
-  setRoute: (route: Route) => void;
-  /** Mobile mode or desktop */
-  isMobile: boolean;
+  children: ReactChild;
 };
 
+export type HandleEdit = (data: TeaRequest, id?: number | string) => void;
+
+export const EditorContext = createContext({} as HandleEdit);
+
 /**
- * Wrapper for components that need access to tea instance editing.
- * Handles editing and creation process.
+ * Provides tea instance editing to components that needs it.
  *
  * @component
  * @subcategory Main
  */
-function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
-  const [imageData, setImageData] = useState("");
-  const [visionData, setVisionData] = useState({} as TeaModel);
+function Editor({ children }: Props): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategories = useContext(SubcategoriesState);
@@ -152,68 +140,11 @@ function Editor({ route, setRoute, isMobile = true }: Props): ReactElement {
     }
   }
 
-  /**
-   * Returns to tea details route or create route,
-   * depending on payload.
-   *
-   * @param {TeaInstance} payload - Optional route payload
-   */
-  function handlePrevious(payload?: TeaInstance): void {
-    if (payload) setRoute({ route: "TEA_DETAILS", payload: payload });
-    else setRoute({ route: "CREATE" });
-  }
-
-  /**
-   * Sets edit route.
-   */
-  function handleNext(): void {
-    setRoute({ route: "EDIT" });
-  }
-
-  /**
-   * Clears state and reroutes to main.
-   */
-  function handleClose(): void {
-    setRoute({ route: "MAIN" });
-  }
-
-  const props = {
-    route,
-    setRoute,
-    imageData,
-    setImageData,
-    visionData,
-    setVisionData,
-    handlePrevious,
-    handleNext,
-    handleEdit,
-    handleClose,
-  };
-
-  /**
-   * Returns component based on route.
-   *
-   * @returns {ReactElement}
-   */
-  function renderSwitch(): ReactElement {
-    switch (route.route) {
-      case "TEA_DETAILS":
-      case "EDIT_NOTES":
-        if (isMobile) return <MobileDetailsLayout {...props} />;
-        else return <DesktopDetailsLayout {...props} />;
-      case "EDIT":
-        if (isMobile) return <MobileInput {...props} />;
-        else return <InputForm {...props} />;
-      case "CREATE":
-        if (isMobile) return <CaptureImage {...props} />;
-        else return <LoadImage {...props} />;
-      default:
-        if (isMobile) return <MobileDetailsLayout {...props} />;
-        else return <DesktopDetailsLayout {...props} />;
-    }
-  }
-
-  return renderSwitch();
+  return (
+    <EditorContext.Provider value={handleEdit}>
+      {children}
+    </EditorContext.Provider>
+  );
 }
 
 export default Editor;

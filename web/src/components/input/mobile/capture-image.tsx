@@ -1,17 +1,6 @@
-import React, {
-  useRef,
-  useCallback,
-  useContext,
-  ReactElement,
-} from "react";
+import React, { useRef, useCallback, useContext, ReactElement } from "react";
 import { Box, IconButton } from "@material-ui/core";
-import {
-  CameraAlt,
-  Close,
-  Done,
-  Replay,
-  SkipNext,
-} from "@material-ui/icons";
+import { CameraAlt, Close, Done, Replay, SkipNext } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import Webcam from "react-webcam";
 import { APIRequest } from "../../../services/auth-services";
@@ -63,8 +52,8 @@ type Props = {
   setVisionData: (data: TeaModel) => void;
   /** Closes editor and return to main route */
   handleClose: () => void;
-  /** Routes to next stage */
-  handleNext: () => void;
+  /** When set to true routes to input creation stage */
+  setImageLoadDone: (state: boolean) => void;
 };
 
 /**
@@ -80,7 +69,7 @@ function CaptureImage({
   setImageData,
   setVisionData,
   handleClose,
-  handleNext,
+  setImageLoadDone,
 }: Props): ReactElement {
   const classes = useStyles();
 
@@ -169,7 +158,7 @@ function CaptureImage({
             </IconButton>
             <IconButton
               className={classes.control}
-              onClick={handleNext}
+              onClick={() => setImageLoadDone(true)}
               color="inherit"
               aria-label="skip"
             >
@@ -188,7 +177,7 @@ function CaptureImage({
             </IconButton>
             <IconButton
               className={classes.control}
-              onClick={handleNext}
+              onClick={() => setImageLoadDone(true)}
               color="inherit"
               aria-label="done"
             >

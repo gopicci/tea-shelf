@@ -7,8 +7,9 @@ import DetailsBoxDescription from "./details-box-description";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeasState } from "../../statecontainers/tea-context";
+import { EditorContext, HandleEdit } from "../../editor";
 import { Route } from "../../../app";
-import { TeaInstance, TeaRequest } from "../../../services/models";
+import { TeaInstance } from "../../../services/models";
 
 /**
  * DesktopDetailsLayout props.
@@ -20,8 +21,6 @@ type Props = {
   route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
-  /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
 };
 
 /**
@@ -30,12 +29,10 @@ type Props = {
  * @component
  * @subcategory Details desktop
  */
-function DesktopDetailsLayout({
-  route,
-  setRoute,
-  handleEdit,
-}: Props): ReactElement {
+function DesktopDetailsLayout({ route, setRoute }: Props): ReactElement {
   const classes = desktopDetailsStyles();
+
+  const handleEdit: HandleEdit = useContext(EditorContext);
   const categories = useContext(CategoriesState);
   const teas = useContext(TeasState);
 

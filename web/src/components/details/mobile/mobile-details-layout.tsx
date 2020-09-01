@@ -9,8 +9,9 @@ import DetailsCardVendor from "./details-card-vendor";
 import DetailsCardDescription from "./details-card-description";
 import EditNotes from "./edit-notes";
 import { TeasState } from "../../statecontainers/tea-context";
+import { EditorContext, HandleEdit } from "../../editor";
 import { Route } from "../../../app";
-import { TeaInstance, TeaRequest } from "../../../services/models";
+import { TeaInstance } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,8 +40,6 @@ type Props = {
   route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
-  /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
 };
 
 /**
@@ -49,13 +48,10 @@ type Props = {
  * @component
  * @subcategory Details mobile
  */
-function MobileDetailsLayout({
-  route,
-  setRoute,
-  handleEdit,
-}: Props): ReactElement {
+function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
+  const handleEdit: HandleEdit = useContext(EditorContext);
   const teas = useContext(TeasState);
 
   const [teaData, setTeaData] = useState<TeaInstance | undefined>();
@@ -66,28 +62,29 @@ function MobileDetailsLayout({
 
   return (
     <>
-      {teaData && (route.route === "EDIT_NOTES" ? (
-        <EditNotes
-          teaData={teaData}
-          handleEdit={handleEdit}
-          setRoute={setRoute}
-        />
-      ) : (
-        <Box className={classes.root}>
-          <DetailsAppBar setRoute={setRoute} teaData={teaData} />
-          <Box className={classes.page}>
-            <DetailsCardMain
-              setRoute={setRoute}
-              teaData={teaData}
-              handleEdit={handleEdit}
-            />
-            <DetailsCardNotes setRoute={setRoute} teaData={teaData} />
-            {teaData.origin && <DetailsCardOrigin origin={teaData.origin} />}
-            {teaData.vendor && <DetailsCardVendor vendor={teaData.vendor} />}
-            <DetailsCardDescription teaData={teaData} />
+      {teaData &&
+        (route.route === "EDIT_NOTES" ? (
+          <EditNotes
+            teaData={teaData}
+            handleEdit={handleEdit}
+            setRoute={setRoute}
+          />
+        ) : (
+          <Box className={classes.root}>
+            <DetailsAppBar setRoute={setRoute} teaData={teaData} />
+            <Box className={classes.page}>
+              <DetailsCardMain
+                setRoute={setRoute}
+                teaData={teaData}
+                handleEdit={handleEdit}
+              />
+              <DetailsCardNotes setRoute={setRoute} teaData={teaData} />
+              {teaData.origin && <DetailsCardOrigin origin={teaData.origin} />}
+              {teaData.vendor && <DetailsCardVendor vendor={teaData.vendor} />}
+              <DetailsCardDescription teaData={teaData} />
+            </Box>
           </Box>
-        </Box>
-      ))}
+        ))}
     </>
   );
 }
