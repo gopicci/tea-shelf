@@ -304,7 +304,7 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
               key={i}
             >
               <TeaCard
-                tea={tea}
+                teaData={tea}
                 gridView={gridView && !isMobile}
                 setRoute={setRoute}
               />

@@ -13,7 +13,8 @@ import localforage from "localforage";
 import { APIRequest } from "../../../services/auth-services";
 import { SnackbarDispatch } from "../../statecontainers/snackbar-context";
 import { TeaDispatch } from "../../statecontainers/tea-context";
-import { mobileDetailsStyles} from '../../../style/mobile-details-styles';
+import { EditorContext } from "../../editor";
+import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { Route } from "../../../app";
 import { TeaInstance } from "../../../services/models";
 
@@ -46,6 +47,8 @@ function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
   const detailsClasses = mobileDetailsStyles();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
+
+  const handleEdit = useContext(EditorContext);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
 
@@ -66,6 +69,23 @@ function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
   /** Closes menu. */
   function handleMenuClose(): void {
     setAnchorEl(undefined);
+  }
+
+  /** Routes to tea instance edit page. */
+  function handleEditClick(): void {
+    setAnchorEl(undefined);
+    setRoute({ route: "EDIT", payload: teaData });
+  }
+
+  /** Archives tea */
+  function handleArchive(): void {
+    setAnchorEl(undefined);
+    handleEdit(
+      { ...teaData, is_archived: true },
+      teaData.id,
+      "Tea successfully archived."
+    );
+    setRoute({ route: "MAIN", payload: teaData });
   }
 
   /**
@@ -126,7 +146,8 @@ function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
         >
-          <MenuItem onClick={handleMenuClose}>Archive</MenuItem>
+          <MenuItem onClick={handleEditClick}>Edit</MenuItem>
+          <MenuItem onClick={handleArchive}>Archive</MenuItem>
           <MenuItem onClick={handleDelete}>Delete</MenuItem>
         </Menu>
       </Toolbar>

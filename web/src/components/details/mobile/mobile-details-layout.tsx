@@ -73,11 +73,7 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
           <Box className={classes.root}>
             <DetailsAppBar setRoute={setRoute} teaData={teaData} />
             <Box className={classes.page}>
-              <DetailsCardMain
-                setRoute={setRoute}
-                teaData={teaData}
-                handleEdit={handleEdit}
-              />
+              <DetailsCardMain teaData={teaData} handleEdit={handleEdit} />
               <DetailsCardNotes setRoute={setRoute} teaData={teaData} />
               {teaData.origin && <DetailsCardOrigin origin={teaData.origin} />}
               {teaData.vendor && <DetailsCardVendor vendor={teaData.vendor} />}

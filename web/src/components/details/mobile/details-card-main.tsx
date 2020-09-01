@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
-import { Edit, Star } from "@material-ui/icons";
+import { Star } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   cropToNoZeroes,
@@ -74,8 +74,6 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Tea instance data */
   teaData: TeaInstance;
-  /** Set app's main route */
-  setRoute: (route: Route) => void;
   /** Handles tea posting process */
   handleEdit: (data: TeaRequest, id?: number | string) => void;
 };
@@ -87,11 +85,7 @@ type Props = {
  * @component
  * @subcategory Details mobile
  */
-function DetailsCardMain({
-  teaData,
-  setRoute,
-  handleEdit,
-}: Props): ReactElement {
+function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
   const classes = useStyles();
   const detailsClasses = mobileDetailsStyles();
 
@@ -111,11 +105,6 @@ function DetailsCardMain({
     setRating(value ? value * 2 : undefined);
   }
 
-  /** Routes to tea instance edit page. */
-  function handleEditClick(): void {
-    setRoute({ route: "EDIT", payload: teaData });
-  }
-
   /** Updates brewing switch state. */
   function handleSwitch(): void {
     setGongfu(!gongfu);
@@ -123,17 +112,6 @@ function DetailsCardMain({
 
   return (
     <Card className={detailsClasses.card}>
-      <Box className={classes.empty}>
-        <Button
-          className={classes.editButton}
-          size="small"
-          endIcon={<Edit />}
-          onClick={handleEditClick}
-          aria-label="edit"
-        >
-          Edit
-        </Button>
-      </Box>
       <Box className={classes.pageTop}>
         <img
           src={teaData.image ? teaData.image : emptyImage}

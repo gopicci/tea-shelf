@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext } from "react";
+import React, { MouseEvent, ReactElement, useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Box,
@@ -7,8 +7,12 @@ import {
   CardActionArea,
   CardContent,
   Typography,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@material-ui/core";
-import { StarRate, MoreVert, Archive } from "@material-ui/icons";
+import { StarRate, MoreVert, Archive, Unarchive } from "@material-ui/icons";
+import localforage from "localforage";
 import ReactCountryFlag from "react-country-flag";
 import {
   getOriginShortName,
@@ -16,7 +20,11 @@ import {
   getCountryCode,
   getCategoryName,
 } from "../../services/parsing-services";
+import { APIRequest } from "../../services/auth-services";
 import { CategoriesState } from "../statecontainers/categories-context";
+import { EditorContext } from "../editor";
+import { TeaDispatch } from "../statecontainers/tea-context";
+import { SnackbarDispatch } from "../statecontainers/snackbar-context";
 import emptyImage from "../../media/empty.png";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
@@ -124,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
  */
 type Props = {
   /** Tea instance data */
-  tea: TeaInstance;
+  teaData: TeaInstance;
   /** Grid or list mode */
   gridView: boolean;
   /** Set app's main route */
@@ -137,14 +145,77 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
+function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
+  const handleEdit = useContext(EditorContext);
   const categories = useContext(CategoriesState);
+  const teaDispatch = useContext(TeaDispatch);
+  const snackbarDispatch = useContext(SnackbarDispatch);
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
 
   /** Sets main route to tea details */
   function handleCardClick(): void {
-    setRoute({ route: "TEA_DETAILS", payload: tea });
+    setRoute({ route: "TEA_DETAILS", payload: teaData });
+  }
+
+  /** Archives tea */
+  function handleArchive(): void {
+    handleEdit(
+      { ...teaData, is_archived: true },
+      teaData.id,
+      "Tea successfully archived."
+    );
+  }
+
+  /** Unarchives tea */
+  function handleUnArchive(): void {
+    handleEdit(
+      { ...teaData, is_archived: false },
+      teaData.id,
+      "Tea successfully unarchived."
+    );
+  }
+
+  /**
+   *  Deletes tea instance.
+   */
+  async function handleDelete(): Promise<void> {
+    try {
+      if (typeof teaData.id === "string")
+        // ID is UUID, delete online tea
+        await APIRequest(`/tea/${teaData.id}/`, "DELETE");
+      else {
+        // ID is not UUID, delete offline tea
+        const offlineTeas = await localforage.getItem<TeaInstance[]>(
+          "offline-teas"
+        );
+        let newOfflineTeas = [];
+        for (const tea of offlineTeas)
+          if (tea.id !== teaData.id) newOfflineTeas.push(tea);
+        await localforage.setItem("offline-teas", newOfflineTeas);
+      }
+      snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
+      teaDispatch({ type: "DELETE", data: teaData });
+    } catch (e) {
+      console.error(e);
+      snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
+    }
+  }
+
+  /**
+   * Opens menu.
+   *
+   * @param {MouseEvent<HTMLElement>} event - Icon button click event
+   */
+  function handleMenuClick(event: MouseEvent<HTMLElement>): void {
+    setAnchorEl(event.currentTarget);
+  }
+
+  /** Closes menu. */
+  function handleMenuClose(): void {
+    setAnchorEl(undefined);
   }
 
   return (
@@ -152,18 +223,18 @@ function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
       <CardActionArea
         className={gridView ? classes.gridCard : classes.listCard}
         onClick={handleCardClick}
-        aria-label={tea.name}
+        aria-label={teaData.name}
       >
         <img
           className={gridView ? classes.gridImage : classes.listImage}
           alt=""
-          src={tea.image ? tea.image : emptyImage}
+          src={teaData.image ? teaData.image : emptyImage}
           crossOrigin="anonymous"
         />
         <CardContent className={classes.content}>
           <Box className={classes.topBox}>
             <Typography gutterBottom variant="h5">
-              {tea.name}
+              {teaData.name}
             </Typography>
             <Typography
               className={
@@ -172,12 +243,12 @@ function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
               gutterBottom
               variant="subtitle1"
             >
-              {tea.year}{" "}
-              {tea.subcategory && getSubcategoryName(tea.subcategory)}
+              {teaData.year}{" "}
+              {teaData.subcategory && getSubcategoryName(teaData.subcategory)}
             </Typography>
           </Box>
           <Box className={classes.bottomBox}>
-            {tea.rating !== undefined && tea.rating > 0 && (
+            {teaData.rating !== undefined && teaData.rating > 0 && (
               <Box className={classes.ratingBox}>
                 <StarRate className={classes.icon} />
                 <Typography
@@ -185,18 +256,18 @@ function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
                   variant="body2"
                   component="span"
                 >
-                  {tea.rating / 2}
+                  {teaData.rating / 2}
                 </Typography>
               </Box>
             )}
-            {tea.origin && (
+            {teaData.origin && (
               <>
                 <Typography
                   className={classes.origin}
                   variant="body2"
                   component="span"
                 >
-                  {getOriginShortName(tea.origin)}
+                  {getOriginShortName(teaData.origin)}
                 </Typography>
                 <ReactCountryFlag
                   svg
@@ -205,9 +276,9 @@ function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
                     width: "20px",
                     height: "20px",
                   }}
-                  countryCode={getCountryCode(tea.origin.country)}
+                  countryCode={getCountryCode(teaData.origin.country)}
                   alt=""
-                  aria-label={tea.origin.country}
+                  aria-label={teaData.origin.country}
                 />
               </>
             )}
@@ -220,14 +291,37 @@ function TeaCard({ tea, gridView, setRoute }: Props): ReactElement {
           variant="body2"
           component="span"
         >
-          {categories && getCategoryName(categories, tea.category)}
+          {categories && getCategoryName(categories, teaData.category)}
         </Typography>
-        <Archive
-          className={classes.icon}
-          fontSize="small"
-          aria-label="archive"
-        />
-        <MoreVert className={classes.icon} aria-label="more" />
+        {teaData.is_archived ? (
+          <IconButton
+            onClick={handleUnArchive}
+            size="small"
+            aria-label="unarchive"
+          >
+            <Unarchive className={classes.icon} fontSize="small" />
+          </IconButton>
+        ) : (
+          <IconButton onClick={handleArchive} size="small" aria-label="archive">
+            <Archive className={classes.icon} fontSize="small" />
+          </IconButton>
+        )}
+        <IconButton
+          onClick={handleMenuClick}
+          size="small"
+          aria-label="unarchive"
+        >
+          <MoreVert className={classes.icon} aria-label="more" />
+        </IconButton>
+        <Menu
+          id="menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={handleDelete}>Delete tea</MenuItem>
+        </Menu>
       </CardActions>
     </Card>
   );
