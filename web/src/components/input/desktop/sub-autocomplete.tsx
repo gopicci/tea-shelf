@@ -150,21 +150,21 @@ function SubAutocomplete({ formikProps }: Props): ReactElement {
       clearOnBlur
       handleHomeEndKeys
       fullWidth
+      freeSolo
+      value={
+        values.subcategory?.name ? getSubcategoryName(values.subcategory) : ""
+      }
       options={options ? options : []}
       getOptionLabel={(option: Option): string => {
         if (typeof option === "string") return option;
         if (option.inputValue) return option.inputValue;
         return String(option);
       }}
-      renderOption={(option: Option) => {
+      renderOption={(option: Option): string => {
         if (typeof option === "string") return option;
         if (option.label) return option.label;
         return String(option);
       }}
-      freeSolo
-      value={
-        values.subcategory?.name ? getSubcategoryName(values.subcategory) : ""
-      }
       renderInput={(params: AutocompleteRenderInputParams) => (
         <TextField
           {...params}

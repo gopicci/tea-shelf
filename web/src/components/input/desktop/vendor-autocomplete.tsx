@@ -1,24 +1,25 @@
 import React, { ChangeEvent, ReactElement, useContext } from "react";
+import { Grid, TextField, Typography } from "@material-ui/core";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import { VendorsState } from "../../statecontainers/vendors-context";
-import { Grid, TextField, Typography } from "@material-ui/core";
-import { FormikProps } from "formik";
-import { InputFormModel, VendorModel } from "../../../services/models";
 import { FilterOptionsState } from "@material-ui/lab";
+import { FormikProps } from "formik";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
-
-const filter = createFilterOptions({
-  stringify: (option: VendorModel) => option.name + " " + option.website,
-});
+import { VendorsState } from "../../statecontainers/vendors-context";
+import { InputFormModel, VendorModel } from "../../../services/models";
 
 type Option =
   | {
       inputValue: string;
       label: string;
     }
-  | VendorModel;
+  | VendorModel
+  | string;
+
+const filter = createFilterOptions({
+  stringify: (option: VendorModel) => option.name + " " + option.website,
+});
 
 /**
  * VendorAutocomplete props.
@@ -38,6 +39,7 @@ type Props = {
  */
 function VendorAutocomplete({ formikProps }: Props): ReactElement {
   const {
+    values,
     handleChange,
     handleBlur,
     errors,
@@ -114,11 +116,29 @@ function VendorAutocomplete({ formikProps }: Props): ReactElement {
       handleHomeEndKeys
       fullWidth
       freeSolo
+      value={
+        values.vendor?.name ? values.vendor.name : ""
+      }
       options={vendors ? vendors : []}
       getOptionLabel={(option: Option | string) => {
         if (typeof option === "string") return option;
         if ("inputValue" in option) return option.inputValue;
         else return option.name;
+      }}
+      renderOption={(option) => {
+        if (typeof option === "string") return option;
+        else return (
+          <Grid container alignItems="center">
+            <Grid item xs className={classes.listItem}>
+              <span className={classes.listItemName}>
+                {"inputValue" in option ? option.label : option.name}
+              </span>
+              <Typography variant="body2" color="textSecondary">
+                {"website" in option ? option.website : ""}
+              </Typography>
+            </Grid>
+          </Grid>
+        );
       }}
       renderInput={(params) => (
         <TextField
@@ -136,20 +156,6 @@ function VendorAutocomplete({ formikProps }: Props): ReactElement {
           helperText={touched.vendor && errors.vendor}
         />
       )}
-      renderOption={(option) => {
-        return (
-          <Grid container alignItems="center">
-            <Grid item xs className={classes.listItem}>
-              <span className={classes.listItemName}>
-                {"inputValue" in option ? option.label : option.name}
-              </span>
-              <Typography variant="body2" color="textSecondary">
-                {"website" in option ? option.website : ""}
-              </Typography>
-            </Grid>
-          </Grid>
-        );
-      }}
     />
   );
 }

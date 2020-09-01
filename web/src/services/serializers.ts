@@ -32,7 +32,14 @@ export function visionParserSerializer(
     const category = Object.values(categories).find(
       (value) => value.name === data.category
     );
-    if (category) serialized.category = category.id;
+    if (category) {
+      serialized.category = category.id;
+
+      if (category.western_brewing)
+        serialized.western_brewing = category.western_brewing;
+      if (category.gongfu_brewing)
+        serialized.gongfu_brewing = category.gongfu_brewing;
+    }
   }
 
   if (data.subcategory) {
@@ -57,6 +64,9 @@ export function visionParserSerializer(
     );
     if (vendor) serialized.vendor = vendor;
   }
+
+  console.log(data);
+  console.log(serialized);
 
   return Object.keys(serialized).length ? serialized : undefined;
 }

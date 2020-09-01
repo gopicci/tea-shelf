@@ -95,15 +95,12 @@ export function generateUniqueId(array: genericModels[]): number {
 export async function uploadInstance(tea: TeaInstance): Promise<Response> {
   let request = JSON.parse(JSON.stringify(tea));
   request = brewingTimesToSeconds(request);
-  // Remove null fields
-  Object.keys(request).forEach(
-    (key) => request[key] === null && delete request[key]
-  );
 
   // String UUID means API generated, instance has been previously uploaded
   if (typeof tea.id === "string" && validator.isUUID(tea.id)) {
     // Remove image from PUT request
     if (request.image) delete request.image;
+    console.log(JSON.stringify(request));
     return APIRequest(`/tea/${request.id}/`, "PUT", JSON.stringify(request));
   } else {
     return APIRequest("/tea/", "POST", JSON.stringify(tea));

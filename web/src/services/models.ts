@@ -101,7 +101,7 @@ export interface TeaModel {
   /** Western brewing object object */
   western_brewing?: BrewingModel;
   /** Tea year */
-  year?: number;
+  year?: number | null;
   /** Default brewing preference */
   gongfu_preferred?: boolean;
   /** Price per gram */

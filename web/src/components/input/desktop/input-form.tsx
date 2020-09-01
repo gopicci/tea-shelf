@@ -25,7 +25,7 @@ import { CategoriesState } from "../../statecontainers/categories-context";
 import { EditorContext, HandleEdit } from "../../editor";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { Route } from "../../../app";
-import { InputFormModel, TeaRequest } from "../../../services/models";
+import { InputFormModel, TeaModel, TeaRequest } from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
 
 /**
@@ -36,6 +36,8 @@ import emptyImage from "../../../media/empty.png";
 type Props = {
   /** Base64 image data from load image stage */
   imageData?: string;
+  /** Vision parser state with data extracted from the captured image */
+  visionData?: TeaModel;
   /** App's main route state, might contain payload for initial values on edit mode */
   route: Route;
   /** Set app's main route */
@@ -51,7 +53,13 @@ type Props = {
  * @component
  * @subcategory Desktop input
  */
-function InputForm({ imageData, route, setRoute, setImageLoadDone }: Props): ReactElement {
+function InputForm({
+  imageData,
+  visionData,
+  route,
+  setRoute,
+  setImageLoadDone,
+}: Props): ReactElement {
   const classes = desktopFormStyles();
 
   const handleEdit: HandleEdit = useContext(EditorContext);
@@ -75,10 +83,11 @@ function InputForm({ imageData, route, setRoute, setImageLoadDone }: Props): Rea
 
     if (values.year && values.year !== "Unknown")
       data["year"] = parseInt(values.year);
+    else data["year"] = null;
 
-    if (values.subcategory) data["subcategory"] = values.subcategory;
-    if (values.origin) data["origin"] = values.origin;
-    if (values.vendor) data["vendor"] = values.vendor;
+    data["subcategory"] = values.subcategory ? values.subcategory : null;
+    data["origin"] = values.origin ? values.origin : null;
+    data["vendor"] = values.vendor ? values.vendor : null;
     if (values.price) data["price"] = values.price;
 
     if (values.weight_left) {
@@ -139,20 +148,39 @@ function InputForm({ imageData, route, setRoute, setImageLoadDone }: Props): Rea
   /** Goes back to previous route. */
   function handlePrevious() {
     if (setImageLoadDone) setImageLoadDone(false);
-    else setRoute({route: "TEA_DETAILS", payload: route.payload});
+    else setRoute({ route: "TEA_DETAILS", payload: route.payload });
   }
 
+  /**
+   * Initial form values. Loads teaData or visionData if any,
+   * then initializes required fields.
+   */
   let initialValues: InputFormModel = {
+    ...visionData,
     ...teaData,
     id: teaData?.id ? teaData?.id : "",
-    name: teaData?.name ? teaData?.name : "",
-    category: teaData?.category ? teaData?.category : 0,
-    year: teaData?.year ? teaData?.year : undefined,
+    name: teaData?.name
+      ? teaData.name
+      : visionData?.name
+      ? visionData.name
+      : "",
+    category: teaData?.category
+      ? teaData.category
+      : visionData?.category
+      ? visionData.category
+      : 0,
+    year: teaData?.year
+      ? teaData.year
+      : visionData?.year
+      ? visionData.year
+      : undefined,
     western_brewing: {
+      ...visionData?.western_brewing,
       ...teaData?.western_brewing,
       fahrenheit: false,
     },
     gongfu_brewing: {
+      ...visionData?.gongfu_brewing,
       ...teaData?.gongfu_brewing,
       fahrenheit: false,
     },
