@@ -148,10 +148,10 @@ def get_or_create_origin(validated_data):
     if not instance:
         instance = Origin(**validated_data)
 
-    if validated_data["latitude"] and not instance.latitude:
+    if "latitude" in validated_data and not instance.latitude:
         instance.latitude = validated_data["latitude"]
 
-    if validated_data["longitude"] and not instance.longitude:
+    if "longitude" in validated_data and not instance.longitude:
         instance.longitude = validated_data["longitude"]
 
     instance.save()
