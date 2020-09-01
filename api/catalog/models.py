@@ -204,7 +204,9 @@ class Subcategory(models.Model):
     name = models.CharField(max_length=50)
     translated_name = models.CharField(max_length=50, blank=True)
     origin = models.ForeignKey(Origin, on_delete=models.SET_NULL, null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, null=True, blank=True
+    )
     description = models.TextField(blank=True)
     description_source = models.CharField(max_length=50, blank=True)
 

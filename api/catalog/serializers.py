@@ -299,21 +299,27 @@ class TeaSerializer(serializers.ModelSerializer):
         """
         nested_data = {}
 
-        if "gongfu_brewing" in validated_data:
+        if (
+            "gongfu_brewing" in validated_data
+            and validated_data["gongfu_brewing"] is not None
+        ):
             nested_data["gongfu"] = validated_data.pop("gongfu_brewing")
             if nested_data["gongfu"]:
                 for k, v in list(nested_data["gongfu"].items()):
                     if v is None:
                         nested_data["gongfu"].pop(k)
 
-        if "western_brewing" in validated_data:
+        if (
+            "western_brewing" in validated_data
+            and validated_data["western_brewing"] is not None
+        ):
             nested_data["western"] = validated_data.pop("western_brewing")
             if nested_data["western"]:
                 for k, v in list(nested_data["western"].items()):
                     if v is None:
                         nested_data["western"].pop(k)
 
-        if "origin" in validated_data:
+        if "origin" in validated_data and validated_data["origin"] is not None:
             nested_data["origin"] = validated_data.pop("origin")
             if nested_data["origin"]:
                 nested_data["origin"]["user"] = validated_data["user"]
@@ -321,7 +327,10 @@ class TeaSerializer(serializers.ModelSerializer):
                     if v is None:
                         nested_data["origin"].pop(k)
 
-        if "subcategory" in validated_data:
+        if (
+            "subcategory" in validated_data
+            and validated_data["subcategory"] is not None
+        ):
             nested_data["subcategory"] = validated_data.pop("subcategory")
             if nested_data["subcategory"]:
                 nested_data["subcategory"]["user"] = validated_data["user"]
@@ -329,7 +338,7 @@ class TeaSerializer(serializers.ModelSerializer):
                     if v is None:
                         nested_data["subcategory"].pop(k)
 
-        if "vendor" in validated_data:
+        if "vendor" in validated_data and validated_data["vendor"] is not None:
             nested_data["vendor"] = validated_data.pop("vendor")
             if nested_data["vendor"]:
                 nested_data["vendor"]["user"] = validated_data["user"]
