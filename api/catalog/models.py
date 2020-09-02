@@ -181,7 +181,7 @@ class Category(models.Model):
     )
     name = models.CharField(max_length=20, choices=CATEGORIES)
     description = models.TextField(blank=True)
-    description_source = models.CharField(max_length=50, blank=True)
+    description_source = models.CharField(max_length=100, blank=True)
     gongfu_brewing = models.ForeignKey(
         Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -208,7 +208,7 @@ class Subcategory(models.Model):
         Category, on_delete=models.CASCADE, null=True, blank=True
     )
     description = models.TextField(blank=True)
-    description_source = models.CharField(max_length=50, blank=True)
+    description_source = models.CharField(max_length=100, blank=True)
 
     gongfu_brewing = models.ForeignKey(
         Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
