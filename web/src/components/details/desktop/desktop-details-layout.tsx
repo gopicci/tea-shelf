@@ -69,10 +69,10 @@ function DesktopDetailsLayout({ route, setRoute }: Props): ReactElement {
         </DialogContent>
       )}
       <DialogActions className={classes.actions}>
-        <Button onClick={handleClose} aria-label="close">
+        <Button onClick={handleClose}>
           Close
         </Button>
-        <Button onClick={handleEditClick} aria-label="edit">
+        <Button onClick={handleEditClick}>
           Edit
         </Button>
       </DialogActions>

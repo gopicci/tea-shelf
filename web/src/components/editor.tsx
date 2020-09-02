@@ -5,7 +5,6 @@ import React, {
   useContext,
 } from "react";
 import localforage from "localforage";
-import validator from "validator";
 import {
   generateUniqueId,
   getOfflineTeas,

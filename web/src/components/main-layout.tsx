@@ -1,13 +1,13 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { Box, Fab, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
 import SearchAppBar from "./appbar/search-app-bar";
-import FilterBar from './filters/filter-bar';
-import FilterAccordion from './filters/filter-accordion';
 import DrawerLayout from "./drawer/drawer-layout";
+import FilterBar from "./filters/filter-bar";
+import FilterAccordion from "./filters/filter-accordion";
 import GridLayout from "./grid/grid-layout";
-import DialogLayout from './dialog/dialog-layout';
+import DialogLayout from "./dialog/dialog-layout";
 import { Route } from "../app";
 
 const useStyles = makeStyles((theme) => ({
@@ -57,6 +57,9 @@ function MainLayout(props: Props): ReactElement {
 
   const { route, setRoute, isMobile } = props;
 
+  // Drawer state
+  const [open, setOpen] = useState(false);
+
   /** Sets route to CREATE */
   function handleCreate() {
     setRoute({ route: "CREATE" });
@@ -64,10 +67,14 @@ function MainLayout(props: Props): ReactElement {
 
   return (
     <>
-      <SearchAppBar />
+      <SearchAppBar setOpen={setOpen} />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout {...props} />
+        <DrawerLayout
+          open={open}
+          setOpen={setOpen}
+          {...props}
+        />
         <Box className={classes.mainBox}>
           {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
           <GridLayout {...props} />

@@ -1,4 +1,10 @@
-import React, { useContext, useState, useEffect, MouseEvent } from "react";
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  MouseEvent,
+  ReactElement,
+} from "react";
 import {
   AppBar,
   Box,
@@ -18,12 +24,12 @@ import {
 } from "@material-ui/icons";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SyncButton from "./sync-button";
+import { logout } from "../../services/auth-services";
 import {
   GridViewState,
   GridViewDispatch,
 } from "../statecontainers/grid-view-context";
 import { SearchDispatch } from "../statecontainers/search-context";
-import { logout } from "../../services/auth-services";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -94,12 +100,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * SearchAppBar props.
+ *
+ * @memberOf SearchAppBar
+ */
+type Props = {
+  /** Set drawer open state */
+  setOpen: (state: boolean) => void;
+};
+
+/**
  * Search app bar component. Handles search and grid view switch.
  *
  * @component
  * @subcategory Main
  */
-function SearchAppBar() {
+function SearchAppBar({ setOpen }: Props): ReactElement {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
@@ -156,6 +172,7 @@ function SearchAppBar() {
           className={classes.menuButton}
           color="inherit"
           aria-label="open drawer"
+          onClick={() => setOpen(true)}
         >
           <MenuIcon />
         </IconButton>
