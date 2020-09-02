@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  item: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+  },
 }));
 
 /**
@@ -53,11 +57,12 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
 
   return (
     <Box className={classes.root}>
-      {!isMobile && <Toolbar />}
+      <Toolbar />
       <Box className={classes.content}>
         <List>
           {!isMobile && (
             <ListItem
+              className={classes.item}
               button
               key="add"
               onClick={() => setRoute({ route: "CREATE" })}
@@ -70,6 +75,7 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
             </ListItem>
           )}
           <ListItem
+            className={classes.item}
             button
             key="catalog"
             selected={route.route === "MAIN"}
@@ -88,6 +94,7 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
             <ListItemText primary="Teas" />
           </ListItem>
           <ListItem
+            className={classes.item}
             button
             key="archive"
             selected={route.route === "ARCHIVE"}
@@ -98,7 +105,7 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
             </ListItemIcon>
             <ListItemText primary="Archive" />
           </ListItem>
-          <ListItem button key="sessions">
+          <ListItem className={classes.item} button key="sessions">
             <ListItemIcon>
               <SvgIcon
                 color="action"
@@ -113,7 +120,12 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
         </List>
         {isMobile && (
           <List>
-            <ListItem button key="logout" onClick={() => logout()}>
+            <ListItem
+              className={classes.item}
+              button
+              key="logout"
+              onClick={() => logout()}
+            >
               <ListItemIcon>
                 <ExitToApp />
               </ListItemIcon>
