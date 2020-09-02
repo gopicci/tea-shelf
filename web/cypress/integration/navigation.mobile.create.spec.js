@@ -18,7 +18,7 @@ describe("Mobile creation", {viewportWidth: 500}, () => {
     cy.get('button[aria-label="Create"]').should("not.be.disabled");
     cy.get('button[aria-label="Create"]').click();
     cy.wait("@tea");
-    cy.get("div").contains("Tea successfully uploaded").should("exist");
+    cy.get("div").contains("Tea successfully added").should("exist");
   });
 
   it("Can add a complex tea.", () => {
@@ -61,6 +61,6 @@ describe("Mobile creation", {viewportWidth: 500}, () => {
 
     cy.get('button[aria-label="Create"]').click();
     cy.wait("@tea");
-    cy.get("div").contains("Tea successfully uploaded").should("exist");
+    cy.get("div").contains("Tea successfully added").should("exist");
   });
 });

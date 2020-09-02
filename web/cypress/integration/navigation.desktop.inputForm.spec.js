@@ -6,19 +6,19 @@ describe("Desktop input form navigation", {viewportWidth: 1000},() => {
 
   it("Cannot post without required fields.", () => {
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('button').contains("skip").click();
+    cy.get('span').contains("Skip").click();
     cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Required").should("exist");
     cy.get('input[name="name"]').type("test");
     cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Required").should("exist");
     cy.get('button[aria-label="back"]').click();
-    cy.get('button').contains("cancel").click();
+    cy.get('span').contains("Cancel").click();
   });
 
   it("Category populates brewing", () => {
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('button').contains("skip").click();
+    cy.get('span').contains("Skip").click();
     cy.get('input[value="95"]').should("not.exist");
     cy.get('input[value="00:00:15"]').should("not.exist");
     cy.get('input[value="4.5"]').should("not.exist");
@@ -30,12 +30,12 @@ describe("Desktop input form navigation", {viewportWidth: 1000},() => {
     cy.get('input[value="4.5"]').should("exist");
     cy.get('input[value="00:00:05"]').should("exist");
     cy.get('button[aria-label="back"]').click();
-    cy.get('button').contains("cancel").click();
+    cy.get('span').contains("Cancel").click();
   });
 
   it("Subcategory overwrites fields.", () => {
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('button').contains("skip").click();
+    cy.get('span').contains("Skip").click();
     cy.get('div[aria-label="category"]').click();
     cy.get("li").contains("Oolong").click();
     cy.get("div").contains("Oolong").should("exist");
@@ -47,12 +47,12 @@ describe("Desktop input form navigation", {viewportWidth: 1000},() => {
     cy.get('input[value="Assam, India"]').should("exist");
     cy.get('input[value="95"]').should("exist");
     cy.get('button[aria-label="back"]').click();
-    cy.get('button').contains("cancel").click();
+    cy.get('span').contains("Cancel").click();
   });
 
   it("Cannot enter wrong year.", () => {
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('button').contains("skip").click();
+    cy.get('span').contains("Skip").click();
     cy.get('input[id="year"]').type("test");
     cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Invalid year").should("exist");
@@ -60,12 +60,12 @@ describe("Desktop input form navigation", {viewportWidth: 1000},() => {
     cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Invalid year").should("not.exist");
     cy.get('button[aria-label="back"]').click();
-    cy.get('button').contains("cancel").click();
+    cy.get('span').contains("Cancel").click();
   });
 
   it("Can change weight and price.", () => {
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('button').contains("skip").click();
+    cy.get('span').contains("Skip").click();
     cy.get("label").contains("Price per g").should("exist");
     cy.get('div[aria-label="measure"]').click();
     cy.get("li").contains("oz").click();
@@ -84,12 +84,12 @@ describe("Desktop input form navigation", {viewportWidth: 1000},() => {
     cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Price must be a number").should("exist");
     cy.get('button[aria-label="back"]').click();
-    cy.get('button').contains("cancel").click();
+    cy.get('span').contains("Cancel").click();
   });
 
   it("Can edit brewings", () => {
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('button').contains("skip").click();
+    cy.get('span').contains("Skip").click();
     cy.get('div[aria-label="category"]').click();
     cy.get("li").contains("Black").click();
     cy.get('input[value="95"]').should("exist");
@@ -107,6 +107,6 @@ describe("Desktop input form navigation", {viewportWidth: 1000},() => {
     cy.get('button[aria-label="save"]').click();
     cy.get("p").contains("Must be in 23:59:59 format").should("exist");
     cy.get('button[aria-label="back"]').click();
-    cy.get('button').contains("cancel").click();
+    cy.get('span').contains("Cancel").click();
   });
 });

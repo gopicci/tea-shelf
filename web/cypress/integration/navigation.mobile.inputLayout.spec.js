@@ -1,5 +1,4 @@
-describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
-
+describe("Mobile input layout navigation", { viewportWidth: 500 }, () => {
   before(() => {
     cy.login();
     cy.visit("/");
@@ -124,11 +123,11 @@ describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
     cy.get('div[id="year"]').click();
     cy.get('button[aria-label="back"]').click();
     cy.get('div[id="year"]').click();
-    cy.get("p").contains("1999").click();
-    cy.get("p").contains("1999").should("exist");
+    cy.get("p").contains("2020").click();
+    cy.get("p").contains("2020").should("exist");
     cy.get('div[id="year"]').click();
     cy.get('button[aria-label="back"]').click();
-    cy.get("p").contains("1999").should("exist");
+    cy.get("p").contains("2020").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
   });
@@ -218,7 +217,7 @@ describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
     cy.get('div[aria-label="price"]').type("2");
     cy.get('div[aria-label="amount"]').type(".1");
     cy.get('button[aria-label="Save"]').click();
-    cy.get("p").contains("0.71/g - 20.1/oz").should("exist");
+    cy.get("p").contains("0.71/g - 20/oz").should("exist");
     cy.get("p").contains("10g - 0.35oz").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
@@ -267,7 +266,7 @@ describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
     cy.get('button[aria-label="Save"]').click();
-    cy.get("p").contains("999").should("exist");
+    cy.get("p").contains("15").should("exist");
 
     // Can pick increments
     cy.get('div[id="gongfu_increments"]').click();
@@ -291,7 +290,7 @@ describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
     cy.get('button[aria-label="Save"]').click();
-    cy.get("p").contains("999").should("exist");
+    cy.get("p").contains("15").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
   });
@@ -339,7 +338,7 @@ describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
     cy.get('button[aria-label="Save"]').click();
-    cy.get("p").contains("999").should("exist");
+    cy.get("p").contains("15").should("exist");
 
     // Can pick increments
     cy.get('div[id="western_increments"]').click();
@@ -363,7 +362,7 @@ describe("Mobile input layout navigation",{viewportWidth: 500}, () => {
     cy.get('input[value="hours"]').click();
     cy.get('div[aria-label="time-text"]').type("999");
     cy.get('button[aria-label="Save"]').click();
-    cy.get("p").contains("999").should("exist");
+    cy.get("p").contains("15").should("exist");
     cy.get('button[aria-label="back"]').click();
     cy.get('button[aria-label="cancel"]').click();
   });
