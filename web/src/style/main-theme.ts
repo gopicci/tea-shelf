@@ -10,9 +10,6 @@ export const mainTheme = createMuiTheme({
       main: "#2e5263",
       dark: "#002838",
     },
-    background: {
-      default: "#dadfe5",
-    },
   },
   typography: {
     h1: {
