@@ -7,52 +7,52 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:export-ydpi="96.000008"
-   inkscape:export-xdpi="96.000008"
-   inkscape:export-filename="C:\Users\Diego\Dev\logo512.png"
-   sodipodi:docname="icon.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   width="512.0px"
-   height="512.0px"
-   viewBox="0 0 512.0 512.0"
+   id="SVGRoot"
    version="1.1"
-   id="SVGRoot">
+   viewBox="0 0 512.0 512.0"
+   height="512.0px"
+   width="512.0px"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="C:\Users\Diego\Dev\logo512.png"
+   inkscape:export-xdpi="96.000008"
+   inkscape:export-ydpi="96.000008">
   <defs
      id="defs18">
     <mask
-       id="mask907"
-       maskUnits="userSpaceOnUse">
+       maskUnits="userSpaceOnUse"
+       id="mask907">
       <circle
-         style="fill:#ececec;stroke-width:0.984616"
-         id="circle909"
-         cx="256"
+         r="256"
          cy="256"
-         r="256" />
+         cx="256"
+         id="circle909"
+         style="fill:#ececec;stroke-width:0.984616" />
     </mask>
   </defs>
   <sodipodi:namedview
-     inkscape:snap-grids="true"
-     inkscape:window-maximized="0"
-     inkscape:window-y="61"
-     inkscape:window-x="2155"
-     inkscape:window-height="1040"
-     inkscape:window-width="1291"
-     showgrid="true"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer5"
-     inkscape:document-units="px"
-     inkscape:cy="258.18486"
-     inkscape:cx="307.4865"
-     inkscape:zoom="0.98994949"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base">
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="307.4865"
+     inkscape:cy="258.18486"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer5"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-grids="true">
     <inkscape:grid
-       type="xygrid"
-       id="grid27" />
+       id="grid27"
+       type="xygrid" />
   </sodipodi:namedview>
   <metadata
      id="metadata21">
@@ -67,72 +67,72 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
+     inkscape:label="base"
      inkscape:groupmode="layer"
-     inkscape:label="base">
+     id="layer1">
     <circle
-       r="256"
-       cy="256"
-       cx="256"
+       style="fill:#f2f2f2;stroke-width:0.984616;fill-opacity:1"
        id="path34"
-       style="fill:#f2f2f2;stroke-width:0.984616;fill-opacity:1" />
-  </g>
-  <g
-     inkscape:label="outer circle"
-     id="layer2"
-     inkscape:groupmode="layer">
-    <circle
-       r="229.74028"
-       cy="256"
        cx="256"
-       id="path37"
-       style="fill:none;stroke:#ff0000;stroke-width:9;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0" />
-  </g>
-  <g
-     style="display:inline"
-     inkscape:label="titles"
-     id="layer3"
-     inkscape:groupmode="layer">
-    <circle
-       r="165.51805"
        cy="256"
-       cx="256"
-       id="path863"
-       style="fill:none;stroke:#808080;stroke-width:70.1129;stroke-miterlimit:4;stroke-dasharray:140.226, 70.1129;stroke-dashoffset:182.294" />
+       r="256" />
   </g>
   <g
-     style="display:inline"
      inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="outer circle">
+    <circle
+       style="fill:none;stroke:#ff0000;stroke-width:9;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path37"
+       cx="256"
+       cy="256"
+       r="229.74028" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="titles"
+     style="display:inline">
+    <circle
+       style="fill:none;stroke:#808080;stroke-width:70.1129;stroke-miterlimit:4;stroke-dasharray:140.226, 70.1129;stroke-dashoffset:182.294"
+       id="path863"
+       cx="256"
+       cy="256"
+       r="165.51805" />
+  </g>
+  <g
+     inkscape:label="inner circle"
      id="g867"
-     inkscape:label="inner circle">
+     inkscape:groupmode="layer"
+     style="display:inline">
     <circle
-       style="fill:none;stroke:#ff0000;stroke-width:18;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
+       r="75.181122"
+       cy="256"
+       cx="256"
        id="circle865"
-       cx="256"
-       cy="256"
-       r="75.181122" />
+       style="fill:none;stroke:#ff0000;stroke-width:18;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0" />
   </g>
   <g
-     inkscape:label="center"
+     inkscape:groupmode="layer"
      id="g871"
-     inkscape:groupmode="layer">
+     inkscape:label="center">
     <circle
-       r="50.822941"
-       cy="256"
-       cx="256"
+       style="fill:#008000;stroke:none;stroke-width:12.1681;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
        id="circle869"
-       style="fill:#008000;stroke:none;stroke-width:12.1681;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0" />
+       cx="256"
+       cy="256"
+       r="50.822941" />
   </g>
   <g
-     style="mix-blend-mode:multiply"
-     inkscape:label="shadows"
+     inkscape:groupmode="layer"
      id="layer5"
-     inkscape:groupmode="layer">
+     inkscape:label="shadows"
+     style="mix-blend-mode:multiply">
     <path
-       sodipodi:nodetypes="ccssc"
-       mask="url(#mask907)"
+       style="fill:#000000;fill-opacity:0.08;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 242.02541,-95.045661 C 384.54823,245.25892 315.04566,365.55839 45.04566,558.48223 45.02061,568.48219 870,620 870,610 870,600 690,-220 660,-240 630,-260 242.02541,-95.045661 242.02541,-95.045661 Z"
        id="path883"
-       d="m 256,-170 c 1.46497,275.08565 0.68902,550.16808 0,825.25382 C 255.97495,665.25378 870,620 870,610 c 0,-10 -180,-830 -210,-850 -30,-20 -404,70 -404,70 z"
-       style="fill:#000000;fill-opacity:0.10080645;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       mask="url(#mask907)"
+       sodipodi:nodetypes="ccssc" />
   </g>
 </svg>
