@@ -3,6 +3,22 @@ import difflib
 from google.cloud import vision
 import re
 from .models import Subcategory, SubcategoryName, Vendor, VendorTrademark, Category
+from typing import TypedDict
+
+
+class TeaData(TypedDict, total=False):
+    """
+    Parsed data structure
+    """
+    name: str
+    category: str
+    category_confidence: float
+    subcategory: str
+    subcategory_confidence: float
+    vendor: str
+    vendor_confidence: float
+    year: int
+    dtd: dict
 
 
 class VisionParser:
@@ -12,24 +28,16 @@ class VisionParser:
 
     def __init__(self, data):
         """
-        Declares vision client and image, empty tea data structure,
-        load relevant objects.
+        Declares vision client, image and response tea data,
+        loads relevant objects lists.
 
         data : str - Base64 image data
         """
         self.client = vision.ImageAnnotatorClient()
         self.image = vision.types.Image(content=a2b_base64(data))
-        self.tea_data = {
-            "name": None,
-            "category": None,
-            "category_confidence": None,
-            "subcategory": None,
-            "subcategory_confidence": None,
-            "vendor": None,
-            "vendor_confidence": None,
-            "year": None,
-            "dtd": None,
-        }
+
+        self.tea_data: TeaData = {}
+
         self.categories = Category.objects.all()
         self.subcategories = Subcategory.objects.filter(is_public=True)
         self.subcategories_names = SubcategoryName.objects.all()
@@ -43,6 +51,7 @@ class VisionParser:
         document = self.document_text_detection()
         self.tea_data["dtd"] = self.reduced_data_parser(document)
 
+        # Disabling as Chinese text recognition isn't quite good yet
         # en_zh_ratio = get_en_zh_ratio(document)
 
         subcategory_names = self.get_subcategories_lookup()
@@ -52,15 +61,16 @@ class VisionParser:
             subcategory = self.get_subcategory_from_match(subcategory_match)
             self.tea_data["subcategory"] = subcategory.name
             self.tea_data["subcategory_confidence"] = subcategory_match[1]
-            self.tea_data["category"] = subcategory.category.name
+            if subcategory.category:
+                self.tea_data["category"] = subcategory.category.name
         else:
-            category_names = [c.name for c in self.categories]
+            category_names = [c.name.lower() for c in self.categories]
             category_match = self.find_match(document, category_names)
             if category_match:
                 self.tea_data["category"] = category_match[0]
                 self.tea_data["category_confidence"] = category_match[1]
 
-        vendor_names = [v.name for v in self.vendors]
+        vendor_names = [v.name.lower() for v in self.vendors]
         vendor_match = self.find_match(document, vendor_names)
         if vendor_match:
             self.tea_data["vendor"] = vendor_match[0]
@@ -272,7 +282,7 @@ class VisionParser:
         drop_common_words = "visit us at the order"
 
         vendor_name = ""
-        vendor = self.tea_data["vendor"]
+        vendor = self.tea_data["vendor"] if "vendor" in self.tea_data else None
         if vendor:
             vendor = str(vendor).lower()
             vendor_name = re.split(r"(\W)", vendor)
@@ -426,9 +436,9 @@ class VisionParser:
         """
         Builds list of subcategory names to use in match lookup
         """
-        lookup_names = [s.name for s in self.subcategories]
-        lookup_names += [s.translated_name for s in self.subcategories]
-        lookup_names += [s.name for s in self.subcategories_names]
+        lookup_names = [s.name.lower() for s in self.subcategories]
+        lookup_names += [s.translated_name.lower() for s in self.subcategories]
+        lookup_names += [s.name.lower() for s in self.subcategories_names]
         return lookup_names
 
     def get_subcategory_from_match(self, match):
@@ -438,7 +448,7 @@ class VisionParser:
         match : (str, float) - find_match result
         """
         sub = next(
-            (s.subcategory for s in self.subcategories_names if s.name == match[0]),
+            (s.subcategory for s in self.subcategories_names if s.name.lower() == match[0]),
             None,
         )
         if not sub:
@@ -446,7 +456,7 @@ class VisionParser:
                 (
                     s
                     for s in self.subcategories
-                    if s.name == match[0] or s.translated_name == match[0]
+                    if s.name.lower() == match[0] or s.translated_name.lower() == match[0]
                 ),
                 None,
             )
