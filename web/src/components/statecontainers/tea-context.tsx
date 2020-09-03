@@ -80,8 +80,8 @@ function TeaContext({ children }: Props): ReactElement {
         console.error(e);
       }
     }
-    if (!state.length) syncTeas();
-  }, [state]);
+    syncTeas();
+  }, []);
 
   return (
     <TeasState.Provider value={state as TeaInstance[]}>
