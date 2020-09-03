@@ -274,8 +274,8 @@ class VisionParser:
         vendor_name = ""
         vendor = self.tea_data["vendor"]
         if vendor:
-            vendor = vendor.lower()
-            vendor_name = re.split(" |-", vendor)
+            vendor = str(vendor).lower()
+            vendor_name = re.split(r"(\W)", vendor)
             vendor_name.append("".join(vendor_name))
             vendor_name.append(vendor)
 
