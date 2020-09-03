@@ -102,29 +102,18 @@ class VisionParser:
                         word_list.append(word_string)
         return word_list
 
-    def combine_words_list_double(self, word_list):
+    def combine_words_list(self, word_list, length):
         """
-        Combines and return a word list in double words statements
+        Combines a word list in statements of defined length
 
-        word_list : [str] - List of single words
+        word_list : [str] - List of words
+        length : int - Statements length
         """
-        double_words_list = []
-        for i in range(len(word_list) - 1):
-            double_words_list.append(word_list[i] + " " + word_list[i + 1])
-        return double_words_list
-
-    def combine_words_list_triple(self, word_list):
-        """
-        Combines and return a word list in triple words statements
-
-        word_list : [str] - List of single words
-        """
-        triple_words_list = []
-        for i in range(len(word_list) - 2):
-            triple_words_list.append(
-                word_list[i] + " " + word_list[i + 1] + " " + word_list[i + 2]
-            )
-        return triple_words_list
+        statements_list = []
+        for i in range(len(word_list) - length + 1):
+            statement = " ".join([word_list[i + j] for j in range(length)])
+            statements_list.append(statement)
+        return statements_list
 
     def find_match(self, document, items):
         """
@@ -135,13 +124,15 @@ class VisionParser:
         items : [str] - List of items to search for
         """
         single_words_list = self.get_text_detection_word_list(document)
-        double_words_list = self.combine_words_list_double(single_words_list)
-        triple_words_list = self.combine_words_list_triple(single_words_list)
-
-        combined_words_list = single_words_list + double_words_list + triple_words_list
+        combined_words_list = (
+            single_words_list
+            + self.combine_words_list(single_words_list, 2)
+            + self.combine_words_list(single_words_list, 3)
+            + self.combine_words_list(single_words_list, 4)
+        )
         no_spaces_text = "".join(single_words_list)
 
-        # first search for a match in single, double or triple words combos
+        # First search for a match in single, double, triple or quadruple words combos
         highest_score = 0
         best_match = ""
         for name in combined_words_list:
@@ -151,16 +142,18 @@ class VisionParser:
                 if score > highest_score:
                     highest_score = score
                     best_match = match[0]
+                # In case of multiple matches with same score pick the longest string
                 if score == highest_score and len(match[0]) > len(best_match):
                     best_match = match[0]
 
-        # if no match then try with no spaces strings
+        # If no match then try with no spaces strings
         if highest_score == 0:
             for item in items:
-                if item.replace(" ", "").lower() in no_spaces_text.lower():
+                if item.replace(" ", "").lower() in no_spaces_text.lower() and len(
+                    item
+                ) > len(best_match):
                     best_match = item
                     highest_score = 1
-                    break
 
         if best_match and highest_score > 0:
             return best_match, highest_score
@@ -431,8 +424,9 @@ class VisionParser:
                 self.subcategory.translated_name,
             ]
             words = name.split(" ")
-            words += self.combine_words_list_double(words)
-            words += self.combine_words_list_triple(words)
+            words += self.combine_words_list(words, 2)
+            words += self.combine_words_list(words, 3)
+            words += self.combine_words_list(words, 4)
             for word in words:
                 for sub_name in subcategory_names:
                     matcher = difflib.SequenceMatcher(
