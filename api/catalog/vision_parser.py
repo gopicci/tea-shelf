@@ -148,7 +148,7 @@ class VisionParser:
             match = difflib.get_close_matches(name.lower(), items, cutoff=0.8)
             if match:
                 score = difflib.SequenceMatcher(None, name.lower(), match[0]).ratio()
-                if score > highest_score:
+                if score > highest_score or len(match[0]) > best_match:
                     highest_score = score
                     best_match = match[0]
 
