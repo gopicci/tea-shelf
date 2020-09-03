@@ -182,6 +182,7 @@ function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
    *  Deletes tea instance.
    */
   async function handleDelete(): Promise<void> {
+    handleMenuClose();
     try {
       if (typeof teaData.id === "string")
         // ID is UUID, delete online tea
