@@ -148,8 +148,10 @@ class VisionParser:
             match = difflib.get_close_matches(name.lower(), items, cutoff=0.8)
             if match:
                 score = difflib.SequenceMatcher(None, name.lower(), match[0]).ratio()
-                if score > highest_score or len(match[0]) > best_match:
+                if score > highest_score:
                     highest_score = score
+                    best_match = match[0]
+                if score == highest_score and len(match[0]) > len(best_match):
                     best_match = match[0]
 
         # if no match then try with no spaces strings
