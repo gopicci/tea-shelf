@@ -44,9 +44,10 @@ function TeaContext({ children }: Props): ReactElement {
 
       try {
         // Get offline teas (not yet uploaded)
-        const offlineTeas = await localforage.getItem<TeaInstance[]>(
+        let offlineTeas = await localforage.getItem<TeaInstance[]>(
           "offline-teas"
         );
+        if (!offlineTeas) offlineTeas = [];
 
         // Get cached teas if id not already on offline
         let localTeas = await localforage.getItem<TeaInstance[]>("teas");
