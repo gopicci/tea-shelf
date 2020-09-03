@@ -3,22 +3,6 @@ import difflib
 from google.cloud import vision
 import re
 from .models import Subcategory, SubcategoryName, Vendor, VendorTrademark, Category
-from typing import TypedDict
-
-
-class TeaData(TypedDict, total=False):
-    """
-    Parsed data structure
-    """
-    name: str
-    category: str
-    category_confidence: float
-    subcategory: str
-    subcategory_confidence: float
-    vendor: str
-    vendor_confidence: float
-    year: int
-    dtd: dict
 
 
 class VisionParser:
@@ -36,13 +20,15 @@ class VisionParser:
         self.client = vision.ImageAnnotatorClient()
         self.image = vision.types.Image(content=a2b_base64(data))
 
-        self.tea_data: TeaData = {}
+        self.tea_data = {}
 
+        self.category = None
+        self.subcategory = None
+        self.vendor = None
         self.categories = Category.objects.all()
         self.subcategories = Subcategory.objects.filter(is_public=True)
         self.subcategories_names = SubcategoryName.objects.all()
         self.vendors = Vendor.objects.filter(is_public=True)
-        self.vendors_trademarks = VendorTrademark.objects.all()
 
     def get_tea_data(self):
         """
@@ -57,24 +43,27 @@ class VisionParser:
         subcategory_names = self.get_subcategories_lookup()
         subcategory_match = self.find_match(document, subcategory_names)
         if subcategory_match:
-            print(subcategory_match)
-            subcategory = self.get_subcategory_from_match(subcategory_match)
-            self.tea_data["subcategory"] = subcategory.name
+            self.subcategory = self.get_subcategory_from_name(subcategory_match[0])
+            self.tea_data["subcategory"] = self.subcategory.id
             self.tea_data["subcategory_confidence"] = subcategory_match[1]
-            if subcategory.category:
-                self.tea_data["category"] = subcategory.category.name
+            if self.subcategory.category:
+                self.tea_data["category"] = self.subcategory.category.id
         else:
             category_names = [c.name.lower() for c in self.categories]
             category_match = self.find_match(document, category_names)
             if category_match:
-                self.tea_data["category"] = category_match[0]
-                self.tea_data["category_confidence"] = category_match[1]
+                self.category = self.get_category_from_name(category_match[0])
+                if self.category:
+                    self.tea_data["category"] = self.category.id
+                    self.tea_data["category_confidence"] = category_match[1]
 
         vendor_names = [v.name.lower() for v in self.vendors]
         vendor_match = self.find_match(document, vendor_names)
         if vendor_match:
-            self.tea_data["vendor"] = vendor_match[0]
-            self.tea_data["vendor_confidence"] = vendor_match[1]
+            self.vendor = self.get_vendor_from_name(vendor_match[0])
+            if self.vendor:
+                self.tea_data["vendor"] = self.vendor.id
+                self.tea_data["vendor_confidence"] = vendor_match[1]
 
         year = self.find_year(document)
         if year:
@@ -83,8 +72,6 @@ class VisionParser:
         name = self.find_name(document)
         if name:
             self.tea_data["name"] = name
-
-        print(self.tea_data)
 
         return self.tea_data
 
@@ -280,14 +267,19 @@ class VisionParser:
         allowed_characters = re.compile("^[a-zA-Z0-9À-ÿ ·,.'\"()&_-]*$")
         web_words = "www .com .org .net .ca"
         drop_common_words = "visit us at the order"
+        trademark_words = []
 
         vendor_name = ""
-        vendor = self.tea_data["vendor"] if "vendor" in self.tea_data else None
-        if vendor:
-            vendor = str(vendor).lower()
-            vendor_name = re.split(r"(\W)", vendor)
+        if self.vendor:
+            vendor_name = re.split(r"(\W)", self.vendor.name.lower())
             vendor_name.append("".join(vendor_name))
-            vendor_name.append(vendor)
+            vendor_name.append(self.vendor.name.lower())
+            vendor_trademarks = VendorTrademark.objects.filter(vendor=self.vendor)
+            if vendor_trademarks:
+                trademark_phrases = [t.name.lower() for t in vendor_trademarks]
+                for tp in trademark_phrases:
+                    for tw in tp.split(" "):
+                        trademark_words.append(tw)
 
         cleaned_blocks = []
         for block in data["blocks"]:
@@ -299,13 +291,21 @@ class VisionParser:
 
                 cleaned_words = []
                 for word in phrase["words"]:
-                    if vendor:
+                    # Drop single characters
+                    if len(word) < 2:
+                        continue
+
+                    # Drop vendor name and trademarks
+                    if self.vendor:
                         match = difflib.get_close_matches(
                             word.lower(), vendor_name, cutoff=0.8
                         )
                         if match and match[0].lower() != "tea":  # mmmmh
                             continue
-                    # drop word with unallowed symbols
+                        if word.lower() in trademark_words:
+                            continue
+
+                    # Drop word with unallowed symbols
                     if allowed_characters.match(word):
                         # check if word is year
                         if any(char.isdigit() for char in word):
@@ -316,7 +316,7 @@ class VisionParser:
                                     cleaned_words.append(word[0:4] + "s")
                                 elif len(word) >= 4:
                                     cleaned_words.append(word[0:4])
-                        # check if word is website or common word
+                        # Check if word is website or common word
                         elif (
                             not any(w in word for w in web_words.split(" "))
                             and word.lower() not in drop_common_words
@@ -374,7 +374,17 @@ class VisionParser:
             else:
                 i += 1
 
-        return " ".join(words).title()
+        return " ".join(words)
+
+    def title(self, name):
+        """
+        Using re.sub for capitalizing as string.title() doesn't count for numbers
+        """
+        return re.sub(
+            r"[A-Za-z0-9]+('[A-Za-z0-9]+)?",
+            lambda mo: mo.group(0)[0].upper() + mo.group(0)[1:].lower(),
+            name,
+        )
 
     def find_name(self, document):
         """
@@ -408,7 +418,28 @@ class VisionParser:
                         biggest_words.append(word)
         name = self.format_join(biggest_words)
 
-        return name
+        # Change word if similar to subcategory name
+        if self.subcategory:
+            alternative_names = SubcategoryName.objects.filter(
+                subcategory__id=self.subcategory.id
+            )
+            subcategory_names = [alt.name for alt in alternative_names]
+            subcategory_names += [
+                self.subcategory.name,
+                self.subcategory.translated_name,
+            ]
+            words = name.split(" ")
+            words += self.combine_words_list_double(words)
+            words += self.combine_words_list_triple(words)
+            for word in words:
+                for sub_name in subcategory_names:
+                    matcher = difflib.SequenceMatcher(
+                        None, word.lower(), sub_name.lower()
+                    )
+                    if matcher.ratio() > 0.8:
+                        return self.title(name.replace(word, sub_name))
+
+        return self.title(name)
 
     def get_en_zh_ratio(self, document):
         """
@@ -441,14 +472,12 @@ class VisionParser:
         lookup_names += [s.name.lower() for s in self.subcategories_names]
         return lookup_names
 
-    def get_subcategory_from_match(self, match):
+    def get_subcategory_from_name(self, name):
         """
-        Returns a subcategory object from a match tuple (name, score)
-
-        match : (str, float) - find_match result
+        Returns a subcategory object from its name
         """
         sub = next(
-            (s.subcategory for s in self.subcategories_names if s.name.lower() == match[0]),
+            (s.subcategory for s in self.subcategories_names if s.name.lower() == name),
             None,
         )
         if not sub:
@@ -456,8 +485,22 @@ class VisionParser:
                 (
                     s
                     for s in self.subcategories
-                    if s.name.lower() == match[0] or s.translated_name.lower() == match[0]
+                    if s.name.lower() == name or s.translated_name.lower() == name
                 ),
                 None,
             )
+        return sub
+
+    def get_category_from_name(self, name):
+        """
+        Returns a category object from its name
+        """
+        sub = next((c for c in self.categories if c.name.lower() == name), None,)
+        return sub
+
+    def get_vendor_from_name(self, name):
+        """
+        Returns a vendor object from its name
+        """
+        sub = next((v for v in self.vendors if v.name.lower() == name), None,)
         return sub

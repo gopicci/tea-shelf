@@ -22,6 +22,7 @@ export function visionParserSerializer(
   subcategories: SubcategoryModel[],
   vendors: VendorModel[]
 ): TeaModel | undefined {
+  console.log("vd", data)
   let serialized: TeaModel = {};
 
   if (data.name) serialized.name = data.name;
@@ -30,7 +31,7 @@ export function visionParserSerializer(
 
   if (data.category) {
     const category = Object.values(categories).find(
-      (value) => value.name === data.category
+      (value) => value.id === data.category
     );
     if (category) {
       serialized.category = category.id;
@@ -44,7 +45,7 @@ export function visionParserSerializer(
 
   if (data.subcategory) {
     const subcategory = Object.values(subcategories).find(
-      (value) => value.name === data.subcategory
+      (value) => value.id === data.subcategory
     );
 
     if (subcategory) {
@@ -60,7 +61,7 @@ export function visionParserSerializer(
 
   if (data.vendor) {
     const vendor = Object.values(vendors).find(
-      (value) => value.name === data.vendor
+      (value) => value.id === data.vendor
     );
     if (vendor) serialized.vendor = vendor;
   }

@@ -222,10 +222,10 @@ export interface VisionData {
   name?: string;
   /** Supposed tea year */
   year?: number;
-  /** Supposed tea category name */
-  category?: string;
-  /** Supposed tea subcategory name */
-  subcategory?: string;
-  /** Supposed tea vendor name */
-  vendor?: string;
+  /** Supposed tea category ID */
+  category?: number;
+  /** Supposed tea subcategory ID */
+  subcategory?: number;
+  /** Supposed tea vendor ID */
+  vendor?: number;
 }
