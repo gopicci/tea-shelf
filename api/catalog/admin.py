@@ -217,6 +217,7 @@ class SubcategoryAdmin(admin.ModelAdmin):
         print(qs)
         return qs
 
+
 class VendorNameInline(admin.TabularInline):
     """
     Defining VendorName model as Vendor tabular inline.
