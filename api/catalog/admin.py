@@ -212,11 +212,6 @@ class SubcategoryAdmin(admin.ModelAdmin):
         get_data["is_public"] = True
         return get_data
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        print(qs)
-        return qs
-
 
 class VendorNameInline(admin.TabularInline):
     """
