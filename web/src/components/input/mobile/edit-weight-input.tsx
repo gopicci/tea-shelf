@@ -56,7 +56,7 @@ function EditWeightInput({
   /**
    * Updates local state on input text change, accepts numbers input only.
    *
-   * @param {event:ChangeEvent<HTMLInputElement>} event - Text input change event
+   * @param {ChangeEvent<HTMLInputElement>} event - Text input change event
    */
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
     const onlyNumbers = event.target.value.replace(/[^0-9.]/g, "");
@@ -66,7 +66,7 @@ function EditWeightInput({
   /**
    * Updates input type on radio select.
    *
-   * @param {event:ChangeEvent<HTMLInputElement>} event - Radio buttons change event
+   * @param {ChangeEvent<HTMLInputElement>} event - Radio buttons change event
    */
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>): void {
     setInputType(event.target.value);

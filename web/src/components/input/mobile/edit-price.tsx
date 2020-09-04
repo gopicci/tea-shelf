@@ -60,7 +60,7 @@ function EditPrice({
   /**
    * Sets local price context on input change.
    *
-   * @param {event:ChangeEvent<HTMLInputElement>} event - Price input change event
+   * @param {ChangeEvent<HTMLInputElement>} event - Price input change event
    */
   function handlePriceChange(event: ChangeEvent<HTMLInputElement>): void {
     const onlyNumbers = event.target.value.replace(/[^0-9.]/g, "");
@@ -70,7 +70,7 @@ function EditPrice({
   /**
    * Sets local weight context on input change.
    *
-   * @param {event:ChangeEvent<HTMLInputElement>} event - Weight input change event
+   * @param {ChangeEvent<HTMLInputElement>} event - Weight input change event
    */
   function handleWeightChange(event: ChangeEvent<HTMLInputElement>): void {
     const onlyNumbers = event.target.value.replace(/[^0-9.]/g, "");
@@ -80,7 +80,7 @@ function EditPrice({
   /**
    * Updates weight between Celsius and Fahrenheit on radio select.
    *
-   * @param {event:ChangeEvent<HTMLInputElement>} event - Radio buttons change event
+   * @param {ChangeEvent<HTMLInputElement>} event - Radio buttons change event
    */
   function handleRadioChange(event: ChangeEvent<HTMLInputElement>): void {
     if (event.target.value !== inputType) {

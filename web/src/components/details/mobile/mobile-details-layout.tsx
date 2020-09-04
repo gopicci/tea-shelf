@@ -60,6 +60,26 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
     setTeaData(Object.values(teas).find((tea) => tea.id === route.payload?.id));
   }, [route.payload, teas]);
 
+  useEffect(() => {
+    /**
+     * Applies custom behavior on browser history pop event.
+     *
+     * @param {PopStateEvent} event - Popstate event
+     * @memberOf MobileDetailsLayout
+     */
+    function onBackButtonEvent(event: PopStateEvent): void {
+      event.preventDefault();
+      setRoute({ route: "MAIN" });
+    }
+
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", onBackButtonEvent);
+
+    return () => {
+      window.removeEventListener("popstate", onBackButtonEvent);
+    };
+  }, [setRoute]);
+
   return (
     <>
       {teaData &&

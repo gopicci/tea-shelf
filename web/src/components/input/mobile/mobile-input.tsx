@@ -112,6 +112,30 @@ function MobileInput({
     setEditRoute("input_layout");
   }
 
+  useEffect(() => {
+    /**
+     * Applies custom behavior on browser history pop event.
+     *
+     * @param {PopStateEvent} event - Pop state event
+     * @memberOf MobileInput
+     */
+    function onBackButtonEvent(event: PopStateEvent): void {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      if (editRoute === "input_layout") {
+        if (setImageLoadDone) setImageLoadDone(false);
+        else setRoute({ route: "TEA_DETAILS", payload: route.payload });
+      } else setEditRoute("input_layout");
+    }
+
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", onBackButtonEvent);
+
+    return () => {
+      window.removeEventListener("popstate", onBackButtonEvent);
+    };
+  }, [editRoute, route.payload, setImageLoadDone, setRoute]);
+
   const inputProps: InputProps = { handleBackToLayout, teaData, setTeaData };
 
   function renderSwitch(editRoute: string) {

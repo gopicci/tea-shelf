@@ -1,4 +1,10 @@
-import React, { useRef, useCallback, useContext, ReactElement } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useContext,
+  ReactElement,
+  useEffect,
+} from "react";
 import { Box, IconButton } from "@material-ui/core";
 import { CameraAlt, Close, Done, Replay, SkipNext } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -121,6 +127,26 @@ function CaptureImage({
   function replay(): void {
     setImageData("");
   }
+
+  useEffect(() => {
+    /**
+     * Applies custom behavior on browser history pop event.
+     *
+     * @param {PopStateEvent} event - Popstate event
+     * @memberOf CaptureImage
+     */
+    function onBackButtonEvent(event: PopStateEvent): void {
+      event.preventDefault();
+      handleClose();
+    }
+
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", onBackButtonEvent);
+
+    return () => {
+      window.removeEventListener("popstate", onBackButtonEvent);
+    };
+  }, [handleClose]);
 
   return (
     <Box className={classes.root}>

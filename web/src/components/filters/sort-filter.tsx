@@ -1,4 +1,4 @@
-import React, {ReactElement, useContext} from 'react';
+import React, {ReactElement, useContext, useEffect} from 'react';
 import {
   AppBar,
   Box,
@@ -53,7 +53,25 @@ function SortFilter({ setRoute }: Props): ReactElement {
   const state = useContext(FilterState);
   const dispatch = useContext(FilterDispatch);
 
-  console.log(state);
+  useEffect(() => {
+    /**
+     * Applies custom behavior on browser history pop event.
+     *
+     * @param {PopStateEvent} event - Popstate event
+     * @memberOf SortFilter
+     */
+    function onBackButtonEvent (event: PopStateEvent): void {
+      event.preventDefault();
+      setRoute({ route: "MAIN" });
+    }
+
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener('popstate', onBackButtonEvent);
+
+    return () => {
+      window.removeEventListener('popstate', onBackButtonEvent);
+    }
+  }, [setRoute]);
 
   /** Sets route to main */
   function handleClose() {
