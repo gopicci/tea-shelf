@@ -2,42 +2,55 @@ openapi: 3.0.2
 info:
   title: Tea Shelf
   version: 0.1.0
-  description: >
+  description: |
     # Introduction
 
-    Tea Shelf is a catalogue app to help users keep track of their collection of teas. This documentation offers an
-    overview on the backend REST API, written in Python and Django REST framework.
+    Tea Shelf is a progressive web app built with the intent to help users keep track of their collection of teas. This
+    documentation offers an overview on the REST API that serves the backend, which is written in Python with
+    **Django REST framework**.
 
-    Petstore illustrate the typical design decisions and tradeoffs a developer makes when building an enterprise application.
-    The demo shows how to document REST API services **OpenAPI format** and is based on
-    [Petstore sample](http://petstore.swagger.io/) by [swagger.io](http://swagger.io) team.
-    It was further **extended** by [ReDoc](https://github.com/Redocly/redoc) Team.
+    The repository is available [here](https://github.com/gopicci/tea-shelf/).
 
     ## API Categories
 
-    The APIs are divided in separate categories, to make things easy to discover.
+    The APIs are divided in separate tags, to make things easy to discover.
 
-    These categories are mostly based around the models that the operations are supporting, which are:
-      - Tea
-      - Category
-      - Subcategory
-      - Origin
-      - Vendor
-      - Brewing
-      - User
+    These tags are mostly based around the models that the operations are supporting, which are:
+
+    | Tag | Description |
+    | ------------ |  -------------- |
+    | [Tea](#tag--Tea) | Operation revoving around tea model |
+    | [Categories](#tag--Categories) | Groups category and subcategory models operations |
+    | Origin | The origin model represents a geographical location |
+    | Vendor | A tea vendor or brand |
+    | Brewing | Brewing information (water temperature, time...) |
+    | User | User info for authentication |
+
+    ## Authentication
+
+    In order to be able to interact with the APIs, please login from [here](#post-/api/login/) first and enter the access token from your
+    response in the apposite input of the [authentication section](#authentication).
 
 tags:
-  - name: pet
-    description: Everything about your Pets
-  - name: store
-    description: Access to Petstore orders
-    x-tag-expanded: false
-  - name: user
-    description: Operations about user
-  - name: pet_model
-    description: The Pet Model
-  - name: store_model
-    description: The Order Model
+  - name: Tea
+    description: |
+      Operations revolving around the tea model.
+
+      A tea instance is user specific and contains information about a tea such as category, vendor, origin, user notes...
+      Some of this data comes from other models and is represented in nested form on the tea model.
+
+      Apart from standard CRUD operations, this section offers access to **vision parser**, a service that extract tea related
+      data from a picture containing it (a package or label).
+  - name: Categories
+    description: |
+      Operations revolving around the category and subcategory models.
+
+      Category instances are generic and can only be read as a list. They contain basic info on major tea categories
+      (i.e. black, oolong, green, etc.).
+
+      Subcategory instances contain more specific tea types (i.e. Darjeeling, Puerh, etc.). They are user based but can be public,
+      when getting a subcategory list the API will return all the public subcategories as well as the user specific ones.
+
 security:
   - Bearer: []
 components:
@@ -46,7 +59,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT access token
+      description: JWT access token. The token is valid for 5 minutes.
 paths:
   /api/user/:
     get:
@@ -162,6 +175,8 @@ paths:
           description: ""
   /api/category/:
     get:
+      tags:
+        - Categories
       operationId: listCategorys
       description: List categories.
       parameters: []
@@ -241,6 +256,8 @@ paths:
           description: ""
   /api/subcategory/:
     get:
+      tags:
+        - Categories
       operationId: listSubcategorys
       description: List and create subcategories.
       parameters: []
@@ -351,6 +368,8 @@ paths:
                     - name
           description: ""
     post:
+      tags:
+        - Categories
       operationId: CreateSubcategory
       description: List and create subcategories.
       parameters: []
@@ -660,6 +679,8 @@ paths:
           description: ""
   /api/tea/:
     get:
+      tags:
+        - Tea
       operationId: listTeas
       description: Tea view set.
       parameters: []
@@ -932,6 +953,8 @@ paths:
                     - name
           description: ""
     post:
+      tags:
+        - Tea
       operationId: createTea
       description: Tea view set.
       parameters: []
@@ -1456,6 +1479,8 @@ paths:
           description: ""
   /api/tea/{id}/:
     get:
+      tags:
+        - Tea
       operationId: retrieveTea
       description: Tea view set.
       parameters:
@@ -1732,6 +1757,8 @@ paths:
                   - name
           description: ""
     put:
+      tags:
+        - Tea
       operationId: updateTea
       description: Tea view set.
       parameters:
@@ -2261,6 +2288,8 @@ paths:
                   - name
           description: ""
     patch:
+      tags:
+        - Tea
       operationId: partial_updateTea
       description: Tea view set.
       parameters:
@@ -2788,6 +2817,8 @@ paths:
                   - name
           description: ""
     delete:
+      tags:
+        - Tea
       operationId: destroyTea
       description: Tea view set.
       parameters:
@@ -3042,6 +3073,8 @@ paths:
                   - country
           description: ""
   /api/parser/:
+    tags:
+      - Tea
     post:
       operationId: CreateVisionParser
       description: Get tea data from vision parser
