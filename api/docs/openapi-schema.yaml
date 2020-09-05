@@ -1,0 +1,3076 @@
+openapi: 3.0.2
+info:
+  title: Tea Shelf
+  version: 0.1.0
+  description: >
+    # Introduction
+
+    Tea Shelf is a catalogue app to help users keep track of their collection of teas. This documentation offers an
+    overview on the backend REST API, written in Python and Django REST framework.
+
+    Petstore illustrate the typical design decisions and tradeoffs a developer makes when building an enterprise application.
+    The demo shows how to document REST API services **OpenAPI format** and is based on
+    [Petstore sample](http://petstore.swagger.io/) by [swagger.io](http://swagger.io) team.
+    It was further **extended** by [ReDoc](https://github.com/Redocly/redoc) Team.
+
+    ## API Categories
+
+    The APIs are divided in separate categories, to make things easy to discover.
+
+    These categories are mostly based around the models that the operations are supporting, which are:
+      - Tea
+      - Category
+      - Subcategory
+      - Origin
+      - Vendor
+      - Brewing
+      - User
+
+tags:
+  - name: pet
+    description: Everything about your Pets
+  - name: store
+    description: Access to Petstore orders
+    x-tag-expanded: false
+  - name: user
+    description: Operations about user
+  - name: pet_model
+    description: The Pet Model
+  - name: store_model
+    description: The Order Model
+security:
+  - Bearer: []
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token
+paths:
+  /api/user/:
+    get:
+      operationId: RetrieveUser
+      description: Logged in user detail view.
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  last_login:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 255
+                  is_active:
+                    type: boolean
+                    readOnly: true
+                  joined_at:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                required:
+                  - email
+          description: ""
+  /api/brewing/{id}/:
+    get:
+      operationId: RetrieveBrewing
+      description: Retrieve gongfu brewing details.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value identifying this brewing.
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  temperature:
+                    type: integer
+                    maximum: 100
+                    nullable: true
+                    minimum: 0
+                  weight:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  initial:
+                    type: string
+                    nullable: true
+                  increments:
+                    type: string
+                    nullable: true
+          description: ""
+  /api/origin/{id}/:
+    get:
+      operationId: RetrieveOrigin
+      description: Retrieve origin details.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value identifying this origin.
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  is_public:
+                    type: boolean
+                  country:
+                    type: string
+                    maxLength: 30
+                  region:
+                    type: string
+                    maxLength: 50
+                  locality:
+                    type: string
+                    maxLength: 50
+                  latitude:
+                    type: number
+                    nullable: true
+                  longitude:
+                    type: number
+                    nullable: true
+                required:
+                  - country
+          description: ""
+  /api/category/:
+    get:
+      operationId: listCategorys
+      description: List categories.
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    gongfu_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                    western_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                    name:
+                      enum:
+                        - WHITE
+                        - YELLOW
+                        - GREEN
+                        - OOLONG
+                        - BLACK
+                        - FERMENTED
+                        - HERBAL
+                        - SCENTED
+                        - OTHER
+                      readOnly: true
+                    description:
+                      type: string
+                    description_source:
+                      type: string
+                      maxLength: 100
+                  required:
+                    - gongfu_brewing
+                    - western_brewing
+          description: ""
+  /api/subcategory/:
+    get:
+      operationId: listSubcategorys
+      description: List and create subcategories.
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    gongfu_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    western_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    origin:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        user:
+                          type: string
+                          readOnly: true
+                        is_public:
+                          type: boolean
+                        country:
+                          type: string
+                          maxLength: 30
+                        region:
+                          type: string
+                          maxLength: 50
+                        locality:
+                          type: string
+                          maxLength: 50
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+                      required:
+                        - country
+                      type: object
+                      nullable: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    translated_name:
+                      type: string
+                      maxLength: 50
+                    description:
+                      type: string
+                    description_source:
+                      type: string
+                      maxLength: 100
+                    category:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+          description: ""
+    post:
+      operationId: CreateSubcategory
+      description: List and create subcategories.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id001
+              properties:
+                gongfu_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                western_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                origin:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    country:
+                      type: string
+                      maxLength: 30
+                    region:
+                      type: string
+                      maxLength: 50
+                    locality:
+                      type: string
+                      maxLength: 50
+                    latitude:
+                      type: number
+                      nullable: true
+                    longitude:
+                      type: number
+                      nullable: true
+                  required:
+                    - country
+                  type: object
+                  nullable: true
+                is_public:
+                  type: boolean
+                name:
+                  type: string
+                  maxLength: 50
+                translated_name:
+                  type: string
+                  maxLength: 50
+                description:
+                  type: string
+                description_source:
+                  type: string
+                  maxLength: 100
+                category:
+                  type: integer
+                  nullable: true
+              required:
+                - name
+          application/x-www-form-urlencoded:
+            schema: *id001
+          multipart/form-data:
+            schema: *id001
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  gongfu_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  western_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  origin:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      country:
+                        type: string
+                        maxLength: 30
+                      region:
+                        type: string
+                        maxLength: 50
+                      locality:
+                        type: string
+                        maxLength: 50
+                      latitude:
+                        type: number
+                        nullable: true
+                      longitude:
+                        type: number
+                        nullable: true
+                    required:
+                      - country
+                    type: object
+                    nullable: true
+                  is_public:
+                    type: boolean
+                  name:
+                    type: string
+                    maxLength: 50
+                  translated_name:
+                    type: string
+                    maxLength: 50
+                  description:
+                    type: string
+                  description_source:
+                    type: string
+                    maxLength: 100
+                  category:
+                    type: integer
+                    nullable: true
+                required:
+                  - name
+          description: ""
+  /api/vendor/:
+    get:
+      operationId: listVendors
+      description: List and create vendors.
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    website:
+                      type: string
+                      maxLength: 50
+                    popularity:
+                      type: integer
+                      maximum: 10
+                      nullable: true
+                      minimum: 0
+                    origin:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+          description: ""
+    post:
+      operationId: CreateVendor
+      description: List and create vendors.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id002
+              properties:
+                is_public:
+                  type: boolean
+                name:
+                  type: string
+                  maxLength: 50
+                website:
+                  type: string
+                  maxLength: 50
+                popularity:
+                  type: integer
+                  maximum: 10
+                  nullable: true
+                  minimum: 0
+                origin:
+                  type: integer
+                  nullable: true
+              required:
+                - name
+          application/x-www-form-urlencoded:
+            schema: *id002
+          multipart/form-data:
+            schema: *id002
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  is_public:
+                    type: boolean
+                  name:
+                    type: string
+                    maxLength: 50
+                  website:
+                    type: string
+                    maxLength: 50
+                  popularity:
+                    type: integer
+                    maximum: 10
+                    nullable: true
+                    minimum: 0
+                  origin:
+                    type: integer
+                    nullable: true
+                required:
+                  - name
+          description: ""
+  /api/tea/:
+    get:
+      operationId: listTeas
+      description: Tea view set.
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    image:
+                      type: string
+                      format: binary
+                      nullable: true
+                    gongfu_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    western_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    origin:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        user:
+                          type: string
+                          readOnly: true
+                        is_public:
+                          type: boolean
+                        country:
+                          type: string
+                          maxLength: 30
+                        region:
+                          type: string
+                          maxLength: 50
+                        locality:
+                          type: string
+                          maxLength: 50
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+                      required:
+                        - country
+                      type: object
+                      nullable: true
+                    subcategory:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        user:
+                          type: string
+                          readOnly: true
+                        gongfu_brewing:
+                          properties:
+                            id:
+                              type: integer
+                              readOnly: true
+                            temperature:
+                              type: integer
+                              maximum: 100
+                              nullable: true
+                              minimum: 0
+                            weight:
+                              type: number
+                              nullable: true
+                              minimum: 0
+                            initial:
+                              type: string
+                              nullable: true
+                            increments:
+                              type: string
+                              nullable: true
+                          type: object
+                          nullable: true
+                        western_brewing:
+                          properties:
+                            id:
+                              type: integer
+                              readOnly: true
+                            temperature:
+                              type: integer
+                              maximum: 100
+                              nullable: true
+                              minimum: 0
+                            weight:
+                              type: number
+                              nullable: true
+                              minimum: 0
+                            initial:
+                              type: string
+                              nullable: true
+                            increments:
+                              type: string
+                              nullable: true
+                          type: object
+                          nullable: true
+                        origin:
+                          properties:
+                            id:
+                              type: integer
+                              readOnly: true
+                            user:
+                              type: string
+                              readOnly: true
+                            is_public:
+                              type: boolean
+                            country:
+                              type: string
+                              maxLength: 30
+                            region:
+                              type: string
+                              maxLength: 50
+                            locality:
+                              type: string
+                              maxLength: 50
+                            latitude:
+                              type: number
+                              nullable: true
+                            longitude:
+                              type: number
+                              nullable: true
+                          required:
+                            - country
+                          type: object
+                          nullable: true
+                        is_public:
+                          type: boolean
+                        name:
+                          type: string
+                          maxLength: 50
+                        translated_name:
+                          type: string
+                          maxLength: 50
+                        description:
+                          type: string
+                        description_source:
+                          type: string
+                          maxLength: 100
+                        category:
+                          type: integer
+                          nullable: true
+                      required:
+                        - name
+                      type: object
+                      nullable: true
+                    vendor:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        user:
+                          type: string
+                          readOnly: true
+                        is_public:
+                          type: boolean
+                        name:
+                          type: string
+                          maxLength: 50
+                        website:
+                          type: string
+                          maxLength: 50
+                        popularity:
+                          type: integer
+                          maximum: 10
+                          nullable: true
+                          minimum: 0
+                        origin:
+                          type: integer
+                          nullable: true
+                      required:
+                        - name
+                      type: object
+                      nullable: true
+                    is_archived:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    year:
+                      type: integer
+                      maximum: 2100
+                      minimum: 1900
+                      nullable: true
+                    gongfu_preferred:
+                      type: boolean
+                    created_on:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    last_consumed_on:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    price:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    weight_left:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    weight_consumed:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    rating:
+                      type: integer
+                      maximum: 10
+                      nullable: true
+                      minimum: 0
+                    notes:
+                      type: string
+                      nullable: true
+                      maxLength: 10000
+                    category:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+          description: ""
+    post:
+      operationId: createTea
+      description: Tea view set.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id003
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  nullable: true
+                gongfu_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                western_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                origin:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    country:
+                      type: string
+                      maxLength: 30
+                    region:
+                      type: string
+                      maxLength: 50
+                    locality:
+                      type: string
+                      maxLength: 50
+                    latitude:
+                      type: number
+                      nullable: true
+                    longitude:
+                      type: number
+                      nullable: true
+                  required:
+                    - country
+                  type: object
+                  nullable: true
+                subcategory:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    gongfu_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    western_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    origin:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        user:
+                          type: string
+                          readOnly: true
+                        is_public:
+                          type: boolean
+                        country:
+                          type: string
+                          maxLength: 30
+                        region:
+                          type: string
+                          maxLength: 50
+                        locality:
+                          type: string
+                          maxLength: 50
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+                      required:
+                        - country
+                      type: object
+                      nullable: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    translated_name:
+                      type: string
+                      maxLength: 50
+                    description:
+                      type: string
+                    description_source:
+                      type: string
+                      maxLength: 100
+                    category:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+                  type: object
+                  nullable: true
+                vendor:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    website:
+                      type: string
+                      maxLength: 50
+                    popularity:
+                      type: integer
+                      maximum: 10
+                      nullable: true
+                      minimum: 0
+                    origin:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+                  type: object
+                  nullable: true
+                is_archived:
+                  type: boolean
+                name:
+                  type: string
+                  maxLength: 50
+                year:
+                  type: integer
+                  maximum: 2100
+                  minimum: 1900
+                  nullable: true
+                gongfu_preferred:
+                  type: boolean
+                price:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                weight_left:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                weight_consumed:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                rating:
+                  type: integer
+                  maximum: 10
+                  nullable: true
+                  minimum: 0
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 10000
+                category:
+                  type: integer
+                  nullable: true
+              required:
+                - name
+          application/x-www-form-urlencoded:
+            schema: *id003
+          multipart/form-data:
+            schema: *id003
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  image:
+                    type: string
+                    format: binary
+                    nullable: true
+                  gongfu_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  western_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  origin:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      country:
+                        type: string
+                        maxLength: 30
+                      region:
+                        type: string
+                        maxLength: 50
+                      locality:
+                        type: string
+                        maxLength: 50
+                      latitude:
+                        type: number
+                        nullable: true
+                      longitude:
+                        type: number
+                        nullable: true
+                    required:
+                      - country
+                    type: object
+                    nullable: true
+                  subcategory:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      gongfu_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      western_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      origin:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          user:
+                            type: string
+                            readOnly: true
+                          is_public:
+                            type: boolean
+                          country:
+                            type: string
+                            maxLength: 30
+                          region:
+                            type: string
+                            maxLength: 50
+                          locality:
+                            type: string
+                            maxLength: 50
+                          latitude:
+                            type: number
+                            nullable: true
+                          longitude:
+                            type: number
+                            nullable: true
+                        required:
+                          - country
+                        type: object
+                        nullable: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      translated_name:
+                        type: string
+                        maxLength: 50
+                      description:
+                        type: string
+                      description_source:
+                        type: string
+                        maxLength: 100
+                      category:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  vendor:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      website:
+                        type: string
+                        maxLength: 50
+                      popularity:
+                        type: integer
+                        maximum: 10
+                        nullable: true
+                        minimum: 0
+                      origin:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  is_archived:
+                    type: boolean
+                  name:
+                    type: string
+                    maxLength: 50
+                  year:
+                    type: integer
+                    maximum: 2100
+                    minimum: 1900
+                    nullable: true
+                  gongfu_preferred:
+                    type: boolean
+                  created_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  last_consumed_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  price:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_left:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_consumed:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  rating:
+                    type: integer
+                    maximum: 10
+                    nullable: true
+                    minimum: 0
+                  notes:
+                    type: string
+                    nullable: true
+                    maxLength: 10000
+                  category:
+                    type: integer
+                    nullable: true
+                required:
+                  - name
+          description: ""
+  /api/tea/{id}/:
+    get:
+      operationId: retrieveTea
+      description: Tea view set.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ""
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  image:
+                    type: string
+                    format: binary
+                    nullable: true
+                  gongfu_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  western_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  origin:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      country:
+                        type: string
+                        maxLength: 30
+                      region:
+                        type: string
+                        maxLength: 50
+                      locality:
+                        type: string
+                        maxLength: 50
+                      latitude:
+                        type: number
+                        nullable: true
+                      longitude:
+                        type: number
+                        nullable: true
+                    required:
+                      - country
+                    type: object
+                    nullable: true
+                  subcategory:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      gongfu_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      western_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      origin:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          user:
+                            type: string
+                            readOnly: true
+                          is_public:
+                            type: boolean
+                          country:
+                            type: string
+                            maxLength: 30
+                          region:
+                            type: string
+                            maxLength: 50
+                          locality:
+                            type: string
+                            maxLength: 50
+                          latitude:
+                            type: number
+                            nullable: true
+                          longitude:
+                            type: number
+                            nullable: true
+                        required:
+                          - country
+                        type: object
+                        nullable: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      translated_name:
+                        type: string
+                        maxLength: 50
+                      description:
+                        type: string
+                      description_source:
+                        type: string
+                        maxLength: 100
+                      category:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  vendor:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      website:
+                        type: string
+                        maxLength: 50
+                      popularity:
+                        type: integer
+                        maximum: 10
+                        nullable: true
+                        minimum: 0
+                      origin:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  is_archived:
+                    type: boolean
+                  name:
+                    type: string
+                    maxLength: 50
+                  year:
+                    type: integer
+                    maximum: 2100
+                    minimum: 1900
+                    nullable: true
+                  gongfu_preferred:
+                    type: boolean
+                  created_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  last_consumed_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  price:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_left:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_consumed:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  rating:
+                    type: integer
+                    maximum: 10
+                    nullable: true
+                    minimum: 0
+                  notes:
+                    type: string
+                    nullable: true
+                    maxLength: 10000
+                  category:
+                    type: integer
+                    nullable: true
+                required:
+                  - name
+          description: ""
+    put:
+      operationId: updateTea
+      description: Tea view set.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ""
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema: &id004
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  nullable: true
+                gongfu_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                western_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                origin:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    country:
+                      type: string
+                      maxLength: 30
+                    region:
+                      type: string
+                      maxLength: 50
+                    locality:
+                      type: string
+                      maxLength: 50
+                    latitude:
+                      type: number
+                      nullable: true
+                    longitude:
+                      type: number
+                      nullable: true
+                  required:
+                    - country
+                  type: object
+                  nullable: true
+                subcategory:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    gongfu_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    western_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    origin:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        user:
+                          type: string
+                          readOnly: true
+                        is_public:
+                          type: boolean
+                        country:
+                          type: string
+                          maxLength: 30
+                        region:
+                          type: string
+                          maxLength: 50
+                        locality:
+                          type: string
+                          maxLength: 50
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+                      required:
+                        - country
+                      type: object
+                      nullable: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    translated_name:
+                      type: string
+                      maxLength: 50
+                    description:
+                      type: string
+                    description_source:
+                      type: string
+                      maxLength: 100
+                    category:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+                  type: object
+                  nullable: true
+                vendor:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    website:
+                      type: string
+                      maxLength: 50
+                    popularity:
+                      type: integer
+                      maximum: 10
+                      nullable: true
+                      minimum: 0
+                    origin:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+                  type: object
+                  nullable: true
+                is_archived:
+                  type: boolean
+                name:
+                  type: string
+                  maxLength: 50
+                year:
+                  type: integer
+                  maximum: 2100
+                  minimum: 1900
+                  nullable: true
+                gongfu_preferred:
+                  type: boolean
+                price:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                weight_left:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                weight_consumed:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                rating:
+                  type: integer
+                  maximum: 10
+                  nullable: true
+                  minimum: 0
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 10000
+                category:
+                  type: integer
+                  nullable: true
+              required:
+                - name
+          application/x-www-form-urlencoded:
+            schema: *id004
+          multipart/form-data:
+            schema: *id004
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  image:
+                    type: string
+                    format: binary
+                    nullable: true
+                  gongfu_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  western_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  origin:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      country:
+                        type: string
+                        maxLength: 30
+                      region:
+                        type: string
+                        maxLength: 50
+                      locality:
+                        type: string
+                        maxLength: 50
+                      latitude:
+                        type: number
+                        nullable: true
+                      longitude:
+                        type: number
+                        nullable: true
+                    required:
+                      - country
+                    type: object
+                    nullable: true
+                  subcategory:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      gongfu_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      western_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      origin:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          user:
+                            type: string
+                            readOnly: true
+                          is_public:
+                            type: boolean
+                          country:
+                            type: string
+                            maxLength: 30
+                          region:
+                            type: string
+                            maxLength: 50
+                          locality:
+                            type: string
+                            maxLength: 50
+                          latitude:
+                            type: number
+                            nullable: true
+                          longitude:
+                            type: number
+                            nullable: true
+                        required:
+                          - country
+                        type: object
+                        nullable: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      translated_name:
+                        type: string
+                        maxLength: 50
+                      description:
+                        type: string
+                      description_source:
+                        type: string
+                        maxLength: 100
+                      category:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  vendor:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      website:
+                        type: string
+                        maxLength: 50
+                      popularity:
+                        type: integer
+                        maximum: 10
+                        nullable: true
+                        minimum: 0
+                      origin:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  is_archived:
+                    type: boolean
+                  name:
+                    type: string
+                    maxLength: 50
+                  year:
+                    type: integer
+                    maximum: 2100
+                    minimum: 1900
+                    nullable: true
+                  gongfu_preferred:
+                    type: boolean
+                  created_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  last_consumed_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  price:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_left:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_consumed:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  rating:
+                    type: integer
+                    maximum: 10
+                    nullable: true
+                    minimum: 0
+                  notes:
+                    type: string
+                    nullable: true
+                    maxLength: 10000
+                  category:
+                    type: integer
+                    nullable: true
+                required:
+                  - name
+          description: ""
+    patch:
+      operationId: partial_updateTea
+      description: Tea view set.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ""
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema: &id005
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  nullable: true
+                gongfu_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                western_brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                origin:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    country:
+                      type: string
+                      maxLength: 30
+                    region:
+                      type: string
+                      maxLength: 50
+                    locality:
+                      type: string
+                      maxLength: 50
+                    latitude:
+                      type: number
+                      nullable: true
+                    longitude:
+                      type: number
+                      nullable: true
+                  required:
+                    - country
+                  type: object
+                  nullable: true
+                subcategory:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    gongfu_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    western_brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    origin:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        user:
+                          type: string
+                          readOnly: true
+                        is_public:
+                          type: boolean
+                        country:
+                          type: string
+                          maxLength: 30
+                        region:
+                          type: string
+                          maxLength: 50
+                        locality:
+                          type: string
+                          maxLength: 50
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+                      required:
+                        - country
+                      type: object
+                      nullable: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    translated_name:
+                      type: string
+                      maxLength: 50
+                    description:
+                      type: string
+                    description_source:
+                      type: string
+                      maxLength: 100
+                    category:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+                  type: object
+                  nullable: true
+                vendor:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    user:
+                      type: string
+                      readOnly: true
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                      maxLength: 50
+                    website:
+                      type: string
+                      maxLength: 50
+                    popularity:
+                      type: integer
+                      maximum: 10
+                      nullable: true
+                      minimum: 0
+                    origin:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+                  type: object
+                  nullable: true
+                is_archived:
+                  type: boolean
+                name:
+                  type: string
+                  maxLength: 50
+                year:
+                  type: integer
+                  maximum: 2100
+                  minimum: 1900
+                  nullable: true
+                gongfu_preferred:
+                  type: boolean
+                price:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                weight_left:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                weight_consumed:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                rating:
+                  type: integer
+                  maximum: 10
+                  nullable: true
+                  minimum: 0
+                notes:
+                  type: string
+                  nullable: true
+                  maxLength: 10000
+                category:
+                  type: integer
+                  nullable: true
+          application/x-www-form-urlencoded:
+            schema: *id005
+          multipart/form-data:
+            schema: *id005
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  image:
+                    type: string
+                    format: binary
+                    nullable: true
+                  gongfu_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  western_brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  origin:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      country:
+                        type: string
+                        maxLength: 30
+                      region:
+                        type: string
+                        maxLength: 50
+                      locality:
+                        type: string
+                        maxLength: 50
+                      latitude:
+                        type: number
+                        nullable: true
+                      longitude:
+                        type: number
+                        nullable: true
+                    required:
+                      - country
+                    type: object
+                    nullable: true
+                  subcategory:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      gongfu_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      western_brewing:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          temperature:
+                            type: integer
+                            maximum: 100
+                            nullable: true
+                            minimum: 0
+                          weight:
+                            type: number
+                            nullable: true
+                            minimum: 0
+                          initial:
+                            type: string
+                            nullable: true
+                          increments:
+                            type: string
+                            nullable: true
+                        type: object
+                        nullable: true
+                      origin:
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                          user:
+                            type: string
+                            readOnly: true
+                          is_public:
+                            type: boolean
+                          country:
+                            type: string
+                            maxLength: 30
+                          region:
+                            type: string
+                            maxLength: 50
+                          locality:
+                            type: string
+                            maxLength: 50
+                          latitude:
+                            type: number
+                            nullable: true
+                          longitude:
+                            type: number
+                            nullable: true
+                        required:
+                          - country
+                        type: object
+                        nullable: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      translated_name:
+                        type: string
+                        maxLength: 50
+                      description:
+                        type: string
+                      description_source:
+                        type: string
+                        maxLength: 100
+                      category:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  vendor:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      user:
+                        type: string
+                        readOnly: true
+                      is_public:
+                        type: boolean
+                      name:
+                        type: string
+                        maxLength: 50
+                      website:
+                        type: string
+                        maxLength: 50
+                      popularity:
+                        type: integer
+                        maximum: 10
+                        nullable: true
+                        minimum: 0
+                      origin:
+                        type: integer
+                        nullable: true
+                    required:
+                      - name
+                    type: object
+                    nullable: true
+                  is_archived:
+                    type: boolean
+                  name:
+                    type: string
+                    maxLength: 50
+                  year:
+                    type: integer
+                    maximum: 2100
+                    minimum: 1900
+                    nullable: true
+                  gongfu_preferred:
+                    type: boolean
+                  created_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  last_consumed_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  price:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_left:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  weight_consumed:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  rating:
+                    type: integer
+                    maximum: 10
+                    nullable: true
+                    minimum: 0
+                  notes:
+                    type: string
+                    nullable: true
+                    maxLength: 10000
+                  category:
+                    type: integer
+                    nullable: true
+                required:
+                  - name
+          description: ""
+    delete:
+      operationId: destroyTea
+      description: Tea view set.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ""
+          schema:
+            type: string
+      responses:
+        "204":
+          description: ""
+  /api/register/:
+    post:
+      operationId: CreateCustomUser
+      description: Register view.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id006
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                password1:
+                  type: string
+                  writeOnly: true
+                password2:
+                  type: string
+                  writeOnly: true
+              required:
+                - email
+                - password1
+                - password2
+          application/x-www-form-urlencoded:
+            schema: *id006
+          multipart/form-data:
+            schema: *id006
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  last_login:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 255
+                  is_active:
+                    type: boolean
+                    readOnly: true
+                  joined_at:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                required:
+                  - email
+          description: ""
+  /api/login/:
+    post:
+      operationId: CreateLogin
+      description: Login view.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id007
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                  writeOnly: true
+              required:
+                - email
+                - password
+          application/x-www-form-urlencoded:
+            schema: *id007
+          multipart/form-data:
+            schema: *id007
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  email:
+                    type: string
+                required:
+                  - email
+          description: ""
+  /api/token/refresh/:
+    post:
+      operationId: CreateTokenRefresh
+      description:
+        "Takes a refresh type JSON web token and returns an access type
+        JSON web
+
+        token if the refresh token is valid."
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id008
+              properties:
+                refresh:
+                  type: string
+              required:
+                - refresh
+          application/x-www-form-urlencoded:
+            schema: *id008
+          multipart/form-data:
+            schema: *id008
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  refresh:
+                    type: string
+                required:
+                  - refresh
+          description: ""
+  /api/brewing/:
+    post:
+      operationId: CreateBrewing
+      description: Create gongfu brewing details.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id009
+              properties:
+                temperature:
+                  type: integer
+                  maximum: 100
+                  nullable: true
+                  minimum: 0
+                weight:
+                  type: number
+                  nullable: true
+                  minimum: 0
+                initial:
+                  type: string
+                  nullable: true
+                increments:
+                  type: string
+                  nullable: true
+          application/x-www-form-urlencoded:
+            schema: *id009
+          multipart/form-data:
+            schema: *id009
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  temperature:
+                    type: integer
+                    maximum: 100
+                    nullable: true
+                    minimum: 0
+                  weight:
+                    type: number
+                    nullable: true
+                    minimum: 0
+                  initial:
+                    type: string
+                    nullable: true
+                  increments:
+                    type: string
+                    nullable: true
+          description: ""
+  /api/origin/:
+    post:
+      operationId: CreateOrigin
+      description: Create origin passing current user.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id010
+              properties:
+                is_public:
+                  type: boolean
+                country:
+                  type: string
+                  maxLength: 30
+                region:
+                  type: string
+                  maxLength: 50
+                locality:
+                  type: string
+                  maxLength: 50
+                latitude:
+                  type: number
+                  nullable: true
+                longitude:
+                  type: number
+                  nullable: true
+              required:
+                - country
+          application/x-www-form-urlencoded:
+            schema: *id010
+          multipart/form-data:
+            schema: *id010
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  user:
+                    type: string
+                    readOnly: true
+                  is_public:
+                    type: boolean
+                  country:
+                    type: string
+                    maxLength: 30
+                  region:
+                    type: string
+                    maxLength: 50
+                  locality:
+                    type: string
+                    maxLength: 50
+                  latitude:
+                    type: number
+                    nullable: true
+                  longitude:
+                    type: number
+                    nullable: true
+                required:
+                  - country
+          description: ""
+  /api/parser/:
+    post:
+      operationId: CreateVisionParser
+      description: Get tea data from vision parser
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: ""
+  /api/places/autocomplete/:
+    post:
+      operationId: CreatePlacesAutocomplete
+      description: Wrapper view around Places API autocomplete
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: ""
+  /api/places/details/:
+    post:
+      operationId: CreatePlacesDetails
+      description: Wrapper view around Places API details
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: ""

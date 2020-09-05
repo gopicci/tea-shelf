@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script
+      type="module"
+      src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"
+    ></script>
+  </head>
+  <body>
+    <rapi-doc
+      show-info="true"
+      spec-url="openapi-schema.yaml"
+      server-url="http://localhost:8080"
+      show-header="false"
+      render-style="focused"
+      allow-server-selection="false"
+      schema-expand-level="1"
+      schema-style="table"
+    >
+      <svg
+        slot="nav-logo"
+        viewBox="0 0 512 512"
+        preserveAspectRatio="xMidYMid meet"
+        focusable="false"
+        class="style-scope ytd-topbar-logo-renderer"
+        style="pointer-events: none; display: block; width: 50%; height: 80%; margin: auto auto"
+      >
+        <defs>
+          <mask id="a" maskUnits="userSpaceOnUse">
+            <circle cx="256" cy="256" r="256" fill="#ececec" />
+          </mask>
+        </defs>
+        <circle r="256" cy="256" cx="256" fill="#f2f2f2" />
+        <circle
+          r="229.7"
+          cy="256"
+          cx="256"
+          fill="none"
+          stroke="red"
+          stroke-width="9"
+        />
+        <circle
+          r="165.5"
+          cy="256"
+          cx="256"
+          fill="none"
+          stroke="gray"
+          stroke-width="70.1"
+          stroke-dasharray="140 70"
+          stroke-dashoffset="182.3"
+        />
+        <circle
+          cx="256"
+          cy="256"
+          r="75.2"
+          fill="none"
+          stroke="red"
+          stroke-width="18"
+        />
+        <circle r="50.8" cy="256" cx="256" fill="green" />
+        <path
+          mask="url(#a)"
+          d="M276-101c83 301 38 486-204 702 0 10 798 19 798 9S690-220 660-240 276-101 276-101z"
+          fill-opacity=".1"
+          style="
+            fill: #000000;
+            fill-opacity: 0.08;
+            stroke: none;
+            stroke-width: 1px;
+            stroke-linecap: butt;
+            stroke-linejoin: miter;
+            stroke-opacity: 1;
+          "
+        />
+      </svg>
+    </rapi-doc>
+  </body>
+</html>
