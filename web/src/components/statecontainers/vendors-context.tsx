@@ -8,11 +8,11 @@ import React, {
 } from 'react';
 import localforage from "localforage";
 import { APIRequest } from "../../services/auth-services";
-import { genericAction, genericReducer } from "../../services/sync-services";
+import { GenericAction, genericReducer } from "../../services/sync-services";
 import { VendorModel } from "../../services/models";
 
 export const VendorsState = createContext<VendorModel[]>([]);
-export const VendorsDispatch = createContext({} as Dispatch<genericAction>);
+export const VendorsDispatch = createContext({} as Dispatch<GenericAction>);
 
 type Props = {
   children: ReactChild;

@@ -8,12 +8,12 @@ import React, {
 } from 'react';
 import localforage from "localforage";
 import { APIRequest } from "../../services/auth-services";
-import { genericAction, genericReducer } from "../../services/sync-services";
+import { GenericAction, genericReducer } from "../../services/sync-services";
 import { SubcategoryModel } from "../../services/models";
 
 export const SubcategoriesState = createContext<SubcategoryModel[]>([]);
 export const SubcategoriesDispatch = createContext(
-  {} as Dispatch<genericAction>
+  {} as Dispatch<GenericAction>
 );
 
 type Props = {

@@ -11,12 +11,12 @@ import React, {
  *
  * @memberOf SyncContext
  */
-type Action = {
+export type SyncAction = {
   /** Action type */
   type: "SET_SYNCED" | "SET_NOT_SYNCED";
 };
 
-function reducer(state: boolean, action: Action) {
+function reducer(state: boolean, action: SyncAction) {
   switch (action.type) {
     case "SET_SYNCED":
       return true;
@@ -30,7 +30,7 @@ function reducer(state: boolean, action: Action) {
 const initialState = false;
 
 export const SyncState = createContext(initialState);
-export const SyncDispatch = createContext({} as Dispatch<Action>);
+export const SyncDispatch = createContext({} as Dispatch<SyncAction>);
 
 type Props = {
   children: ReactChild;

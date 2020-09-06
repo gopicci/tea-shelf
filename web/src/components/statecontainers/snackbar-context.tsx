@@ -26,7 +26,7 @@ type State = {
  *
  * @memberOf SnackbarContext
  */
-type Action =
+export type SnackbarAction =
   | {
       /** Available actions by severity */
       type: "ERROR" | "WARNING" | "INFO" | "SUCCESS";
@@ -44,7 +44,7 @@ const initialState: State = {
   message: "",
 };
 
-function reducer(state: State, action: Action) {
+function reducer(state: State, action: SnackbarAction) {
   switch (action.type) {
     case "ERROR":
     case "WARNING":
@@ -63,7 +63,7 @@ function reducer(state: State, action: Action) {
 }
 
 export const SnackbarState = createContext(initialState);
-export const SnackbarDispatch = createContext({} as Dispatch<Action>);
+export const SnackbarDispatch = createContext({} as Dispatch<SnackbarAction>);
 
 type Props = {
   children: ReactChild;

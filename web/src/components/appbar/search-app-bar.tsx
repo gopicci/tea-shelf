@@ -107,6 +107,10 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Set drawer open state */
   setOpen: (state: boolean) => void;
+  /** App start sync state */
+  syncOnOpen: boolean;
+  /** Set app start sync state */
+  setSyncOnOpen: (state: boolean) => void;
 };
 
 /**
@@ -115,7 +119,11 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function SearchAppBar({ setOpen }: Props): ReactElement {
+function SearchAppBar({
+  setOpen,
+  syncOnOpen,
+  setSyncOnOpen,
+}: Props): ReactElement {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
@@ -196,7 +204,7 @@ function SearchAppBar({ setOpen }: Props): ReactElement {
           />
         </Box>
         <Box className={classes.user}>
-          <SyncButton />
+          <SyncButton syncOnOpen={syncOnOpen} setSyncOnOpen={setSyncOnOpen} />
           <IconButton
             onClick={handleGridViewChange}
             color="inherit"

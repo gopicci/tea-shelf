@@ -21,7 +21,7 @@ info:
     | ------------ |  -------------- |
     | [Tea](#tag--Tea) | Operation revoving around tea model |
     | [Categories](#tag--Categories) | Groups category and subcategory models operations |
-    | Origin | The origin model represents a geographical location |
+    | [Origin](#tag--Origin) | The origin model represents a geographical location |
     | Vendor | A tea vendor or brand |
     | Brewing | Brewing information (water temperature, time...) |
     | User | User info for authentication |
@@ -45,11 +45,19 @@ tags:
     description: |
       Operations revolving around the category and subcategory models.
 
-      Category instances are generic and can only be read as a list. They contain basic info on major tea categories
+      Category instances are predefined and can only be read as a list. They contain basic info on major tea categories
       (i.e. black, oolong, green, etc.).
 
       Subcategory instances contain more specific tea types (i.e. Darjeeling, Puerh, etc.). They are user based but can be public,
-      when getting a subcategory list the API will return all the public subcategories as well as the user specific ones.
+      when requesting a subcategory list the API will return all the public subcategories as well as the user specific ones.
+  - name: Origin
+    description: |
+      Operations revolving around the origin model.
+
+      The origin model contains data about a geographical location (name and coordinates) and it's structured in a way
+      that it's compatible with Google Maps services, from which the API offers customized autocomplete and place details operations.
+
+      Origin instances are nested in others and can be posted with a get or create approach.
 
 security:
   - Bearer: []
@@ -3009,6 +3017,8 @@ paths:
           description: ""
   /api/origin/:
     post:
+      tags:
+        - Origin
       operationId: CreateOrigin
       description: Create origin passing current user.
       parameters: []
@@ -3087,6 +3097,8 @@ paths:
           description: ""
   /api/places/autocomplete/:
     post:
+      tags:
+        - Origin
       operationId: CreatePlacesAutocomplete
       description: Wrapper view around Places API autocomplete
       parameters: []
@@ -3098,6 +3110,8 @@ paths:
           description: ""
   /api/places/details/:
     post:
+      tags:
+        - Origin
       operationId: CreatePlacesDetails
       description: Wrapper view around Places API details
       parameters: []

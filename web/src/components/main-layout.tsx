@@ -42,6 +42,10 @@ type Props = {
   route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
+  /** App start sync state */
+  syncOnOpen: boolean;
+  /** Set app start sync state */
+  setSyncOnOpen: (state: boolean) => void;
   /** Mobile mode or desktop */
   isMobile: boolean;
 };
@@ -67,14 +71,10 @@ function MainLayout(props: Props): ReactElement {
 
   return (
     <>
-      <SearchAppBar setOpen={setOpen} />
+      <SearchAppBar setOpen={setOpen} {...props} />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout
-          open={open}
-          setOpen={setOpen}
-          {...props}
-        />
+        <DrawerLayout open={open} setOpen={setOpen} {...props} />
         <Box className={classes.mainBox}>
           {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
           <GridLayout {...props} />

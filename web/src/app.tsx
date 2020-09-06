@@ -48,6 +48,8 @@ function App(): ReactElement {
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const [syncOnOpen, setSyncOnOpen] = useState(false);
+
   const [route, setRoute] = useState<Route>({ route: "MAIN" });
 
   /**
@@ -60,6 +62,8 @@ function App(): ReactElement {
     const props = {
       route,
       setRoute,
+      syncOnOpen,
+      setSyncOnOpen,
       isMobile,
     };
 

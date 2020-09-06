@@ -1,8 +1,8 @@
-import { APIRequest } from "./auth-services";
 import localforage from "localforage";
 import validator from "validator";
-import { TeaInstance, SubcategoryModel, VendorModel } from "./models";
+import { APIRequest } from "./auth-services";
 import { brewingTimesToSeconds } from "./parsing-services";
+import { TeaInstance, SubcategoryModel, VendorModel } from "./models";
 
 /**
  * Models allowed to be used in the generic services requiring an instance ID.
@@ -12,7 +12,7 @@ type genericModels = TeaInstance | SubcategoryModel | VendorModel;
 /**
  * Generic reducer actions.
  */
-export type genericAction =
+export type GenericAction =
   /** Clear state and returns an empty array */
   | { type: "CLEAR" }
   /** Set state with array input */
@@ -24,7 +24,7 @@ export type genericAction =
   /** Updates the ID of an instance on the array */
   | {
       type: "EDIT_ID";
-      data: { instance: genericModels; newID: number | string; };
+      data: { instance: genericModels; newID: number | string };
     }
   /** Deletes an instance from the array */
   | { type: "DELETE"; data: genericModels };
@@ -34,13 +34,13 @@ export type genericAction =
  * Models require a unique id field.
  *
  * @param {genericModels} state - Array of generic models instances
- * @param {genericAction} action - Action type and data
+ * @param {GenericAction} action - Action type and data
  * @returns {genericModels[]}
  * @category Services
  */
 export function genericReducer(
   state: genericModels[],
-  action: genericAction
+  action: GenericAction
 ): genericModels[] {
   switch (action.type) {
     case "CLEAR":
