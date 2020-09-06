@@ -110,6 +110,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
 
   return (
     <Card className={detailsClasses.card}>
+      <Box className={classes.empty} />
       <Box className={classes.pageTop}>
         <img
           src={teaData.image ? teaData.image : emptyImage}
