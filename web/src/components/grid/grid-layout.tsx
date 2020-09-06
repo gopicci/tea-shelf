@@ -175,8 +175,6 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
     }
   }
 
-  useEffect(() => console.log("filteredTeas: ", filteredTeas), [filteredTeas]);
-
   useEffect(() => {
     /**
      * Keeps visualized tea instances state sorted and filtered based on

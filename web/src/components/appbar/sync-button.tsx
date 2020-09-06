@@ -24,18 +24,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * SyncButton props.
- *
- * @memberOf SyncButton
- */
-type Props = {
-  /** App start sync state */
-  syncOnOpen: boolean;
-  /** Set app start sync state */
-  setSyncOnOpen: (state: boolean) => void;
-};
-
-/**
  * Sync icon button component. Callback runs on mount and on click.
  * Uploads offline cached tea instances, downloads tea instances,
  * categories, subcategories, vendors from API, updating global contexts.
@@ -43,7 +31,7 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function SyncButton({ syncOnOpen, setSyncOnOpen }: Props): ReactElement {
+function SyncButton(): ReactElement {
   const classes = useStyles();
 
   const [isSyncing, setSyncing] = useState(false);
@@ -148,13 +136,6 @@ function SyncButton({ syncOnOpen, setSyncOnOpen }: Props): ReactElement {
     teaDispatch,
     vendorDispatch,
   ]);
-
-  useEffect(() => {
-    if (!syncOnOpen) {
-      setSyncOnOpen(true);
-      handleSync();
-    }
-  }, [handleSync, setSyncOnOpen, syncOnOpen]);
 
   return isSyncing ? (
     <IconButton color="inherit" aria-label="refresh">
