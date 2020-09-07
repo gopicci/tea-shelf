@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { ReactElement, useCallback, useContext, useState } from "react";
 import { CircularProgress, IconButton } from "@material-ui/core";
 import { CloudDone, Refresh } from "@material-ui/icons";
 import localforage from "localforage";
