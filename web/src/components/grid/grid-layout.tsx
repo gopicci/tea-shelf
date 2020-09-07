@@ -267,6 +267,7 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
       }
     }
     if (teasState.length) filterTeas();
+    else setFilteredTeas(teasState);
   }, [
     filterState,
     categories,

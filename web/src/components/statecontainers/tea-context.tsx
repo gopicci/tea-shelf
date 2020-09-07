@@ -7,10 +7,13 @@ import React, {
   useReducer,
 } from "react";
 import localforage from "localforage";
-import { uploadOffline } from "../../services/sync-services";
+import {
+  genericReducer,
+  GenericAction,
+  uploadOffline,
+} from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import { TeaInstance } from "../../services/models";
-import { genericReducer, GenericAction } from "../../services/sync-services";
 
 export const TeasState = createContext<TeaInstance[]>([]);
 export const TeaDispatch = createContext({} as Dispatch<GenericAction>);

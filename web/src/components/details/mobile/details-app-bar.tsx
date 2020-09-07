@@ -9,8 +9,7 @@ import {
 } from "@material-ui/core";
 import { ArrowBack, MoreVert } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import localforage from "localforage";
-import { APIRequest } from "../../../services/auth-services";
+import { deleteTea } from "../../../services/sync-services";
 import { SnackbarDispatch } from "../../statecontainers/snackbar-context";
 import { TeaDispatch } from "../../statecontainers/tea-context";
 import { EditorContext } from "../../editor";
@@ -93,19 +92,7 @@ function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
    */
   async function handleDelete(): Promise<void> {
     try {
-      if (typeof teaData.id === "string")
-        // ID is UUID, delete online tea
-        await APIRequest(`/tea/${teaData.id}/`, "DELETE");
-      else {
-        // ID is not UUID, delete offline tea
-        const offlineTeas = await localforage.getItem<TeaInstance[]>(
-          "offline-teas"
-        );
-        let newOfflineTeas = [];
-        for (const tea of offlineTeas)
-          if (tea.id !== teaData.id) newOfflineTeas.push(tea);
-        await localforage.setItem("offline-teas", newOfflineTeas);
-      }
+      await deleteTea(teaData);
       setRoute({ route: "MAIN" });
       snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
       teaDispatch({ type: "DELETE", data: teaData });

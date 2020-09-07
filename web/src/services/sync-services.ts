@@ -60,10 +60,10 @@ export function genericReducer(
           : item
       );
     case "DELETE":
-      if (state.length < 2) return [];
       let newState = [];
-      for (const item of state)
-        if (item.id !== action.data.id) newState.push(item);
+      if (state.length)
+        for (const item of state)
+          if (item.id !== action.data.id) newState.push(item);
       return newState;
     default:
       return [];
@@ -152,4 +152,26 @@ export async function getOfflineTeas(): Promise<TeaInstance[]> {
   const cache = await localforage.getItem<TeaInstance[]>("offline-teas");
   if (!cache) return localforage.setItem("offline-teas", []);
   else return Promise.all(cache);
+}
+
+/**
+ * Deletes tea a instance.
+ *
+ * @param {TeaInstance} teaData - Tea instance
+ * @category Services
+ */
+export async function deleteTea(teaData: TeaInstance): Promise<void> {
+  if (typeof teaData.id === "string")
+    // ID is UUID, delete online tea
+    await APIRequest(`/tea/${teaData.id}/`, "DELETE");
+  else {
+    // ID is not UUID, delete offline tea
+    const offlineTeas = await localforage.getItem<TeaInstance[]>(
+      "offline-teas"
+    );
+    let newOfflineTeas = [];
+    for (const tea of offlineTeas)
+      if (tea.id !== teaData.id) newOfflineTeas.push(tea);
+    await localforage.setItem("offline-teas", newOfflineTeas);
+  }
 }

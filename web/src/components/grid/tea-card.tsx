@@ -12,7 +12,6 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import { StarRate, MoreVert, Archive, Unarchive } from "@material-ui/icons";
-import localforage from "localforage";
 import ReactCountryFlag from "react-country-flag";
 import {
   getOriginShortName,
@@ -20,14 +19,14 @@ import {
   getCountryCode,
   getCategoryName,
 } from "../../services/parsing-services";
-import { APIRequest } from "../../services/auth-services";
+import { deleteTea } from "../../services/sync-services";
 import { CategoriesState } from "../statecontainers/categories-context";
 import { EditorContext } from "../editor";
 import { TeaDispatch } from "../statecontainers/tea-context";
 import { SnackbarDispatch } from "../statecontainers/snackbar-context";
-import emptyImage from "../../media/empty.png";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
+import emptyImage from "../../media/empty.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -178,25 +177,11 @@ function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
     );
   }
 
-  /**
-   *  Deletes tea instance.
-   */
+  /** Deletes tea instance. */
   async function handleDelete(): Promise<void> {
     handleMenuClose();
     try {
-      if (typeof teaData.id === "string")
-        // ID is UUID, delete online tea
-        await APIRequest(`/tea/${teaData.id}/`, "DELETE");
-      else {
-        // ID is not UUID, delete offline tea
-        const offlineTeas = await localforage.getItem<TeaInstance[]>(
-          "offline-teas"
-        );
-        let newOfflineTeas = [];
-        for (const tea of offlineTeas)
-          if (tea.id !== teaData.id) newOfflineTeas.push(tea);
-        await localforage.setItem("offline-teas", newOfflineTeas);
-      }
+      await deleteTea(teaData);
       snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
       teaDispatch({ type: "DELETE", data: teaData });
     } catch (e) {
