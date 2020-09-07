@@ -13,6 +13,9 @@ import { FilterDispatch } from "../statecontainers/filter-context";
 import { formListStyles } from "../../style/form-list-styles";
 import { Filters } from "../../services/models";
 
+// Typing separately from props for jsdoc issue
+type ListName = "sorting" | keyof Filters["filters"]
+
 /**
  * FilterList props.
  *
@@ -20,7 +23,7 @@ import { Filters } from "../../services/models";
  */
 type Props = {
   /** Filter list name, can be sorting or one of the filter model options */
-  entry: "sorting" | keyof Filters["filters"];
+  entry: ListName;
   /** Filter list item in {name: checked} format */
   list: { [name: string]: boolean };
 };
