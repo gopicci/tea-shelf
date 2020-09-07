@@ -155,6 +155,7 @@ class TeaViewSet(ModelViewSet):
 
     lookup_field = "id"
     serializer_class = TeaSerializer
+    http_method_names = ["get", "post", "head", "put", "delete", "options"]
 
     def get_queryset(self):
         """
