@@ -302,6 +302,7 @@ class TeaAdmin(admin.ModelAdmin):
         "user",
         "is_archived",
     )
+    ordering = ("-created_on",)
 
     def get_changeform_initial_data(self, request):
         """
