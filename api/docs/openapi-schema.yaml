@@ -22,9 +22,9 @@ info:
     | [Tea](#tag--Tea) | Operation revoving around tea model |
     | [Categories](#tag--Categories) | Groups category and subcategory models operations |
     | [Origin](#tag--Origin) | The origin model represents a geographical location |
-    | Vendor | A tea vendor or brand |
-    | Brewing | Brewing information (water temperature, time...) |
-    | User | User info for authentication |
+    | [Vendor](#tag--Vendor) | A tea vendor or brand |
+    | [Brewing](#tag--Brewing) | Brewing information (water temperature, time...) |
+    | [User](#tag--User) | User related operations |
 
     ## Authentication
 
@@ -37,18 +37,18 @@ tags:
       Operations revolving around the tea model.
 
       A tea instance is user specific and contains information about a tea such as category, vendor, origin, user notes...
-      Some of this data comes from other models and is represented in nested form on the tea model.
+      Some of this data is based on other models and is represented in nested form.
 
-      Apart from standard CRUD operations, this section offers access to **vision parser**, a service that extract tea related
+      Apart from standard CRUD operations, this section offers access to vision parser, a service that extract tea related
       data from a picture containing it (a package or label).
   - name: Categories
     description: |
       Operations revolving around the category and subcategory models.
 
-      Category instances are predefined and can only be read as a list. They contain basic info on major tea categories
+      Category instances are predefined and can only be read as a list. They contain basic info about major tea categories
       (i.e. black, oolong, green, etc.).
 
-      Subcategory instances contain more specific tea types (i.e. Darjeeling, Puerh, etc.). They are user based but can be public,
+      Subcategory instances define more specific tea types (i.e. Darjeeling, Puerh, etc.). They are user based but can be public,
       when requesting a subcategory list the API will return all the public subcategories as well as the user specific ones.
   - name: Origin
     description: |
@@ -58,7 +58,21 @@ tags:
       that it's compatible with Google Maps services, from which the API offers customized autocomplete and place details operations.
 
       Origin instances are nested in others and can be posted with a get or create approach.
+  - name: Vendor
+    description: |
+      Operations revolving around the vendor model.
 
+      Vendor instances are user based but can ben public, when requesting a vendor list the API will return all
+      the public vendors as well as the user's ones.
+  - name: Brewing
+    description: |
+      Operations revolving around the brewing model.
+
+      The brewing model contains data about brewing suggestions. Brewing instances are nested in others and can be posted
+      with a get or create approach.
+  - name: User
+    description: |
+      Operations revolving around user authentication and data retrieval.
 security:
   - Bearer: []
 components:
@@ -71,8 +85,11 @@ components:
 paths:
   /api/user/:
     get:
+      tags:
+        - User
+      summary: User details
       operationId: RetrieveUser
-      description: Logged in user detail view.
+      description: View authentication details about the logged in user.
       parameters: []
       responses:
         "200":
@@ -91,7 +108,6 @@ paths:
                   email:
                     type: string
                     format: email
-                    maxLength: 255
                   is_active:
                     type: boolean
                     readOnly: true
@@ -99,20 +115,23 @@ paths:
                     type: string
                     format: date-time
                     readOnly: true
-                required:
-                  - email
           description: ""
+        "401":
+          description: "Unauthorized"
   /api/brewing/{id}/:
     get:
+      tags:
+        - Brewing
+      summary: Find brewing by ID
       operationId: RetrieveBrewing
-      description: Retrieve gongfu brewing details.
+      description: Retrieve a single brewing details.
       parameters:
         - name: id
           in: path
           required: true
-          description: A unique integer value identifying this brewing.
+          description: A unique integer value identifying the brewing.
           schema:
-            type: string
+            type: integer
       responses:
         "200":
           content:
@@ -138,17 +157,24 @@ paths:
                     type: string
                     nullable: true
           description: ""
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
   /api/origin/{id}/:
     get:
+      tags:
+        - Origin
+      summary: Find origin by ID
       operationId: RetrieveOrigin
-      description: Retrieve origin details.
+      description: Retrieve a single origin details.
       parameters:
         - name: id
           in: path
           required: true
-          description: A unique integer value identifying this origin.
+          description: A unique integer value identifying the origin.
           schema:
-            type: string
+            type: integer
       responses:
         "200":
           content:
@@ -160,6 +186,7 @@ paths:
                     readOnly: true
                   user:
                     type: string
+                    format: uuid
                     readOnly: true
                   is_public:
                     type: boolean
@@ -181,12 +208,18 @@ paths:
                 required:
                   - country
           description: ""
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
   /api/category/:
     get:
       tags:
         - Categories
+      summary: List categories
       operationId: listCategorys
-      description: List categories.
+      description: Category instances are predefined and can only be read as a list. They contain basic info about major tea categories
+        (i.e. black, oolong, green, etc.).
       parameters: []
       responses:
         "200":
@@ -257,17 +290,25 @@ paths:
                       type: string
                     description_source:
                       type: string
+                      format: uri
                       maxLength: 100
                   required:
                     - gongfu_brewing
                     - western_brewing
           description: ""
+        "401":
+          description: "Unauthorized"
   /api/subcategory/:
     get:
       tags:
         - Categories
+      summary: List subcategories
       operationId: listSubcategorys
-      description: List and create subcategories.
+      description: |
+        Subcategory instances define more specific tea types (i.e. Darjeeling, Puerh, etc.).
+
+        They are user based but can be public, when requesting a subcategory list the API will return all the public
+        subcategories as well as the user's ones.
       parameters: []
       responses:
         "200":
@@ -282,6 +323,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     gongfu_brewing:
                       properties:
@@ -334,6 +376,7 @@ paths:
                           readOnly: true
                         user:
                           type: string
+                          format: uuid
                           readOnly: true
                         is_public:
                           type: boolean
@@ -368,6 +411,7 @@ paths:
                       type: string
                     description_source:
                       type: string
+                      format: uri
                       maxLength: 100
                     category:
                       type: integer
@@ -375,11 +419,14 @@ paths:
                   required:
                     - name
           description: ""
+        "401":
+          description: "Unauthorized"
     post:
       tags:
         - Categories
+      summary: Create a subcategory
       operationId: CreateSubcategory
-      description: List and create subcategories.
+      description: Subcategory instances define more specific tea types (i.e. Darjeeling, Puerh, etc.).
       parameters: []
       requestBody:
         content:
@@ -437,6 +484,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     is_public:
                       type: boolean
@@ -471,6 +519,7 @@ paths:
                   type: string
                 description_source:
                   type: string
+                  format: uri
                   maxLength: 100
                 category:
                   type: integer
@@ -492,6 +541,7 @@ paths:
                     readOnly: true
                   user:
                     type: string
+                    format: uuid
                     readOnly: true
                   gongfu_brewing:
                     properties:
@@ -544,6 +594,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       is_public:
                         type: boolean
@@ -578,6 +629,7 @@ paths:
                     type: string
                   description_source:
                     type: string
+                    format: uri
                     maxLength: 100
                   category:
                     type: integer
@@ -585,10 +637,21 @@ paths:
                 required:
                   - name
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/vendor/:
     get:
+      tags:
+        - Vendor
+      summary: List vendors
       operationId: listVendors
-      description: List and create vendors.
+      description: |
+        Vendor instances contain info about a tea vendor or brand.
+
+        Vendor instances are user based but can ben public, when requesting a vendor list the API will return all
+        the public vendors as well as the user's ones.
       parameters: []
       responses:
         "200":
@@ -603,6 +666,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     is_public:
                       type: boolean
@@ -611,6 +675,7 @@ paths:
                       maxLength: 50
                     website:
                       type: string
+                      format: uri
                       maxLength: 50
                     popularity:
                       type: integer
@@ -623,9 +688,14 @@ paths:
                   required:
                     - name
           description: ""
+        "401":
+          description: "Unauthorized"
     post:
+      tags:
+        - Vendor
+      summary: Create a vendor
       operationId: CreateVendor
-      description: List and create vendors.
+      description: Vendor instances contain info about a tea vendor or brand.
       parameters: []
       requestBody:
         content:
@@ -639,6 +709,7 @@ paths:
                   maxLength: 50
                 website:
                   type: string
+                  format: uri
                   maxLength: 50
                 popularity:
                   type: integer
@@ -665,6 +736,7 @@ paths:
                     readOnly: true
                   user:
                     type: string
+                    format: uuid
                     readOnly: true
                   is_public:
                     type: boolean
@@ -673,6 +745,7 @@ paths:
                     maxLength: 50
                   website:
                     type: string
+                    format: uri
                     maxLength: 50
                   popularity:
                     type: integer
@@ -685,12 +758,21 @@ paths:
                 required:
                   - name
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/tea/:
     get:
       tags:
         - Tea
+      summary: List teas
       operationId: listTeas
-      description: Tea view set.
+      description: |
+        Returns a list of user's teas. A tea instance contains information about a tea such as category, vendor, origin,
+        user notes, etc.
+
+        Some of this data is based on other models and is represented in nested form.
       parameters: []
       responses:
         "200":
@@ -706,10 +788,11 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     image:
                       type: string
-                      format: binary
+                      format: uri
                       nullable: true
                     gongfu_brewing:
                       properties:
@@ -762,6 +845,7 @@ paths:
                           readOnly: true
                         user:
                           type: string
+                          format: uuid
                           readOnly: true
                         is_public:
                           type: boolean
@@ -791,6 +875,7 @@ paths:
                           readOnly: true
                         user:
                           type: string
+                          format: uuid
                           readOnly: true
                         gongfu_brewing:
                           properties:
@@ -843,6 +928,7 @@ paths:
                               readOnly: true
                             user:
                               type: string
+                              format: uuid
                               readOnly: true
                             is_public:
                               type: boolean
@@ -877,6 +963,7 @@ paths:
                           type: string
                         description_source:
                           type: string
+                          format: uri
                           maxLength: 100
                         category:
                           type: integer
@@ -892,6 +979,7 @@ paths:
                           readOnly: true
                         user:
                           type: string
+                          format: uuid
                           readOnly: true
                         is_public:
                           type: boolean
@@ -900,6 +988,7 @@ paths:
                           maxLength: 50
                         website:
                           type: string
+                          format: uri
                           maxLength: 50
                         popularity:
                           type: integer
@@ -960,11 +1049,17 @@ paths:
                   required:
                     - name
           description: ""
+        "401":
+          description: "Unauthorized"
     post:
       tags:
         - Tea
+      summary: Create a tea
       operationId: createTea
-      description: Tea view set.
+      description: |
+        A tea instance contains information about a tea such as category, vendor, origin, user notes, etc.
+
+        Some of this data is based on other models and is represented in nested form.
       parameters: []
       requestBody:
         content:
@@ -973,8 +1068,9 @@ paths:
               properties:
                 image:
                   type: string
-                  format: binary
+                  format: byte
                   nullable: true
+                  description: Base64 encoded image
                 gongfu_brewing:
                   properties:
                     id:
@@ -1026,6 +1122,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     is_public:
                       type: boolean
@@ -1055,6 +1152,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     gongfu_brewing:
                       properties:
@@ -1107,6 +1205,7 @@ paths:
                           readOnly: true
                         user:
                           type: string
+                          format: uuid
                           readOnly: true
                         is_public:
                           type: boolean
@@ -1141,6 +1240,7 @@ paths:
                       type: string
                     description_source:
                       type: string
+                      format: uri
                       maxLength: 100
                     category:
                       type: integer
@@ -1156,6 +1256,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     is_public:
                       type: boolean
@@ -1164,6 +1265,7 @@ paths:
                       maxLength: 50
                     website:
                       type: string
+                      format: uri
                       maxLength: 50
                     popularity:
                       type: integer
@@ -1231,10 +1333,11 @@ paths:
                     readOnly: true
                   user:
                     type: string
+                    format: uuid
                     readOnly: true
                   image:
                     type: string
-                    format: binary
+                    format: uri
                     nullable: true
                   gongfu_brewing:
                     properties:
@@ -1287,6 +1390,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       is_public:
                         type: boolean
@@ -1316,6 +1420,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       gongfu_brewing:
                         properties:
@@ -1368,6 +1473,7 @@ paths:
                             readOnly: true
                           user:
                             type: string
+                            format: uuid
                             readOnly: true
                           is_public:
                             type: boolean
@@ -1402,6 +1508,7 @@ paths:
                         type: string
                       description_source:
                         type: string
+                        format: uri
                         maxLength: 100
                       category:
                         type: integer
@@ -1417,6 +1524,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       is_public:
                         type: boolean
@@ -1425,6 +1533,7 @@ paths:
                         maxLength: 50
                       website:
                         type: string
+                        format: uri
                         maxLength: 50
                       popularity:
                         type: integer
@@ -1485,19 +1594,30 @@ paths:
                 required:
                   - name
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/tea/{id}/:
     get:
       tags:
         - Tea
+      summary: Find tea by ID
       operationId: retrieveTea
-      description: Tea view set.
+      description: |
+        Returns a single tea instance.
+
+        A tea instance contains information about a tea such as category, vendor, origin, user notes, etc.
+
+        Some of this data is based on other models and is represented in nested form.
       parameters:
         - name: id
           in: path
           required: true
-          description: ""
+          description: A unique integer value in UUID format identifying the tea instance.
           schema:
-            type: string
+            type: integer
+            format: uuid
       responses:
         "200":
           content:
@@ -1510,10 +1630,11 @@ paths:
                     readOnly: true
                   user:
                     type: string
+                    format: uuid
                     readOnly: true
                   image:
                     type: string
-                    format: binary
+                    format: uri
                     nullable: true
                   gongfu_brewing:
                     properties:
@@ -1566,6 +1687,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       is_public:
                         type: boolean
@@ -1595,6 +1717,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       gongfu_brewing:
                         properties:
@@ -1647,6 +1770,7 @@ paths:
                             readOnly: true
                           user:
                             type: string
+                            format: uuid
                             readOnly: true
                           is_public:
                             type: boolean
@@ -1681,6 +1805,7 @@ paths:
                         type: string
                       description_source:
                         type: string
+                        format: uri
                         maxLength: 100
                       category:
                         type: integer
@@ -1696,6 +1821,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       is_public:
                         type: boolean
@@ -1704,6 +1830,7 @@ paths:
                         maxLength: 50
                       website:
                         type: string
+                        format: uri
                         maxLength: 50
                       popularity:
                         type: integer
@@ -1764,18 +1891,26 @@ paths:
                 required:
                   - name
           description: ""
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
     put:
       tags:
         - Tea
+      summary: Update an existing tea
       operationId: updateTea
-      description: Tea view set.
+      description: |
+        A tea instance contains information about a tea such as category, vendor, origin, user notes, etc.
+
+        Some of this data is based on other models and is represented in nested form.
       parameters:
         - name: id
           in: path
-          required: true
-          description: ""
+          description: A unique integer value in UUID format identifying the tea instance.
           schema:
-            type: string
+            type: integer
+            format: uuid
       requestBody:
         content:
           application/json:
@@ -1836,6 +1971,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     is_public:
                       type: boolean
@@ -1865,6 +2001,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     gongfu_brewing:
                       properties:
@@ -1917,6 +2054,7 @@ paths:
                           readOnly: true
                         user:
                           type: string
+                          format: uuid
                           readOnly: true
                         is_public:
                           type: boolean
@@ -1951,6 +2089,7 @@ paths:
                       type: string
                     description_source:
                       type: string
+                      format: uri
                       maxLength: 100
                     category:
                       type: integer
@@ -1966,6 +2105,7 @@ paths:
                       readOnly: true
                     user:
                       type: string
+                      format: uuid
                       readOnly: true
                     is_public:
                       type: boolean
@@ -1974,6 +2114,7 @@ paths:
                       maxLength: 50
                     website:
                       type: string
+                      format: uri
                       maxLength: 50
                     popularity:
                       type: integer
@@ -2041,536 +2182,8 @@ paths:
                     readOnly: true
                   user:
                     type: string
-                    readOnly: true
-                  image:
-                    type: string
-                    format: binary
-                    nullable: true
-                  gongfu_brewing:
-                    properties:
-                      id:
-                        type: integer
-                        readOnly: true
-                      temperature:
-                        type: integer
-                        maximum: 100
-                        nullable: true
-                        minimum: 0
-                      weight:
-                        type: number
-                        nullable: true
-                        minimum: 0
-                      initial:
-                        type: string
-                        nullable: true
-                      increments:
-                        type: string
-                        nullable: true
-                    type: object
-                    nullable: true
-                  western_brewing:
-                    properties:
-                      id:
-                        type: integer
-                        readOnly: true
-                      temperature:
-                        type: integer
-                        maximum: 100
-                        nullable: true
-                        minimum: 0
-                      weight:
-                        type: number
-                        nullable: true
-                        minimum: 0
-                      initial:
-                        type: string
-                        nullable: true
-                      increments:
-                        type: string
-                        nullable: true
-                    type: object
-                    nullable: true
-                  origin:
-                    properties:
-                      id:
-                        type: integer
-                        readOnly: true
-                      user:
-                        type: string
-                        readOnly: true
-                      is_public:
-                        type: boolean
-                      country:
-                        type: string
-                        maxLength: 30
-                      region:
-                        type: string
-                        maxLength: 50
-                      locality:
-                        type: string
-                        maxLength: 50
-                      latitude:
-                        type: number
-                        nullable: true
-                      longitude:
-                        type: number
-                        nullable: true
-                    required:
-                      - country
-                    type: object
-                    nullable: true
-                  subcategory:
-                    properties:
-                      id:
-                        type: integer
-                        readOnly: true
-                      user:
-                        type: string
-                        readOnly: true
-                      gongfu_brewing:
-                        properties:
-                          id:
-                            type: integer
-                            readOnly: true
-                          temperature:
-                            type: integer
-                            maximum: 100
-                            nullable: true
-                            minimum: 0
-                          weight:
-                            type: number
-                            nullable: true
-                            minimum: 0
-                          initial:
-                            type: string
-                            nullable: true
-                          increments:
-                            type: string
-                            nullable: true
-                        type: object
-                        nullable: true
-                      western_brewing:
-                        properties:
-                          id:
-                            type: integer
-                            readOnly: true
-                          temperature:
-                            type: integer
-                            maximum: 100
-                            nullable: true
-                            minimum: 0
-                          weight:
-                            type: number
-                            nullable: true
-                            minimum: 0
-                          initial:
-                            type: string
-                            nullable: true
-                          increments:
-                            type: string
-                            nullable: true
-                        type: object
-                        nullable: true
-                      origin:
-                        properties:
-                          id:
-                            type: integer
-                            readOnly: true
-                          user:
-                            type: string
-                            readOnly: true
-                          is_public:
-                            type: boolean
-                          country:
-                            type: string
-                            maxLength: 30
-                          region:
-                            type: string
-                            maxLength: 50
-                          locality:
-                            type: string
-                            maxLength: 50
-                          latitude:
-                            type: number
-                            nullable: true
-                          longitude:
-                            type: number
-                            nullable: true
-                        required:
-                          - country
-                        type: object
-                        nullable: true
-                      is_public:
-                        type: boolean
-                      name:
-                        type: string
-                        maxLength: 50
-                      translated_name:
-                        type: string
-                        maxLength: 50
-                      description:
-                        type: string
-                      description_source:
-                        type: string
-                        maxLength: 100
-                      category:
-                        type: integer
-                        nullable: true
-                    required:
-                      - name
-                    type: object
-                    nullable: true
-                  vendor:
-                    properties:
-                      id:
-                        type: integer
-                        readOnly: true
-                      user:
-                        type: string
-                        readOnly: true
-                      is_public:
-                        type: boolean
-                      name:
-                        type: string
-                        maxLength: 50
-                      website:
-                        type: string
-                        maxLength: 50
-                      popularity:
-                        type: integer
-                        maximum: 10
-                        nullable: true
-                        minimum: 0
-                      origin:
-                        type: integer
-                        nullable: true
-                    required:
-                      - name
-                    type: object
-                    nullable: true
-                  is_archived:
-                    type: boolean
-                  name:
-                    type: string
-                    maxLength: 50
-                  year:
-                    type: integer
-                    maximum: 2100
-                    minimum: 1900
-                    nullable: true
-                  gongfu_preferred:
-                    type: boolean
-                  created_on:
-                    type: string
-                    format: date-time
-                    readOnly: true
-                  last_consumed_on:
-                    type: string
-                    format: date-time
-                    readOnly: true
-                  price:
-                    type: number
-                    nullable: true
-                    minimum: 0
-                  weight_left:
-                    type: number
-                    nullable: true
-                    minimum: 0
-                  weight_consumed:
-                    type: number
-                    nullable: true
-                    minimum: 0
-                  rating:
-                    type: integer
-                    maximum: 10
-                    nullable: true
-                    minimum: 0
-                  notes:
-                    type: string
-                    nullable: true
-                    maxLength: 10000
-                  category:
-                    type: integer
-                    nullable: true
-                required:
-                  - name
-          description: ""
-    patch:
-      tags:
-        - Tea
-      operationId: partial_updateTea
-      description: Tea view set.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ""
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema: &id005
-              properties:
-                image:
-                  type: string
-                  format: binary
-                  nullable: true
-                gongfu_brewing:
-                  properties:
-                    id:
-                      type: integer
-                      readOnly: true
-                    temperature:
-                      type: integer
-                      maximum: 100
-                      nullable: true
-                      minimum: 0
-                    weight:
-                      type: number
-                      nullable: true
-                      minimum: 0
-                    initial:
-                      type: string
-                      nullable: true
-                    increments:
-                      type: string
-                      nullable: true
-                  type: object
-                  nullable: true
-                western_brewing:
-                  properties:
-                    id:
-                      type: integer
-                      readOnly: true
-                    temperature:
-                      type: integer
-                      maximum: 100
-                      nullable: true
-                      minimum: 0
-                    weight:
-                      type: number
-                      nullable: true
-                      minimum: 0
-                    initial:
-                      type: string
-                      nullable: true
-                    increments:
-                      type: string
-                      nullable: true
-                  type: object
-                  nullable: true
-                origin:
-                  properties:
-                    id:
-                      type: integer
-                      readOnly: true
-                    user:
-                      type: string
-                      readOnly: true
-                    is_public:
-                      type: boolean
-                    country:
-                      type: string
-                      maxLength: 30
-                    region:
-                      type: string
-                      maxLength: 50
-                    locality:
-                      type: string
-                      maxLength: 50
-                    latitude:
-                      type: number
-                      nullable: true
-                    longitude:
-                      type: number
-                      nullable: true
-                  required:
-                    - country
-                  type: object
-                  nullable: true
-                subcategory:
-                  properties:
-                    id:
-                      type: integer
-                      readOnly: true
-                    user:
-                      type: string
-                      readOnly: true
-                    gongfu_brewing:
-                      properties:
-                        id:
-                          type: integer
-                          readOnly: true
-                        temperature:
-                          type: integer
-                          maximum: 100
-                          nullable: true
-                          minimum: 0
-                        weight:
-                          type: number
-                          nullable: true
-                          minimum: 0
-                        initial:
-                          type: string
-                          nullable: true
-                        increments:
-                          type: string
-                          nullable: true
-                      type: object
-                      nullable: true
-                    western_brewing:
-                      properties:
-                        id:
-                          type: integer
-                          readOnly: true
-                        temperature:
-                          type: integer
-                          maximum: 100
-                          nullable: true
-                          minimum: 0
-                        weight:
-                          type: number
-                          nullable: true
-                          minimum: 0
-                        initial:
-                          type: string
-                          nullable: true
-                        increments:
-                          type: string
-                          nullable: true
-                      type: object
-                      nullable: true
-                    origin:
-                      properties:
-                        id:
-                          type: integer
-                          readOnly: true
-                        user:
-                          type: string
-                          readOnly: true
-                        is_public:
-                          type: boolean
-                        country:
-                          type: string
-                          maxLength: 30
-                        region:
-                          type: string
-                          maxLength: 50
-                        locality:
-                          type: string
-                          maxLength: 50
-                        latitude:
-                          type: number
-                          nullable: true
-                        longitude:
-                          type: number
-                          nullable: true
-                      required:
-                        - country
-                      type: object
-                      nullable: true
-                    is_public:
-                      type: boolean
-                    name:
-                      type: string
-                      maxLength: 50
-                    translated_name:
-                      type: string
-                      maxLength: 50
-                    description:
-                      type: string
-                    description_source:
-                      type: string
-                      maxLength: 100
-                    category:
-                      type: integer
-                      nullable: true
-                  required:
-                    - name
-                  type: object
-                  nullable: true
-                vendor:
-                  properties:
-                    id:
-                      type: integer
-                      readOnly: true
-                    user:
-                      type: string
-                      readOnly: true
-                    is_public:
-                      type: boolean
-                    name:
-                      type: string
-                      maxLength: 50
-                    website:
-                      type: string
-                      maxLength: 50
-                    popularity:
-                      type: integer
-                      maximum: 10
-                      nullable: true
-                      minimum: 0
-                    origin:
-                      type: integer
-                      nullable: true
-                  required:
-                    - name
-                  type: object
-                  nullable: true
-                is_archived:
-                  type: boolean
-                name:
-                  type: string
-                  maxLength: 50
-                year:
-                  type: integer
-                  maximum: 2100
-                  minimum: 1900
-                  nullable: true
-                gongfu_preferred:
-                  type: boolean
-                price:
-                  type: number
-                  nullable: true
-                  minimum: 0
-                weight_left:
-                  type: number
-                  nullable: true
-                  minimum: 0
-                weight_consumed:
-                  type: number
-                  nullable: true
-                  minimum: 0
-                rating:
-                  type: integer
-                  maximum: 10
-                  nullable: true
-                  minimum: 0
-                notes:
-                  type: string
-                  nullable: true
-                  maxLength: 10000
-                category:
-                  type: integer
-                  nullable: true
-          application/x-www-form-urlencoded:
-            schema: *id005
-          multipart/form-data:
-            schema: *id005
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                properties:
-                  id:
-                    type: string
                     format: uuid
                     readOnly: true
-                  user:
-                    type: string
-                    readOnly: true
                   image:
                     type: string
                     format: binary
@@ -2626,6 +2239,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       is_public:
                         type: boolean
@@ -2655,6 +2269,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       gongfu_brewing:
                         properties:
@@ -2707,6 +2322,7 @@ paths:
                             readOnly: true
                           user:
                             type: string
+                            format: uuid
                             readOnly: true
                           is_public:
                             type: boolean
@@ -2741,6 +2357,7 @@ paths:
                         type: string
                       description_source:
                         type: string
+                        format: uri
                         maxLength: 100
                       category:
                         type: integer
@@ -2756,6 +2373,7 @@ paths:
                         readOnly: true
                       user:
                         type: string
+                        format: uuid
                         readOnly: true
                       is_public:
                         type: boolean
@@ -2764,6 +2382,7 @@ paths:
                         maxLength: 50
                       website:
                         type: string
+                        format: uri
                         maxLength: 50
                       popularity:
                         type: integer
@@ -2824,25 +2443,40 @@ paths:
                 required:
                   - name
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
     delete:
       tags:
         - Tea
+      summary: Delete a tea
       operationId: destroyTea
-      description: Tea view set.
+      description: Remove a tea instance.
       parameters:
         - name: id
           in: path
           required: true
-          description: ""
+          description: A unique integer value in UUID format identifying the tea instance.
           schema:
-            type: string
+            type: integer
+            format: uuid
       responses:
         "204":
-          description: ""
+          description: "No content"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
   /api/register/:
     post:
+      tags:
+        - User
+      summary: Create a user
       operationId: CreateCustomUser
-      description: Register view.
+      description: Register a new user. Requires a valid email and both passwords to match.
       parameters: []
       requestBody:
         content:
@@ -2852,13 +2486,15 @@ paths:
                 email:
                   type: string
                   format: email
-                  maxLength: 255
+                  description: User email
                 password1:
                   type: string
                   writeOnly: true
+                  description: User password
                 password2:
                   type: string
                   writeOnly: true
+                  description: Confirm user password
               required:
                 - email
                 - password1
@@ -2884,7 +2520,6 @@ paths:
                   email:
                     type: string
                     format: email
-                    maxLength: 255
                   is_active:
                     type: boolean
                     readOnly: true
@@ -2892,30 +2527,34 @@ paths:
                     type: string
                     format: date-time
                     readOnly: true
-                required:
-                  - email
           description: ""
+        "400":
+          description: "Bad request"
   /api/login/:
     post:
+      tags:
+        - User
+      summary: Log in user
       operationId: CreateLogin
-      description: Login view.
+      description: If successful returns a new pair of tokens.
       parameters: []
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema: &id007
               properties:
                 email:
                   type: string
+                  description: The user email for login
                 password:
                   type: string
-                  writeOnly: true
+                  description: The password for login in clear text
               required:
                 - email
                 - password
           application/x-www-form-urlencoded:
             schema: *id007
-          multipart/form-data:
+          application/json:
             schema: *id007
       responses:
         "200":
@@ -2923,19 +2562,24 @@ paths:
             application/json:
               schema:
                 properties:
-                  email:
+                  refresh:
+                    type: string
+                  access:
                     type: string
                 required:
-                  - email
+                  - refresh
+                  - access
           description: ""
+        "400":
+          description: "Bad request"
   /api/token/refresh/:
     post:
+      tags:
+        - User
+      summary: Refresh access token
       operationId: CreateTokenRefresh
-      description:
-        "Takes a refresh type JSON web token and returns an access type
-        JSON web
-
-        token if the refresh token is valid."
+      description: |
+        Takes a refresh type JSON web token and returns an access type one if the refresh token is valid.
       parameters: []
       requestBody:
         content:
@@ -2944,6 +2588,7 @@ paths:
               properties:
                 refresh:
                   type: string
+                  description: JWT refresh token
               required:
                 - refresh
           application/x-www-form-urlencoded:
@@ -2956,15 +2601,22 @@ paths:
             application/json:
               schema:
                 properties:
-                  refresh:
+                  access:
                     type: string
                 required:
-                  - refresh
+                  - access
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/brewing/:
     post:
+      tags:
+        - Brewing
+      summary: Create a brewing
       operationId: CreateBrewing
-      description: Create gongfu brewing details.
+      description: Brewing instances are unique and get posted with a get or create method.
       parameters: []
       requestBody:
         content:
@@ -2981,11 +2633,13 @@ paths:
                   nullable: true
                   minimum: 0
                 initial:
-                  type: string
+                  type: integer
                   nullable: true
+                  description: Time in seconds
                 increments:
-                  type: string
+                  type: integer
                   nullable: true
+                  description: Time in seconds
           application/x-www-form-urlencoded:
             schema: *id009
           multipart/form-data:
@@ -3015,12 +2669,19 @@ paths:
                     type: string
                     nullable: true
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/origin/:
     post:
       tags:
         - Origin
+      summary: Create an origin
       operationId: CreateOrigin
-      description: Create origin passing current user.
+      description: |
+        Origin instances are unique and get posted with a get or create method, based on country, region and
+        locality fields.
       parameters: []
       requestBody:
         content:
@@ -3061,6 +2722,7 @@ paths:
                     readOnly: true
                   user:
                     type: string
+                    format: uuid
                     readOnly: true
                   is_public:
                     type: boolean
@@ -3082,42 +2744,267 @@ paths:
                 required:
                   - country
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/parser/:
-    tags:
-      - Tea
     post:
+      tags:
+        - Tea
+      summary: Extract tea data from image
       operationId: CreateVisionParser
-      description: Get tea data from vision parser
+      description: |
+        Uses Google Vision API to grab text from an image from which it extracts relevant tea data, such as
+        categories, name, year, vendor.
       parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id011
+              properties:
+                image:
+                  type: string
+                  format: byte
+                  description: Base64 encoded image
+              required:
+                - image
+          application/x-www-form-urlencoded:
+            schema: *id011
+          multipart/form-data:
+            schema: *id011
       responses:
         "200":
           content:
             application/json:
-              schema: {}
+              schema:
+                properties:
+                  dtd:
+                    type: object
+                    description: Reduced Google Vision data
+                    nullable: true
+                    properties:
+                      blocks:
+                        type: array
+                        nullable: true
+                        items:
+                          properties:
+                            phrases:
+                              type: array
+                              nullable: true
+                              items:
+                                properties:
+                                  words:
+                                    type: array
+                                    items:
+                                      type: string
+                                      nullable: true
+                                  font_size:
+                                    type: float
+                                    nullable: true
+                                  confidence:
+                                    type: float
+                                    minimum: 0
+                                    maximum: 1
+                                    nullable: true
+                  subcategory:
+                    type: integer
+                    description: Matched subcategory ID
+                    nullable: true
+                  subcategory_confidence:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    nullable: true
+                  category:
+                    type: integer
+                    description: Matched category ID
+                    nullable: true
+                  category_confidence:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    nullable: true
+                  vendor:
+                    type: integer
+                    description: Matched vendor ID
+                    nullable: true
+                  vendor_confidence:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    nullable: true
+                  year:
+                    type: integer
+                    description: Guessed year
+                    nullable: true
+                  name:
+                    type: string
+                    description: Guessed name
+                    nullable: true
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/places/autocomplete/:
     post:
       tags:
         - Origin
+      summary: Get possible origins
       operationId: CreatePlacesAutocomplete
-      description: Wrapper view around Places API autocomplete
+      description: Uses Google Places API to return a list of possible origins from a partial name.
       parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id011
+              properties:
+                input:
+                  type: string
+                  description: Partial origin name to search for
+                token:
+                  type: string
+                  description: Used to group related Google Places API requests into the same session
+              required:
+                - input
+                - token
+          application/x-www-form-urlencoded:
+            schema: *id011
+          multipart/form-data:
+            schema: *id011
       responses:
         "200":
           content:
             application/json:
-              schema: {}
+              schema:
+                type: array
+                items:
+                  properties:
+                    description:
+                      type: string
+                      nullable: true
+                    matched_substrings:
+                      type: array
+                      nullable: true
+                      items:
+                        properties:
+                          length:
+                            type: integer
+                          offset:
+                            type: integer
+                    place_id:
+                      type: string
+                      nullable: true
+                    reference:
+                      type: string
+                      nullable: true
+                    structured_formatting:
+                      properties:
+                        main_text:
+                          type: string
+                          nullable: true
+                        main_text_matched_substrings:
+                          type: array
+                          nullable: true
+                          items:
+                            properties:
+                              length:
+                                type: integer
+                              offset:
+                                type: integer
+                        secondary_text:
+                          type: string
+                          nullable: true
+                    terms:
+                      type: array
+                      nullable: true
+                      items:
+                        properties:
+                          offset:
+                            type: integer
+                          value:
+                            type: string
+                    "types":
+                      type: array
+                      nullable: true
+                      items:
+                        type: string
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
   /api/places/details/:
     post:
       tags:
         - Origin
+      summary: Get origin details
       operationId: CreatePlacesDetails
-      description: Wrapper view around Places API details
+      description: Uses Google Places API to return an origin data from a name.
       parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id012
+              properties:
+                place_id:
+                  type: string
+                  description: ID of the place to retrieve
+                token:
+                  type: string
+                  description: Used to group related Google Places API requests into the same session
+              required:
+                - place_id
+                - token
+          application/x-www-form-urlencoded:
+            schema: *id012
+          multipart/form-data:
+            schema: *id012
       responses:
         "200":
           content:
             application/json:
-              schema: {}
+              schema:
+                type: array
+                items:
+                  properties:
+                    html_attributions:
+                      type: array
+                      items:
+                        type: string
+                        nullable: true
+                    result:
+                      properties:
+                        adr_address:
+                          type: string
+                        geometry:
+                          properties:
+                            location:
+                              properties:
+                                lat:
+                                  type: number
+                                lng:
+                                  type: number
+                            viewport:
+                              properties:
+                                northeast:
+                                  properties:
+                                    lat:
+                                      type: number
+                                    lng:
+                                      type: number
+                                southwest:
+                                  properties:
+                                    lat:
+                                      type: number
+                                    lng:
+                                      type: number
+
+                    status:
+                      type: string
           description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
