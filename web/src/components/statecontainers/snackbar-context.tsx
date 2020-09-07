@@ -56,7 +56,9 @@ function reducer(state: State, action: SnackbarAction) {
         message: action.data,
       };
     case "RESET":
-      return initialState;
+      let newState = initialState;
+      newState.severity = state.severity;
+      return newState;
     default:
       return initialState;
   }
