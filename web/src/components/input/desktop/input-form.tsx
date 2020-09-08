@@ -25,7 +25,7 @@ import { CategoriesState } from "../../statecontainers/categories-context";
 import { EditorContext, HandleEdit } from "../../editor";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { Route } from "../../../app";
-import { InputFormModel, TeaModel, TeaRequest } from "../../../services/models";
+import {BrewingModel, InputFormModel, TeaModel, TeaRequest} from '../../../services/models';
 import emptyImage from "../../../media/empty.png";
 
 /**
@@ -96,45 +96,48 @@ function InputForm({
       if (!isNaN(grams)) data["weight_left"] = grams;
     }
 
-    data["gongfu_brewing"] = {};
-    data["western_brewing"] = {};
+    let gongfu: BrewingModel = {};
+    let western: BrewingModel = {};
     if (values.gongfu_brewing.temperature) {
       if (values.gongfu_brewing.fahrenheit)
-        data["gongfu_brewing"]["temperature"] = fahrenheitToCelsius(
+        gongfu["temperature"] = fahrenheitToCelsius(
           parseInt(values.gongfu_brewing.temperature)
         );
       else
-        data["gongfu_brewing"]["temperature"] = parseInt(
+        gongfu["temperature"] = parseInt(
           values.gongfu_brewing.temperature
         );
     }
     if (values.western_brewing.temperature) {
       if (values.western_brewing.fahrenheit)
-        data["western_brewing"]["temperature"] = fahrenheitToCelsius(
+        western["temperature"] = fahrenheitToCelsius(
           parseInt(values.western_brewing.temperature)
         );
       else
-        data["western_brewing"]["temperature"] = parseInt(
+        western["temperature"] = parseInt(
           values.western_brewing.temperature
         );
     }
     if (values.gongfu_brewing.weight)
-      data["gongfu_brewing"]["weight"] = parseFloat(
+      gongfu["weight"] = parseFloat(
         values.gongfu_brewing.weight
       );
     if (values.western_brewing.weight)
-      data["western_brewing"]["weight"] = parseFloat(
+      western["weight"] = parseFloat(
         values.western_brewing.weight
       );
 
     if (values.gongfu_brewing.initial)
-      data["gongfu_brewing"]["initial"] = values.gongfu_brewing.initial;
+      gongfu["initial"] = values.gongfu_brewing.initial;
     if (values.western_brewing.initial)
-      data["western_brewing"]["initial"] = values.western_brewing.initial;
+      western["initial"] = values.western_brewing.initial;
     if (values.gongfu_brewing.increments)
-      data["gongfu_brewing"]["increments"] = values.gongfu_brewing.increments;
+      gongfu["increments"] = values.gongfu_brewing.increments;
     if (values.western_brewing.increments)
-      data["western_brewing"]["increments"] = values.western_brewing.increments;
+      western["increments"] = values.western_brewing.increments;
+
+    if (Object.keys(gongfu).length) data["gongfu_brewing"] = gongfu;
+    if (Object.keys(western).length) data["western_brewing"] = western;
 
     if (values.id) {
       handleEdit(data, values.id);

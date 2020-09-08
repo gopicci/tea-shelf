@@ -72,7 +72,6 @@ function InputFormBrewing({ formikProps }: Props): ReactElement {
                   values.brewing + ".fahrenheit",
                   e.target.value === "fahrenheit"
                 );
-                console.log(e.target.value, values);
               }}
               onBlur={handleBlur}
             >

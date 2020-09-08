@@ -73,10 +73,6 @@ function MobileInput({
     ...route.payload,
   });
 
-  useEffect(() => {
-    console.log(teaData);
-  }, [teaData]);
-
   /**
    * Checks field requirements, merges image data and
    * calls edit handler.
