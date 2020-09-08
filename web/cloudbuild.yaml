@@ -7,8 +7,8 @@ steps:
   args: ['run', 'build']
 - name: 'gcr.io/cloud-builders/gsutil'
   args: ['-h', 'Cache-Control:no-cache,max-age=0', '-m', 'cp', '-r', 'build/*', 'gs://teashelf.app/']
-- name: node
-  entrypoint: npm
-  args: ['run', '--silent', 'docs']
-- name: 'gcr.io/cloud-builders/gsutil'
-  args: ['-h', 'Cache-Control:no-cache,max-age=0', '-m', 'cp', '-r', 'docs/*', 'gs://tea-shelf-281917-static/docs/web/']
+#- name: node
+#  entrypoint: npm
+#  args: ['run', '--silent', 'docs']
+#- name: 'gcr.io/cloud-builders/gsutil'
+#  args: ['-h', 'Cache-Control:no-cache,max-age=0', '-m', 'cp', '-r', 'docs/*', 'gs://tea-shelf-281917-static/docs/web/']
