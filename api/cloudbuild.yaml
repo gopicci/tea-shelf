@@ -1,9 +1,9 @@
 steps:
-#- name: gcr.io/cloud-builders/docker
-#  args: ['build', '-f', 'Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/api', '.']
-#- name: gcr.io/cloud-builders/docker
-#  args: ['push', 'gcr.io/$PROJECT_ID/api']
-#- name: gcr.io/cloud-builders/gcloud
-#  args: [ 'compute', 'instances', 'reset', 'api-instance-1', '--zone=us-central1-a']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-f', 'Dockerfile.prod', '-t', 'gcr.io/$PROJECT_ID/api', '.']
+- name: gcr.io/cloud-builders/docker
+  args: ['push', 'gcr.io/$PROJECT_ID/api']
+- name: gcr.io/cloud-builders/gcloud
+  args: [ 'compute', 'instances', 'reset', 'api-instance-1', '--zone=us-central1-a']
 - name: 'gcr.io/cloud-builders/gsutil'
   args: ['-h', 'Cache-Control:no-cache,max-age=0', '-m', 'cp', '-r', 'docs/*', 'gs://tea-shelf-281917-static/docs/api/']

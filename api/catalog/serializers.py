@@ -169,7 +169,7 @@ class OriginSerializer(serializers.ModelSerializer):
     class Meta:
         model = Origin
         fields = "__all__"
-        read_only_fields = ("user",)
+        read_only_fields = ("user", "is_public",)
 
     def create(self, validated_data):
         """
@@ -233,7 +233,7 @@ class SubcategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Subcategory
         fields = "__all__"
-        read_only_fields = ("user",)
+        read_only_fields = ("user", "is_public",)
 
     def create(self, validated_data):
         return custom_get_or_create(Subcategory, validated_data)
@@ -259,7 +259,7 @@ class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = "__all__"
-        read_only_fields = ("user",)
+        read_only_fields = ("user", "is_public",)
 
     def create(self, validated_data):
         return custom_get_or_create(Vendor, validated_data)
