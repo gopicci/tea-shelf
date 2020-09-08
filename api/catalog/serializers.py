@@ -11,7 +11,6 @@ from .models import (
     Origin,
     Category,
     Subcategory,
-    SubcategoryName,
     Vendor,
     Tea,
 )
@@ -84,7 +83,6 @@ class LoginSerializer(TokenObtainPairSerializer):
         user = authenticate(username=attrs["email"], password=attrs["password"])
         if not user:
             raise serializers.ValidationError("Incorrect email or password.")
-            return None
 
         data = super().validate(attrs)
 
@@ -98,7 +96,7 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 class BrewingSerializer(serializers.ModelSerializer):
     """
-    Brewing serializer returns instance if existing or creates a new one.
+    Brewing model serializer returns instance if existing or creates a new one.
     """
 
     class Meta:
@@ -161,7 +159,7 @@ def get_or_create_origin(validated_data):
 
 class OriginSerializer(serializers.ModelSerializer):
     """
-    Origin serializer, passes request user on creation.
+    Origin model serializer, passes request user on creation.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
@@ -183,7 +181,7 @@ class OriginSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     """
-    Category serializer with nested brewings.
+    Category model serializer with nested brewings.
     """
 
     gongfu_brewing = BrewingSerializer()
@@ -225,7 +223,8 @@ def custom_get_or_create(model, validated_data):
 
 class SubcategorySerializer(serializers.ModelSerializer):
     """
-    Subcategory serializer, passes request user on creation.
+    Subcategory model serializer, passes request user on creation, nested
+    brewings and origin.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
@@ -243,16 +242,6 @@ class SubcategorySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return custom_get_or_create(Subcategory, validated_data)
-
-
-class SubcategoryNameSerializer(serializers.ModelSerializer):
-    """
-    SubcategoryName serializer.
-    """
-
-    class Meta:
-        model = SubcategoryName
-        fields = "__all__"
 
 
 class VendorSerializer(serializers.ModelSerializer):

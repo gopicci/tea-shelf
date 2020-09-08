@@ -7,11 +7,10 @@ from catalog.serializers import (
     OriginSerializer,
     CategorySerializer,
     SubcategorySerializer,
-    SubcategoryNameSerializer,
     VendorSerializer,
     TeaSerializer,
 )
-from catalog.models import Category, Subcategory, CustomUser
+from catalog.models import Category, CustomUser
 
 
 @pytest.mark.django_db
@@ -148,31 +147,6 @@ def test_invalid_vendor_serializer(client):
     assert serializer.errors == {
         "popularity": ["Ensure this value is less than or equal to 10."]
     }
-
-
-@pytest.mark.django_db
-def test_valid_subcategoryname_serializer(client):
-    user = CustomUser(email="test@test.com")
-    user.save()
-    category = Category(name="OOLONG")
-    category.save()
-    subcategory = Subcategory(name="sub", category=category, user=user)
-    subcategory.save()
-    valid_serializer_data = {"name": "test", "subcategory": subcategory.id}
-    serializer = SubcategoryNameSerializer(data=valid_serializer_data)
-    assert serializer.is_valid()
-    assert serializer.validated_data["name"] == valid_serializer_data["name"]
-    assert type(serializer.validated_data["subcategory"]) == Subcategory
-    assert serializer.errors == {}
-
-
-@pytest.mark.django_db
-def test_invalid_subcategoryname_serializer(client):
-    invalid_serializer_data = {"name": "test"}
-    serializer = SubcategoryNameSerializer(data=invalid_serializer_data)
-    assert not serializer.is_valid()
-    assert serializer.data == invalid_serializer_data
-    assert serializer.errors == {"subcategory": ["This field is required."]}
 
 
 @pytest.mark.django_db
