@@ -5,11 +5,23 @@ info:
   description: |
     # Introduction
 
-    Tea Shelf is a progressive web app built with the intent to help users keep track of their collection of teas. This
-    documentation offers an overview on the REST API that serves the backend, which is written in Python with
+    Tea Shelf is a **progressive web app** built with the intent to help users keep track of their collection of teas.
+    This documentation offers an overview on the REST API that serves the backend, which is written in Python with
     **Django REST framework**.
 
-    The repository is available [here](https://github.com/gopicci/tea-shelf/).
+    For a quick overview of how the database is structured please find a simplefied **ERD** [here](erd.html). Most
+    entities models have views that are reachable from the APIs however some remain for staff only (SubcategoryName and
+    VendorTrademark). Others are placeholders for future development (brewing sessions, Settings).
+
+    The API offers token authentication and mostly CRUD operations revolving around the central model of Tea, which
+    contains personal data a user might want to keep about a tea as well as some inherited from other models (category,
+    origin, vendor information).
+    On top of that, to help streamline the creation process, the **vision parser** service uses Google Vision api to
+    get text from an image and extract relevant tea data from it. It compares it with existing category, subcategory,
+    vendor entries and builds a name for it. Far from being exact the algorithm often savesa lot of time entering form
+    data.
+
+    The **repository** is available [here](https://github.com/gopicci/tea-shelf/).
 
     ## API Categories
 
@@ -28,34 +40,38 @@ info:
 
     ## Authentication
 
-    In order to be able to interact with the APIs, please login from [here](#post-/api/login/) first and enter the access token from your
-    response in the apposite input of the [authentication section](#authentication).
+    In order to be able to interact with the APIs, please login from [here](#post-/api/login/) first and enter the
+    access token from your response in the apposite input of the [authentication section](#authentication).
 
 tags:
   - name: Tea
     description: |
       Operations revolving around the tea model.
 
-      A tea instance is user specific and contains information about a tea such as category, vendor, origin, user notes...
+      A tea instance is user specific and contains information about a tea such as category, vendor, origin, user
+      notes...
+
       Some of this data is based on other models and is represented in nested form.
 
-      Apart from standard CRUD operations, this section offers access to vision parser, a service that extract tea related
-      data from a picture containing it (a package or label).
+      Apart from standard CRUD operations, this section offers access to vision parser, a service that extract tea
+      related data from a picture containing it (a package or label).
   - name: Categories
     description: |
       Operations revolving around the category and subcategory models.
 
-      Category instances are predefined and can only be read as a list. They contain basic info about major tea categories
-      (i.e. black, oolong, green, etc.).
+      Category instances are predefined and can only be read as a list. They contain basic info about major tea
+      categories (i.e. black, oolong, green, etc.).
 
-      Subcategory instances define more specific tea types (i.e. Darjeeling, Puerh, etc.). They are user based but can be public,
-      when requesting a subcategory list the API will return all the public subcategories as well as the user specific ones.
+      Subcategory instances define more specific tea types (i.e. Darjeeling, Puerh, etc.). They are user based but can
+      be public, when requesting a subcategory list the API will return all the public subcategories as well as the
+      user specific ones.
   - name: Origin
     description: |
       Operations revolving around the origin model.
 
       The origin model contains data about a geographical location (name and coordinates) and it's structured in a way
-      that it's compatible with Google Maps services, from which the API offers customized autocomplete and place details operations.
+      that it's compatible with Google Maps services, from which the API offers customized autocomplete and place
+      details operations.
 
       Origin instances are nested in others and can be posted with a get or create approach.
   - name: Vendor
@@ -68,8 +84,8 @@ tags:
     description: |
       Operations revolving around the brewing model.
 
-      The brewing model contains data about brewing suggestions. Brewing instances are nested in others and can be posted
-      with a get or create approach.
+      The brewing model contains data about brewing suggestions. Brewing instances are nested in others and can be
+      posted with a get or create approach.
   - name: User
     description: |
       Operations revolving around user authentication and data retrieval.
@@ -219,8 +235,8 @@ paths:
         - Categories
       summary: List categories
       operationId: listCategorys
-      description: Category instances are predefined and can only be read as a list. They contain basic info about major tea categories
-        (i.e. black, oolong, green, etc.).
+      description: Category instances are predefined and can only be read as a list. They contain basic info about major
+        tea categories (i.e. black, oolong, green, etc.).
       parameters: []
       responses:
         "200":
