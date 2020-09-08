@@ -324,3 +324,6 @@ class Tea(models.Model):
         blank=True,
     )
     notes = models.TextField(max_length=10000, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
