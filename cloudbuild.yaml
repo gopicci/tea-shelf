@@ -1,13 +1,13 @@
 steps:
-- id: 'build web'
-  name: 'gcr.io/cloud-builders/gcloud'
-  args: ['builds', 'submit', 'web', '--config', 'web/cloudbuild.yaml']
-  waitFor: ['-']
+#- id: 'build web'
+#  name: 'gcr.io/cloud-builders/gcloud'
+#  args: ['builds', 'submit', 'web', '--config', 'web/cloudbuild.yaml']
+#  waitFor: ['-']
 #- id: 'build api'
 #  name: 'gcr.io/cloud-builders/gcloud'
 #  args: ['builds', 'submit', 'api', '--config', 'api/cloudbuild.yaml']
 #  waitFor: ['-']
-#- id: 'build nginx'
-#  name: 'gcr.io/cloud-builders/gcloud'
-#  args: ['builds', 'submit', 'nginx', '--config', 'nginx/cloudbuild.yaml']
-#  waitFor: ['-']
+- id: 'build nginx'
+  name: 'gcr.io/cloud-builders/gcloud'
+  args: ['builds', 'submit', 'nginx', '--config', 'nginx/cloudbuild.yaml']
+  waitFor: ['-']
