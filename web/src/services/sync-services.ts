@@ -100,7 +100,6 @@ export async function uploadInstance(tea: TeaInstance): Promise<Response> {
   if (typeof tea.id === "string" && validator.isUUID(tea.id)) {
     // Remove image from PUT request
     if (request.image) delete request.image;
-    console.log(JSON.stringify(request));
     return APIRequest(`/tea/${request.id}/`, "PUT", JSON.stringify(request));
   } else {
     return APIRequest("/tea/", "POST", JSON.stringify(tea));

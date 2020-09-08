@@ -22,7 +22,6 @@ export function visionParserSerializer(
   subcategories: SubcategoryModel[],
   vendors: VendorModel[]
 ): TeaModel | undefined {
-  console.log("vd", data)
   let serialized: TeaModel = {};
 
   if (data.name) serialized.name = data.name;
@@ -65,9 +64,6 @@ export function visionParserSerializer(
     );
     if (vendor) serialized.vendor = vendor;
   }
-
-  console.log(data);
-  console.log(serialized);
 
   return Object.keys(serialized).length ? serialized : undefined;
 }
