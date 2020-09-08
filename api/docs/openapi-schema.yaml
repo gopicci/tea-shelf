@@ -190,6 +190,7 @@ paths:
                     readOnly: true
                   is_public:
                     type: boolean
+                    readOnly: true
                   country:
                     type: string
                     maxLength: 30
@@ -380,6 +381,7 @@ paths:
                           readOnly: true
                         is_public:
                           type: boolean
+                          readOnly: true
                         country:
                           type: string
                           maxLength: 30
@@ -401,6 +403,7 @@ paths:
                       nullable: true
                     is_public:
                       type: boolean
+                      readOnly: true
                     name:
                       type: string
                       maxLength: 50
@@ -486,8 +489,6 @@ paths:
                       type: string
                       format: uuid
                       readOnly: true
-                    is_public:
-                      type: boolean
                     country:
                       type: string
                       maxLength: 30
@@ -507,8 +508,6 @@ paths:
                     - country
                   type: object
                   nullable: true
-                is_public:
-                  type: boolean
                 name:
                   type: string
                   maxLength: 50
@@ -598,6 +597,7 @@ paths:
                         readOnly: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       country:
                         type: string
                         maxLength: 30
@@ -619,6 +619,7 @@ paths:
                     nullable: true
                   is_public:
                     type: boolean
+                    readOnly: true
                   name:
                     type: string
                     maxLength: 50
@@ -670,6 +671,7 @@ paths:
                       readOnly: true
                     is_public:
                       type: boolean
+                      readOnly: true
                     name:
                       type: string
                       maxLength: 50
@@ -702,8 +704,6 @@ paths:
           application/json:
             schema: &id002
               properties:
-                is_public:
-                  type: boolean
                 name:
                   type: string
                   maxLength: 50
@@ -740,6 +740,7 @@ paths:
                     readOnly: true
                   is_public:
                     type: boolean
+                    readOnly: true
                   name:
                     type: string
                     maxLength: 50
@@ -849,6 +850,7 @@ paths:
                           readOnly: true
                         is_public:
                           type: boolean
+                          readOnly: true
                         country:
                           type: string
                           maxLength: 30
@@ -932,6 +934,7 @@ paths:
                               readOnly: true
                             is_public:
                               type: boolean
+                              readOnly: true
                             country:
                               type: string
                               maxLength: 30
@@ -953,6 +956,7 @@ paths:
                           nullable: true
                         is_public:
                           type: boolean
+                          readOnly: true
                         name:
                           type: string
                           maxLength: 50
@@ -983,6 +987,7 @@ paths:
                           readOnly: true
                         is_public:
                           type: boolean
+                          readOnly: true
                         name:
                           type: string
                           maxLength: 50
@@ -1124,8 +1129,6 @@ paths:
                       type: string
                       format: uuid
                       readOnly: true
-                    is_public:
-                      type: boolean
                     country:
                       type: string
                       maxLength: 30
@@ -1207,8 +1210,6 @@ paths:
                           type: string
                           format: uuid
                           readOnly: true
-                        is_public:
-                          type: boolean
                         country:
                           type: string
                           maxLength: 30
@@ -1228,8 +1229,6 @@ paths:
                         - country
                       type: object
                       nullable: true
-                    is_public:
-                      type: boolean
                     name:
                       type: string
                       maxLength: 50
@@ -1258,8 +1257,6 @@ paths:
                       type: string
                       format: uuid
                       readOnly: true
-                    is_public:
-                      type: boolean
                     name:
                       type: string
                       maxLength: 50
@@ -1394,6 +1391,7 @@ paths:
                         readOnly: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       country:
                         type: string
                         maxLength: 30
@@ -1477,6 +1475,7 @@ paths:
                             readOnly: true
                           is_public:
                             type: boolean
+                            readOnly: true
                           country:
                             type: string
                             maxLength: 30
@@ -1498,6 +1497,7 @@ paths:
                         nullable: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       name:
                         type: string
                         maxLength: 50
@@ -1528,6 +1528,7 @@ paths:
                         readOnly: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       name:
                         type: string
                         maxLength: 50
@@ -1691,6 +1692,7 @@ paths:
                         readOnly: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       country:
                         type: string
                         maxLength: 30
@@ -1774,6 +1776,7 @@ paths:
                             readOnly: true
                           is_public:
                             type: boolean
+                            readOnly: true
                           country:
                             type: string
                             maxLength: 30
@@ -1795,6 +1798,7 @@ paths:
                         nullable: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       name:
                         type: string
                         maxLength: 50
@@ -1825,6 +1829,7 @@ paths:
                         readOnly: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       name:
                         type: string
                         maxLength: 50
@@ -1973,8 +1978,6 @@ paths:
                       type: string
                       format: uuid
                       readOnly: true
-                    is_public:
-                      type: boolean
                     country:
                       type: string
                       maxLength: 30
@@ -2056,8 +2059,6 @@ paths:
                           type: string
                           format: uuid
                           readOnly: true
-                        is_public:
-                          type: boolean
                         country:
                           type: string
                           maxLength: 30
@@ -2077,8 +2078,6 @@ paths:
                         - country
                       type: object
                       nullable: true
-                    is_public:
-                      type: boolean
                     name:
                       type: string
                       maxLength: 50
@@ -2107,8 +2106,6 @@ paths:
                       type: string
                       format: uuid
                       readOnly: true
-                    is_public:
-                      type: boolean
                     name:
                       type: string
                       maxLength: 50
@@ -2243,6 +2240,7 @@ paths:
                         readOnly: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       country:
                         type: string
                         maxLength: 30
@@ -2326,6 +2324,7 @@ paths:
                             readOnly: true
                           is_public:
                             type: boolean
+                            readOnly: true
                           country:
                             type: string
                             maxLength: 30
@@ -2347,6 +2346,7 @@ paths:
                         nullable: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       name:
                         type: string
                         maxLength: 50
@@ -2377,6 +2377,7 @@ paths:
                         readOnly: true
                       is_public:
                         type: boolean
+                        readOnly: true
                       name:
                         type: string
                         maxLength: 50
@@ -2688,8 +2689,6 @@ paths:
           application/json:
             schema: &id010
               properties:
-                is_public:
-                  type: boolean
                 country:
                   type: string
                   maxLength: 30
@@ -2726,6 +2725,7 @@ paths:
                     readOnly: true
                   is_public:
                     type: boolean
+                    readOnly: true
                   country:
                     type: string
                     maxLength: 30
