@@ -8,6 +8,7 @@ from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
 )
+from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
@@ -178,11 +179,12 @@ class VisionParserView(APIView):
     def post(self, request):
         try:
             image_data = request.data["image"].split(",")[1]
-            parser = VisionParser(image_data)
-            tea_data = parser.get_tea_data()
-            return Response(tea_data)
         except IndexError:
-            return Response(status=400)
+            message = {"image": "Invalid image data"}
+            return Response(data=message, status=status.HTTP_400_BAD_REQUEST)
+        parser = VisionParser(image_data)
+        tea_data = parser.get_tea_data()
+        return Response(tea_data)
 
 
 class PlacesAutocompleteView(APIView):
