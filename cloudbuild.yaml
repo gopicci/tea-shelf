@@ -11,3 +11,4 @@ steps:
 #  name: 'gcr.io/cloud-builders/gcloud'
 #  args: ['builds', 'submit', 'nginx', '--config', 'nginx/cloudbuild.yaml']
 #  waitFor: ['-']
+timeout: 1000s
