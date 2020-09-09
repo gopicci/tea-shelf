@@ -201,7 +201,9 @@ export interface SortingOptions {
 export interface Filters {
   /** Sorting options */
   sorting: SortingOptions;
-  /** Active filter status */
+  /** Sorting reverse status */
+  reversed: boolean;
+  /** Number of active filters */
   active: number;
   /** Filter groups */
   filters: {

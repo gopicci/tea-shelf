@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createMuiTheme, fade } from "@material-ui/core/styles";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
 const breakpoints = createBreakpoints({});
@@ -10,6 +10,10 @@ export const mainTheme = createMuiTheme({
       main: "#2e5263",
       dark: "#002838",
     },
+    background: {
+      default: "#fff",
+      paper: "#fff",
+    }
   },
   typography: {
     h1: {
@@ -67,4 +71,15 @@ export const mainTheme = createMuiTheme({
       color: "#666",
     },
   },
+  overrides: {
+    MuiAppBar: {
+      root: {
+        borderBottom: `solid 1px ${fade("#000", 0.12)}`
+      },
+      colorPrimary: {
+        color: fade("#000", 0.54),
+        backgroundColor: "#fff",
+      }
+    }
+  }
 });

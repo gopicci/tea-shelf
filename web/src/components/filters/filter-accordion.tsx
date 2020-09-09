@@ -20,8 +20,12 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     width: "80%",
     margin: "auto",
-    marginTop: -theme.spacing(1),
+    marginTop: theme.spacing(4),
     padding: "auto",
+  },
+  accordion: {
+    border: `solid 1px ${theme.palette.divider}`,
+    borderRadius: theme.spacing(1),
   },
   accordionDetails: {
     padding: 0,
@@ -69,7 +73,7 @@ function FilterAccordion(): ReactElement {
 
   return (
     <Box className={classes.root}>
-      <Accordion elevation={0} expanded={open}>
+      <Accordion elevation={0} expanded={open} className={classes.accordion}>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1c-content"
@@ -85,7 +89,10 @@ function FilterAccordion(): ReactElement {
             </Grid>
             {Object.entries(state.filters).map(([entry, list]) => (
               <Grid item className={classes.listItem} key={entry}>
-                <FilterList entry={entry as keyof Filters["filters"]} list={list} />
+                <FilterList
+                  entry={entry as keyof Filters["filters"]}
+                  list={list}
+                />
               </Grid>
             ))}
           </Grid>

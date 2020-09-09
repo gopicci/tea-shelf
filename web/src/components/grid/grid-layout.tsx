@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext, useEffect, useState } from "react";
-import { Box, Grid, Typography } from "@material-ui/core";
-import { ArrowDropUp, ArrowDropDown } from "@material-ui/icons";
+import { Box, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 import TeaCard from "./tea-card";
 import { getSubcategoryName } from "../../services/parsing-services";
 import { TeasState } from "../statecontainers/tea-context";
@@ -16,27 +16,23 @@ import { TeaInstance } from "../../services/models";
 import { getCategoryName } from "../../services/parsing-services";
 
 const useStyles = makeStyles((theme) => ({
-  gridRoot: {
+  root: {
     margin: "auto",
     padding: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
-      padding: 0,
-      paddingTop: theme.spacing(6),
-    },
-    maxWidth: "100%",
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.complex,
     }),
   },
+  gridRoot: {
+    [theme.breakpoints.down("sm")]: {
+      padding: 0,
+      paddingTop: theme.spacing(6),
+    },
+    maxWidth: "100%",
+  },
   listRoot: {
-    margin: "auto",
     maxWidth: 600,
-    padding: theme.spacing(2),
-    transition: theme.transitions.create("all", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.complex,
-    }),
   },
   gridItem: {
     width: 240,
@@ -50,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
-      padding: 0,
+      padding: theme.spacing(0.5),
       paddingTop: theme.spacing(1),
     },
     transition: theme.transitions.create("all", {
@@ -113,8 +109,6 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
   const searchState = useContext(SearchState);
 
   const [filteredTeas, setFilteredTeas] = useState<TeaInstance[]>(teasState);
-  const [sorting, setSorting] = useState<string>("");
-  const [reversed, setReversed] = useState<boolean>(false);
 
   /**
    * Sort array of tea instances based on sorting type.
@@ -192,9 +186,8 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
         (k) => filterState.sorting[k]
       );
       if (!sorting) sorting = "";
-      setSorting(sorting);
       let sorted = sortTeas(teas, sorting);
-      if (sorted && reversed) sorted = sorted.reverse();
+      if (sorted && filterState.reversed) sorted = sorted.reverse();
 
       // Parse entries through selected filters
       let filtered;
@@ -275,23 +268,17 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
     vendors,
     teasState,
     searchState,
-    reversed,
     route,
   ]);
 
   return (
-    <Box className={gridView ? classes.gridRoot : classes.listRoot}>
-      <Box className={classes.sortByBox}>
-        <Box
-          className={classes.reverseButton}
-          onClick={() => setReversed(!reversed)}
-        >
-          <Typography variant="caption" className={classes.sortByText}>
-            Sorting by {sorting}
-          </Typography>
-          {reversed ? <ArrowDropUp /> : <ArrowDropDown />}
-        </Box>
-      </Box>
+    <Box
+      className={clsx(
+        classes.root,
+        gridView && classes.gridRoot,
+        !gridView && classes.listRoot
+      )}
+    >
       <Grid container justify="center">
         {filteredTeas &&
           filteredTeas.map((tea, i) => (

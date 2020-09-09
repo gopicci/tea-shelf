@@ -1,19 +1,18 @@
 import React, { ReactElement } from "react";
 import { Drawer, SwipeableDrawer } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 import DrawerContent from "./drawer-content";
 import { Route } from "../../app";
 
-const drawerWidth = 240;
-
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: drawerWidth,
     flexShrink: 0,
     display: "flex",
   },
   drawerPaper: {
-    width: drawerWidth,
+    width: 240,
+    border: 0,
   },
 }));
 
@@ -48,7 +47,7 @@ function DrawerLayout(props: Props): ReactElement {
 
   return isMobile ? (
     <SwipeableDrawer
-      className={classes.root}
+      className={clsx(classes.root, classes.drawerPaper)}
       classes={{
         paper: classes.drawerPaper,
       }}
@@ -61,7 +60,7 @@ function DrawerLayout(props: Props): ReactElement {
     </SwipeableDrawer>
   ) : (
     <Drawer
-      className={classes.root}
+      className={clsx(classes.root, classes.drawerPaper)}
       classes={{
         paper: classes.drawerPaper,
       }}

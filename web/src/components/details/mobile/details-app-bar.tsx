@@ -103,7 +103,7 @@ function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" elevation={0}>
       <Toolbar>
         <Box className={detailsClasses.grow}>
           <IconButton

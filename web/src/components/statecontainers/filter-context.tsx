@@ -29,6 +29,7 @@ const initialSorting: SortingOptions = {
 // Defines initial filters state
 const initialFilters: Filters = {
   sorting: { ...initialSorting },
+  reversed: false,
   active: 0,
   filters: {
     categories: {},
@@ -47,6 +48,7 @@ type Action =
       data: { entry: keyof Filters["filters"]; item: string };
     }
   | { type: "CHECK_SORT"; data: { item: string } }
+  | { type: "REVERSE" }
   | { type: "CLEAR" }
   | { type: "RESET" };
 
@@ -99,6 +101,12 @@ function FilterContext({ children }: Props): ReactElement {
         newSort.sorting["date added"] = false;
         newSort.sorting[action.data.item] = true;
         return newSort;
+      case "REVERSE":
+        // Flip reverse status
+        return {
+          ...state,
+          reversed: !state.reversed,
+        }
       case "CLEAR":
         // Set all filters to unchecked but keep current sorting option
         return {

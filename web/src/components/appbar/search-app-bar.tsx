@@ -9,7 +9,6 @@ import {
   AppBar,
   Box,
   Toolbar,
-  Typography,
   InputBase,
   IconButton,
   MenuItem,
@@ -22,7 +21,9 @@ import {
   ViewStream,
   ViewModule,
 } from "@material-ui/icons";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import { appBarStyles } from "../../style/appbar-styles";
 import SyncButton from "./sync-button";
 import { logout } from "../../services/auth-services";
 import {
@@ -30,6 +31,7 @@ import {
   GridViewDispatch,
 } from "../statecontainers/grid-view-context";
 import { SearchDispatch } from "../statecontainers/search-context";
+import titleImage from "../../media/title.png";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -42,20 +44,20 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
-  title: {
+  titleBox: {
     display: "none",
     [theme.breakpoints.up("md")]: {
       display: "block",
       width: "25%",
     },
   },
+  titleImage: {
+    display: "block",
+    height: theme.spacing(3),
+  },
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
     marginLeft: 0,
     width: "100%",
     [theme.breakpoints.up("md")]: {
@@ -117,6 +119,7 @@ type Props = {
  */
 function SearchAppBar({ setOpen }: Props): ReactElement {
   const classes = useStyles();
+  const appBarClasses = appBarStyles();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
   const [searchValue, setSearchValue] = useState("");
@@ -165,7 +168,11 @@ function SearchAppBar({ setOpen }: Props): ReactElement {
   }
 
   return (
-    <AppBar position="fixed" className={classes.appBar}>
+    <AppBar
+      position="fixed"
+      elevation={0}
+      className={classes.appBar}
+    >
       <Toolbar>
         <IconButton
           edge="start"
@@ -176,10 +183,10 @@ function SearchAppBar({ setOpen }: Props): ReactElement {
         >
           <MenuIcon />
         </IconButton>
-        <Typography className={classes.title} variant="h6" noWrap>
-          Tea shelf
-        </Typography>
-        <Box className={classes.search}>
+        <Box className={classes.titleBox}>
+          <img src={titleImage} className={classes.titleImage} alt="Tea shelf" />
+        </Box>
+        <Box className={clsx(classes.search, appBarClasses.input)}>
           <Box className={classes.searchIcon}>
             <Search />
           </Box>

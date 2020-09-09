@@ -3,18 +3,20 @@ import {
   Collapse,
   FormGroup,
   FormLabel,
+  IconButton,
   Link,
   List,
   ListItem,
   Typography,
 } from "@material-ui/core";
+import { ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import CheckboxListItem from "../generics/checkbox-list-item";
-import { FilterDispatch } from "../statecontainers/filter-context";
+import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
 import { formListStyles } from "../../style/form-list-styles";
 import { Filters } from "../../services/models";
 
 // Typing separately from props for jsdoc issue
-type ListName = "sorting" | keyof Filters["filters"]
+type ListName = "sorting" | keyof Filters["filters"];
 
 /**
  * FilterList props.
@@ -37,6 +39,7 @@ type Props = {
 function FilterList({ entry, list }: Props): ReactElement {
   const formListClasses = formListStyles();
 
+  const state = useContext(FilterState);
   const dispatch = useContext(FilterDispatch);
 
   /**
@@ -70,6 +73,15 @@ function FilterList({ entry, list }: Props): ReactElement {
         <Typography className={formListClasses.formLabelText}>
           {entry === "sorting" ? "Sort by" : entry}:
         </Typography>
+        {entry === "sorting" && (
+          <IconButton className={formListClasses.arrowIcon}>
+            {state.reversed ? (
+              <ArrowDropUp onClick={() => dispatch({ type: "REVERSE" })} />
+            ) : (
+              <ArrowDropDown onClick={() => dispatch({ type: "REVERSE" })} />
+            )}
+          </IconButton>
+        )}
       </FormLabel>
       <List className={formListClasses.list}>
         {list &&

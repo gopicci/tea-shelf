@@ -27,8 +27,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   item: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    borderRadius: `0px ${theme.spacing(4)}px ${theme.spacing(4)}px 0px`,
   },
 }));
 

@@ -4,14 +4,13 @@ import { mainTheme as theme } from "./main-theme";
 export const formListStyles = makeStyles({
   formLabel: {
     display: "flex",
-    padding: theme.spacing(1),
+    flexDirection: "row",
+    padding: theme.spacing(2),
     background: fade(theme.palette.primary.light, 0.15),
   },
   formLabelText: {
     flexGrow: 1,
     textTransform: "capitalize",
-    paddingTop: theme.spacing(2),
-    paddingLeft: theme.spacing(1),
   },
   list: {
     paddingTop: 0,
@@ -53,5 +52,9 @@ export const formListStyles = makeStyles({
   textField: {
     padding: theme.spacing(2),
     flexGrow: 1,
+  },
+  arrowIcon: {
+    width: theme.spacing(2),
+    height: theme.spacing(2),
   },
 });

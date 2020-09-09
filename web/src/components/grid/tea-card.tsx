@@ -29,11 +29,6 @@ import { TeaInstance } from "../../services/models";
 import emptyImage from "../../media/empty.png";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    [theme.breakpoints.down("sm")]: {
-      borderRadius: 0,
-    },
-  },
   gridCard: {
     minHeight: 200,
     display: "flex",
@@ -205,7 +200,7 @@ function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
   }
 
   return (
-    <Card className={classes.root}>
+    <Card variant="outlined">
       <CardActionArea
         className={gridView ? classes.gridCard : classes.listCard}
         onClick={handleCardClick}
