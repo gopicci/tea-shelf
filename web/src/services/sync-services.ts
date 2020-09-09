@@ -95,8 +95,6 @@ export function generateUniqueId(array: genericModels[]): number {
 export async function uploadInstance(tea: TeaInstance): Promise<Response> {
   let request = JSON.parse(JSON.stringify(tea));
 
-  console.log(request)
-
   request = brewingTimesToSeconds(request);
 
   // String UUID means API generated, instance has been previously uploaded
