@@ -2555,15 +2555,7 @@ paths:
       summary: Log in user
       operationId: CreateLogin
       description: If successful returns a new pair of tokens.
-      parameters:
-        - examples:
-            example:
-              summary: test
-              value: |
-                {
-                  "email": "test@test.app",
-                  "password": "testpassword"
-                }
+      parameters: []
       requestBody:
         content:
           multipart/form-data:
@@ -2578,6 +2570,12 @@ paths:
               required:
                 - email
                 - password
+            examples:
+              example:
+                summary: test
+                properties:
+                  email:
+                    value: test@test.app
           application/x-www-form-urlencoded:
             schema: *id007
           application/json:
