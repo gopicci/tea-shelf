@@ -1,0 +1,11 @@
+#main > .sidebar {
+    width: unset;
+}
+
+.top-nav .menu .navigation .link {
+    visibility: hidden;
+}
+
+.top-nav .menu .navigation .link.user-link {
+    visibility: visible;
+}

@@ -51,7 +51,7 @@
     "build": "react-scripts build && npm run build-sw",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docs": "jsdoc -c jsdoc.json"
+    "docs": "jsdoc -c jsdoc.json --readme README.md && cp src/style/jsdoc.css docs/styles/"
   },
   "eslintConfig": {
     "extends": [

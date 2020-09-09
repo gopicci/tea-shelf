@@ -19,7 +19,19 @@
     "monospaceLinks": false,
     "search": true,
     "better-docs": {
-      "name": "Tea shelf UI docs"
+      "name": "Tea Shelf UI Documentation",
+      "hideGenerator": true,
+      "css": "styles/jsdoc.css",
+      "navLinks": [
+        {
+              "label": "API Documentation",
+              "href": "../api/"
+          },
+          {
+              "label": "Github",
+              "href": "https://github.com/gopicci/tea-shelf"
+          }
+      ]
     }
   },
   "opts": {
