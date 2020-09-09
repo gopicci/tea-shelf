@@ -2555,7 +2555,15 @@ paths:
       summary: Log in user
       operationId: CreateLogin
       description: If successful returns a new pair of tokens.
-      parameters: []
+      parameters:
+        - examples:
+            example:
+              summary: test
+              value: |
+                {
+                  "email": "test@test.app",
+                  "password": "testpassword"
+                }
       requestBody:
         content:
           multipart/form-data:
