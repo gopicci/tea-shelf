@@ -21,7 +21,8 @@ info:
     exact the algorithm often saves the user a lot of time entering form data and helps pointing to the right
     preexisting entries.
 
-    The **repository** is available [here](https://github.com/gopicci/tea-shelf/).
+    The **frontend documentation** is available [here](https://teashelf.app/docs/web/), the **repository**
+    [here](https://github.com/gopicci/tea-shelf/).
 
     ## API Categories
 
@@ -31,7 +32,7 @@ info:
 
     | Tag | Description |
     | ------------ |  -------------- |
-    | [Tea](#tag--Tea) | Operation revoving around tea model |
+    | [Tea](#tag--Tea) | Operations revolving around tea model |
     | [Categories](#tag--Categories) | Groups category and subcategory models operations |
     | [Origin](#tag--Origin) | The origin model represents a geographical location |
     | [Vendor](#tag--Vendor) | A tea vendor or brand |
