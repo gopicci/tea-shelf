@@ -1,7 +1,7 @@
 Tea Shelf is a **progressive web app** built with the intent to help users keep
-track of their collection of teas. This documentation offers an overview on the
-app frontend, a one page app written with a mobile first approach in
-**Typescript** with **React web framework**.
+track of their collection of teas. The documentation [here](https://teashelf.app/docs/web/)
+offers an overview on the app frontend, a one page app written with a mobile
+first approach in **Typescript** with **React web framework**.
 
 #### Routing
 Routing is mostly taken care by the [App](https://teashelf.app/docs/web/App.html) component. It keeps a state with the
