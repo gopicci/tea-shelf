@@ -9,3 +9,16 @@
 .top-nav .menu .navigation .link.user-link {
     visibility: visible;
 }
+
+.navbar-item, .navbar-link {
+    margin: auto;
+}
+
+.logo {
+    display: flex;
+    flex-direction: row;
+}
+
+.logo .image img {
+    height: 50px;
+}

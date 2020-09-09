@@ -20,12 +20,13 @@
     "search": true,
     "better-docs": {
       "name": "Tea Shelf UI Documentation",
+      "logo": "https://teashelf.app/logo192.png",
       "hideGenerator": true,
       "css": "styles/jsdoc.css",
       "navLinks": [
         {
               "label": "API Documentation",
-              "href": "../api/"
+              "href": "https://teashelf.app/docs/api/"
           },
           {
               "label": "Github",
