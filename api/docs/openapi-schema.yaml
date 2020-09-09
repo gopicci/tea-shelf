@@ -2570,12 +2570,6 @@ paths:
               required:
                 - email
                 - password
-            examples:
-              example:
-                summary: test
-                properties:
-                  email:
-                    value: test@test.app
           application/x-www-form-urlencoded:
             schema: *id007
           application/json:
