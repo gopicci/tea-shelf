@@ -177,10 +177,6 @@ class VisionParserView(APIView):
     """
 
     def post(self, request):
-        if not request.data["image"]:
-            return Response(
-                data={"image": "Missing image data"}, status=status.HTTP_400_BAD_REQUEST
-            )
         try:
             image_data = request.data["image"].split(",")[1]
             if not image_data:
@@ -192,6 +188,11 @@ class VisionParserView(APIView):
             return Response(
                 data={"image": "Invalid image data"}, status=status.HTTP_400_BAD_REQUEST
             )
+        except KeyError as e:
+            key = str(e).strip("'")
+            return Response(
+                data={key: f"Missing {key} field"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class PlacesAutocompleteView(APIView):
@@ -200,13 +201,24 @@ class PlacesAutocompleteView(APIView):
     """
 
     def post(self, request):
-        gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
-        results = gmaps.places_autocomplete(
-            request.data["input"],
-            session_token=request.data["token"],
-            types=["(regions)"],
-        )
-        return Response(results)
+        try:
+            gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
+            results = gmaps.places_autocomplete(
+                request.data["input"],
+                session_token=request.data["token"],
+                types=["(regions)"],
+            )
+            return Response(results)
+        except googlemaps.exceptions.ApiError as e:
+            return Response(
+                data={"no_field_error": str(e).strip("'")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except KeyError as e:
+            key = str(e).strip("'")
+            return Response(
+                data={key: f"Missing {key} field"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class PlacesDetailsView(APIView):
@@ -215,10 +227,21 @@ class PlacesDetailsView(APIView):
     """
 
     def post(self, request):
-        gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
-        results = gmaps.place(
-            request.data["place_id"],
-            session_token=request.data["token"],
-            fields=["adr_address", "geometry"],
-        )
-        return Response(results)
+        try:
+            gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
+            results = gmaps.place(
+                request.data["place_id"],
+                session_token=request.data["token"],
+                fields=["adr_address", "geometry"],
+            )
+            return Response(results)
+        except googlemaps.exceptions.ApiError as e:
+            return Response(
+                data={"no_field_error": str(e).strip("'")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except KeyError as e:
+            key = str(e).strip("'")
+            return Response(
+                data={key: f"Missing {key} field"}, status=status.HTTP_400_BAD_REQUEST
+            )
