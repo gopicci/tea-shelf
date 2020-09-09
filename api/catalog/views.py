@@ -176,10 +176,13 @@ class VisionParserView(APIView):
     """
 
     def post(self, request):
-        image_data = request.data["image"].split(",")[1]
-        parser = VisionParser(image_data)
-        tea_data = parser.get_tea_data()
-        return Response(tea_data)
+        try:
+            image_data = request.data["image"].split(",")[1]
+            parser = VisionParser(image_data)
+            tea_data = parser.get_tea_data()
+            return Response(tea_data)
+        except IndexError:
+            return Response(status=400)
 
 
 class PlacesAutocompleteView(APIView):
