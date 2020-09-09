@@ -3,9 +3,6 @@ track of their collection of teas. This documentation offers an overview on the
 app frontend, a one page app written with a mobile first approach in
 **Typescript** with **React web framework**.
 
-Backend API documentation is available [here](https://teashelf.app/docs/api/), repository
-[here](https://github.com/gopicci/tea-shelf).
-
 #### Routing
 Routing is mostly taken care by the [App](https://teashelf.app/docs/web/App.html) component. It keeps a state with the
 current route and optional payload (tea instance data needed by some
