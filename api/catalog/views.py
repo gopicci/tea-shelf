@@ -177,14 +177,21 @@ class VisionParserView(APIView):
     """
 
     def post(self, request):
+        if not request.data["image"]:
+            return Response(
+                data={"image": "Missing image data"}, status=status.HTTP_400_BAD_REQUEST
+            )
         try:
             image_data = request.data["image"].split(",")[1]
-        except IndexError:
-            message = {"image": "Invalid image data"}
-            return Response(data=message, status=status.HTTP_400_BAD_REQUEST)
-        parser = VisionParser(image_data)
-        tea_data = parser.get_tea_data()
-        return Response(tea_data)
+            if not image_data:
+                raise ValueError
+            parser = VisionParser(image_data)
+            tea_data = parser.get_tea_data()
+            return Response(tea_data)
+        except (ValueError, IndexError):
+            return Response(
+                data={"image": "Invalid image data"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class PlacesAutocompleteView(APIView):
