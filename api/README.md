@@ -13,4 +13,4 @@ from it, comparing it with existing category, subcategory, vendor entries and
 building a name. Far from being exact the algorithm often saves the user a lot
 of time entering form data and helps pointing to the right preexisting entries.
 
-For more information the API documentation is available [here](https://teashelf.app/docs/web/).
+For more information the API documentation is available [here](https://teashelf.app/docs/api/).
