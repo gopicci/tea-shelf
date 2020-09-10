@@ -6,7 +6,7 @@ export const mobileDetailsStyles = makeStyles({
     display: "flex",
     flexShrink: 0,
     flexDirection: "column",
-    borderRadius: 0,
+    margin: theme.spacing(0.5),
     marginBottom: theme.spacing(2),
   },
   genericBox: {

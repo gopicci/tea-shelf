@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column-reverse",
     alignItems: "flex-end",
     minHeight: theme.spacing(10),
-    background: theme.palette.background.default,
+    background: theme.palette.action.disabledBackground,
     paddingRight: theme.spacing(1),
   },
   editButton: {
@@ -109,7 +109,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
   }
 
   return (
-    <Card className={detailsClasses.card}>
+    <Card className={detailsClasses.card} variant="outlined">
       <Box className={classes.empty} />
       <Box className={classes.pageTop}>
         <img

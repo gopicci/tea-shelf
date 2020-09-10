@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext, useEffect, useState } from "react";
-import { Box } from "@material-ui/core";
+import {Box, Toolbar} from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import DetailsAppBar from "./details-app-bar";
 import DetailsCardMain from "./details-card-main";
@@ -92,6 +92,7 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
         ) : (
           <Box className={classes.root}>
             <DetailsAppBar setRoute={setRoute} teaData={teaData} />
+            <Toolbar />
             <Box className={classes.page}>
               <DetailsCardMain teaData={teaData} handleEdit={handleEdit} />
               <DetailsCardNotes setRoute={setRoute} teaData={teaData} />

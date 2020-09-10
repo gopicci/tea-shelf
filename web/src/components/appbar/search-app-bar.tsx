@@ -13,6 +13,7 @@ import {
   IconButton,
   MenuItem,
   Menu,
+  useScrollTrigger,
 } from "@material-ui/core";
 import {
   AccountCircle,
@@ -47,7 +48,9 @@ const useStyles = makeStyles((theme) => ({
   titleBox: {
     display: "none",
     [theme.breakpoints.up("md")]: {
-      display: "block",
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
       width: "25%",
     },
   },
@@ -109,6 +112,8 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Set drawer open state */
   setOpen: (state: boolean) => void;
+  /** Mobile mode or desktop */
+  isMobile: boolean;
 };
 
 /**
@@ -117,9 +122,18 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function SearchAppBar({ setOpen }: Props): ReactElement {
+function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
   const classes = useStyles();
   const appBarClasses = appBarStyles();
+
+  const shadowTrigger = useScrollTrigger(
+    isMobile
+      ? undefined
+      : {
+          threshold: 1,
+          disableHysteresis: true,
+        }
+  );
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
   const [searchValue, setSearchValue] = useState("");
@@ -170,7 +184,7 @@ function SearchAppBar({ setOpen }: Props): ReactElement {
   return (
     <AppBar
       position="fixed"
-      elevation={0}
+      elevation={shadowTrigger ? 3 : 0}
       className={classes.appBar}
     >
       <Toolbar>
@@ -184,7 +198,11 @@ function SearchAppBar({ setOpen }: Props): ReactElement {
           <MenuIcon />
         </IconButton>
         <Box className={classes.titleBox}>
-          <img src={titleImage} className={classes.titleImage} alt="Tea shelf" />
+          <img
+            src={titleImage}
+            className={classes.titleImage}
+            alt="Tea shelf"
+          />
         </Box>
         <Box className={clsx(classes.search, appBarClasses.input)}>
           <Box className={classes.searchIcon}>

@@ -1,29 +1,19 @@
-import React, { MouseEvent, ReactElement, useContext, useState } from "react";
+import React, { ReactElement } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Box,
   Card,
-  CardActions,
   CardActionArea,
   CardContent,
   Typography,
-  IconButton,
-  Menu,
-  MenuItem,
 } from "@material-ui/core";
-import { StarRate, MoreVert, Archive, Unarchive } from "@material-ui/icons";
+import { StarRate } from "@material-ui/icons";
 import ReactCountryFlag from "react-country-flag";
 import {
   getOriginShortName,
   getSubcategoryName,
   getCountryCode,
-  getCategoryName,
 } from "../../services/parsing-services";
-import { deleteTea } from "../../services/sync-services";
-import { CategoriesState } from "../statecontainers/categories-context";
-import { EditorContext } from "../editor";
-import { TeaDispatch } from "../statecontainers/tea-context";
-import { SnackbarDispatch } from "../statecontainers/snackbar-context";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
 import emptyImage from "../../media/empty.png";
@@ -108,13 +98,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
   },
   icon: {
-    color: "#ccc",
-  },
-  cardActions: {
-    borderTop: `solid 1px ${theme.palette.divider}`,
-  },
-  category: {
-    flexGrow: 1,
+    color: theme.palette.text.secondary,
   },
 }));
 
@@ -142,61 +126,9 @@ type Props = {
 function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
-  const handleEdit = useContext(EditorContext);
-  const categories = useContext(CategoriesState);
-  const teaDispatch = useContext(TeaDispatch);
-  const snackbarDispatch = useContext(SnackbarDispatch);
-
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
-
   /** Sets main route to tea details */
   function handleCardClick(): void {
     setRoute({ route: "TEA_DETAILS", payload: teaData });
-  }
-
-  /** Archives tea */
-  function handleArchive(): void {
-    handleEdit(
-      { ...teaData, is_archived: true },
-      teaData.id,
-      "Tea successfully archived."
-    );
-  }
-
-  /** Unarchives tea */
-  function handleUnArchive(): void {
-    handleEdit(
-      { ...teaData, is_archived: false },
-      teaData.id,
-      "Tea successfully unarchived."
-    );
-  }
-
-  /** Deletes tea instance. */
-  async function handleDelete(): Promise<void> {
-    handleMenuClose();
-    try {
-      await deleteTea(teaData);
-      snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
-      teaDispatch({ type: "DELETE", data: teaData });
-    } catch (e) {
-      console.error(e);
-      snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
-    }
-  }
-
-  /**
-   * Opens menu.
-   *
-   * @param {MouseEvent<HTMLElement>} event - Icon button click event
-   */
-  function handleMenuClick(event: MouseEvent<HTMLElement>): void {
-    setAnchorEl(event.currentTarget);
-  }
-
-  /** Closes menu. */
-  function handleMenuClose(): void {
-    setAnchorEl(undefined);
   }
 
   return (
@@ -266,44 +198,6 @@ function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
           </Box>
         </CardContent>
       </CardActionArea>
-      <CardActions className={classes.cardActions}>
-        <Typography
-          className={classes.category}
-          variant="body2"
-          component="span"
-        >
-          {categories && getCategoryName(categories, teaData.category)}
-        </Typography>
-        {teaData.is_archived ? (
-          <IconButton
-            onClick={handleUnArchive}
-            size="small"
-            aria-label="unarchive"
-          >
-            <Unarchive className={classes.icon} fontSize="small" />
-          </IconButton>
-        ) : (
-          <IconButton onClick={handleArchive} size="small" aria-label="archive">
-            <Archive className={classes.icon} fontSize="small" />
-          </IconButton>
-        )}
-        <IconButton
-          onClick={handleMenuClick}
-          size="small"
-          aria-label="unarchive"
-        >
-          <MoreVert className={classes.icon} aria-label="more" />
-        </IconButton>
-        <Menu
-          id="menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleDelete}>Delete tea</MenuItem>
-        </Menu>
-      </CardActions>
     </Card>
   );
 }

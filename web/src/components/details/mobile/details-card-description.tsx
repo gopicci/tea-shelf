@@ -54,7 +54,7 @@ function DetailsCardDescription({ teaData }: Props): ReactElement {
   }
 
   return (
-    <Card className={detailsClasses.card}>
+    <Card className={detailsClasses.card} variant="outlined">
       <Box className={detailsClasses.genericBox}>
         <Typography variant="caption" display="block" className={classes.about}>
           About {descriptionName}:

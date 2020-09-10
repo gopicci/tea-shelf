@@ -67,14 +67,10 @@ function MainLayout(props: Props): ReactElement {
 
   return (
     <>
-      <SearchAppBar setOpen={setOpen} />
+      <SearchAppBar setOpen={setOpen} isMobile={isMobile} />
       <Toolbar />
       <Box className={classes.page}>
-        <DrawerLayout
-          open={open}
-          setOpen={setOpen}
-          {...props}
-        />
+        <DrawerLayout open={open} setOpen={setOpen} {...props} />
         <Box className={classes.mainBox}>
           {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
           <GridLayout {...props} />

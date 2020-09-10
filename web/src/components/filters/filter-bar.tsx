@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 2,
     width: "100vw",
     borderRadius: 0,
+    borderBottom: `solid 1px ${theme.palette.divider}`,
     paddingTop: theme.spacing(1),
     justifyContent: "center",
     alignItems: "center",
@@ -22,27 +23,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-
-type HOSProps = {
-  children: ReactElement;
-};
-
-/**
- * Hides children on scroll.
- *
- * @param {ReactElement} children
- * @returns {ReactElement}
- * @memberOf FilterBar
- */
-function HideOnScroll({ children }: HOSProps): ReactElement {
-  const trigger = useScrollTrigger();
-
-  return (
-    <Slide appear={false} direction="down" in={!trigger}>
-      {children}
-    </Slide>
-  );
-}
 
 /**
  * FilterBar props.
@@ -63,6 +43,9 @@ type Props = {
 function FilterBar({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
+  const hideTrigger = useScrollTrigger();
+  const shadowTrigger = useScrollTrigger({threshold: 1, disableHysteresis: true});
+
   /** Sets main route to filter */
   function handleButtonClick(): void {
     setRoute({ route: "FILTER" });
@@ -70,8 +53,8 @@ function FilterBar({ setRoute }: Props): ReactElement {
 
   return (
     <>
-      <HideOnScroll>
-        <Paper className={classes.root}>
+      <Slide appear={false} direction="down" in={!hideTrigger}>
+        <Paper className={classes.root} elevation={shadowTrigger ? 3 : 0}>
           <Button
             size="small"
             color="primary"
@@ -82,7 +65,7 @@ function FilterBar({ setRoute }: Props): ReactElement {
           </Button>
           <FilterBarChips />
         </Paper>
-      </HideOnScroll>
+      </Slide>
     </>
   );
 }

@@ -31,7 +31,7 @@ function DetailsCardVendor({ vendor }: Props): ReactElement {
   const detailsClasses = mobileDetailsStyles();
 
   return (
-    <Card className={detailsClasses.card}>
+    <Card className={detailsClasses.card} variant="outlined">
       <Box className={detailsClasses.genericBox}>
         <Typography variant="caption" display="block">
           Vendor:

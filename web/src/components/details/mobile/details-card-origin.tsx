@@ -27,8 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mapBox: {
     flexGrow: 1,
-    margin: theme.spacing(2),
-    marginTop: 0,
+    marginBottom: -theme.spacing(1),
   },
 }));
 
@@ -56,7 +55,7 @@ function DetailsCardOrigin({ origin }: Props): ReactElement {
     coordinates = [origin.longitude, origin.latitude];
 
   return (
-    <Card className={detailsClasses.card}>
+    <Card className={detailsClasses.card} variant="outlined">
       <Box className={detailsClasses.genericBox}>
         <Typography variant="caption" display="block">
           Origin:

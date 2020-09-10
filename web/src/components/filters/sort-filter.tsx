@@ -1,4 +1,4 @@
-import React, {ReactElement, useContext, useEffect} from 'react';
+import React, { ReactElement, useContext, useEffect } from "react";
 import {
   AppBar,
   Box,
@@ -9,10 +9,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
-import FilterList from './filter-list';
+import FilterList from "./filter-list";
 import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
-import { Route } from '../../app';
-import {Filters} from '../../services/models';
+import { Route } from "../../app";
+import { Filters } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,17 +60,17 @@ function SortFilter({ setRoute }: Props): ReactElement {
      * @param {PopStateEvent} event - Popstate event
      * @memberOf SortFilter
      */
-    function onBackButtonEvent (event: PopStateEvent): void {
+    function onBackButtonEvent(event: PopStateEvent): void {
       event.preventDefault();
       setRoute({ route: "MAIN" });
     }
 
     window.history.pushState(null, "", window.location.pathname);
-    window.addEventListener('popstate', onBackButtonEvent);
+    window.addEventListener("popstate", onBackButtonEvent);
 
     return () => {
-      window.removeEventListener('popstate', onBackButtonEvent);
-    }
+      window.removeEventListener("popstate", onBackButtonEvent);
+    };
   }, [setRoute]);
 
   /** Sets route to main */
@@ -87,7 +87,7 @@ function SortFilter({ setRoute }: Props): ReactElement {
 
   return (
     <Box className={classes.root}>
-      <AppBar position="fixed">
+      <AppBar position="fixed" elevation={0}>
         <Toolbar>
           <IconButton
             onClick={handleClose}
@@ -108,7 +108,7 @@ function SortFilter({ setRoute }: Props): ReactElement {
       </AppBar>
       <Toolbar />
       <FilterList key="sortList" entry="sorting" list={state.sorting} />
-      {Object.entries(state.filters).map(([entry , list]) => (
+      {Object.entries(state.filters).map(([entry, list]) => (
         <FilterList entry={entry as keyof Filters["filters"]} list={list} />
       ))}
     </Box>

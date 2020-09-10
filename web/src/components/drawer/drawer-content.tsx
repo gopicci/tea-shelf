@@ -5,11 +5,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  SvgIcon,
-  Toolbar,
-} from "@material-ui/core";
+  SvgIcon, Toolbar,
+} from '@material-ui/core';
 import { Add, Archive, ExitToApp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import Logo from '../generics/logo';
 import { logout } from "../../services/auth-services";
 import { Route } from "../../app";
 
@@ -27,7 +27,15 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   item: {
-    borderRadius: `0px ${theme.spacing(4)}px ${theme.spacing(4)}px 0px`,
+    [theme.breakpoints.up("md")]: {
+      borderRadius: `0px ${theme.spacing(4)}px ${theme.spacing(4)}px 0px`,
+    },
+  },
+  logo: {
+    width: "50%",
+    margin: "auto",
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
   },
 }));
 
@@ -56,9 +64,14 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
 
   return (
     <Box className={classes.root}>
-      <Toolbar />
+      {!isMobile && <Toolbar />}
       <Box className={classes.content}>
         <List>
+          {isMobile && (
+            <Box className={classes.logo}>
+              <Logo />
+            </Box>
+          )}
           {!isMobile && (
             <ListItem
               className={classes.item}
