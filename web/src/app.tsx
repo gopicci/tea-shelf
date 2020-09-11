@@ -12,6 +12,7 @@ import MainStateContainer from "./components/statecontainers/main-state-containe
 import Create from "./components/create";
 import MobileDetailsLayout from "./components/details/mobile/mobile-details-layout";
 import MobileInput from "./components/input/mobile/mobile-input";
+import Settings from './components/settings';
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { TeaInstance } from "./services/models";
@@ -31,7 +32,8 @@ export type Route = {
     | "EDIT"
     | "EDIT_NOTES"
     | "TEA_DETAILS"
-    | "ARCHIVE";
+    | "ARCHIVE"
+    | "SETTINGS";
   /** Optional route payload */
   payload?: TeaInstance;
 };
@@ -80,6 +82,9 @@ function App(): ReactElement {
         else return <MainLayout {...props} />;
       case "TEA_DETAILS":
         if (isMobile) return <MobileDetailsLayout {...props} />;
+        else return <MainLayout {...props} />;
+      case "SETTINGS":
+        if (isMobile) return <Settings {...props} />;
         else return <MainLayout {...props} />;
       default:
         return <MainLayout {...props} />;
