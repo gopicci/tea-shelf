@@ -23,7 +23,7 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsCardDescription({ teaData }: Props): ReactElement {
-  const detailsClasses = mobileDetailsStyles();
+  const classes = mobileDetailsStyles();
 
   const categories = useContext(CategoriesState);
 
@@ -48,10 +48,10 @@ function DetailsCardDescription({ teaData }: Props): ReactElement {
   }
 
   return description ? (
-    <Card className={detailsClasses.card} variant="outlined">
-      <Box className={detailsClasses.genericBox}>
-        <Box className={detailsClasses.titleBox}>
-          <MenuBook className={detailsClasses.titleIcon} />
+    <Card className={classes.card} variant="outlined">
+      <Box className={classes.genericBox}>
+        <Box className={classes.titleBox}>
+          <MenuBook className={classes.titleIcon} />
           <Typography variant="h5">About {descriptionName}:</Typography>
         </Box>
 
@@ -68,7 +68,7 @@ function DetailsCardDescription({ teaData }: Props): ReactElement {
               window.open("https://" + descriptionSource, "_blank")
             }
             variant="body2"
-            className={detailsClasses.source}
+            className={classes.source}
           >
             View source
           </Link>

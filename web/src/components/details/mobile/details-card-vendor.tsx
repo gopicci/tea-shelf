@@ -21,16 +21,16 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsCardVendor({ vendor }: Props): ReactElement {
-  const detailsClasses = mobileDetailsStyles();
+  const classes = mobileDetailsStyles();
 
   return (
-    <Card className={detailsClasses.card} variant="outlined">
-      <Box className={detailsClasses.genericBox}>
-        <Box className={detailsClasses.titleBox}>
-          <Storefront className={detailsClasses.titleIcon} />
+    <Card className={classes.card} variant="outlined">
+      <Box className={classes.genericBox}>
+        <Box className={classes.titleBox}>
+          <Storefront className={classes.titleIcon} />
           <Typography variant="h5">Vendor:</Typography>
         </Box>
-        <Typography variant="h3" className={detailsClasses.name}>
+        <Typography variant="h3" className={classes.name}>
           {vendor.name}
         </Typography>
         {vendor.website && (

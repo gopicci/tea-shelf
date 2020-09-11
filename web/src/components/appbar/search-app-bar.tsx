@@ -29,9 +29,9 @@ import { appBarStyles } from "../../style/appbar-styles";
 import SyncButton from "./sync-button";
 import { logout } from "../../services/auth-services";
 import {
-  GridViewState,
-  GridViewDispatch,
-} from "../statecontainers/grid-view-context";
+  SettingsState,
+  SettingsDispatch,
+} from "../statecontainers/settings-context";
 import { SearchDispatch } from "../statecontainers/search-context";
 import titleImage from "../../media/title.png";
 
@@ -139,8 +139,8 @@ function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
   const [searchValue, setSearchValue] = useState("");
 
-  const gridView = useContext(GridViewState);
-  const gridViewDispatch = useContext(GridViewDispatch);
+  const settings = useContext(SettingsState);
+  const settingsDispatch = useContext(SettingsDispatch);
   const searchDispatch = useContext(SearchDispatch);
 
   useEffect(() => {
@@ -157,7 +157,7 @@ function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
 
   /** Switches grid view global state. */
   function handleGridViewChange(): void {
-    gridViewDispatch({
+    settingsDispatch({
       type: "SWITCH_VIEW",
     });
   }
@@ -222,19 +222,13 @@ function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
         </Box>
         <Box className={classes.user}>
           <SyncButton />
-          <Tooltip title={gridView ? "List view" : "Grid view"}>
-            <IconButton
-              onClick={handleGridViewChange}
-              aria-label="switch view"
-            >
-              {gridView ? <ViewStream /> : <ViewModule />}
+          <Tooltip title={settings.gridView ? "List view" : "Grid view"}>
+            <IconButton onClick={handleGridViewChange} aria-label="switch view">
+              {settings.gridView ? <ViewStream /> : <ViewModule />}
             </IconButton>
           </Tooltip>
           <Tooltip title="Account">
-            <IconButton
-              aria-label="user menu"
-              onClick={handleMenuClick}
-            >
+            <IconButton aria-label="user menu" onClick={handleMenuClick}>
               <AccountCircle />
             </IconButton>
           </Tooltip>

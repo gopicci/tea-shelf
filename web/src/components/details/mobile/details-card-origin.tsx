@@ -33,20 +33,20 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsCardOrigin({ origin }: Props): ReactElement {
-  const detailsClasses = mobileDetailsStyles();
+  const classes = mobileDetailsStyles();
 
   let coordinates: Point | undefined;
   if (origin.longitude && origin.latitude)
     coordinates = [origin.longitude, origin.latitude];
 
   return (
-    <Card className={detailsClasses.card} variant="outlined">
-      <Box className={detailsClasses.genericBox}>
-        <Box className={detailsClasses.titleBox}>
-          <Public className={detailsClasses.titleIcon} />
+    <Card className={classes.card} variant="outlined">
+      <Box className={classes.genericBox}>
+        <Box className={classes.titleBox}>
+          <Public className={classes.titleIcon} />
           <Typography variant="h5">Origin:</Typography>
         </Box>
-        <Typography variant="h3" className={detailsClasses.name}>
+        <Typography variant="h3" className={classes.name}>
           {getOriginName(origin)}
         </Typography>
         <ReactCountryFlag
@@ -55,14 +55,14 @@ function DetailsCardOrigin({ origin }: Props): ReactElement {
             width: "2em",
             height: "2em",
           }}
-          className={detailsClasses.countryFlag}
+          className={classes.countryFlag}
           countryCode={getCountryCode(origin.country)}
           alt=""
           aria-label={origin.country}
         />
       </Box>
       {coordinates && (
-        <Box className={detailsClasses.mapBox}>
+        <Box className={classes.mapBox}>
           <ComposableMap
             projection="geoMercator"
             projectionConfig={{

@@ -26,7 +26,7 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
-  const detailsClasses = mobileDetailsStyles();
+  const classes = mobileDetailsStyles();
 
   /** Routes back to main */
   function handleBack() {
@@ -36,7 +36,7 @@ function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
   return (
     <GenericAppBar>
       <Toolbar>
-        <Box className={detailsClasses.grow}>
+        <Box className={classes.grow}>
           <IconButton onClick={handleBack} edge="start" aria-label="back">
             <ArrowBack />
           </IconButton>

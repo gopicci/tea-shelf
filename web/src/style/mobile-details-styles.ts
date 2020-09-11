@@ -25,8 +25,16 @@ export const mobileDetailsStyles = makeStyles({
     marginBottom: theme.spacing(2),
     color: theme.palette.primary.main,
   },
+  label: {
+    display: "flex",
+    alignItems: "center",
+  },
   titleIcon: {
     marginBottom: theme.spacing(1),
+  },
+  lineIcon: {
+    marginRight: theme.spacing(0.5),
+    color: theme.palette.primary.main,
   },
   divider: {
     width: `calc(100% - ${theme.spacing(4)}px)`,
@@ -41,13 +49,52 @@ export const mobileDetailsStyles = makeStyles({
   row: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "space-between",
   },
   grow: {
     flexGrow: 1,
   },
-  centerGrow: {
+  title: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  editButton: {
+    color: theme.palette.primary.main,
+  },
+  pageTop: {
+    display: "flex",
+    flexDirection: "row",
+    padding: theme.spacing(2),
+  },
+  teaImage: {
+    minWidth: theme.spacing(14),
+    maxWidth: theme.spacing(14),
+    minHeight: theme.spacing(18),
+    maxHeight: theme.spacing(18),
+    objectFit: "cover",
+    marginRight: theme.spacing(2),
+    borderRadius: theme.spacing(0.75),
+    border: `solid 2px ${theme.palette.background.default}`,
+  },
+  brewingIcon: {
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+  brewingTitle: {
     flexGrow: 1,
-    textAlign: "center",
+    textAlign: "left",
+    margin: "auto",
+  },
+  brewing: {
+    flexGrow: 1,
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(2),
+  },
+  weightSwitch: {
+    marginBottom: theme.spacing(2),
   },
   source: {
     marginTop: theme.spacing(1),

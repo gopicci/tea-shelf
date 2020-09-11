@@ -24,7 +24,7 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
-  const detailsClasses = mobileDetailsStyles();
+  const classes = mobileDetailsStyles();
 
   /** Routes to notes editor. */
   function handleEditNotes(): void {
@@ -32,24 +32,24 @@ function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
   }
 
   return (
-    <Card className={detailsClasses.card} variant="outlined">
+    <Card className={classes.card} variant="outlined">
       <CardActionArea onClick={handleEditNotes} aria-label="edit notes">
-        <Box className={detailsClasses.genericBox}>
+        <Box className={classes.genericBox}>
           {!teaData.notes ? (
-            <Typography variant="button" className={detailsClasses.center}>
+            <Typography variant="button" className={classes.center}>
               Add notes
             </Typography>
           ) : (
             <>
-              <Box className={detailsClasses.titleBox}>
-                <Notes className={detailsClasses.titleIcon} />
+              <Box className={classes.titleBox}>
+                <Notes className={classes.titleIcon} />
                 <Typography variant="h5">Notes:</Typography>
               </Box>
-              <Box className={detailsClasses.notesBox}>
+              <Box className={classes.notesBox}>
                 {teaData.notes.split("\n").map((s, key) => (
                   <Typography
                     variant="body1"
-                    className={detailsClasses.notes}
+                    className={classes.notes}
                     key={key}
                   >
                     {s}

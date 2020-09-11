@@ -6,7 +6,7 @@ import TeaCard from "./tea-card";
 import { getSubcategoryName } from "../../services/parsing-services";
 import { TeasState } from "../statecontainers/tea-context";
 import { FilterState } from "../statecontainers/filter-context";
-import { GridViewState } from "../statecontainers/grid-view-context";
+import { SettingsState } from "../statecontainers/settings-context";
 import { CategoriesState } from "../statecontainers/categories-context";
 import { SubcategoriesState } from "../statecontainers/subcategories-context";
 import { VendorsState } from "../statecontainers/vendors-context";
@@ -105,7 +105,7 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
   const vendors = useContext(VendorsState);
   const filterState = useContext(FilterState);
   const teasState = useContext(TeasState);
-  const gridView = useContext(GridViewState);
+  const settings = useContext(SettingsState);
   const searchState = useContext(SearchState);
 
   const [filteredTeas, setFilteredTeas] = useState<TeaInstance[]>(teasState);
@@ -275,8 +275,8 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
     <Box
       className={clsx(
         classes.root,
-        gridView && classes.gridRoot,
-        !gridView && classes.listRoot
+        settings.gridView && classes.gridRoot,
+        !settings.gridView && classes.listRoot
       )}
     >
       <Grid container justify="center">
@@ -285,13 +285,15 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
             <Grid
               item
               className={
-                gridView && !isMobile ? classes.gridItem : classes.listItem
+                settings.gridView && !isMobile
+                  ? classes.gridItem
+                  : classes.listItem
               }
               key={i}
             >
               <TeaCard
                 teaData={tea}
-                gridView={gridView && !isMobile}
+                gridView={!!(settings.gridView && !isMobile)}
                 setRoute={setRoute}
               />
             </Grid>

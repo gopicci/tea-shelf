@@ -1,6 +1,6 @@
 import React, { ReactChild, ReactElement } from "react";
 import SyncContext from "./sync-context";
-import GridViewContext from "./grid-view-context";
+import SettingsContext from "./settings-context";
 import CategoriesContext from "./categories-context";
 import SubcategoriesContext from "./subcategories-context";
 import VendorsContext from "./vendors-context";
@@ -29,7 +29,7 @@ function MainStateContainer({ children }: Props): ReactElement {
               <TeaContext>
                 <FilterContext>
                   <SearchContext>
-                    <GridViewContext>{children}</GridViewContext>
+                    <SettingsContext>{children}</SettingsContext>
                   </SearchContext>
                 </FilterContext>
               </TeaContext>
