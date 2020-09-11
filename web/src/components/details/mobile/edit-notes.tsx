@@ -91,7 +91,6 @@ function EditNotes({
             onClick={handlePrevious}
             edge="start"
             className={classes.menuButton}
-            color="inherit"
             aria-label="back"
           >
             <ArrowBack />
@@ -100,7 +99,7 @@ function EditNotes({
             {teaData.notes ? "Edit Notes" : "Add notes"}
           </Typography>
           <Button
-            color="inherit"
+            color="secondary"
             disabled={!notes}
             onClick={handleSave}
             aria-label="save"

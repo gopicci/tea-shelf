@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import {
   Box,
   Card,
@@ -12,17 +12,25 @@ import { Star } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   cropToNoZeroes,
+  getCategoryName,
   getSubcategoryName,
 } from "../../../services/parsing-services";
 import InputBrewing from "../../input/mobile/input-brewing";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
+import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeaInstance, TeaRequest } from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
 
 const useStyles = makeStyles((theme) => ({
   title: {
-    flexGrow: 1,
-    textTransform: "capitalize",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  name: {
+    marginBottom: theme.spacing(1),
   },
   empty: {
     display: "flex",
@@ -38,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   pageTop: {
     display: "flex",
     flexDirection: "row",
-    paddingRight: theme.spacing(2),
+    padding: theme.spacing(2),
   },
   teaImage: {
     minWidth: theme.spacing(14),
@@ -46,9 +54,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: theme.spacing(18),
     maxHeight: theme.spacing(18),
     objectFit: "cover",
-    margin: theme.spacing(2),
-    marginBottom: 0,
-    marginTop: -theme.spacing(5),
+    marginRight: theme.spacing(2),
     borderRadius: theme.spacing(0.75),
     border: `solid 2px ${theme.palette.background.default}`,
   },
@@ -78,7 +84,7 @@ type Props = {
 
 /**
  * Mobile tea details page main card. Contains image, title, rating,
- * brewing instructions, weight, price.
+ * brewing suggestions, weight, price.
  *
  * @component
  * @subcategory Details mobile
@@ -86,6 +92,9 @@ type Props = {
 function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
   const classes = useStyles();
   const detailsClasses = mobileDetailsStyles();
+
+  const categories = useContext(CategoriesState);
+  const category = getCategoryName(categories, teaData.category);
 
   const [rating, setRating] = useState(teaData?.rating);
   const [gongfu, setGongfu] = useState(true);
@@ -110,26 +119,32 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
 
   return (
     <Card className={detailsClasses.card} variant="outlined">
-      <Box className={classes.empty} />
       <Box className={classes.pageTop}>
         <img
           src={teaData.image ? teaData.image : emptyImage}
           alt=""
           className={classes.teaImage}
         />
-        <Box className={detailsClasses.center}>
-          <Typography variant="h1">{teaData.name}</Typography>
+        <Box className={classes.title}>
+          <Box>
+            <Typography variant="h1" className={classes.name}>
+              {teaData.name}
+            </Typography>
+            <Typography variant="h2">
+              {teaData.year}{" "}
+              {teaData.subcategory
+                ? getSubcategoryName(teaData.subcategory)
+                : category !== "Other" && category + "  Tea"}
+            </Typography>
+          </Box>
+          {teaData.subcategory && category !== "Other" && (
+            <Typography variant="h4">
+              {category} Tea
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box className={detailsClasses.genericBox}>
-        <Typography variant="h2">
-          {teaData.year}{" "}
-          {teaData.subcategory && getSubcategoryName(teaData.subcategory)}
-        </Typography>
-      </Box>
-      <Box className={detailsClasses.divider} />
-      <Box className={detailsClasses.genericBox}>
-        <Typography variant="caption">Rating:</Typography>
         <Box className={detailsClasses.grow}>
           <Rating
             name="customized-empty"
@@ -145,7 +160,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
       <Box className={detailsClasses.genericBox}>
         <Box className={detailsClasses.row}>
           <Typography variant="caption" className={classes.brewingTitle}>
-            Brewing instructions:
+            Brewing suggestions:
           </Typography>
           <FormGroup>
             <FormControlLabel

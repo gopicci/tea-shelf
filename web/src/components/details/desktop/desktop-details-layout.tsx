@@ -4,6 +4,7 @@ import DetailsBoxMain from "./details-box-main";
 import DetailsBoxNotes from "./details-box-notes";
 import DetailsBoxOrigin from "./details-box-origin";
 import DetailsBoxDescription from "./details-box-description";
+import ActionIcons from "../../generics/actionIcons";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeasState } from "../../statecontainers/tea-context";
@@ -51,11 +52,6 @@ function DesktopDetailsLayout({ route, setRoute }: Props): ReactElement {
     setRoute({ route: "MAIN" });
   }
 
-  /** Routes to edit. */
-  function handleEditClick(): void {
-    setRoute({ route: "EDIT", payload: teaData });
-  }
-
   return (
     <>
       {teaData && (
@@ -69,12 +65,8 @@ function DesktopDetailsLayout({ route, setRoute }: Props): ReactElement {
         </DialogContent>
       )}
       <DialogActions className={classes.actions}>
-        <Button onClick={handleClose}>
-          Close
-        </Button>
-        <Button onClick={handleEditClick}>
-          Edit
-        </Button>
+        {teaData && <ActionIcons teaData={teaData} setRoute={setRoute} />}
+        <Button onClick={handleClose}>Close</Button>
       </DialogActions>
     </>
   );

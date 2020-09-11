@@ -93,7 +93,6 @@ function SortFilter({ setRoute }: Props): ReactElement {
             onClick={handleClose}
             edge="start"
             className={classes.menuButton}
-            color="inherit"
             aria-label="back"
           >
             <ArrowBack />
@@ -101,7 +100,7 @@ function SortFilter({ setRoute }: Props): ReactElement {
           <Typography variant="h6" className={classes.title}>
             Sort & Filter
           </Typography>
-          <Button color="inherit" onClick={handleReset}>
+          <Button color="secondary" onClick={handleReset}>
             RESET
           </Button>
         </Toolbar>

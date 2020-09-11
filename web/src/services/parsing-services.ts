@@ -19,7 +19,7 @@ export function getCategoryName(
   id: number
 ): string {
   const category = Object.values(categories).find((value) => value.id === id);
-  if (category?.name) return category.name;
+  if (category?.name) return category.name.charAt(0) + category.name.slice(1).toLowerCase();
   else return "";
 }
 

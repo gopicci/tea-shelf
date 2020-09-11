@@ -5,6 +5,7 @@ import {
   IconButton,
   Toolbar,
   Typography,
+  useScrollTrigger,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -56,33 +57,44 @@ function InputAppBar({
 }: Props): ReactElement {
   const classes = useStyles();
 
+  const shadowTrigger = useScrollTrigger({
+    threshold: 1,
+    disableHysteresis: true,
+  });
+
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <IconButton
-          onClick={handleBackToLayout}
-          edge="start"
-          className={classes.menuButton}
-          color="inherit"
-          aria-label="back"
-        >
-          <ArrowBack />
-        </IconButton>
-        <Typography variant="h6" className={classes.title}>
-          {actionName} {name}
-        </Typography>
-        {saveName && (
-          <Button
-            color="inherit"
-            disabled={disableSave}
-            onClick={handleSave}
-            aria-label={saveName}
+    <>
+      <AppBar
+        position="fixed"
+        elevation={shadowTrigger ? 3 : 0}
+        style={{ border: 0 }}
+      >
+        <Toolbar>
+          <IconButton
+            onClick={handleBackToLayout}
+            edge="start"
+            className={classes.menuButton}
+            aria-label="back"
           >
-            {saveName}
-          </Button>
-        )}
-      </Toolbar>
-    </AppBar>
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            {actionName} {name}
+          </Typography>
+          {saveName && (
+            <Button
+              color="secondary"
+              disabled={disableSave}
+              onClick={handleSave}
+              aria-label={saveName}
+            >
+              {saveName}
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
+    </>
   );
 }
 

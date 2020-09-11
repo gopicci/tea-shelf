@@ -167,7 +167,6 @@ function CaptureImage({
         <IconButton
           className={classes.control}
           onClick={handleClose}
-          color="inherit"
           aria-label="cancel"
         >
           <Close />
@@ -177,7 +176,6 @@ function CaptureImage({
             <IconButton
               className={classes.control}
               onClick={capture}
-              color="inherit"
               aria-label="capture"
             >
               <CameraAlt fontSize="large" />
@@ -185,7 +183,6 @@ function CaptureImage({
             <IconButton
               className={classes.control}
               onClick={() => setImageLoadDone(true)}
-              color="inherit"
               aria-label="skip"
             >
               <SkipNext />
@@ -196,7 +193,6 @@ function CaptureImage({
             <IconButton
               className={classes.control}
               onClick={replay}
-              color="inherit"
               aria-label="recapture"
             >
               <Replay fontSize="large" />
@@ -204,7 +200,6 @@ function CaptureImage({
             <IconButton
               className={classes.control}
               onClick={() => setImageLoadDone(true)}
-              color="inherit"
               aria-label="done"
             >
               <Done />

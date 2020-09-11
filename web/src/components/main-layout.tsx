@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import { Box, Fab, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
@@ -8,6 +8,7 @@ import FilterBar from "./filters/filter-bar";
 import FilterAccordion from "./filters/filter-accordion";
 import GridLayout from "./grid/grid-layout";
 import DialogLayout from "./dialog/dialog-layout";
+import { TeasState } from "./statecontainers/tea-context";
 import { Route } from "../app";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,8 +25,6 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   addButton: {
-    color: theme.palette.common.white,
-    backgroundColor: theme.palette.primary.main,
     position: "fixed",
     bottom: theme.spacing(4),
     right: theme.spacing(4),
@@ -57,6 +56,8 @@ function MainLayout(props: Props): ReactElement {
 
   const { route, setRoute, isMobile } = props;
 
+  const teas = useContext(TeasState);
+
   // Drawer state
   const [open, setOpen] = useState(false);
 
@@ -72,7 +73,8 @@ function MainLayout(props: Props): ReactElement {
       <Box className={classes.page}>
         <DrawerLayout open={open} setOpen={setOpen} {...props} />
         <Box className={classes.mainBox}>
-          {isMobile ? <FilterBar {...props} /> : <FilterAccordion />}
+          {teas.length > 0 &&
+            (isMobile ? <FilterBar {...props} /> : <FilterAccordion />)}
           <GridLayout {...props} />
         </Box>
         {!isMobile &&
@@ -82,6 +84,7 @@ function MainLayout(props: Props): ReactElement {
         {isMobile && (
           <Fab
             aria-label="add tea"
+            color="secondary"
             className={classes.addButton}
             onClick={handleCreate}
           >

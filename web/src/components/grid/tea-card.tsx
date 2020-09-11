@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Box,
@@ -13,7 +13,9 @@ import {
   getOriginShortName,
   getSubcategoryName,
   getCountryCode,
+  getCategoryName,
 } from "../../services/parsing-services";
+import { CategoriesState } from "../statecontainers/categories-context";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
 import emptyImage from "../../media/empty.png";
@@ -126,6 +128,8 @@ type Props = {
 function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
+  const categories = useContext(CategoriesState);
+
   /** Sets main route to tea details */
   function handleCardClick(): void {
     setRoute({ route: "TEA_DETAILS", payload: teaData });
@@ -157,7 +161,11 @@ function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
               variant="subtitle1"
             >
               {teaData.year}{" "}
-              {teaData.subcategory && getSubcategoryName(teaData.subcategory)}
+              {!teaData.subcategory
+                ? getCategoryName(categories, teaData.category)
+                : gridView
+                ? teaData.subcategory.name
+                : getSubcategoryName(teaData.subcategory)}
             </Typography>
           </Box>
           <Box className={classes.bottomBox}>

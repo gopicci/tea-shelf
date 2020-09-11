@@ -121,7 +121,7 @@ function DetailsBoxMain({ teaData, handleEdit }: Props): ReactElement {
           </Box>
           <Box className={classes.brewingBox}>
             <Box className={classes.brewingTitle}>
-              <Typography variant="caption">Brewing instructions:</Typography>
+              <Typography variant="caption">Brewing suggestions:</Typography>
               <FormGroup>
                 <FormControlLabel
                   className={classes.brewingSwitch}

@@ -1,6 +1,7 @@
 import React, { ReactElement, useContext } from "react";
 import { Box, Card, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { getCategoryName } from "../../../services/parsing-services";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeaInstance } from "../../../services/models";
@@ -47,23 +48,24 @@ function DetailsCardDescription({ teaData }: Props): ReactElement {
     if (teaData.subcategory.description_source)
       descriptionSource = teaData.subcategory.description_source;
   } else if (category && category.description && category.description_source) {
-    descriptionName = category.name.charAt(0) + category.name.slice(1).toLowerCase() + " Tea";
+    descriptionName = getCategoryName(categories, teaData.category) + " Tea";
     description = category.description;
     if (category.description_source)
       descriptionSource = category.description_source;
   }
 
-  return (
+  return description ? (
     <Card className={detailsClasses.card} variant="outlined">
       <Box className={detailsClasses.genericBox}>
         <Typography variant="caption" display="block" className={classes.about}>
           About {descriptionName}:
         </Typography>
-        {description && description.split("\n").map((s, key) => (
-          <Typography variant="body2" key={key}>
-            {s}
-          </Typography>
-        ))}
+        {description &&
+          description.split("\n").map((s, key) => (
+            <Typography variant="body2" key={key}>
+              {s}
+            </Typography>
+          ))}
         {descriptionSource && (
           <Link
             href="#"
@@ -77,6 +79,8 @@ function DetailsCardDescription({ teaData }: Props): ReactElement {
         )}
       </Box>
     </Card>
+  ) : (
+    <></>
   );
 }
 

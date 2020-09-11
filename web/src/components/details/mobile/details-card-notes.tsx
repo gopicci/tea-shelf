@@ -50,12 +50,16 @@ function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
     <Card className={detailsClasses.card} variant="outlined">
       <CardActionArea onClick={handleEditNotes} aria-label="edit notes">
         <Box className={detailsClasses.genericBox}>
-          <Typography variant="caption" display="block">
+          <Typography variant="caption" color="secondary" display="block">
             {teaData.notes && "Edit notes:"}
           </Typography>
 
           {!teaData.notes ? (
-            <Typography variant="button" className={detailsClasses.center}>
+            <Typography
+              variant="button"
+              color="secondary"
+              className={detailsClasses.center}
+            >
               Add notes
             </Typography>
           ) : (

@@ -98,10 +98,10 @@ function FilterAccordion(): ReactElement {
           </Grid>
         </AccordionDetails>
         <AccordionActions className={classes.actions}>
-          <Button size="small" color="primary" onClick={handleReset}>
+          <Button size="small" color="secondary" onClick={handleReset}>
             Reset
           </Button>
-          <Button size="small" color="primary" onClick={handleExpansion}>
+          <Button size="small" color="secondary" onClick={handleExpansion}>
             Close
           </Button>
         </AccordionActions>

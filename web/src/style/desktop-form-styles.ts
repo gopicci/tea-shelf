@@ -38,7 +38,7 @@ export const desktopFormStyles = makeStyles({
     padding: theme.spacing(0.5),
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    backgroundColor: fade(theme.palette.background.default, 0.5),
+    backgroundColor: theme.palette.divider,
   },
   brewingSwitch: {
     position: "absolute",

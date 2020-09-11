@@ -13,6 +13,7 @@ import {
   IconButton,
   MenuItem,
   Menu,
+  Tooltip,
   useScrollTrigger,
 } from "@material-ui/core";
 import {
@@ -191,7 +192,6 @@ function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
         <IconButton
           edge="start"
           className={classes.menuButton}
-          color="inherit"
           aria-label="open drawer"
           onClick={() => setOpen(true)}
         >
@@ -222,20 +222,22 @@ function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
         </Box>
         <Box className={classes.user}>
           <SyncButton />
-          <IconButton
-            onClick={handleGridViewChange}
-            color="inherit"
-            aria-label="switch view"
-          >
-            {gridView ? <ViewStream /> : <ViewModule />}
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label="user menu"
-            onClick={handleMenuClick}
-          >
-            <AccountCircle />
-          </IconButton>
+          <Tooltip title={gridView ? "List view" : "Grid view"}>
+            <IconButton
+              onClick={handleGridViewChange}
+              aria-label="switch view"
+            >
+              {gridView ? <ViewStream /> : <ViewModule />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Account">
+            <IconButton
+              aria-label="user menu"
+              onClick={handleMenuClick}
+            >
+              <AccountCircle />
+            </IconButton>
+          </Tooltip>
           <Menu
             id="menu"
             anchorEl={anchorEl}

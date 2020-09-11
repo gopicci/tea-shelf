@@ -44,6 +44,7 @@ function DetailsCardVendor({ vendor }: Props): ReactElement {
             href="#"
             onClick={() => window.open("https://" + vendor.website, "_blank")}
             variant="body2"
+            color="secondary"
           >
             {vendor.website}
           </Link>

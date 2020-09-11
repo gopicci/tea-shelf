@@ -152,7 +152,6 @@ function EditOriginOnline({
                   <IconButton
                     onClick={handleBackToLayout}
                     edge="start"
-                    color="inherit"
                     aria-label="back"
                   >
                     <ArrowBack />

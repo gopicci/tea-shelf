@@ -19,6 +19,7 @@ import { SubcategoriesState } from "../../statecontainers/subcategories-context"
 import { formListStyles } from "../../../style/form-list-styles";
 import { TeaRequest } from "../../../services/models";
 import { FilterOptionsState } from "@material-ui/lab";
+import { FilterState } from "../../statecontainers/filter-context";
 
 type Option = { inputValue: string; label: string } | string;
 
@@ -54,6 +55,9 @@ function EditSubcategory({
   const formListClasses = formListStyles();
 
   const subcategories = useContext(SubcategoriesState);
+  const filters = useContext(FilterState);
+
+  const userSubcategories = Object.keys(filters.filters.subcategories);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -178,7 +182,6 @@ function EditSubcategory({
                     <IconButton
                       onClick={handleBackToLayout}
                       edge="start"
-                      color="inherit"
                       aria-label="back"
                     >
                       <ArrowBack />
@@ -190,7 +193,7 @@ function EditSubcategory({
           )}
         />
       )}
-      {!inputValue && (
+      {!inputValue && userSubcategories.length > 0 && (
         <FormGroup>
           <FormLabel className={formListClasses.formLabel}>
             <Typography className={formListClasses.formLabelText}>
@@ -198,21 +201,20 @@ function EditSubcategory({
             </Typography>
           </FormLabel>
           <List className={formListClasses.list}>
-            {options &&
-              options.map((option) => (
-                <ListItem
-                  button
-                  className={formListClasses.listItem}
-                  key={option}
-                  id={option}
-                  aria-label={option}
-                  onClick={(e) => updateSubcategory(e.currentTarget.id)}
-                >
-                  <Box className={formListClasses.listItemBox}>
-                    <Typography variant={"body2"}>{option}</Typography>
-                  </Box>
-                </ListItem>
-              ))}
+            {userSubcategories.map((sub) => (
+              <ListItem
+                button
+                className={formListClasses.listItem}
+                key={sub}
+                id={sub}
+                aria-label={sub}
+                onClick={(e) => updateSubcategory(e.currentTarget.id)}
+              >
+                <Box className={formListClasses.listItemBox}>
+                  <Typography variant={"body2"}>{sub}</Typography>
+                </Box>
+              </ListItem>
+            ))}
           </List>
         </FormGroup>
       )}

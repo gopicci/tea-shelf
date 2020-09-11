@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app';
 import * as serviceWorker from './serviceWorker';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import 'fontsource-roboto';
 
 import "whatwg-fetch"; // disable fetch for cypress support
@@ -11,7 +10,6 @@ import "whatwg-fetch"; // disable fetch for cypress support
 
 ReactDOM.render(
   <React.StrictMode>
-    <CssBaseline />
     <App />
   </React.StrictMode>,
   document.getElementById('root')

@@ -96,6 +96,7 @@ function InputLayout({
                 : ""
             }
             handleClick={handleClick}
+            noBorder
           />
         </List>
         <FormLabel className={formListClasses.formLabel}>
@@ -161,7 +162,8 @@ function InputLayout({
                 : ""
             }
             handleClick={handleClick}
-            noTitle={true}
+            noTitle
+            noBorder
           />
         </List>
         <FormLabel className={formListClasses.formLabel}>
@@ -184,7 +186,7 @@ function InputLayout({
             </Box>
           </ListItem>
           <ListItem className={formListClasses.listItem} id="western">
-            <Box className={formListClasses.listItemBox}>
+            <Box className={formListClasses.listItemBox} style={{ border: 0 }}>
               <Box className={classes.nameBox}>
                 <Typography variant={"body2"}>Western</Typography>
               </Box>

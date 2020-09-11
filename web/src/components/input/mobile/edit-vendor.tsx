@@ -18,6 +18,7 @@ import { formListStyles } from "../../../style/form-list-styles";
 import { VendorsState } from "../../statecontainers/vendors-context";
 import { TeaRequest } from "../../../services/models";
 import { FilterOptionsState } from "@material-ui/lab";
+import {FilterState} from '../../statecontainers/filter-context';
 
 type Option = { inputValue: string; label: string } | string;
 
@@ -52,6 +53,9 @@ function EditVendor({
   const formListClasses = formListStyles();
 
   const vendors = useContext(VendorsState);
+  const filters = useContext(FilterState);
+
+  const userVendors = Object.keys(filters.filters.vendors);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -139,7 +143,6 @@ function EditVendor({
                     <IconButton
                       onClick={handleBackToLayout}
                       edge="start"
-                      color="inherit"
                       aria-label="back"
                     >
                       <ArrowBack />
@@ -151,7 +154,7 @@ function EditVendor({
           )}
         />
       )}
-      {!inputValue && (
+      {!inputValue && userVendors.length > 0 && (
         <FormGroup>
           <FormLabel className={formListClasses.formLabel}>
             <Typography className={formListClasses.formLabelText}>
@@ -159,17 +162,16 @@ function EditVendor({
             </Typography>
           </FormLabel>
           <List className={formListClasses.list}>
-            {options &&
-              options.map((option) => (
+            {userVendors.map((vendor) => (
                 <ListItem
                   button
                   className={formListClasses.listItem}
-                  key={option}
-                  id={option}
+                  key={vendor}
+                  id={vendor}
                   onClick={(e) => updateVendor(e.currentTarget.id)}
                 >
                   <Box className={formListClasses.listItemBox}>
-                    <Typography variant={"body2"}>{option}</Typography>
+                    <Typography variant={"body2"}>{vendor}</Typography>
                   </Box>
                 </ListItem>
               ))}

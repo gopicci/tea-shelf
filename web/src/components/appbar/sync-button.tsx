@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useContext, useState } from "react";
-import { CircularProgress, IconButton } from "@material-ui/core";
+import { CircularProgress, IconButton, Tooltip } from "@material-ui/core";
 import { CloudDone, Refresh } from "@material-ui/icons";
 import localforage from "localforage";
 import { getOfflineTeas, uploadOffline } from "../../services/sync-services";
@@ -132,7 +132,7 @@ function SyncButton(): ReactElement {
   ]);
 
   return isSyncing ? (
-    <IconButton color="inherit" aria-label="refresh">
+    <IconButton aria-label="refresh">
       <CircularProgress
         className={classes.circularProgress}
         size={20}
@@ -140,9 +140,11 @@ function SyncButton(): ReactElement {
       />
     </IconButton>
   ) : (
-    <IconButton color="inherit" aria-label="refresh" onClick={handleSync}>
-      {sync ? <CloudDone /> : <Refresh />}
-    </IconButton>
+    <Tooltip title="Refresh">
+      <IconButton aria-label="refresh" onClick={handleSync}>
+        {sync ? <CloudDone /> : <Refresh />}
+      </IconButton>
+    </Tooltip>
   );
 }
 

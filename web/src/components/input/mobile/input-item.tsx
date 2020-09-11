@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * InputItem props.
- * 
+ *
  * @memberOf InputItem
  */
 type Props = {
@@ -32,7 +32,9 @@ type Props = {
   handleClick: (event: MouseEvent) => void;
   /** If true value text capitalization is disabled */
   noTitle?: boolean;
-}
+  /** If true value bottom border is disabled */
+  noBorder?: boolean;
+};
 
 /**
  * Mobile tea editing layout list item.
@@ -44,7 +46,8 @@ function InputItem({
   name,
   value,
   handleClick,
-  noTitle = false,
+  noTitle,
+  noBorder,
 }: Props): ReactElement {
   const classes = useStyles();
   const formListClasses = formListStyles();
@@ -57,7 +60,10 @@ function InputItem({
       onClick={handleClick}
       aria-label={name}
     >
-      <Box className={formListClasses.listItemBox}>
+      <Box
+        className={formListClasses.listItemBox}
+        style={noBorder ? { border: 0 } : undefined}
+      >
         <Box className={classes.nameBox}>
           <Typography variant={"body2"}>{name}</Typography>
         </Box>

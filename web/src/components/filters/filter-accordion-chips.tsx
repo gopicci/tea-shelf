@@ -73,7 +73,7 @@ function FilterAccordionChips(): ReactElement {
       {state.active > 0 && (
         <Button
           size="small"
-          color="primary"
+          color="secondary"
           disableElevation
           onClick={handleReset}
         >

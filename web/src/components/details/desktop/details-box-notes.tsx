@@ -45,7 +45,7 @@ function DetailsBoxNotes({ teaData, handleEdit }: Props): ReactElement {
 
   return (
     <Box className={classes.row}>
-      <Paper className={classes.notesPaper}>
+      <Paper className={classes.notesPaper} elevation={0}>
         {notesEditing ? (
           <TextField
             onChange={handleNotesChange}

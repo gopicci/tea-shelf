@@ -1,5 +1,5 @@
 import React, { useState, ReactElement } from "react";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { CssBaseline, useMediaQuery } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 
 //import Register from "./components/Register";
@@ -88,6 +88,7 @@ function App(): ReactElement {
 
   return (
     <ThemeProvider theme={mainTheme}>
+      <CssBaseline />
       {!isLoggedIn ? (
         <Login />
       ) : (

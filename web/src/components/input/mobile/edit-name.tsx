@@ -8,6 +8,7 @@ const maxLength = 50;
 
 const useStyles = makeStyles((theme) => ({
   textField: {
+    backgroundColor: theme.palette.background.default,
     padding: theme.spacing(4),
     flexGrow: 1,
   },

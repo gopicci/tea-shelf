@@ -16,6 +16,7 @@ export const desktopDetailsStyles = makeStyles({
     display: "flex",
     flexGrow: 1,
     justifyContent: "space-between",
+    borderTop: `solid 1px ${theme.palette.divider}`
   },
   row: {
     display: "flex",
@@ -118,7 +119,7 @@ export const desktopDetailsStyles = makeStyles({
     marginTop: theme.spacing(12),
     marginBottom: theme.spacing(10),
     padding: theme.spacing(2),
-    boxShadow: "5px 5px 20px #ccc",
+    border: `solid 1px ${theme.palette.divider}`,
   },
   notesText: {
     paddingTop: theme.spacing(2),

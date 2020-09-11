@@ -6,7 +6,10 @@ export const formListStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     padding: theme.spacing(2),
-    background: fade(theme.palette.primary.light, 0.15),
+    [theme.breakpoints.up("sm")]: {
+      padding: theme.spacing(1),
+    },
+    background: theme.palette.action.selected,
   },
   formLabelText: {
     flexGrow: 1,
@@ -46,7 +49,6 @@ export const formListStyles = makeStyles({
     paddingBottom: theme.spacing(2),
     fontSize: theme.typography.caption.fontSize,
     fontWeight: "bold",
-    color: `${theme.palette.primary.main}`,
     cursor: "pointer",
   },
   textField: {
