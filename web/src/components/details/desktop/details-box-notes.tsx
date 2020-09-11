@@ -1,5 +1,6 @@
 import React, { ChangeEvent, ReactElement, useState } from "react";
 import { Box, Button, Paper, TextField, Typography } from "@material-ui/core";
+import { Notes } from "@material-ui/icons";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { TeaInstance, TeaRequest } from "../../../services/models";
 
@@ -46,6 +47,9 @@ function DetailsBoxNotes({ teaData, handleEdit }: Props): ReactElement {
   return (
     <Box className={classes.row}>
       <Paper className={classes.notesPaper} elevation={0}>
+        <Box className={classes.row}>
+          <Notes className={classes.notesIcon}></Notes>
+        </Box>
         {notesEditing ? (
           <TextField
             onChange={handleNotesChange}
@@ -74,16 +78,11 @@ function DetailsBoxNotes({ teaData, handleEdit }: Props): ReactElement {
         )}
         <Box className={classes.rowCenter}>
           {notesEditing ? (
-            <Button
-              className={classes.doubleMargin}
-              onClick={handleNotesSave}
-              aria-label="save notes"
-            >
+            <Button onClick={handleNotesSave} aria-label="save notes">
               Save
             </Button>
           ) : (
             <Button
-              className={classes.doubleMargin}
               onClick={() => setNotesEditing(true)}
               aria-label={notes ? "edit notes" : "add notes"}
             >

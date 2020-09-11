@@ -16,7 +16,7 @@ export const desktopDetailsStyles = makeStyles({
     display: "flex",
     flexGrow: 1,
     justifyContent: "space-between",
-    borderTop: `solid 1px ${theme.palette.divider}`
+    borderTop: `solid 1px ${theme.palette.divider}`,
   },
   row: {
     display: "flex",
@@ -38,6 +38,19 @@ export const desktopDetailsStyles = makeStyles({
     margin: "auto",
     borderTop: `solid 1px ${theme.palette.divider}`,
   },
+  label: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    marginBottom: theme.spacing(2),
+    color: theme.palette.primary.main,
+  },
+  lineIcon: {
+    marginRight: theme.spacing(1),
+    color: theme.palette.primary.main,
+  },
   teaImage: {
     minWidth: theme.spacing(28),
     maxWidth: theme.spacing(28),
@@ -54,11 +67,11 @@ export const desktopDetailsStyles = makeStyles({
     flexGrow: 1,
     marginTop: theme.spacing(2),
     marginLeft: theme.spacing(4),
-    paddingBottom: theme.spacing(2),
   },
   column: {
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
   },
   vendor: {
     marginBottom: theme.spacing(2),
@@ -92,6 +105,7 @@ export const desktopDetailsStyles = makeStyles({
     justifyContent: "space-between",
     flexDirection: "column",
     minWidth: 250,
+    marginBottom: theme.spacing(2),
   },
   brewingTitle: {
     position: "relative",
@@ -114,6 +128,9 @@ export const desktopDetailsStyles = makeStyles({
     justifyContent: "center",
     marginBottom: theme.spacing(2),
   },
+  notesIcon: {
+    color: theme.palette.primary.main,
+  },
   notesPaper: {
     width: "66%",
     marginTop: theme.spacing(12),
@@ -123,18 +140,18 @@ export const desktopDetailsStyles = makeStyles({
   },
   notesText: {
     paddingTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   doubleMargin: {
     margin: theme.spacing(2),
-  },
-  countryFlag: {
-    marginLeft: theme.spacing(2),
   },
   map: {
     marginTop: theme.spacing(2),
   },
   aboutBox: {
     display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     flexShrink: 0,
     paddingTop: theme.spacing(2),
     paddingRight: theme.spacing(4),

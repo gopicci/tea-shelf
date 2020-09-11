@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
 import { Box, Typography } from "@material-ui/core";
+import {Public} from '@material-ui/icons';
 import ReactCountryFlag from "react-country-flag";
 import {
   ComposableMap,
@@ -15,6 +16,7 @@ import {
 import { geography } from "../../../services/geography";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { OriginModel } from "../../../services/models";
+
 
 /**
  * DetailsBoxOrigin props.
@@ -75,6 +77,7 @@ function DetailsBoxOrigin({ origin }: Props): ReactElement {
         </Box>
       )}
       <Box className={classes.halfCenterBox}>
+        <Public className={classes.icon}></Public>
         <Typography variant="h4">Origin:</Typography>
         <Typography variant="h3" className={classes.doubleMargin}>
           {getOriginName(origin)}
@@ -88,7 +91,6 @@ function DetailsBoxOrigin({ origin }: Props): ReactElement {
           countryCode={getCountryCode(origin.country)}
           alt=""
           aria-label={origin.country}
-          className={classes.countryFlag}
         />
       </Box>
     </Box>

@@ -1,6 +1,7 @@
 import React, { ReactElement, useContext } from "react";
 import { TeaInstance } from "../../../services/models";
 import { Box, Link, Typography } from "@material-ui/core";
+import { MenuBook } from "@material-ui/icons";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 
@@ -48,6 +49,7 @@ function DetailsBoxDescription({ teaData }: Props): ReactElement {
   return (
     <Box className={classes.descriptionRow}>
       <Box className={classes.aboutBox}>
+        <MenuBook className={classes.icon} />
         <Typography variant="h3">About {descriptionName}</Typography>
       </Box>
       <Box>
