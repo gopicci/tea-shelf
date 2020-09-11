@@ -28,8 +28,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   item: {
+    marginTop: theme.spacing(2),
     [theme.breakpoints.up("md")]: {
       borderRadius: `0px ${theme.spacing(4)}px ${theme.spacing(4)}px 0px`,
+      margin: 0,
     },
   },
   itemText: {
