@@ -27,11 +27,19 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     margin: theme.spacing(2),
     marginTop: theme.spacing(4),
+    [theme.breakpoints.up("md")]: {
+      padding: theme.spacing(2),
+    },
   },
   row: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  title: {
+    margin: "auto",
+    marginBottom: theme.spacing(4),
+
   },
   divider: {
     width: `calc(100% - ${theme.spacing(4)}px)`,
@@ -50,6 +58,8 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Set app's main route */
   setRoute: (route: Route) => void;
+  /** Mobile mode or desktop */
+  isMobile: boolean;
 };
 
 /**
@@ -58,7 +68,7 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function Settings({ setRoute }: Props): ReactElement {
+function Settings({ setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
 
   const settings = useContext(SettingsState);
@@ -71,21 +81,30 @@ function Settings({ setRoute }: Props): ReactElement {
 
   return (
     <>
-      <GenericAppBar>
-        <Toolbar>
-          <IconButton
-            onClick={handleBack}
-            edge="start"
-            className={classes.back}
-            aria-label="back"
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6">Change Settings</Typography>
-        </Toolbar>
-      </GenericAppBar>
-      <Toolbar />
+      {isMobile && (
+        <>
+          <GenericAppBar>
+            <Toolbar>
+              <IconButton
+                onClick={handleBack}
+                edge="start"
+                className={classes.back}
+                aria-label="back"
+              >
+                <ArrowBack />
+              </IconButton>
+              <Typography variant="h5">Change Settings</Typography>
+            </Toolbar>
+          </GenericAppBar>
+          <Toolbar />
+        </>
+      )}
       <Box className={classes.root}>
+        {!isMobile && (
+          <Box className={classes.title}>
+            <Typography variant="h4">Change Settings</Typography>
+          </Box>
+        )}
         <Box className={classes.row}>
           <Typography variant="h5">Brewing type</Typography>
           <FormGroup>
@@ -93,7 +112,7 @@ function Settings({ setRoute }: Props): ReactElement {
               checked={!settings.gongfu}
               control={<Switch size="small" />}
               label={
-                <Typography variant="caption">
+                <Typography variant="h5">
                   {settings.gongfu ? "Gongfu" : "Western"}
                 </Typography>
               }
@@ -110,7 +129,7 @@ function Settings({ setRoute }: Props): ReactElement {
               checked={!settings.metric}
               control={<Switch size="small" />}
               label={
-                <Typography variant="caption">
+                <Typography variant="h5">
                   {settings.metric ? "Metric" : "Imperial"}
                 </Typography>
               }

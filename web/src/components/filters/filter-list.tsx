@@ -1,4 +1,10 @@
-import React, { ChangeEvent, ReactElement, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  MouseEvent,
+  ReactElement,
+  useContext,
+  useState,
+} from "react";
 import {
   Collapse,
   FormGroup,
@@ -67,6 +73,16 @@ function FilterList({ entry, list }: Props): ReactElement {
     setOpen(!open);
   }
 
+  /**
+   * Set reversed sorting state
+   *
+   * @param {MouseEvent<HTMLElement>} event - Icon button click event
+   */
+  function handleReverseClick(event: MouseEvent<HTMLElement>): void {
+    event.preventDefault();
+    dispatch({ type: "REVERSE" });
+  }
+
   return (
     <FormGroup>
       <FormLabel className={formListClasses.formLabel}>
@@ -74,12 +90,11 @@ function FilterList({ entry, list }: Props): ReactElement {
           {entry === "sorting" ? "Sort by" : entry}:
         </Typography>
         {entry === "sorting" && (
-          <IconButton className={formListClasses.arrowIcon}>
-            {state.reversed ? (
-              <ArrowDropUp onClick={() => dispatch({ type: "REVERSE" })} />
-            ) : (
-              <ArrowDropDown onClick={() => dispatch({ type: "REVERSE" })} />
-            )}
+          <IconButton
+            className={formListClasses.arrowIcon}
+            onClick={handleReverseClick}
+          >
+            {state.reversed ? <ArrowDropUp /> : <ArrowDropDown />}
           </IconButton>
         )}
       </FormLabel>

@@ -28,6 +28,7 @@ export const mobileDetailsStyles = makeStyles({
   label: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
   },
   titleIcon: {
     marginBottom: theme.spacing(1),

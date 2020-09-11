@@ -147,8 +147,12 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
         <>
           <Box className={classes.divider} />
           <Box className={classes.genericBox}>
-            <Box className={classes.row}>
-              {teaData.weight_left && (
+            <Box
+              className={
+                teaData.weight_left && teaData.price ? classes.row : undefined
+              }
+            >
+              {!!teaData.weight_left && (
                 <Box className={classes.label}>
                   <FitnessCenter className={classes.lineIcon} />
                   <Typography variant="caption">
@@ -159,7 +163,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
                   </Typography>
                 </Box>
               )}
-              {teaData.price && (
+              {!!teaData.price && (
                 <Box className={classes.label}>
                   <CreditCard className={classes.lineIcon} />
                   <Typography variant="caption">

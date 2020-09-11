@@ -68,7 +68,7 @@ function MainLayout(props: Props): ReactElement {
 
   return (
     <>
-      <SearchAppBar setOpen={setOpen} isMobile={isMobile} />
+      <SearchAppBar setOpen={setOpen} {...props} />
       <Toolbar />
       <Box className={classes.page}>
         <DrawerLayout open={open} setOpen={setOpen} {...props} />
@@ -78,7 +78,7 @@ function MainLayout(props: Props): ReactElement {
           <GridLayout {...props} />
         </Box>
         {!isMobile &&
-          ["CREATE", "TEA_DETAILS", "EDIT"].includes(route.route) && (
+          ["CREATE", "TEA_DETAILS", "EDIT", "SETTINGS"].includes(route.route) && (
             <DialogLayout {...props} />
           )}
         {isMobile && (

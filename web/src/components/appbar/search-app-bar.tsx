@@ -34,6 +34,7 @@ import {
 } from "../statecontainers/settings-context";
 import { SearchDispatch } from "../statecontainers/search-context";
 import titleImage from "../../media/title.png";
+import { Route } from "../../app";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -113,6 +114,8 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Set drawer open state */
   setOpen: (state: boolean) => void;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
   /** Mobile mode or desktop */
   isMobile: boolean;
 };
@@ -123,7 +126,7 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
+function SearchAppBar({ setOpen, setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
   const appBarClasses = appBarStyles();
 
@@ -176,9 +179,15 @@ function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
     setAnchorEl(undefined);
   }
 
+  /** Open settings. */
+  function handleSettings(): void {
+    handleMenuClose();
+    setRoute({ route: "SETTINGS" });
+  }
+
   /** Logout. */
   function handleLogout(): void {
-    setAnchorEl(undefined);
+    handleMenuClose();
     logout();
   }
 
@@ -239,6 +248,7 @@ function SearchAppBar({ setOpen, isMobile }: Props): ReactElement {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
+            <MenuItem onClick={handleSettings}>Settings</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Box>

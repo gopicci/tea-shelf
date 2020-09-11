@@ -4,6 +4,7 @@ import Create from "../create";
 import InputForm from "../input/desktop/input-form";
 import DesktopDetailsLayout from "../details/desktop/desktop-details-layout";
 import { Route } from "../../app";
+import Settings from '../settings';
 
 /**
  * DialogLayout props.
@@ -44,6 +45,7 @@ function DialogLayout(props: Props): ReactElement {
       {route.route === "CREATE" && <Create {...props} />}
       {route.route === "EDIT" && <InputForm {...props} />}
       {route.route === "TEA_DETAILS" && <DesktopDetailsLayout {...props} />}
+      {route.route === "SETTINGS" && <Settings {...props} />}
     </Dialog>
   );
 }
