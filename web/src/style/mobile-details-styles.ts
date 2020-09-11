@@ -111,7 +111,7 @@ export const mobileDetailsStyles = makeStyles({
     textAlign: "left",
   },
   name: {
-    margin: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   countryFlag: {
     paddingLeft: theme.spacing(0.5),
