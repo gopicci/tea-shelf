@@ -140,7 +140,6 @@ export interface TeaInstance extends TeaRequest {
   id: string | number;
 }
 
-
 /**
  * Extension of tea model that includes extra fields needed in input forms.
  */
@@ -230,4 +229,14 @@ export interface VisionData {
   subcategory?: number;
   /** Supposed tea vendor ID */
   vendor?: number;
+}
+
+/**
+ * User settings data structure.
+ */
+export interface Settings {
+  /** Grid view on desktop mode */
+  gridView?: boolean;
+  /** Metric units or imperial */
+  metric?: boolean;
 }
