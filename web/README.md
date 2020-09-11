@@ -53,3 +53,11 @@ And services:
 | [auth-services.ts](https://teashelf.app/docs/web/services_auth-services.ts.html) | Authentication services for API requests |
 | [sync-services.ts](https://teashelf.app/docs/web/services_sync-services.ts.html) | Offline behavior sync services |
 | [parsing-services.ts](https://teashelf.app/docs/web/services_parsing-services.ts.html) | Parsers and translators |
+
+##### Styling
+
+The interface has been built using [Material UI](https://material-ui.com).
+Styling has mostly been kept in place, defining classes relevant to the component
+in the same file. To favor readability the style of certain nested components has
+been grouped together and moved under styles. Within the same directory there's
+also the main theme containing macro definitions.

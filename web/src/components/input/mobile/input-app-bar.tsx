@@ -1,14 +1,8 @@
 import React, { ReactElement } from "react";
-import {
-  AppBar,
-  Button,
-  IconButton,
-  Toolbar,
-  Typography,
-  useScrollTrigger,
-} from "@material-ui/core";
+import { Button, IconButton, Toolbar, Typography } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import GenericAppBar from "../../generics/generic-app-bar";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -57,18 +51,9 @@ function InputAppBar({
 }: Props): ReactElement {
   const classes = useStyles();
 
-  const shadowTrigger = useScrollTrigger({
-    threshold: 1,
-    disableHysteresis: true,
-  });
-
   return (
     <>
-      <AppBar
-        position="fixed"
-        elevation={shadowTrigger ? 3 : 0}
-        style={{ border: 0 }}
-      >
+      <GenericAppBar>
         <Toolbar>
           <IconButton
             onClick={handleBackToLayout}
@@ -92,7 +77,7 @@ function InputAppBar({
             </Button>
           )}
         </Toolbar>
-      </AppBar>
+      </GenericAppBar>
       <Toolbar />
     </>
   );

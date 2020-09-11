@@ -32,7 +32,7 @@ type Props = {
  * To be used in instance details components.
  *
  * @component
- * @subcategory Details mobile
+ * @subcategory Generics
  */
 function ActionIcons({ teaData, setRoute }: Props): ReactElement {
   const classes = useStyles();

@@ -17,6 +17,17 @@ export const mobileDetailsStyles = makeStyles({
     flexDirection: "column",
     margin: theme.spacing(2),
   },
+  titleBox: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: theme.spacing(2),
+    color: theme.palette.primary.main,
+  },
+  titleIcon: {
+    marginBottom: theme.spacing(1),
+  },
   divider: {
     width: `calc(100% - ${theme.spacing(4)}px)`,
     height: theme.spacing(1),
@@ -37,5 +48,29 @@ export const mobileDetailsStyles = makeStyles({
   centerGrow: {
     flexGrow: 1,
     textAlign: "center",
+  },
+  source: {
+    marginTop: theme.spacing(1),
+  },
+  notesBox: {
+    display: "flex",
+    flexGrow: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    paddingBottom: theme.spacing(2),
+  },
+  notes: {
+    textAlign: "left",
+  },
+  name: {
+    margin: theme.spacing(1),
+  },
+  countryFlag: {
+    paddingLeft: theme.spacing(0.5),
+    margin: "auto",
+  },
+  mapBox: {
+    flexGrow: 1,
+    marginBottom: -theme.spacing(1),
   },
 });

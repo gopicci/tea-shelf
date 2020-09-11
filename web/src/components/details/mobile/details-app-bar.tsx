@@ -1,13 +1,8 @@
 import React, { ReactElement } from "react";
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Toolbar,
-  useScrollTrigger,
-} from "@material-ui/core";
+import { Box, IconButton, Toolbar } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
-import ActionIcons from "../../generics/actionIcons";
+import GenericAppBar from "../../generics/generic-app-bar";
+import ActionIcons from "../../generics/action-icons";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { Route } from "../../../app";
 import { TeaInstance } from "../../../services/models";
@@ -33,35 +28,22 @@ type Props = {
 function DetailsAppbar({ teaData, setRoute }: Props): ReactElement {
   const detailsClasses = mobileDetailsStyles();
 
-  const shadowTrigger = useScrollTrigger({
-    threshold: 1,
-    disableHysteresis: true,
-  });
-
   /** Routes back to main */
   function handleBack() {
     setRoute({ route: "MAIN" });
   }
 
   return (
-    <AppBar
-      position="fixed"
-      elevation={shadowTrigger ? 3 : 0}
-      style={{ border: 0 }}
-    >
+    <GenericAppBar>
       <Toolbar>
         <Box className={detailsClasses.grow}>
-          <IconButton
-            onClick={handleBack}
-            edge="start"
-            aria-label="back"
-          >
+          <IconButton onClick={handleBack} edge="start" aria-label="back">
             <ArrowBack />
           </IconButton>
         </Box>
         <ActionIcons teaData={teaData} setRoute={setRoute} />
       </Toolbar>
-    </AppBar>
+    </GenericAppBar>
   );
 }
 

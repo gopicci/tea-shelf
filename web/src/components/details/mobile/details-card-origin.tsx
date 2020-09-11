@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { Box, Card, Typography } from "@material-ui/core";
+import { Public } from "@material-ui/icons";
 import ReactCountryFlag from "react-country-flag";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   ComposableMap,
   Geographies,
@@ -16,20 +16,6 @@ import {
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { geography } from "../../../services/geography";
 import { OriginModel } from "../../../services/models";
-
-const useStyles = makeStyles((theme) => ({
-  name: {
-    margin: theme.spacing(1),
-  },
-  countryFlag: {
-    paddingLeft: theme.spacing(0.5),
-    margin: "auto",
-  },
-  mapBox: {
-    flexGrow: 1,
-    marginBottom: -theme.spacing(1),
-  },
-}));
 
 /**
  * DetailsCardOrigin props.
@@ -47,7 +33,6 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsCardOrigin({ origin }: Props): ReactElement {
-  const classes = useStyles();
   const detailsClasses = mobileDetailsStyles();
 
   let coordinates: Point | undefined;
@@ -57,10 +42,11 @@ function DetailsCardOrigin({ origin }: Props): ReactElement {
   return (
     <Card className={detailsClasses.card} variant="outlined">
       <Box className={detailsClasses.genericBox}>
-        <Typography variant="caption" display="block">
-          Origin:
-        </Typography>
-        <Typography variant="body2" className={classes.name}>
+        <Box className={detailsClasses.titleBox}>
+          <Public className={detailsClasses.titleIcon} />
+          <Typography variant="h5">Origin:</Typography>
+        </Box>
+        <Typography variant="h3" className={detailsClasses.name}>
           {getOriginName(origin)}
         </Typography>
         <ReactCountryFlag
@@ -69,14 +55,14 @@ function DetailsCardOrigin({ origin }: Props): ReactElement {
             width: "2em",
             height: "2em",
           }}
-          className={classes.countryFlag}
+          className={detailsClasses.countryFlag}
           countryCode={getCountryCode(origin.country)}
           alt=""
           aria-label={origin.country}
         />
       </Box>
       {coordinates && (
-        <Box className={classes.mapBox}>
+        <Box className={detailsClasses.mapBox}>
           <ComposableMap
             projection="geoMercator"
             projectionConfig={{

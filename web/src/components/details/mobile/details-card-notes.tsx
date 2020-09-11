@@ -1,23 +1,9 @@
 import React, { ReactElement } from "react";
 import { Box, Card, CardActionArea, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Notes } from "@material-ui/icons";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { TeaInstance } from "../../../services/models";
 import { Route } from "../../../app";
-
-const useStyles = makeStyles((theme) => ({
-  notesBox: {
-    display: "flex",
-    flexGrow: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    minHeight: theme.spacing(16),
-    paddingBottom: theme.spacing(2),
-  },
-  notes: {
-    textAlign: "left",
-  },
-}));
 
 /**
  * DetailsCardNotes props.
@@ -38,7 +24,6 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
-  const classes = useStyles();
   const detailsClasses = mobileDetailsStyles();
 
   /** Routes to notes editor. */
@@ -50,26 +35,28 @@ function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
     <Card className={detailsClasses.card} variant="outlined">
       <CardActionArea onClick={handleEditNotes} aria-label="edit notes">
         <Box className={detailsClasses.genericBox}>
-          <Typography variant="caption" color="secondary" display="block">
-            {teaData.notes && "Edit notes:"}
-          </Typography>
-
           {!teaData.notes ? (
-            <Typography
-              variant="button"
-              color="secondary"
-              className={detailsClasses.center}
-            >
+            <Typography variant="button" className={detailsClasses.center}>
               Add notes
             </Typography>
           ) : (
-            <Box className={classes.notesBox}>
-              {teaData.notes.split("\n").map((s, key) => (
-                <Typography variant="body1" className={classes.notes} key={key}>
-                  {s}
-                </Typography>
-              ))}
-            </Box>
+            <>
+              <Box className={detailsClasses.titleBox}>
+                <Notes className={detailsClasses.titleIcon} />
+                <Typography variant="h5">Notes:</Typography>
+              </Box>
+              <Box className={detailsClasses.notesBox}>
+                {teaData.notes.split("\n").map((s, key) => (
+                  <Typography
+                    variant="body1"
+                    className={detailsClasses.notes}
+                    key={key}
+                  >
+                    {s}
+                  </Typography>
+                ))}
+              </Box>
+            </>
           )}
         </Box>
       </CardActionArea>

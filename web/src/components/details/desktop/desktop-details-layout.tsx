@@ -4,7 +4,7 @@ import DetailsBoxMain from "./details-box-main";
 import DetailsBoxNotes from "./details-box-notes";
 import DetailsBoxOrigin from "./details-box-origin";
 import DetailsBoxDescription from "./details-box-description";
-import ActionIcons from "../../generics/actionIcons";
+import ActionIcons from "../../generics/action-icons";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeasState } from "../../statecontainers/tea-context";

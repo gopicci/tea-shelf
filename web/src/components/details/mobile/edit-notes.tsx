@@ -1,6 +1,5 @@
-import React, {ChangeEvent, ReactElement, useEffect, useState} from 'react';
+import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
 import {
-  AppBar,
   Box,
   Button,
   IconButton,
@@ -10,6 +9,7 @@ import {
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import GenericAppBar from '../../generics/generic-app-bar';
 import { TeaInstance, TeaRequest } from "../../../services/models";
 import { Route } from "../../../app";
 
@@ -50,11 +50,7 @@ type Props = {
  * @component
  * @subcategory Details mobile
  */
-function EditNotes({
-  teaData,
-  setRoute,
-  handleEdit,
-}: Props): ReactElement {
+function EditNotes({ teaData, setRoute, handleEdit }: Props): ReactElement {
   const classes = useStyles();
 
   const [notes, setNotes] = useState(teaData.notes ? teaData.notes : "");
@@ -85,7 +81,7 @@ function EditNotes({
 
   return (
     <>
-      <AppBar position="static">
+      <GenericAppBar>
         <Toolbar>
           <IconButton
             onClick={handlePrevious}
@@ -107,7 +103,8 @@ function EditNotes({
             SAVE
           </Button>
         </Toolbar>
-      </AppBar>
+      </GenericAppBar>
+      <Toolbar />
       <Box className={classes.textField}>
         <InputBase
           onChange={handleChange}

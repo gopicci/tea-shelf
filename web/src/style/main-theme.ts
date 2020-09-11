@@ -5,22 +5,20 @@ const breakpoints = createBreakpoints({});
 
 const defaultTheme = createMuiTheme();
 
-const main = "#ee1c1c";
+const main = "#ee341c";
+const background = "#ffffff"
 
 export const mainTheme = createMuiTheme({
   palette: {
     primary: {
-      light: "#acacac",
-      main: "#717171",
-      dark: "#1a1a1a",
+      main: "#a0a0a0",
     },
     secondary: {
-      light: "#bf6565",
       main: main,
-      dark: "#580f0f",
     },
     background: {
-      default: defaultTheme.palette.background.paper,
+      default: background,
+      paper: background,
     },
   },
   typography: {
@@ -86,7 +84,7 @@ export const mainTheme = createMuiTheme({
     MuiCssBaseline: {
       "@global": {
         body: {
-          backgroundColor: defaultTheme.palette.background.paper,
+          backgroundColor: background,
         },
       },
     },
@@ -96,7 +94,7 @@ export const mainTheme = createMuiTheme({
       },
       colorPrimary: {
         color: defaultTheme.palette.action.active,
-        backgroundColor: defaultTheme.palette.background.paper,
+        backgroundColor: background,
       },
     },
     MuiListItem: {
@@ -107,12 +105,6 @@ export const mainTheme = createMuiTheme({
           "&:hover": {
             backgroundColor: fade(main, 0.20),
           },
-        },
-        color: main,
-      },
-      button: {
-        "&:hover": {
-          backgroundColor: fade(main, 0.06),
         },
       },
     },

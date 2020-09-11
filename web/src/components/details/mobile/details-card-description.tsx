@@ -1,16 +1,10 @@
 import React, { ReactElement, useContext } from "react";
 import { Box, Card, Link, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { MenuBook } from "@material-ui/icons";
 import { getCategoryName } from "../../../services/parsing-services";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeaInstance } from "../../../services/models";
-
-const useStyles = makeStyles((theme) => ({
-  about: {
-    marginBottom: theme.spacing(1),
-  },
-}));
 
 /**
  * DetailsCardDescription props.
@@ -29,7 +23,6 @@ type Props = {
  * @subcategory Details mobile
  */
 function DetailsCardDescription({ teaData }: Props): ReactElement {
-  const classes = useStyles();
   const detailsClasses = mobileDetailsStyles();
 
   const categories = useContext(CategoriesState);
@@ -57,9 +50,11 @@ function DetailsCardDescription({ teaData }: Props): ReactElement {
   return description ? (
     <Card className={detailsClasses.card} variant="outlined">
       <Box className={detailsClasses.genericBox}>
-        <Typography variant="caption" display="block" className={classes.about}>
-          About {descriptionName}:
-        </Typography>
+        <Box className={detailsClasses.titleBox}>
+          <MenuBook className={detailsClasses.titleIcon} />
+          <Typography variant="h5">About {descriptionName}:</Typography>
+        </Box>
+
         {description &&
           description.split("\n").map((s, key) => (
             <Typography variant="body2" key={key}>
@@ -73,6 +68,7 @@ function DetailsCardDescription({ teaData }: Props): ReactElement {
               window.open("https://" + descriptionSource, "_blank")
             }
             variant="body2"
+            className={detailsClasses.source}
           >
             View source
           </Link>

@@ -1,6 +1,5 @@
 import React, { ReactElement, useContext, useEffect } from "react";
 import {
-  AppBar,
   Box,
   Button,
   IconButton,
@@ -10,6 +9,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
 import FilterList from "./filter-list";
+import GenericAppBar from '../generics/generic-app-bar';
 import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
 import { Route } from "../../app";
 import { Filters } from "../../services/models";
@@ -87,7 +87,7 @@ function SortFilter({ setRoute }: Props): ReactElement {
 
   return (
     <Box className={classes.root}>
-      <AppBar position="fixed" elevation={0}>
+      <GenericAppBar>
         <Toolbar>
           <IconButton
             onClick={handleClose}
@@ -104,7 +104,7 @@ function SortFilter({ setRoute }: Props): ReactElement {
             RESET
           </Button>
         </Toolbar>
-      </AppBar>
+      </GenericAppBar>
       <Toolbar />
       <FilterList key="sortList" entry="sorting" list={state.sorting} />
       {Object.entries(state.filters).map(([entry, list]) => (
