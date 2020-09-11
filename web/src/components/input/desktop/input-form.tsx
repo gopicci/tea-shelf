@@ -21,11 +21,17 @@ import OriginAutocomplete from "./origin-autocomplete";
 import InputFormBrewing from "./input-form-brewing";
 import { fahrenheitToCelsius } from "../../../services/parsing-services";
 import { validationSchema } from "./validation-schema";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { EditorContext, HandleEdit } from "../../editor";
-import { desktopFormStyles } from "../../../style/desktop-form-styles";
+import { SettingsState } from "../../statecontainers/settings-context";
 import { Route } from "../../../app";
-import {BrewingModel, InputFormModel, TeaModel, TeaRequest} from '../../../services/models';
+import {
+  BrewingModel,
+  InputFormModel,
+  TeaModel,
+  TeaRequest,
+} from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
 
 /**
@@ -61,6 +67,8 @@ function InputForm({
   setImageLoadDone,
 }: Props): ReactElement {
   const classes = desktopFormStyles();
+
+  const settings = useContext(SettingsState);
 
   const handleEdit: HandleEdit = useContext(EditorContext);
   const categories = useContext(CategoriesState);
@@ -103,10 +111,7 @@ function InputForm({
         gongfu["temperature"] = fahrenheitToCelsius(
           parseInt(values.gongfu_brewing.temperature)
         );
-      else
-        gongfu["temperature"] = parseInt(
-          values.gongfu_brewing.temperature
-        );
+      else gongfu["temperature"] = parseInt(values.gongfu_brewing.temperature);
     }
     if (values.western_brewing.temperature) {
       if (values.western_brewing.fahrenheit)
@@ -114,18 +119,12 @@ function InputForm({
           parseInt(values.western_brewing.temperature)
         );
       else
-        western["temperature"] = parseInt(
-          values.western_brewing.temperature
-        );
+        western["temperature"] = parseInt(values.western_brewing.temperature);
     }
     if (values.gongfu_brewing.weight)
-      gongfu["weight"] = parseFloat(
-        values.gongfu_brewing.weight
-      );
+      gongfu["weight"] = parseFloat(values.gongfu_brewing.weight);
     if (values.western_brewing.weight)
-      western["weight"] = parseFloat(
-        values.western_brewing.weight
-      );
+      western["weight"] = parseFloat(values.western_brewing.weight);
 
     if (values.gongfu_brewing.initial)
       gongfu["initial"] = values.gongfu_brewing.initial;
@@ -188,7 +187,7 @@ function InputForm({
       fahrenheit: false,
     },
     brewing: "gongfu_brewing",
-    measure: "g",
+    measure: settings.metric ? "g" : "oz",
   };
 
   return (

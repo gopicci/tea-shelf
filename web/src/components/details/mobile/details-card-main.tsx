@@ -157,7 +157,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
                   <FitnessCenter className={classes.lineIcon} />
                   <Typography variant="caption">
                     Weight left:{" "}
-                    {settings?.metric
+                    {settings.metric
                       ? cropToNoZeroes(teaData.weight_left) + "g"
                       : cropToNoZeroes(teaData.weight_left / 28.35, 2) + "oz"}
                   </Typography>
@@ -168,7 +168,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
                   <CreditCard className={classes.lineIcon} />
                   <Typography variant="caption">
                     Price:{" "}
-                    {settings?.metric
+                    {settings.metric
                       ? cropToNoZeroes(teaData.price) + "/g"
                       : cropToNoZeroes(teaData.price * 28.35, 1) + "/oz"}
                   </Typography>

@@ -1,4 +1,10 @@
-import React, { ChangeEvent, FocusEvent, ReactElement, useState } from "react";
+import React, {
+  ChangeEvent,
+  FocusEvent,
+  ReactElement,
+  useContext,
+  useState,
+} from "react";
 import {
   Box,
   FormControlLabel,
@@ -9,6 +15,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import InputAppBar from "./input-app-bar";
 import { cropToNoZeroes } from "../../../services/parsing-services";
+import { SettingsState } from "../../statecontainers/settings-context";
 import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,11 +58,15 @@ function EditPrice({
 }: Props): ReactElement {
   const classes = useStyles();
 
+  const settings = useContext(SettingsState);
+
   const [textPrice, setTextPrice] = useState("");
   const [textWeight, setTextWeight] = useState(
     teaData.weight_left ? cropToNoZeroes(teaData.weight_left) : "1"
   );
-  const [inputType, setInputType] = useState("grams");
+  const [inputType, setInputType] = useState(
+    settings.metric ? "grams" : "ounces"
+  );
 
   /**
    * Sets local price context on input change.

@@ -1,4 +1,10 @@
-import React, { ChangeEvent, FocusEvent, ReactElement, useState } from "react";
+import React, {
+  ChangeEvent,
+  FocusEvent,
+  ReactElement,
+  useContext,
+  useState,
+} from "react";
 import {
   Box,
   FormControlLabel,
@@ -8,6 +14,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputAppBar from "./input-app-bar";
+import { SettingsState } from "../../statecontainers/settings-context";
 import { TeaRequest } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
@@ -50,8 +57,12 @@ function EditWeightInput({
 }: Props): ReactElement {
   const classes = useStyles();
 
+  const settings = useContext(SettingsState);
+
   const [text, setText] = useState("");
-  const [inputType, setInputType] = useState("grams");
+  const [inputType, setInputType] = useState(
+    settings.metric ? "grams" : "ounces"
+  );
 
   /**
    * Updates local state on input text change, accepts numbers input only.
