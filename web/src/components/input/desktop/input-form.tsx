@@ -186,7 +186,7 @@ function InputForm({
       ...teaData?.gongfu_brewing,
       fahrenheit: false,
     },
-    brewing: "gongfu_brewing",
+    brewing: settings.gongfu ? "gongfu_brewing" : "western_brewing",
     measure: settings.metric ? "g" : "oz",
   };
 
