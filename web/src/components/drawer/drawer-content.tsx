@@ -1,17 +1,25 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import {
   Box,
+  FormControlLabel,
+  FormGroup,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   SvgIcon,
+  Switch,
   Toolbar,
+  Typography,
 } from "@material-ui/core";
 import { Add, Archive, ExitToApp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import Logo from "../generics/logo";
 import { logout } from "../../services/auth-services";
+import {
+  SettingsDispatch,
+  SettingsState,
+} from "../statecontainers/settings-context";
 import { Route } from "../../app";
 
 const useStyles = makeStyles((theme) => ({
@@ -46,6 +54,13 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
   },
+  unitsLabel: {
+    color: theme.palette.text.primary,
+  },
+  unitsSwitch: {
+    marginLeft: theme.spacing(2.5),
+    marginRight: theme.spacing(2.75),
+  },
 }));
 
 /**
@@ -70,6 +85,9 @@ type Props = {
  */
 function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
+
+  const settings = useContext(SettingsState);
+  const settingsDispatch = useContext(SettingsDispatch);
 
   return (
     <Box className={classes.root}>
@@ -156,6 +174,23 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
         </List>
         {isMobile && (
           <List>
+            <FormGroup>
+              <FormControlLabel
+                value="end"
+                checked={!settings.metric}
+                control={
+                  <Switch size="small" className={classes.unitsSwitch} />
+                }
+                label={
+                  <Typography variant="caption">
+                    {settings.metric ? "Metric" : "Imperial"} units
+                  </Typography>
+                }
+                labelPlacement="end"
+                onChange={() => settingsDispatch({ type: "SWITCH_UNITS" })}
+                className={classes.unitsLabel}
+              />
+            </FormGroup>
             <ListItem
               className={classes.item}
               button

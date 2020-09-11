@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 import { CreditCard, FitnessCenter, Star } from "@material-ui/icons";
+import clsx from "clsx";
 import {
   cropToNoZeroes,
   getCategoryName,
@@ -19,9 +20,9 @@ import {
 import InputBrewing from "../../input/mobile/input-brewing";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
+import { SettingsState } from "../../statecontainers/settings-context";
 import { TeaInstance, TeaRequest } from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
-import clsx from "clsx";
 
 /**
  * DetailsCardMain props.
@@ -45,12 +46,12 @@ type Props = {
 function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
   const classes = mobileDetailsStyles();
 
+  const settings = useContext(SettingsState);
   const categories = useContext(CategoriesState);
   const category = getCategoryName(categories, teaData.category);
 
   const [rating, setRating] = useState(teaData?.rating);
   const [gongfu, setGongfu] = useState(true);
-  const [grams, setGrams] = useState(true);
 
   /**
    * Updates tea instance rating. API rating range is 0 to 10.
@@ -66,13 +67,8 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
   }
 
   /** Updates brewing switch state. */
-  function handleBrewingSwitch(): void {
+  function handleSwitch(): void {
     setGongfu(!gongfu);
-  }
-
-  /** Updates weight measure switch state. */
-  function handleWeightSwitch(): void {
-    setGrams(!grams);
   }
 
   return (
@@ -136,7 +132,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
                 </Typography>
               }
               labelPlacement="start"
-              onChange={handleBrewingSwitch}
+              onChange={handleSwitch}
             />
           </FormGroup>
         </Box>
@@ -151,27 +147,13 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
         <>
           <Box className={classes.divider} />
           <Box className={classes.genericBox}>
-            <FormGroup>
-              <FormControlLabel
-                value="start"
-                control={<Switch size="small" color="default" />}
-                label={
-                  <Typography variant="caption">
-                    {grams ? "g" : "oz"}
-                  </Typography>
-                }
-                labelPlacement="start"
-                onChange={handleWeightSwitch}
-                className={classes.weightSwitch}
-              />
-            </FormGroup>
             <Box className={classes.row}>
               {teaData.weight_left && (
                 <Box className={classes.label}>
                   <FitnessCenter className={classes.lineIcon} />
                   <Typography variant="caption">
                     Weight left:{" "}
-                    {grams
+                    {settings?.metric
                       ? cropToNoZeroes(teaData.weight_left) + "g"
                       : cropToNoZeroes(teaData.weight_left / 28.35, 2) + "oz"}
                   </Typography>
@@ -182,7 +164,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
                   <CreditCard className={classes.lineIcon} />
                   <Typography variant="caption">
                     Price:{" "}
-                    {grams
+                    {settings?.metric
                       ? cropToNoZeroes(teaData.price) + "/g"
                       : cropToNoZeroes(teaData.price * 28.35, 1) + "/oz"}
                   </Typography>
