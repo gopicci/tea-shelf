@@ -51,7 +51,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
   const category = getCategoryName(categories, teaData.category);
 
   const [rating, setRating] = useState(teaData?.rating);
-  const [gongfu, setGongfu] = useState(true);
+  const [gongfu, setGongfu] = useState(settings.gongfu);
 
   /**
    * Updates tea instance rating. API rating range is 0 to 10.
