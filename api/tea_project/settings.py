@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "storages",
     "catalog",
     "django_cleanup.apps.CleanupConfig",
+    "django_rest_passwordreset",
 ]
 
 MIDDLEWARE = [
@@ -167,3 +168,9 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),
     "USER_ID_CLAIM": "id",
 }
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey' # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

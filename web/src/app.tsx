@@ -12,10 +12,11 @@ import MainStateContainer from "./components/statecontainers/main-state-containe
 import Create from "./components/create";
 import MobileDetailsLayout from "./components/details/mobile/mobile-details-layout";
 import MobileInput from "./components/input/mobile/mobile-input";
-import Settings from './components/settings';
+import Settings from "./components/settings";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { TeaInstance } from "./services/models";
+import Register from "./components/register";
 
 /**
  * Defines type for app's main routing state.
@@ -33,7 +34,8 @@ export type Route = {
     | "EDIT_NOTES"
     | "TEA_DETAILS"
     | "ARCHIVE"
-    | "SETTINGS";
+    | "SETTINGS"
+    | "REGISTER";
   /** Optional route payload */
   payload?: TeaInstance;
 };
@@ -95,7 +97,11 @@ function App(): ReactElement {
     <ThemeProvider theme={mainTheme}>
       <CssBaseline />
       {!isLoggedIn ? (
-        <Login />
+        route.route === "REGISTER" ? (
+          <Register setRoute={setRoute} />
+        ) : (
+          <Login setRoute={setRoute} />
+        )
       ) : (
         <MainStateContainer>
           <>

@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -245,3 +246,36 @@ class PlacesDetailsView(APIView):
             return Response(
                 data={key: f"Missing {key} field"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+from django.core.mail import EmailMultiAlternatives
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.urls import reverse
+
+from django_rest_passwordreset.signals import reset_password_token_created
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    """
+    Handles password reset tokens
+    When a token is created, an e-mail needs to be sent to the user
+    :param sender: View Class that sent the signal
+    :param instance: View Instance that sent the signal
+    :param reset_password_token: Token Model Object
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    print("this")
+    msg = EmailMultiAlternatives(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        "plain text message" + "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key),
+        # from:
+        "noreply@teashelf.app",
+        # to:
+        [reset_password_token.user.email]
+    )
+
+    msg.send()
