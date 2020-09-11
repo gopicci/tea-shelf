@@ -235,8 +235,10 @@ export interface VisionData {
  * User settings data structure.
  */
 export interface Settings {
-  /** Grid view on desktop mode */
+  /** Grid view or list view on desktop mode */
   gridView?: boolean;
   /** Metric units or imperial */
   metric?: boolean;
+  /** Gongfu brewing or western */
+  gongfu?: boolean;
 }
