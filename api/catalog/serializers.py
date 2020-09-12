@@ -1,19 +1,16 @@
 from datetime import timedelta
 
-from django.contrib.auth import authenticate
-from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.password_validation import (
+    get_password_validators,
+    validate_password,
+)
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from drf_extra_fields.fields import Base64ImageField
 
-from .models import (
-    Brewing,
-    Origin,
-    Category,
-    Subcategory,
-    Vendor,
-    Tea,
-)
+from .models import Brewing, Category, Origin, Subcategory, Tea, Vendor
 from .validators import validate_username
 
 
@@ -49,6 +46,12 @@ class UserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data["password1"] != data["password2"]:
             raise serializers.ValidationError("Passwords must match.")
+        validate_password(
+            data["password1"],
+            password_validators=get_password_validators(
+                settings.AUTH_PASSWORD_VALIDATORS
+            ),
+        )
         return data
 
     def create(self, validated_data):
