@@ -45,7 +45,10 @@ urlpatterns = [
     path("api/register/", RegisterView.as_view(), name="register"),
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api/password_reset/", include("django_rest_passwordreset.urls", namespace="password_reset")),
+    path(
+        "api/password_reset/",
+        include("django_rest_passwordreset.urls", namespace="password_reset"),
+    ),
     path("api/user/", UserView.as_view(), name="user_detail"),
     path("api/brewing/", BrewingCreateView.as_view(), name="brewing_create",),
     path("api/brewing/<int:pk>/", BrewingDetailView.as_view(), name="brewing_detail",),

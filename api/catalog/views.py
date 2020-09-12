@@ -1,40 +1,37 @@
-from django.core.mail import send_mail
+import googlemaps
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
-import googlemaps
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
+from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView,
-    RetrieveAPIView,
     ListAPIView,
     ListCreateAPIView,
+    RetrieveAPIView,
 )
-from rest_framework import status
 from rest_framework.permissions import AllowAny
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .vision_parser import VisionParser
 
+from .models import Brewing, Category, Origin, Subcategory, Tea, Vendor
 from .serializers import (
-    LoginSerializer,
-    UserSerializer,
     BrewingSerializer,
     CategorySerializer,
-    SubcategorySerializer,
-    VendorSerializer,
+    LoginSerializer,
     OriginSerializer,
+    SubcategorySerializer,
     TeaSerializer,
+    UserSerializer,
+    VendorSerializer,
 )
-from .models import (
-    Category,
-    Brewing,
-    Origin,
-    Subcategory,
-    Vendor,
-    Tea,
-)
+from .vision_parser import VisionParser
 
 
 class RegisterView(CreateAPIView):
@@ -66,6 +63,41 @@ class UserView(RetrieveAPIView):
 
     def get_object(self, *args, **kwargs):
         return self.request.user
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, reset_password_token, *args, **kwargs):
+    """
+    Handles password reset tokens
+    When a token is created, an e-mail needs to be sent to the user
+    :param sender: View Class that sent the signal
+    :param reset_password_token: Token Model Object
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    reset_url = reverse("password_reset:reset-password-request")
+
+    context = {
+        "email": reset_password_token.user.email,
+        "reset_password_url": f"{settings.BASE_URL}{reset_url}?reset_token={reset_password_token.key}",
+    }
+
+    email_html_message = render_to_string("user_reset_password.txt", context)
+    email_plaintext_message = render_to_string("user_reset_password.txt", context)
+
+    msg = EmailMultiAlternatives(
+        # title:
+        f"Password Reset for {settings.DOMAIN}",
+        # message:
+        email_plaintext_message,
+        # from:
+        f"noreply@{settings.DOMAIN}",
+        # to:
+        [reset_password_token.user.email],
+    )
+    msg.attach_alternative(email_html_message, "text/txt")
+    msg.send()
 
 
 class BrewingCreateView(CreateAPIView):
@@ -246,36 +278,3 @@ class PlacesDetailsView(APIView):
             return Response(
                 data={key: f"Missing {key} field"}, status=status.HTTP_400_BAD_REQUEST
             )
-
-from django.core.mail import EmailMultiAlternatives
-from django.dispatch import receiver
-from django.template.loader import render_to_string
-from django.urls import reverse
-
-from django_rest_passwordreset.signals import reset_password_token_created
-
-@receiver(reset_password_token_created)
-def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
-    """
-    Handles password reset tokens
-    When a token is created, an e-mail needs to be sent to the user
-    :param sender: View Class that sent the signal
-    :param instance: View Instance that sent the signal
-    :param reset_password_token: Token Model Object
-    :param args:
-    :param kwargs:
-    :return:
-    """
-    print("this")
-    msg = EmailMultiAlternatives(
-        # title:
-        "Password Reset for {title}".format(title="Some website title"),
-        # message:
-        "plain text message" + "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key),
-        # from:
-        "noreply@teashelf.app",
-        # to:
-        [reset_password_token.user.email]
-    )
-
-    msg.send()
