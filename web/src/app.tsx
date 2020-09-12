@@ -1,9 +1,10 @@
 import React, { useState, ReactElement } from "react";
 import { CssBaseline, useMediaQuery } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
-
-//import Register from "./components/Register";
-import Login from "./components/login";
+import Login from "./components/auth/login";
+import Register from "./components/auth/register";
+import PasswordRequest from "./components/auth/password-request";
+import PasswordReset from "./components/auth/password-reset";
 import MainLayout from "./components/main-layout";
 import SortFilter from "./components/filters/sort-filter";
 import Editor from "./components/editor";
@@ -16,7 +17,6 @@ import Settings from "./components/settings";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { TeaInstance } from "./services/models";
-import Register from "./components/register";
 
 /**
  * Defines type for app's main routing state.
@@ -35,7 +35,8 @@ export type Route = {
     | "TEA_DETAILS"
     | "ARCHIVE"
     | "SETTINGS"
-    | "REGISTER";
+    | "REGISTER"
+    | "PASSWORD_REQUEST";
   /** Optional route payload */
   payload?: TeaInstance;
 };
@@ -57,7 +58,7 @@ function App(): ReactElement {
   /**
    * Returns React component based on route name, passing optional route payload.
    *
-   * @param {Route} route Route info
+   * @param {Route} route - Route data
    * @returns {ReactElement}
    */
   function getRoute(route: Route): ReactElement {
@@ -93,15 +94,32 @@ function App(): ReactElement {
     }
   }
 
+  /**
+   * Returns authentication related component based on route name.
+   *
+   * @param {Route} route - Route data
+   * @returns {ReactElement}
+   */
+  function getAuth(route: Route): ReactElement {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("reset_token");
+
+    switch (route.route) {
+      case "REGISTER":
+        return <Register setRoute={setRoute} />;
+      case "PASSWORD_REQUEST":
+        return <PasswordRequest setRoute={setRoute} />;
+      default:
+        if (token) return <PasswordReset setRoute={setRoute} token={token}/>;
+        else return <Login setRoute={setRoute} />;
+    }
+  }
+
   return (
     <ThemeProvider theme={mainTheme}>
       <CssBaseline />
       {!isLoggedIn ? (
-        route.route === "REGISTER" ? (
-          <Register setRoute={setRoute} />
-        ) : (
-          <Login setRoute={setRoute} />
-        )
+        getAuth(route)
       ) : (
         <MainStateContainer>
           <>

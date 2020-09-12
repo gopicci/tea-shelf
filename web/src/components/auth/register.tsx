@@ -1,18 +1,19 @@
 import React, { ReactElement } from "react";
-import { Formik, FormikHelpers } from "formik";
 import {
-  Box,
   Button,
-  Container,
   CssBaseline,
-  Grid,
-  Link,
-  SvgIcon,
+  Container,
   TextField,
+  Link,
+  Grid,
+  Box,
   Typography,
+  SvgIcon,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Route } from "../app";
+import { Route } from "../../app";
+import { Formik, FormikHelpers } from "formik";
+import Logo from "../generics/logo";
 
 function Copyright() {
   return (
@@ -48,21 +49,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Login input values type.
+ * Register input values type.
  *
- * @memberOf Login
+ * @memberOf Register
  */
 type Inputs = {
   /** Email input */
   email: string;
   /** Password input */
-  password: string;
+  password1: string;
+  /** Confirm password input */
+  password2: string;
 };
 
 /**
- * Login props.
+ * Register props.
  *
- * @memberOf Login
+ * @memberOf Register
  */
 type Props = {
   /** Set app's main route */
@@ -70,12 +73,12 @@ type Props = {
 };
 
 /**
- * App login component
+ * App register component
  *
  * @component
  * @subcategory Main
  */
-function Login({ setRoute }: Props): ReactElement {
+function Register({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
   /**
@@ -94,12 +97,13 @@ function Login({ setRoute }: Props): ReactElement {
     if (api_path === undefined) api_path = "/api";
 
     try {
-      const response = await fetch(`${api_path}/login/`, {
+      const response = await fetch(`${api_path}/register/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: values.email,
-          password: values.password,
+          password1: values.password1,
+          password2: values.password2,
         }),
       });
 
@@ -109,18 +113,31 @@ function Login({ setRoute }: Props): ReactElement {
 
       if (!response.ok) {
         if (data["non_field_errors"]) {
-          actions.setFieldError("email", "nofield");
-          actions.setFieldError("password", data["non_field_errors"][0]);
+          actions.setFieldError("password1", data["non_field_errors"][0]);
+          actions.setFieldError("password2", data["non_field_errors"][0]);
         }
         if (data["email"]) {
           actions.setFieldError("email", data["email"][0]);
         }
-        if (data["password"]) {
-          actions.setFieldError("password", data["password"][0]);
+        if (data["password1"]) {
+          actions.setFieldError("password1", data["password1"][0]);
+        }
+        if (data["password2"]) {
+          actions.setFieldError("password2", data["password2"][0]);
         }
         console.error(response.statusText);
       } else {
-        window.localStorage.setItem("user.auth", JSON.stringify(data));
+        const loginResponse = await fetch(`${api_path}/login/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: values.email,
+            password1: values.password1,
+          }),
+        });
+        const loginData = await loginResponse.json();
+        if (loginResponse.ok)
+          window.localStorage.setItem("user.auth", JSON.stringify(loginData));
         window.location.reload();
       }
     } catch (e) {
@@ -132,57 +149,17 @@ function Login({ setRoute }: Props): ReactElement {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <SvgIcon
-          className={classes.logo}
-          shapeRendering="geometricPrecision"
-          viewBox="0 0 512 512"
-        >
-          <defs>
-            <mask id="a" maskUnits="userSpaceOnUse">
-              <circle cx="256" cy="256" r="256" fill="#ececec" />
-            </mask>
-          </defs>
-          <circle r="256" cy="256" cx="256" fill="#f2f2f2" />
-          <circle
-            r="229.7"
-            cy="256"
-            cx="256"
-            fill="none"
-            stroke="red"
-            stroke-width="9"
-          />
-          <circle
-            r="165.5"
-            cy="256"
-            cx="256"
-            fill="none"
-            stroke="gray"
-            stroke-width="70.1"
-            stroke-dasharray="140 70"
-            stroke-dashoffset="182.3"
-          />
-          <circle
-            cx="256"
-            cy="256"
-            r="75.2"
-            fill="none"
-            stroke="red"
-            stroke-width="18"
-          />
-          <circle r="50.8" cy="256" cx="256" fill="green" />
-          <path
-            mask="url(#a)"
-            d="M256-170l1 422-71 388c-2 10 684-20 684-30S690-220 660-240s-404 70-404 70z"
-            fill-opacity=".1"
-          />
+        <SvgIcon className={classes.logo}>
+          <Logo />
         </SvgIcon>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign un
         </Typography>
         <Formik
           initialValues={{
             email: "",
-            password: "",
+            password1: "",
+            password2: "",
           }}
           onSubmit={(values, actions) => onSubmit(values, actions)}
         >
@@ -218,15 +195,29 @@ function Login({ setRoute }: Props): ReactElement {
                 margin="normal"
                 required
                 fullWidth
-                name="password"
+                name="password1"
                 label="Password"
                 type="password"
-                id="password"
+                id="password1"
                 autoComplete="current-password"
-                error={"password" in errors}
-                helperText={"password" in errors ? errors.password : ""}
+                error={"password1" in errors}
+                helperText={"password1" in errors ? errors.password1 : ""}
                 onChange={handleChange}
-                value={values.password}
+                value={values.password1}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password2"
+                label="Confirm password"
+                type="password"
+                id="password2"
+                autoComplete="current-password"
+                error={"password2" in errors}
+                helperText={"password2" in errors ? errors.password2 : ""}
+                onChange={handleChange}
+                value={values.password2}
               />
               <Button
                 type="submit"
@@ -236,21 +227,16 @@ function Login({ setRoute }: Props): ReactElement {
                 disabled={isSubmitting}
                 className={classes.submit}
               >
-                Sign In
+                Sign Up
               </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
+              <Grid container justify={"flex-end"}>
                 <Grid item>
                   <Link
                     href="#"
                     variant="body2"
-                    onClick={() => setRoute({ route: "REGISTER" })}
+                    onClick={() => setRoute({ route: "MAIN" })}
                   >
-                    Don't have an account? Sign Up
+                    Already have an account? Sign In
                   </Link>
                 </Grid>
               </Grid>
@@ -265,4 +251,4 @@ function Login({ setRoute }: Props): ReactElement {
   );
 }
 
-export default Login;
+export default Register;
