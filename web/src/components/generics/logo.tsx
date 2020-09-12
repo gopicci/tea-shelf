@@ -21,7 +21,7 @@ function Logo(): ReactElement {
         cx="256"
         fill="none"
         stroke="red"
-        stroke-width="9"
+        strokeWidth="9"
       />
       <circle
         r="165.5"
@@ -29,9 +29,9 @@ function Logo(): ReactElement {
         cx="256"
         fill="none"
         stroke="gray"
-        stroke-width="70.1"
-        stroke-dasharray="140 70"
-        stroke-dashoffset="182.3"
+        strokeWidth="70.1"
+        strokeDasharray="140 70"
+        strokeDashoffset="182.3"
       />
       <circle
         cx="256"
@@ -39,13 +39,13 @@ function Logo(): ReactElement {
         r="75.2"
         fill="none"
         stroke="red"
-        stroke-width="18"
+        strokeWidth="18"
       />
       <circle r="50.8" cy="256" cx="256" fill="green" />
       <path
         mask="url(#a)"
         d="M276-101c83 301 38 486-204 702 0 10 798 19 798 9S690-220 660-240 276-101 276-101z"
-        fill-opacity=".1"
+        fillOpacity=".1"
         style={{
           fill: "#000000",
           fillOpacity: 0.08,
