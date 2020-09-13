@@ -2621,7 +2621,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: &id006
+            schema: &id013
               properties:
                 email:
                   type: string
@@ -2630,9 +2630,9 @@ paths:
               required:
                 - email
           application/x-www-form-urlencoded:
-            schema: *id006
+            schema: *id013
           multipart/form-data:
-            schema: *id006
+            schema: *id013
       responses:
         "200":
           content:
@@ -2651,12 +2651,12 @@ paths:
         - User
       summary: Update password with token
       operationId: UpdateUserPasswordToken
-      description: Updates a user password without authentication using the requested token.
+      description: Update a user password without authentication using the requested token.
       parameters: [ ]
       requestBody:
         content:
           application/json:
-            schema: &id006
+            schema: &id014
               properties:
                 password:
                   type: string
@@ -2669,9 +2669,9 @@ paths:
                 - password
                 - token
           application/x-www-form-urlencoded:
-            schema: *id006
+            schema: *id014
           multipart/form-data:
-            schema: *id006
+            schema: *id014
       responses:
         "200":
           content:
@@ -2691,23 +2691,23 @@ paths:
       tags:
         - User
       summary: Validate a password reset token
-      operationId: ValidatePasswordResetToken
-      description: Verifies if a password reset token is still valid.
+      operationId: ValidatePasswordToken
+      description: Verify if a password reset token is still valid.
       parameters: [ ]
       requestBody:
         content:
           application/json:
-            schema: &id006
+            schema: &id015
               properties:
-                password:
                 token:
                   type: string
                   description: Password reset token
+              required:
                 - token
           application/x-www-form-urlencoded:
-            schema: *id006
+            schema: *id015
           multipart/form-data:
-            schema: *id006
+            schema: *id015
       responses:
         "200":
           content:
