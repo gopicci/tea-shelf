@@ -15,6 +15,7 @@ import {
   Menu,
   Tooltip,
   useScrollTrigger,
+  InputAdornment,
 } from "@material-ui/core";
 import {
   AccountCircle,
@@ -22,6 +23,7 @@ import {
   Menu as MenuIcon,
   ViewStream,
   ViewModule,
+  Clear,
 } from "@material-ui/icons";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
@@ -39,12 +41,8 @@ import { Route } from "../../app";
 const useStyles = makeStyles((theme) => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-    display: "block",
-    [theme.breakpoints.up("md")]: {
-      display: "none",
+    [theme.breakpoints.down("sm")]: {
+      border: 0,
     },
   },
   titleBox: {
@@ -70,11 +68,9 @@ const useStyles = makeStyles((theme) => ({
       width: "50%",
     },
   },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
+  inputIcon: {
+    margin: theme.spacing(1, 2, 1, 2),
     height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -84,17 +80,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
-      },
-    },
+    fontSize: theme.typography.h5.fontSize,
+    flexGrow: 1,
   },
   user: {
     width: "25%",
@@ -198,14 +185,6 @@ function SearchAppBar({ setOpen, setRoute, isMobile }: Props): ReactElement {
       className={classes.appBar}
     >
       <Toolbar>
-        <IconButton
-          edge="start"
-          className={classes.menuButton}
-          aria-label="open drawer"
-          onClick={() => setOpen(true)}
-        >
-          <MenuIcon />
-        </IconButton>
         <Box className={classes.titleBox}>
           <img
             src={titleImage}
@@ -214,9 +193,6 @@ function SearchAppBar({ setOpen, setRoute, isMobile }: Props): ReactElement {
           />
         </Box>
         <Box className={clsx(classes.search, appBarClasses.input)}>
-          <Box className={classes.searchIcon}>
-            <Search />
-          </Box>
           <InputBase
             placeholder="Search…"
             classes={{
@@ -224,6 +200,35 @@ function SearchAppBar({ setOpen, setRoute, isMobile }: Props): ReactElement {
               input: classes.inputInput,
             }}
             inputProps={{ "aria-label": "search" }}
+            startAdornment={
+              <InputAdornment position="start" className={classes.inputIcon}>
+                {isMobile ? (
+                  <IconButton
+                    aria-label="open drawer"
+                    size="small"
+                    onClick={() => setOpen(true)}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                ) : (
+                  <Search />
+                )}
+              </InputAdornment>
+            }
+            endAdornment={
+              searchValue && (
+                <InputAdornment position="end" className={classes.inputIcon}>
+                  <IconButton
+                    aria-label="clear search"
+                    size="small"
+                    onClick={() => setSearchValue("")}
+                  >
+                    <Clear />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
+            value={searchValue}
             onChange={(event) => {
               setSearchValue(event.target.value);
             }}

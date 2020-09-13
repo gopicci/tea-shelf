@@ -99,6 +99,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
       <Box className={classes.genericBox}>
         <Box className={classes.grow}>
           <Rating
+            className={classes.rating}
             name="customized-empty"
             value={rating ? rating / 2 : 0}
             precision={0.5}

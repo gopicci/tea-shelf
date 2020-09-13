@@ -80,6 +80,11 @@ export const mobileDetailsStyles = makeStyles({
     borderRadius: theme.spacing(0.75),
     border: `solid 2px ${theme.palette.background.default}`,
   },
+  rating: {
+    "& .MuiRating-iconFilled": {
+      color: theme.palette.secondary.main,
+    },
+  },
   brewingIcon: {
     marginRight: theme.spacing(1),
     marginBottom: theme.spacing(1),

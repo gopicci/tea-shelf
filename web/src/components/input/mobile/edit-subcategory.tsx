@@ -188,6 +188,9 @@ function EditSubcategory({
                     </IconButton>
                   </InputAdornment>
                 ),
+                endAdornment: {
+
+                },
               }}
             />
           )}

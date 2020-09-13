@@ -100,6 +100,11 @@ export const desktopDetailsStyles = makeStyles({
   ratingNumber: {
     marginRight: theme.spacing(1),
   },
+  rating: {
+    "& .MuiRating-iconFilled": {
+      color: theme.palette.secondary.main,
+    },
+  },
   brewingBox: {
     display: "flex",
     justifyContent: "space-between",

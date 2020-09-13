@@ -120,6 +120,7 @@ function DetailsBoxMain({ teaData, handleEdit }: Props): ReactElement {
                 {rating ? rating / 2 : ""}
               </Typography>
               <Rating
+                className={classes.rating}
                 name="customized-empty"
                 value={rating ? rating / 2 : 0}
                 precision={0.5}
