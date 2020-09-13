@@ -182,14 +182,14 @@ function PasswordResetForm({
   ) : token ? (
     <Link
       href="https://teashelf.app/"
-      variant="body2"
       onClick={() => setRoute({ route: "MAIN" })}
       className={classes.message}
+      variant="h5"
     >
       Click here to log in.
     </Link>
   ) : (
-    <Typography className={classes.center}>
+    <Typography className={classes.message}>
       Password changed successfully.
     </Typography>
   );
