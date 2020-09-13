@@ -3,6 +3,7 @@ import { Formik, FormikHelpers } from "formik";
 import { Button, Grid, Link, TextField, Typography } from "@material-ui/core";
 import AuthLayout, { authStyles } from "./auth-layout";
 import { Route } from "../../app";
+import { APIRequest } from "../../services/auth-services";
 
 /**
  * Password request input values type.
@@ -51,13 +52,13 @@ function PasswordRequest({ setRoute }: Props): ReactElement {
     if (api_path === undefined) api_path = "/api";
 
     try {
-      const response = await fetch(`${api_path}/password_reset/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await APIRequest(
+        `${api_path}/password_reset/`,
+        "POST",
+        JSON.stringify({
           email: values.email,
-        }),
-      });
+        })
+      );
 
       const data = await response.json();
 
