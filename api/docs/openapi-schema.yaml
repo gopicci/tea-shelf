@@ -2548,6 +2548,178 @@ paths:
           description: ""
         "400":
           description: "Bad request"
+  /api/update_password/:
+    put:
+      tags:
+        - User
+      summary: Update user password
+      operationId: UpdateUserPassword
+      description: Update authenticated user password. Requires both passwords to match.
+      parameters: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema: &id006
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email
+                password1:
+                  type: string
+                  writeOnly: true
+                  description: New password
+                password2:
+                  type: string
+                  writeOnly: true
+                  description: Confirm new password
+              required:
+                - email
+                - password1
+                - password2
+          application/x-www-form-urlencoded:
+            schema: *id006
+          multipart/form-data:
+            schema: *id006
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  last_login:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  email:
+                    type: string
+                    format: email
+                  is_active:
+                    type: boolean
+                    readOnly: true
+                  joined_at:
+                    type: string
+                    format: date-time
+                    readOnly: true
+          description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
+  /api/password_reset/:
+    post:
+      tags:
+        - User
+      summary: Request a new password
+      operationId: RequestUserPassword
+      description: Request a password reset token at the provided email.
+      parameters: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema: &id006
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email
+              required:
+                - email
+          application/x-www-form-urlencoded:
+            schema: *id006
+          multipart/form-data:
+            schema: *id006
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    readOnly: true
+          description: ""
+        "400":
+          description: "Bad request"
+  /api/password_reset/confirm/:
+    post:
+      tags:
+        - User
+      summary: Update password with token
+      operationId: UpdateUserPasswordToken
+      description: Updates a user password without authentication using the requested token.
+      parameters: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema: &id006
+              properties:
+                password:
+                  type: string
+                  writeOnly: true
+                  description: New password
+                token:
+                  type: string
+                  description: Password reset token
+              required:
+                - password
+                - token
+          application/x-www-form-urlencoded:
+            schema: *id006
+          multipart/form-data:
+            schema: *id006
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    readOnly: true
+          description: ""
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Not found"
+  /api/password_reset/validate_token/:
+    post:
+      tags:
+        - User
+      summary: Validate a password reset token
+      operationId: ValidatePasswordResetToken
+      description: Verifies if a password reset token is still valid.
+      parameters: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema: &id006
+              properties:
+                password:
+                token:
+                  type: string
+                  description: Password reset token
+                - token
+          application/x-www-form-urlencoded:
+            schema: *id006
+          multipart/form-data:
+            schema: *id006
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    readOnly: true
+          description: ""
+        "400":
+          description: "Bad request"
   /api/login/:
     post:
       tags:
