@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -11,10 +11,12 @@ import {
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import GenericAppBar from "./generics/generic-app-bar";
+import PasswordResetForm from "./auth/password-reset-form";
 import {
   SettingsDispatch,
   SettingsState,
 } from "./statecontainers/settings-context";
+import { getUser } from "../services/auth-services";
 import { Route } from "../app";
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
   title: {
     margin: "auto",
     marginBottom: theme.spacing(4),
-
   },
   divider: {
     width: `calc(100% - ${theme.spacing(4)}px)`,
@@ -47,6 +48,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     margin: "auto",
     borderTop: `solid 1px ${theme.palette.divider}`,
+  },
+  passwordTitle: {
+    margin: "auto",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -73,6 +79,8 @@ function Settings({ setRoute, isMobile }: Props): ReactElement {
 
   const settings = useContext(SettingsState);
   const settingsDispatch = useContext(SettingsDispatch);
+  const [reset, setReset] = useState(false);
+  const email = getUser()?.email;
 
   /** Routes back to main */
   function handleBack() {
@@ -138,6 +146,17 @@ function Settings({ setRoute, isMobile }: Props): ReactElement {
             />
           </FormGroup>
         </Box>
+        <Box className={classes.divider} />
+        <Box className={classes.passwordTitle}>
+          <Typography variant="h4">Change Password</Typography>
+        </Box>
+        <PasswordResetForm
+          setRoute={setRoute}
+          email={email}
+          reset={reset}
+          setReset={setReset}
+          endpoint="/password_update/"
+        />
       </Box>
     </>
   );

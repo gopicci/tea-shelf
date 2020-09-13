@@ -1,55 +1,8 @@
 import React, { ReactElement, useState } from "react";
 import { Formik, FormikHelpers } from "formik";
-import {
-  Box,
-  Button,
-  Container,
-  CssBaseline,
-  Grid,
-  Link,
-  SvgIcon,
-  TextField,
-  Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Grid, Link, TextField, Typography } from "@material-ui/core";
+import AuthLayout, { authStyles } from "./auth-layout";
 import { Route } from "../../app";
-import Logo from "../generics/logo";
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://teashelf.app/">
-        Tea Shelf
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  logo: {
-    fontSize: theme.spacing(12),
-    marginBottom: theme.spacing(4),
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  message: {
-    margin: theme.spacing(2),
-  },
-}));
 
 /**
  * Password request input values type.
@@ -72,13 +25,13 @@ type Props = {
 };
 
 /**
- * Password reset component
+ * New password request component
  *
  * @component
- * @subcategory Main
+ * @subcategory Auth
  */
 function PasswordRequest({ setRoute }: Props): ReactElement {
-  const classes = useStyles();
+  const classes = authStyles();
 
   const [emailSent, setEmailSent] = useState(false);
 
@@ -127,97 +80,65 @@ function PasswordRequest({ setRoute }: Props): ReactElement {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <SvgIcon className={classes.logo}>
-          <Logo />
-        </SvgIcon>
-
-        {!emailSent && (
-          <>
-            <Typography component="h1" variant="h5">
-              Forgot password
-            </Typography>
-            <Formik
-              initialValues={{
-                email: "",
-              }}
-              onSubmit={(values, actions) => onSubmit(values, actions)}
-            >
-              {({
-                errors,
-                handleChange,
-                handleSubmit,
-                isSubmitting,
-                values,
-                setSubmitting,
-                setFieldError,
-              }) => (
-                <form
-                  className={classes.form}
-                  noValidate
-                  onSubmit={handleSubmit}
-                >
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    autoFocus
-                    error={"email" in errors}
-                    helperText={
-                      "email" in errors && errors.email !== "nofield"
-                        ? errors.email
-                        : ""
-                    }
-                    onChange={handleChange}
-                    value={values.email}
-                  />
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="secondary"
-                    disabled={isSubmitting}
-                    className={classes.submit}
+    <AuthLayout title={emailSent ? "Email sent" : "Forgot password"}>
+      {!emailSent ? (
+        <Formik
+          initialValues={{
+            email: "",
+          }}
+          onSubmit={(values, actions) => onSubmit(values, actions)}
+        >
+          {({ errors, handleChange, handleSubmit, isSubmitting, values }) => (
+            <form className={classes.form} noValidate onSubmit={handleSubmit}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                error={"email" in errors}
+                helperText={
+                  "email" in errors && errors.email !== "nofield"
+                    ? errors.email
+                    : ""
+                }
+                onChange={handleChange}
+                value={values.email}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="secondary"
+                disabled={isSubmitting}
+                className={classes.submit}
+              >
+                Send Email
+              </Button>
+              <Grid container>
+                <Grid item>
+                  <Link
+                    href="#"
+                    variant="body2"
+                    onClick={() => setRoute({ route: "REGISTER" })}
                   >
-                    Send Email
-                  </Button>
-                  <Grid container>
-                    <Grid item>
-                      <Link
-                        href="#"
-                        variant="body2"
-                        onClick={() => setRoute({ route: "REGISTER" })}
-                      >
-                        Don't have an account? Sign Up
-                      </Link>
-                    </Grid>
-                  </Grid>
-                </form>
-              )}
-            </Formik>
-          </>
-        )}
-        {emailSent && (
-          <>
-            <Typography variant="h5" className={classes.message}>
-              Email sent.
-            </Typography>
-            <Typography variant="h5" className={classes.message}>
-              Click on the email link to reset your password.
-            </Typography>
-          </>
-        )}
-      </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
-    </Container>
+                    Don't have an account? Sign Up
+                  </Link>
+                </Grid>
+              </Grid>
+            </form>
+          )}
+        </Formik>
+      ) : (
+        <Typography variant="h5" className={classes.message}>
+          Click on the email link to reset your password.
+        </Typography>
+      )}
+    </AuthLayout>
   );
 }
 

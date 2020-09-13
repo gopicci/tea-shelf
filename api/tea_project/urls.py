@@ -34,6 +34,7 @@ from catalog.views import (
     VisionParserView,
     PlacesAutocompleteView,
     PlacesDetailsView,
+    UpdatePasswordView,
 )
 
 router = routers.SimpleRouter()
@@ -45,6 +46,7 @@ urlpatterns = [
     path("api/register/", RegisterView.as_view(), name="register"),
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/password_update/", UpdatePasswordView.as_view(), name="password_update"),
     path(
         "api/password_reset/",
         include("django_rest_passwordreset.urls", namespace="password_reset"),

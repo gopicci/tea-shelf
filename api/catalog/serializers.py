@@ -11,7 +11,6 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import Brewing, Category, Origin, Subcategory, Tea, Vendor
-from .validators import validate_username
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,10 +38,6 @@ class UserSerializer(serializers.ModelSerializer):
             "password2": {"required": True, "write_only": True},
         }
 
-    @staticmethod
-    def validate_email(value):
-        return validate_username(value)
-
     def validate(self, data):
         if data["password1"] != data["password2"]:
             raise serializers.ValidationError("Passwords must match.")
@@ -63,6 +58,11 @@ class UserSerializer(serializers.ModelSerializer):
         data["password"] = validated_data["password1"]
         user = self.Meta.model.objects.create_user(**data)
         return user
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data["password1"])
+        instance.save()
+        return instance
 
 
 class LoginSerializer(TokenObtainPairSerializer):

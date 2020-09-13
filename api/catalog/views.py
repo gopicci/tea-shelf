@@ -13,6 +13,7 @@ from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
     RetrieveAPIView,
+    UpdateAPIView,
 )
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -56,6 +57,18 @@ class LoginView(TokenObtainPairView):
 class UserView(RetrieveAPIView):
     """
     Logged in user detail view.
+    """
+
+    serializer_class = UserSerializer
+    lookup_field = "pk"
+
+    def get_object(self, *args, **kwargs):
+        return self.request.user
+
+
+class UpdatePasswordView(UpdateAPIView):
+    """
+    Update password view, requires authentication.
     """
 
     serializer_class = UserSerializer

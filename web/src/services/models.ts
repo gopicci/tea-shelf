@@ -1,4 +1,26 @@
 /**
+ * User data structure, as in auth token payload.
+ */
+export interface UserAuth {
+  /** User email */
+  email: string;
+  /** Token expiration date */
+  exp: number;
+  /** User ID */
+  id: string;
+  /** Account active status */
+  is_active: boolean;
+  /** Registration date */
+  joined_at: string;
+  /** JWT token ID */
+  jti: string;
+  /** Last login date */
+  last_login: string;
+  /** JWT token type */
+  token_type: string;
+}
+
+/**
  * Brewing data structure, used in both gongfu and western brewing instances.
  */
 export interface BrewingModel {

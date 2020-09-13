@@ -1,3 +1,5 @@
+import { UserAuth } from "./models";
+
 /**
  * Gets access token from local storage auth data.
  *
@@ -32,7 +34,7 @@ export function getRefreshToken(): string | undefined {
  * @returns {object|undefined}
  * @category Services
  */
-export function getUser(): object | undefined {
+export function getUser(): UserAuth | undefined {
   const auth = window.localStorage.getItem("user.auth");
   if (auth) {
     const [, payload] = JSON.parse(auth).access.split(".");
