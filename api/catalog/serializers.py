@@ -56,7 +56,6 @@ class UserSerializer(serializers.ModelSerializer):
             if key not in ("password1", "password2")
         }
         data["password"] = validated_data["password1"]
-        data["is_active"] = True
         user = self.Meta.model.objects.create_user(**data)
         return user
 
