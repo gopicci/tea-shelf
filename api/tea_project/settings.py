@@ -34,6 +34,11 @@ if os.environ.get("MAPS_API_KEY"):
 else:
     MAPS_API_KEY = access_secret(os.environ.get("PROJECT_ID"), "maps-api-key")
 
+if os.environ.get("SENDGRID_API_KEY"):
+    SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+else:
+    SENDGRID_API_KEY = access_secret(os.environ.get("PROJECT_ID"), "sendgrid-api-key")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
@@ -173,6 +178,6 @@ SIMPLE_JWT = {
 
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
