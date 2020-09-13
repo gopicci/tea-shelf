@@ -42,7 +42,8 @@ export const authStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
   message: {
-    margin: theme.spacing(2),
+    textAlign: "center",
+    marginTop: theme.spacing(4),
   },
   center: {
     textAlign: "center",
