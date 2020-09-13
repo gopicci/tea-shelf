@@ -88,12 +88,12 @@ function Register({ setRoute }: Props): ReactElement {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: values.email,
-            password1: values.password1,
+            password: values.password1,
           }),
         });
         const loginData = await loginResponse.json();
         if (loginResponse.ok)
-          window.localStorage.setItem("user.auth", JSON.stringify(loginData));
+          await window.localStorage.setItem("user.auth", JSON.stringify(loginData));
         window.location.reload();
       }
     } catch (e) {
