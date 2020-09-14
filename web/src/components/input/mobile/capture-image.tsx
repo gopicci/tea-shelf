@@ -10,12 +10,12 @@ import { CameraAlt, Close, Done, Replay, SkipNext } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import Webcam from "react-webcam";
 import { APIRequest } from "../../../services/auth-services";
+import { getImageHeight, cropDataURL } from "../../../services/image-services";
 import { visionParserSerializer } from "../../../services/serializers";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { SubcategoriesState } from "../../statecontainers/subcategories-context";
 import { VendorsState } from "../../statecontainers/vendors-context";
 import { TeaModel } from "../../../services/models";
-import {resizeDataURL} from '../../../services/image-services';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   imageBox: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     overflow: "hidden",
   },
   controlsBox: {
@@ -38,9 +41,15 @@ const useStyles = makeStyles((theme) => ({
   control: {
     margin: theme.spacing(4),
   },
+  webcam: {
+    minHeight: "80vh",
+    maxHeight: "80vh",
+  },
 }));
 
 const videoConstraints = {
+  width: { ideal: 4096 },
+  height: { ideal: 2160 },
   facingMode: "environment",
 };
 
@@ -87,14 +96,19 @@ function CaptureImage({
 
   const capture = useCallback(async () => {
     if (webcamRef.current) {
-      // Get screenshot
+      // Get screenshot at max resolution
       const screenshot = webcamRef.current.getScreenshot();
 
       if (screenshot) {
-        const croppedImage = await resizeDataURL(
+        // Crop screenshot with box ratio
+        const cropHeight = await getImageHeight(screenshot);
+        const ratio = (window.screen.height * 0.8) / window.screen.width;
+        const cropWidth = cropHeight / ratio;
+
+        const croppedImage = await cropDataURL(
           screenshot,
-          window.screen.width,
-          window.screen.height * 0.8
+          cropWidth,
+          cropHeight
         );
 
         // Update image data state
@@ -159,10 +173,9 @@ function CaptureImage({
       <Box className={classes.imageBox}>
         {!imageData ? (
           <Webcam
+            className={classes.webcam}
             audio={false}
             imageSmoothing={false}
-            //height={window.screen.height * 0.8}
-            height={50}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={videoConstraints}

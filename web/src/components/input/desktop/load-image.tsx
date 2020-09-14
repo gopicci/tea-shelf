@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext } from "react";
 import { Box, Button } from "@material-ui/core";
 import { DropzoneArea } from "material-ui-dropzone";
-import { FileToBase64 } from "../../../services/image-services";
+import { fileToBase64 } from "../../../services/image-services";
 import { APIRequest } from "../../../services/auth-services";
 import { visionParserSerializer } from "../../../services/serializers";
 import { makeStyles } from "@material-ui/core/styles";
@@ -71,7 +71,7 @@ function LoadImage({
     if (files.length > 0) {
       try {
 
-        const image = await FileToBase64(files[0]);
+        const image = await fileToBase64(files[0]);
         setImageData(image);
 
         // Post image to API parser

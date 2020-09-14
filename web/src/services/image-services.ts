@@ -5,7 +5,7 @@
  * @returns {Promise<File>}
  * @category Services
  */
-export async function ImageDataToFile(imageData: string): Promise<File> {
+export async function imageDataToFile(imageData: string): Promise<File> {
   if (!imageData) return Promise.reject();
   else
     return fetch(imageData)
@@ -21,7 +21,7 @@ export async function ImageDataToFile(imageData: string): Promise<File> {
  * @returns {Promise<string>}
  * @category Services
  */
-export function FileToBase64(file: File): Promise<string> {
+export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!file) return Promise.reject();
     else {
@@ -48,14 +48,14 @@ export function FileToBase64(file: File): Promise<string> {
 }
 
 /**
- * Crops a data URI.
+ * Crops a data URI from the center.
  *
  * @param {string} data - Base64 encoded image
  * @param {number} width - Crop width
  * @param {height} height - Crop height
  * @returns {Promise<string>}
  */
-export function resizeDataURL(
+export function cropDataURL(
   data: string,
   width: number,
   height: number
@@ -64,20 +64,43 @@ export function resizeDataURL(
     const img = document.createElement("img");
 
     img.onload = function () {
+      // Create canvas with source
       const source = document.createElement("canvas");
       source.width = img.width;
       source.height = img.height;
       let ctx = source.getContext("2d");
       ctx?.drawImage(img, 0, 0, img.width, img.height);
 
+      // Get bottom left corner from source center
+      const x = img.width / 2 - width / 2;
+      const y = img.height / 2 - height / 2;
+
+      // Create destination canvas with crop from source
       const dest = document.createElement("canvas");
       dest.width = width;
       dest.height = height;
       ctx = dest.getContext("2d");
-      ctx?.drawImage(source, 0, 0, width, height, 0, 0, width, height);
+      ctx?.drawImage(source, x, y, width, height, 0, 0, width, height);
 
       const dataURL = dest.toDataURL();
       resolve(dataURL);
+    };
+    img.src = data;
+  });
+}
+
+/**
+ * Gets height of a data URI.
+ *
+ * @param {string} data - Base64 encoded image
+ * @returns {Promise<number>}
+ */
+export function getImageHeight(data: string): Promise<number> {
+  return new Promise(async function (resolve, reject) {
+    const img = new Image();
+    img.onload = function () {
+      const height = img.height;
+      resolve(height);
     };
     img.src = data;
   });
