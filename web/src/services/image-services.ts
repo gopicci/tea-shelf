@@ -90,6 +90,38 @@ export function cropDataURL(
 }
 
 /**
+ * Resizes a data URI based on width and height.
+ *
+ * @param {string} data - Base64 encoded image
+ * @param {number} width - Crop width
+ * @param {height} height - Crop height
+ * @returns {Promise<string>}
+ */
+export function resizeDataURL(
+  data: string,
+  width: number,
+  height: number
+): Promise<string> {
+  return new Promise(async function (resolve, reject) {
+    const img = document.createElement("img");
+
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      const dataURI = canvas.toDataURL();
+      resolve(dataURI);
+    };
+    img.src = data;
+  });
+}
+
+/**
  * Gets height of a data URI.
  *
  * @param {string} data - Base64 encoded image

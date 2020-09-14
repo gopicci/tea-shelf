@@ -10,7 +10,11 @@ import { CameraAlt, Close, Done, Replay, SkipNext } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import Webcam from "react-webcam";
 import { APIRequest } from "../../../services/auth-services";
-import { getImageHeight, cropDataURL } from "../../../services/image-services";
+import {
+  getImageHeight,
+  cropDataURL,
+  resizeDataURL,
+} from "../../../services/image-services";
 import { visionParserSerializer } from "../../../services/serializers";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { SubcategoriesState } from "../../statecontainers/subcategories-context";
@@ -48,8 +52,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const videoConstraints = {
-  width: { ideal: 4096 },
-  height: { ideal: 2160 },
+  width: { ideal: 1080 },
+  height: { ideal: 1080 },
   facingMode: "environment",
 };
 
@@ -96,30 +100,30 @@ function CaptureImage({
 
   const capture = useCallback(async () => {
     if (webcamRef.current) {
-      // Get screenshot at max resolution
-      const screenshot = webcamRef.current.getScreenshot({
-  width:  4096 ,
-  height:  2160 ,
-});
+      const screenshot = webcamRef.current.getScreenshot();
 
       if (screenshot) {
-        // Crop screenshot with box ratio
+        // Crop higher resolution screenshot with box ratio
         const cropHeight = await getImageHeight(screenshot);
         const ratio = (window.screen.height * 0.8) / window.screen.width;
         const cropWidth = cropHeight / ratio;
-
         const croppedImage = await cropDataURL(
           screenshot,
           cropWidth,
           cropHeight
         );
 
-        // Resize image
+        // Resize image based on visible box
+        const resizedImage = await resizeDataURL(
+          croppedImage,
+          window.screen.width,
+          window.screen.height * 0.8
+        );
 
-        // Update image data state
-        setImageData(croppedImage);
+        // Update image data state with resized image
+        setImageData(resizedImage);
 
-        // Post image to API parser
+        // Post cropped image to API parser
         const res = await APIRequest(
           "/parser/",
           "POST",
@@ -181,7 +185,7 @@ function CaptureImage({
             className={classes.webcam}
             audio={false}
             imageSmoothing={false}
-            //forceScreenshotSourceSize={true}
+            forceScreenshotSourceSize={true}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={videoConstraints}
