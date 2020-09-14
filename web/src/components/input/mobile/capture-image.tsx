@@ -97,7 +97,10 @@ function CaptureImage({
   const capture = useCallback(async () => {
     if (webcamRef.current) {
       // Get screenshot at max resolution
-      const screenshot = webcamRef.current.getScreenshot();
+      const screenshot = webcamRef.current.getScreenshot({
+  width:  4096 ,
+  height:  2160 ,
+});
 
       if (screenshot) {
         // Crop screenshot with box ratio
@@ -110,6 +113,8 @@ function CaptureImage({
           cropWidth,
           cropHeight
         );
+
+        // Resize image
 
         // Update image data state
         setImageData(croppedImage);
@@ -176,6 +181,7 @@ function CaptureImage({
             className={classes.webcam}
             audio={false}
             imageSmoothing={false}
+            //forceScreenshotSourceSize={true}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={videoConstraints}
