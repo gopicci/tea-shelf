@@ -27,6 +27,7 @@ export function FileToBase64(file: File): Promise<string> {
     else {
       const reader = new FileReader();
       reader.readAsDataURL(file);
+
       reader.onloadend = (e) => {
         const img = new Image();
         img.src = ""; // onload event sometimes won't fire in webkit without this
@@ -36,12 +37,48 @@ export function FileToBase64(file: File): Promise<string> {
           canvas.height = img.height;
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, img.width, img.height);
-          const dataUrl = canvas.toDataURL("image/jpeg", 90);
-          resolve(dataUrl);
+          const dataURL = canvas.toDataURL("image/jpeg", 90);
+          resolve(dataURL);
         };
         if (typeof reader.result === "string") img.src = reader.result;
       };
       reader.onerror = (error) => reject(error);
     }
+  });
+}
+
+/**
+ * Crops a data URI.
+ *
+ * @param {string} data - Base64 encoded image
+ * @param {number} width - Crop width
+ * @param {height} height - Crop height
+ * @returns {Promise<string>}
+ */
+export function resizeDataURL(
+  data: string,
+  width: number,
+  height: number
+): Promise<string> {
+  return new Promise(async function (resolve, reject) {
+    const img = document.createElement("img");
+
+    img.onload = function () {
+      const source = document.createElement("canvas");
+      source.width = img.width;
+      source.height = img.height;
+      let ctx = source.getContext("2d");
+      ctx?.drawImage(img, 0, 0, img.width, img.height);
+
+      const dest = document.createElement("canvas");
+      dest.width = width;
+      dest.height = height;
+      ctx = dest.getContext("2d");
+      ctx?.drawImage(source, 0, 0, width, height, 0, 0, width, height);
+
+      const dataURL = dest.toDataURL();
+      resolve(dataURL);
+    };
+    img.src = data;
   });
 }

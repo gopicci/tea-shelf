@@ -15,11 +15,12 @@ import { CategoriesState } from "../../statecontainers/categories-context";
 import { SubcategoriesState } from "../../statecontainers/subcategories-context";
 import { VendorsState } from "../../statecontainers/vendors-context";
 import { TeaModel } from "../../../services/models";
+import {resizeDataURL} from '../../../services/image-services';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.secondary.main,
     width: "100%",
     height: "100vh",
     display: "flex",
@@ -27,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   imageBox: {
-    height: "70%",
     overflow: "hidden",
   },
   controlsBox: {
@@ -91,14 +91,20 @@ function CaptureImage({
       const screenshot = webcamRef.current.getScreenshot();
 
       if (screenshot) {
+        const croppedImage = await resizeDataURL(
+          screenshot,
+          window.screen.width,
+          window.screen.height * 0.8
+        );
+
         // Update image data state
-        setImageData(screenshot);
+        setImageData(croppedImage);
 
         // Post image to API parser
         const res = await APIRequest(
           "/parser/",
           "POST",
-          JSON.stringify({ image: screenshot })
+          JSON.stringify({ image: croppedImage })
         );
 
         if (res.ok) {
@@ -153,8 +159,10 @@ function CaptureImage({
       <Box className={classes.imageBox}>
         {!imageData ? (
           <Webcam
-            height={500}
             audio={false}
+            imageSmoothing={false}
+            //height={window.screen.height * 0.8}
+            height={50}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={videoConstraints}
