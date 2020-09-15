@@ -189,6 +189,18 @@ class Category(models.Model):
         return self.name
 
 
+class CategoryName(models.Model):
+    """
+    Model defining a category alternative names.
+    """
+
+    name = models.CharField(max_length=50)
+    subcategory = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
 class Subcategory(models.Model):
     """
     Model defining a tea subcategory.

@@ -7,6 +7,7 @@ from .models import (
     CustomUser,
     Brewing,
     Category,
+    CategoryName,
     Subcategory,
     SubcategoryName,
     Vendor,
@@ -44,6 +45,15 @@ class CustomUserAdmin(admin.ModelAdmin):
     search_fields = ("email",)
 
 
+class CategoryNameInline(admin.TabularInline):
+    """
+    Defining CategoryName model as Subcategory tabular inline.
+    """
+
+    model = CategoryName
+    extra = 0
+
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     """
@@ -55,6 +65,7 @@ class CategoryAdmin(admin.ModelAdmin):
         "gongfu_brewing",
         "western_brewing",
     )
+    inlines = [CategoryNameInline]
 
 
 class BrewingForm(ModelForm):

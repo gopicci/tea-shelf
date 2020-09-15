@@ -2,7 +2,14 @@ from binascii import a2b_base64
 import difflib
 from google.cloud import vision
 import re
-from .models import Subcategory, SubcategoryName, Vendor, VendorTrademark, Category
+from .models import (
+    Subcategory,
+    SubcategoryName,
+    Vendor,
+    VendorTrademark,
+    Category,
+    CategoryName,
+)
 
 
 class VisionParser:
@@ -26,6 +33,7 @@ class VisionParser:
         self.subcategory = None
         self.vendor = None
         self.categories = Category.objects.all()
+        self.categories_names = CategoryName.objects.all()
         self.subcategories = Subcategory.objects.filter(is_public=True)
         self.subcategories_names = SubcategoryName.objects.all()
         self.vendors = Vendor.objects.filter(is_public=True)
@@ -49,7 +57,7 @@ class VisionParser:
             if self.subcategory.category:
                 self.tea_data["category"] = self.subcategory.category.id
         else:
-            category_names = [c.name.lower() for c in self.categories]
+            category_names = self.get_categories_lookup()
             category_match = self.find_match(document, category_names)
             if category_match:
                 self.category = self.get_category_from_name(category_match[0])
@@ -468,6 +476,14 @@ class VisionParser:
         lookup_names += [s.name.lower() for s in self.subcategories_names]
         return lookup_names
 
+    def get_categories_lookup(self):
+        """
+        Builds list of category names to use in match lookup
+        """
+        lookup_names = [c.name.lower() for c in self.categories]
+        lookup_names += [c.name.lower() for c in self.categories_names]
+        return lookup_names
+
     def get_subcategory_from_name(self, name):
         """
         Returns a subcategory object from its name
@@ -491,7 +507,7 @@ class VisionParser:
         """
         Returns a category object from its name
         """
-        sub = next((c for c in self.categories if c.name.lower() == name), None,)
+        sub = next((c for c in self.categories_names if c.name.lower() == name), None,)
         return sub
 
     def get_vendor_from_name(self, name):
