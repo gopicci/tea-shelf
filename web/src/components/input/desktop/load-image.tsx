@@ -71,9 +71,11 @@ function LoadImage({
     if (files.length > 0) {
       try {
 
+        console.log(files[0])
         const image = await fileToBase64(files[0]);
         setImageData(image);
 
+        console.log(JSON.stringify({ image: image }))
         // Post image to API parser
         const res = await APIRequest(
           "/parser/",
