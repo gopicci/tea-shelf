@@ -22,6 +22,7 @@ import {
   getImageSize,
   cropDataURL,
   resizeDataURL,
+  resizeImage,
 } from "../../../services/image-services";
 import { visionParserSerializer } from "../../../services/serializers";
 import { CategoriesState } from "../../statecontainers/categories-context";
@@ -122,7 +123,7 @@ type Props = {
 /**
  * Mobile image capture component, used as first stage of tea creation process.
  * Once the image is captured or loaded it's cropped/resized and run through
- * vision parser API to extract text data that will be used as default input for
+ * API vision parser to extract text data that will be used as default input for
  * the next stage.
  *
  * @component
@@ -235,18 +236,7 @@ function CaptureImage({
         if (typeof image === "string") {
           try {
             // Resize image to max resolution
-            let resizedImage = image;
-
-            const size = await getImageSize(image);
-
-            if (size.height > maxResolution || size.width > maxResolution) {
-              const ratio = size.height / size.width;
-              resizedImage = await resizeDataURL(
-                image,
-                ratio > 1 ? maxResolution / ratio : maxResolution,
-                ratio > 1 ? maxResolution : maxResolution * ratio
-              );
-            }
+            const resizedImage = await resizeImage(image, maxResolution);
 
             // Update image data state with resized image
             setImageData(resizedImage);

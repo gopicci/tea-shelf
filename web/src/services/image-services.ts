@@ -27,7 +27,7 @@ export function fileToBase64(file: File): Promise<string> {
     else {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      console.log(reader)
+      console.log(reader);
 
       reader.onloadend = (e) => {
         const img = new Image();
@@ -38,9 +38,9 @@ export function fileToBase64(file: File): Promise<string> {
           canvas.height = img.height;
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, img.width, img.height);
-          console.log(ctx?.getImageData(0, 0, img.width, img.height))
+          console.log(ctx?.getImageData(0, 0, img.width, img.height));
           const dataURL = canvas.toDataURL("image/jpeg", 90);
-          console.log(dataURL)
+          console.log(dataURL);
           resolve(dataURL);
         };
         if (typeof reader.result === "string") img.src = reader.result;
@@ -130,13 +130,39 @@ export function resizeDataURL(
  * @param {string} data - Base64 encoded image
  * @returns {Promise<{width: number, height: number}>}
  */
-export function getImageSize(data: string): Promise<{width: number, height: number}> {
+export function getImageSize(
+  data: string
+): Promise<{ width: number; height: number }> {
   return new Promise(async function (resolve, reject) {
     const img = new Image();
     img.onload = function () {
-      const size = {width: img.width, height: img.height};
+      const size = { width: img.width, height: img.height };
       resolve(size);
     };
     img.src = data;
   });
+}
+
+/**
+ * Resizes a base64 image to fit within max resolution boundaries,.
+ *
+ * @param {string} image - Base64 encoded image data
+ * @param {number} maxResolution - Maximum resolution of the longest side
+ * @returns {Promise<string>}
+ */
+export async function resizeImage(
+  image: string,
+  maxResolution: number
+): Promise<string> {
+  const size = await getImageSize(image);
+
+  if (size.height > maxResolution || size.width > maxResolution) {
+    const ratio = size.height / size.width;
+    return resizeDataURL(
+      image,
+      ratio > 1 ? maxResolution / ratio : maxResolution,
+      ratio > 1 ? maxResolution : maxResolution * ratio
+    );
+  }
+  return image;
 }

@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext } from "react";
 import { Box, Button } from "@material-ui/core";
 import { DropzoneArea } from "material-ui-dropzone";
-import { fileToBase64 } from "../../../services/image-services";
+import { resizeImage } from "../../../services/image-services";
 import { APIRequest } from "../../../services/auth-services";
 import { visionParserSerializer } from "../../../services/serializers";
 import { makeStyles } from "@material-ui/core/styles";
@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// Max resolution for the image to be uploaded
+const maxResolution = 1080;
+
 /**
  * LoadImage props.
  *
@@ -43,8 +46,9 @@ type Props = {
 };
 
 /**
- * Desktop tea creation image loader, converts file to base64
- * and moves to next step.
+ * Desktop tea creation image loader. Converts File input to base64,
+ * resizes and runs through API vision parser to extract text data
+ * that will be used as default input for the next stage.
  *
  * @component
  * @subcategory Desktop input
@@ -68,35 +72,49 @@ function LoadImage({
    * @param {File[]} files - Array of files
    */
   async function handleChange(files: File[]): Promise<void> {
-    if (files.length > 0) {
-      try {
+    const reader = new FileReader();
 
-        const image = await fileToBase64(files[0]);
-        setImageData(image);
+    reader.addEventListener(
+      "load",
+      async function () {
+        // convert image file to base64 string
+        const image = reader.result;
 
-        // Post image to API parser
-        const res = await APIRequest(
-          "/parser/",
-          "POST",
-          JSON.stringify({ image: image })
-        );
+        if (typeof image === "string") {
+          try {
+            const resizedImage = await resizeImage(image, maxResolution);
 
-        if (res.ok) {
-          // Update visionData state with suggestions from parser
-          setVisionData({
-            ...visionParserSerializer(
-              await res.json(),
-              categories,
-              subcategories,
-              vendors
-            ),
-          });
+            // Update image data state with resized image
+            setImageData(resizedImage);
+
+            // Post image to API parser
+            const res = await APIRequest(
+              "/parser/",
+              "POST",
+              JSON.stringify({ image: resizedImage })
+            );
+
+            if (res.ok) {
+              // Update visionData state with suggestions from parser
+              setVisionData({
+                ...visionParserSerializer(
+                  await res.json(),
+                  categories,
+                  subcategories,
+                  vendors
+                ),
+              });
+            }
+          } catch (e) {
+            console.error(e);
+          }
         }
-      } catch (e) {
-        console.error(e);
-      }
-
-      setImageLoadDone(true);
+        setImageLoadDone(true);
+      },
+      false
+    );
+    if (files.length) {
+      reader.readAsDataURL(files[0]);
     }
   }
 
@@ -108,18 +126,14 @@ function LoadImage({
         onChange={(files) => handleChange(files)}
         filesLimit={1}
         showPreviewsInDropzone={false}
-        showAlerts={['error', 'info']}
+        showAlerts={["error", "info"]}
         alertSnackbarProps={{
           anchorOrigin: { vertical: "top", horizontal: "center" },
         }}
       />
       <Box className={classes.bottom}>
-        <Button onClick={handleClose}>
-          Cancel
-        </Button>
-        <Button onClick={() => setImageLoadDone(true)}>
-          Skip
-        </Button>
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={() => setImageLoadDone(true)}>Skip</Button>
       </Box>
     </Box>
   );
