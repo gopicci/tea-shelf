@@ -4,8 +4,9 @@ import React, {
   useContext,
   ReactElement,
   useEffect,
+  useState,
 } from "react";
-import { Box, Fab } from "@material-ui/core";
+import { Box, CircularProgress, Fab, fade } from "@material-ui/core";
 import {
   CameraAlt,
   Close,
@@ -52,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "left",
     padding: theme.spacing(4),
+    zIndex: 1,
   },
   controlsBox: {
     position: "fixed",
@@ -63,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "space-around",
     padding: theme.spacing(4),
+    zIndex: 1,
   },
   webcam: {
     objectFit: "cover",
@@ -74,8 +77,22 @@ const useStyles = makeStyles((theme) => ({
   input: {
     display: "none",
   },
+  progressBox: {
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%",
+    zIndex: 2,
+    backgroundColor: fade(theme.palette.common.black, 0.5),
+    padding: "auto",
+  },
 }));
 
+// Max resolution for the image to be uploaded
 const maxResolution = 1080;
 
 const videoConstraints = {
@@ -104,8 +121,9 @@ type Props = {
 
 /**
  * Mobile image capture component, used as first stage of tea creation process.
- * Once the image is capture it's run through vision parser API to extract data
- * that will be used as default input state of next stage.
+ * Once the image is captured or loaded it's cropped/resized and run through
+ * vision parser API to extract text data that will be used as default input for
+ * the next stage.
  *
  * @component
  * @subcategory Mobile input
@@ -123,43 +141,56 @@ function CaptureImage({
   const subcategories = useContext(SubcategoriesState);
   const vendors = useContext(VendorsState);
 
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
   const webcamRef = useRef<any>(null);
 
   /**
-   * Captures an image from the webcam stream, crops and resizes it,
-   * updates the image data state and runs it through image parser.
+   * Captures a screenshot from the webcam stream, crops and resizes it,
+   * updates the image data state and runs it through vision parser.
    */
   async function capture(): Promise<void> {
     if (webcamRef.current) {
       const screenshot = webcamRef.current.getScreenshot();
 
       if (screenshot) {
-        // Crop higher resolution screenshot with box ratio
-        const size = await getImageSize(screenshot);
-        const ratio = window.screen.height / window.screen.width;
-        const croppedImage = await cropDataURL(
-          screenshot,
-          ratio > 1 ? size.height / ratio : size.width,
-          ratio > 1 ? size.height : size.width * ratio
-        );
+        setLoading(true);
 
-        // Resize image based on visible box
-        const resizedImage = await resizeDataURL(
-          croppedImage,
-          window.screen.width,
-          window.screen.height
-        );
+        try {
+          // Crop higher resolution screenshot with visible box ratio
+          const size = await getImageSize(screenshot);
+          const ratio = window.screen.height / window.screen.width;
+          const croppedImage = await cropDataURL(
+            screenshot,
+            ratio > 1 ? size.height / ratio : size.width,
+            ratio > 1 ? size.height : size.width * ratio
+          );
 
-        // Update image data state with resized image
-        setImageData(resizedImage);
-        await parseImage(croppedImage);
+          // Resize image based on visible box
+          const resizedImage = await resizeDataURL(
+            croppedImage,
+            window.screen.width,
+            window.screen.height
+          );
+
+          // Update image data state with resized image
+          setImageData(resizedImage);
+
+          // Run through vision parser
+          await parseImage(croppedImage);
+        } catch (e) {
+          console.error(e);
+        }
+
+        setLoading(false);
       }
     }
   }
 
   /**
    * Runs image through vision parser and updates vision
-   * data state with response.
+   * data state if response is ok.
    *
    * @param {string} data - Base64 image data
    */
@@ -184,7 +215,8 @@ function CaptureImage({
   }
 
   /**
-   * Updates image data state on image file select.
+   * Grabs image data from file input, processes it and runs it
+   * through vision parser.
    *
    * @param {ChangeEvent<HTMLInputElement>} event - File input change event
    */
@@ -195,26 +227,37 @@ function CaptureImage({
     reader.addEventListener(
       "load",
       async function () {
+        setLoading(true);
+
         // convert image file to base64 string
         const image = reader.result;
 
         if (typeof image === "string") {
-          // Resize image to screen resolution
-          const size = await getImageSize(image);
+          try {
+            // Resize image to max resolution
+            let resizedImage = image;
 
-          // Resize image to max resolution
-          let resizedImage = image;
-          if (size.height > maxResolution || size.width > maxResolution) {
-            const ratio = size.height / size.width;
-            resizedImage = await resizeDataURL(
-              image,
-              ratio > 1 ? maxResolution / ratio : maxResolution,
-              ratio > 1 ? maxResolution : maxResolution * ratio
-            );
+            const size = await getImageSize(image);
+
+            if (size.height > maxResolution || size.width > maxResolution) {
+              const ratio = size.height / size.width;
+              resizedImage = await resizeDataURL(
+                image,
+                ratio > 1 ? maxResolution / ratio : maxResolution,
+                ratio > 1 ? maxResolution : maxResolution * ratio
+              );
+            }
+
+            // Update image data state with resized image
+            setImageData(resizedImage);
+
+            // Run through vision parser
+            await parseImage(resizedImage);
+          } catch (e) {
+            console.error(e);
           }
 
-          setImageData(resizedImage);
-          await parseImage(resizedImage);
+          setLoading(false);
         }
       },
       false
@@ -245,23 +288,35 @@ function CaptureImage({
     };
   }, [handleClose]);
 
-  /** Empties image data */
+  /**
+   * Moves to next stage when user sets status to done
+   * and loading is finished.
+   */
+  useEffect(() => {
+    if (done && !loading) setImageLoadDone(true);
+  }, [done, loading, setImageLoadDone]);
+
+  /**
+   * Empties image data
+   */
   function replay(): void {
     setImageData("");
   }
 
   return (
     <Box className={classes.root}>
-      <Box className={classes.back}>
-        <Fab
-          color="primary"
-          size="small"
-          onClick={handleClose}
-          aria-label="cancel"
-        >
-          <Close />
-        </Fab>
-      </Box>
+      {!done && (
+        <Box className={classes.back}>
+          <Fab
+            color="primary"
+            size="small"
+            onClick={handleClose}
+            aria-label="cancel"
+          >
+            <Close />
+          </Fab>
+        </Box>
+      )}
       <Box className={classes.imageBox}>
         {!imageData ? (
           <Webcam
@@ -277,54 +332,68 @@ function CaptureImage({
           <img className={classes.webcam} src={imageData} alt="" />
         )}
       </Box>
-      <Box className={classes.controlsBox}>
-        <input
-          className={classes.input}
-          onChange={handleInputChange}
-          accept="image/*"
-          id="load-image"
-          type="file"
-        />
-        <label htmlFor="load-image">
-          <Fab
+      {!done && (
+        <Box className={classes.controlsBox}>
+          <input
+            className={classes.input}
+            onChange={handleInputChange}
+            accept="image/*"
+            id="load-image"
+            type="file"
+          />
+          <label htmlFor="load-image">
+            <Fab
+              color="secondary"
+              size="small"
+              aria-label="load image"
+              component="span"
+            >
+              <PermMedia />
+            </Fab>
+          </label>
+          {!imageData ? (
+            <>
+              <Fab color="secondary" onClick={capture} aria-label="capture">
+                <CameraAlt fontSize="large" />
+              </Fab>
+              <Fab
+                color="secondary"
+                size="small"
+                onClick={() => setImageLoadDone(true)}
+                aria-label="skip"
+              >
+                <SkipNext />
+              </Fab>
+            </>
+          ) : (
+            <>
+              <Fab color="secondary" onClick={replay} aria-label="recapture">
+                <Replay fontSize="large" />
+              </Fab>
+              <Fab
+                color="secondary"
+                size="small"
+                onClick={() => setDone(true)}
+                aria-label="done"
+              >
+                <Done />
+              </Fab>
+            </>
+          )}
+        </Box>
+      )}
+      {done && (
+        <Box className={classes.progressBox}>
+          <CircularProgress
             color="secondary"
-            size="small"
-            aria-label="load image"
-            component="span"
-          >
-            <PermMedia />
-          </Fab>
-        </label>
-        {!imageData ? (
-          <>
-            <Fab color="secondary" onClick={capture} aria-label="capture">
-              <CameraAlt fontSize="large" />
-            </Fab>
-            <Fab
-              color="secondary"
-              size="small"
-              onClick={() => setImageLoadDone(true)}
-              aria-label="skip"
-            >
-              <SkipNext />
-            </Fab>
-          </>
-        ) : (
-          <>
-            <Fab color="secondary" onClick={replay} aria-label="recapture">
-              <Replay fontSize="large" />
-            </Fab>
-            <Fab
-              color="secondary"
-              size="small"
-              onClick={() => setImageLoadDone(true)}
-              aria-label="done"
-            >
-              <Done />
-            </Fab>
-          </>
-        )}
-      </Box>
+            size={Math.min(
+              window.screen.width * 0.5,
+              window.screen.height * 0.5
+            )}
+            thickness={1}
+          />
+        </Box>
+      )}
     </Box>
   );
 }
