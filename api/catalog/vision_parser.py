@@ -65,7 +65,7 @@ class VisionParser:
                     self.tea_data["category"] = self.category.id
                     self.tea_data["category_confidence"] = category_match[1]
 
-        vendor_names = [v.name.lower() for v in self.vendors]
+        vendor_names = self.get_vendors_lookup()
         vendor_match = self.find_match(document, vendor_names)
         if vendor_match:
             self.vendor = self.get_vendor_from_name(vendor_match[0])
@@ -484,6 +484,14 @@ class VisionParser:
         lookup_names += [c.name.lower() for c in self.categories_names]
         return lookup_names
 
+    def get_vendors_lookup(self):
+        """
+        Builds list of vendor names and websites to use in match lookup
+        """
+        lookup_names = [v.name.lower() for v in self.vendors]
+        lookup_names += [v.website.lower() for v in self.vendors]
+        return lookup_names
+
     def get_subcategory_from_name(self, name):
         """
         Returns a subcategory object from its name
@@ -507,7 +515,9 @@ class VisionParser:
         """
         Returns a category object from its name
         """
-        sub = next((c.category for c in self.categories_names if c.name.lower() == name), None,)
+        sub = next(
+            (c.category for c in self.categories_names if c.name.lower() == name), None,
+        )
         if not sub:
             sub = next((c for c in self.categories if c.name.lower() == name), None,)
         return sub
@@ -516,5 +526,12 @@ class VisionParser:
         """
         Returns a vendor object from its name
         """
-        sub = next((v for v in self.vendors if v.name.lower() == name), None,)
+        sub = next(
+            (
+                v
+                for v in self.vendors
+                if v.name.lower() == name or v.website.lower() == name
+            ),
+            None,
+        )
         return sub
