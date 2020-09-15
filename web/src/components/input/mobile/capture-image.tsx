@@ -1,17 +1,24 @@
 import React, {
+  ChangeEvent,
   useRef,
-  useCallback,
   useContext,
   ReactElement,
   useEffect,
 } from "react";
-import { Box, IconButton } from "@material-ui/core";
-import { CameraAlt, Close, Done, Replay, SkipNext } from "@material-ui/icons";
+import { Box, Fab } from "@material-ui/core";
+import {
+  CameraAlt,
+  Close,
+  Done,
+  PermMedia,
+  Replay,
+  SkipNext,
+} from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import Webcam from "react-webcam";
 import { APIRequest } from "../../../services/auth-services";
 import {
-  getImageHeight,
+  getImageSize,
   cropDataURL,
   resizeDataURL,
 } from "../../../services/image-services";
@@ -24,9 +31,8 @@ import { TeaModel } from "../../../services/models";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.secondary.main,
     width: "100%",
-    height: window.innerHeight,
+    height: "100%",
     display: "flex",
     margin: 0,
     flexDirection: "column",
@@ -35,25 +41,46 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    height: "100%",
+    width: "100%",
     overflow: "hidden",
   },
-  controlsBox: {
+  back: {
+    position: "fixed",
+    top: 0,
     display: "flex",
-    justifyContent: "center",
-    margin: "auto",
+    alignItems: "center",
+    justifyContent: "left",
+    padding: theme.spacing(4),
   },
-  control: {
-    margin: theme.spacing(4),
+  controlsBox: {
+    position: "fixed",
+    bottom: 0,
+    minHeight: "120px",
+    maxHeight: "120px",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+    padding: theme.spacing(4),
   },
   webcam: {
-    minHeight: "80vh",
-    maxHeight: "80vh",
+    objectFit: "cover",
+    minHeight: "100vh",
+    maxHeight: "100vh",
+    minWidth: "100vw",
+    maxWidth: "100vw",
+  },
+  input: {
+    display: "none",
   },
 }));
 
+const maxResolution = 1080;
+
 const videoConstraints = {
-  width: { ideal: 1080 },
-  height: { ideal: 1080 },
+  width: { ideal: maxResolution },
+  height: { ideal: maxResolution },
   facingMode: "environment",
 };
 
@@ -98,63 +125,104 @@ function CaptureImage({
 
   const webcamRef = useRef<any>(null);
 
-  const capture = useCallback(async () => {
+  /**
+   * Captures an image from the webcam stream, crops and resizes it,
+   * updates the image data state and runs it through image parser.
+   */
+  async function capture(): Promise<void> {
     if (webcamRef.current) {
       const screenshot = webcamRef.current.getScreenshot();
 
       if (screenshot) {
         // Crop higher resolution screenshot with box ratio
-        const cropHeight = await getImageHeight(screenshot);
-        const ratio = (window.screen.height * 0.8) / window.screen.width;
-        const cropWidth = cropHeight / ratio;
+        const size = await getImageSize(screenshot);
+        const ratio = window.screen.height / window.screen.width;
         const croppedImage = await cropDataURL(
           screenshot,
-          cropWidth,
-          cropHeight
+          ratio > 1 ? size.height / ratio : size.width,
+          ratio > 1 ? size.height : size.width * ratio
         );
 
         // Resize image based on visible box
         const resizedImage = await resizeDataURL(
           croppedImage,
           window.screen.width,
-          window.screen.height * 0.8
+          window.screen.height
         );
 
         // Update image data state with resized image
         setImageData(resizedImage);
-
-        // Post cropped image to API parser
-        const res = await APIRequest(
-          "/parser/",
-          "POST",
-          JSON.stringify({ image: croppedImage })
-        );
-
-        if (res.ok) {
-          // Update visionData state with suggestions from parser
-          setVisionData({
-            ...visionParserSerializer(
-              await res.json(),
-              categories,
-              subcategories,
-              vendors
-            ),
-          });
-        }
+        await parseImage(croppedImage);
       }
     }
-  }, [
-    webcamRef,
-    setImageData,
-    setVisionData,
-    categories,
-    subcategories,
-    vendors,
-  ]);
+  }
 
-  /** Empties image data */
-  function replay(): void {
-    setImageData("");
+  /**
+   * Runs image through vision parser and updates vision
+   * data state with response.
+   *
+   * @param {string} data - Base64 image data
+   */
+  async function parseImage(data: string): Promise<void> {
+    const res = await APIRequest(
+      "/parser/",
+      "POST",
+      JSON.stringify({ image: data })
+    );
+
+    if (res.ok) {
+      // Update visionData state with suggestions from parser
+      setVisionData({
+        ...visionParserSerializer(
+          await res.json(),
+          categories,
+          subcategories,
+          vendors
+        ),
+      });
+    }
+  }
+
+  /**
+   * Updates image data state on image file select.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} event - File input change event
+   */
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>): void {
+    const files = event.target.files;
+    const reader = new FileReader();
+
+    reader.addEventListener(
+      "load",
+      async function () {
+        // convert image file to base64 string
+        const image = reader.result;
+
+        if (typeof image === "string") {
+          // Resize image to screen resolution
+          const size = await getImageSize(image);
+
+          // Resize image to max resolution
+          let resizedImage = image;
+          if (size.height > maxResolution || size.width > maxResolution) {
+            const ratio = size.height / size.width;
+            resizedImage = await resizeDataURL(
+              image,
+              ratio > 1 ? maxResolution / ratio : maxResolution,
+              ratio > 1 ? maxResolution : maxResolution * ratio
+            );
+          }
+
+          setImageData(resizedImage);
+          await parseImage(resizedImage);
+        }
+      },
+      false
+    );
+
+    if (files) {
+      reader.readAsDataURL(files[0]);
+    }
   }
 
   useEffect(() => {
@@ -177,8 +245,23 @@ function CaptureImage({
     };
   }, [handleClose]);
 
+  /** Empties image data */
+  function replay(): void {
+    setImageData("");
+  }
+
   return (
     <Box className={classes.root}>
+      <Box className={classes.back}>
+        <Fab
+          color="primary"
+          size="small"
+          onClick={handleClose}
+          aria-label="cancel"
+        >
+          <Close />
+        </Fab>
+      </Box>
       <Box className={classes.imageBox}>
         {!imageData ? (
           <Webcam
@@ -191,50 +274,54 @@ function CaptureImage({
             videoConstraints={videoConstraints}
           />
         ) : (
-          <img src={imageData} alt="" />
+          <img className={classes.webcam} src={imageData} alt="" />
         )}
       </Box>
       <Box className={classes.controlsBox}>
-        <IconButton
-          className={classes.control}
-          onClick={handleClose}
-          aria-label="cancel"
-        >
-          <Close />
-        </IconButton>
+        <input
+          className={classes.input}
+          onChange={handleInputChange}
+          accept="image/*"
+          id="load-image"
+          type="file"
+        />
+        <label htmlFor="load-image">
+          <Fab
+            color="secondary"
+            size="small"
+            aria-label="load image"
+            component="span"
+          >
+            <PermMedia />
+          </Fab>
+        </label>
         {!imageData ? (
           <>
-            <IconButton
-              className={classes.control}
-              onClick={capture}
-              aria-label="capture"
-            >
+            <Fab color="secondary" onClick={capture} aria-label="capture">
               <CameraAlt fontSize="large" />
-            </IconButton>
-            <IconButton
-              className={classes.control}
+            </Fab>
+            <Fab
+              color="secondary"
+              size="small"
               onClick={() => setImageLoadDone(true)}
               aria-label="skip"
             >
               <SkipNext />
-            </IconButton>
+            </Fab>
           </>
         ) : (
           <>
-            <IconButton
-              className={classes.control}
-              onClick={replay}
-              aria-label="recapture"
-            >
+            <Fab color="secondary" onClick={replay} aria-label="recapture">
               <Replay fontSize="large" />
-            </IconButton>
-            <IconButton
-              className={classes.control}
+            </Fab>
+            <Fab
+              color="secondary"
+              size="small"
               onClick={() => setImageLoadDone(true)}
               aria-label="done"
             >
               <Done />
-            </IconButton>
+            </Fab>
           </>
         )}
       </Box>

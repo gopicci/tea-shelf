@@ -125,14 +125,14 @@ export function resizeDataURL(
  * Gets height of a data URI.
  *
  * @param {string} data - Base64 encoded image
- * @returns {Promise<number>}
+ * @returns {Promise<{width: number, height: number}>}
  */
-export function getImageHeight(data: string): Promise<number> {
+export function getImageSize(data: string): Promise<{width: number, height: number}> {
   return new Promise(async function (resolve, reject) {
     const img = new Image();
     img.onload = function () {
-      const height = img.height;
-      resolve(height);
+      const size = {width: img.width, height: img.height};
+      resolve(size);
     };
     img.src = data;
   });
