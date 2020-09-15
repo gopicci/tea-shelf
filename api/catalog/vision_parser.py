@@ -507,7 +507,9 @@ class VisionParser:
         """
         Returns a category object from its name
         """
-        sub = next((c for c in self.categories_names if c.name.lower() == name), None,)
+        sub = next((c.category for c in self.categories_names if c.name.lower() == name), None,)
+        if not sub:
+            sub = next((c for c in self.categories if c.name.lower() == name), None,)
         return sub
 
     def get_vendor_from_name(self, name):

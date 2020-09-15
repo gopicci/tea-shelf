@@ -195,7 +195,7 @@ class CategoryName(models.Model):
     """
 
     name = models.CharField(max_length=50)
-    subcategory = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
