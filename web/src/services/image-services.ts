@@ -1,9 +1,9 @@
 /**
  * Converts image data into File format.
  *
+ * @category Services
  * @param {string} imageData - Base64 encoded image data
  * @returns {Promise<File>}
- * @category Services
  */
 export async function imageDataToFile(imageData: string): Promise<File> {
   if (!imageData) return Promise.reject();
@@ -14,12 +14,12 @@ export async function imageDataToFile(imageData: string): Promise<File> {
 }
 
 /**
- * Converts image File to base64. Re-encoding it from canvas is safer as
+ * Generic image File to base64 converter. Re-encoding it from canvas is safer as
  * Django base64 interpreter has issues with the encoding of certain jpg types.
  *
+ * @category Services
  * @param {File} file - Image input in File format
  * @returns {Promise<string>}
- * @category Services
  */
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -53,6 +53,7 @@ export function fileToBase64(file: File): Promise<string> {
 /**
  * Crops a data URI from the center.
  *
+ * @category Services
  * @param {string} data - Base64 encoded image
  * @param {number} width - Crop width
  * @param {height} height - Crop height
@@ -95,6 +96,7 @@ export function cropDataURL(
 /**
  * Resizes a data URI based on width and height.
  *
+ * @category Services
  * @param {string} data - Base64 encoded image
  * @param {number} width - Crop width
  * @param {height} height - Crop height
@@ -127,6 +129,7 @@ export function resizeDataURL(
 /**
  * Gets height of a data URI.
  *
+ * @category Services
  * @param {string} data - Base64 encoded image
  * @returns {Promise<{width: number, height: number}>}
  */
@@ -144,8 +147,9 @@ export function getImageSize(
 }
 
 /**
- * Resizes a base64 image to fit within max resolution boundaries,.
+ * Resizes a base64 image to fit within max resolution boundaries.
  *
+ * @category Services
  * @param {string} image - Base64 encoded image data
  * @param {number} maxResolution - Maximum resolution of the longest side
  * @returns {Promise<string>}
