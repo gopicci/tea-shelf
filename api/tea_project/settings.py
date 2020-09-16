@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import datetime
 import os
+
 from .auth import access_secret
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

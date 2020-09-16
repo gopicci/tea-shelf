@@ -4,18 +4,17 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from .models import (
-    CustomUser,
     Brewing,
     Category,
     CategoryName,
+    CustomUser,
+    Origin,
     Subcategory,
     SubcategoryName,
+    Tea,
     Vendor,
     VendorTrademark,
-    Origin,
-    Tea,
 )
-
 from .serializers import custom_get_or_create
 
 

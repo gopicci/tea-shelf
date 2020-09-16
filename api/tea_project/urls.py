@@ -14,28 +14,29 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from rest_framework_simplejwt.views import TokenRefreshView
+from django.urls import include, path
 from rest_framework import routers
+from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import ping
 from catalog.views import (
-    RegisterView,
-    LoginView,
-    UserView,
     BrewingCreateView,
     BrewingDetailView,
+    CategoryView,
+    LoginView,
     OriginCreateView,
     OriginDetailView,
-    CategoryView,
-    SubcategoryView,
-    VendorView,
-    TeaViewSet,
-    VisionParserView,
     PlacesAutocompleteView,
     PlacesDetailsView,
+    RegisterView,
+    SubcategoryView,
+    TeaViewSet,
     UpdatePasswordView,
+    UserView,
+    VendorView,
+    VisionParserView,
 )
+
+from .views import ping
 
 router = routers.SimpleRouter()
 router.register(r"tea", TeaViewSet, basename="tea")
