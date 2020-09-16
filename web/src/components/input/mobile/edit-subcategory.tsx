@@ -41,7 +41,7 @@ type Props = {
 
 /**
  * Mobile tea creation subcategory input component. Shows a list and autocomplete from
- * central subcategories state, with option to add extra.
+ * global subcategories state, with option to add extra.
  * Updates category, origin and brewing entries to match subcategory data.
  *
  * @component

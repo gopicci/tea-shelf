@@ -1,5 +1,5 @@
 Tea Shelf is a **progressive web app** built with the intent of helping users
-keep track of their collection of teas. This documentation offers an overview
+keeping track of their collection of teas. This documentation offers an overview
 on the REST API that serves the backend, which is written in **Python** with
 **Django REST framework**.
 

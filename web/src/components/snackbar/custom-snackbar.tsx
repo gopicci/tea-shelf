@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * Custom center top snackbar component used for major communications.
- * Relies on central snackbar state and dispatch provider.
+ * Relies on global snackbar state and dispatch provider.
  *
  * @component
  * @subcategory Main

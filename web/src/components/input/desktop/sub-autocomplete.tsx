@@ -60,7 +60,7 @@ function SubAutocomplete({ formikProps }: Props): ReactElement {
    */
   function updateSubcategory(name: string): void {
     if (name) {
-      // Look for a match in subcategories central state
+      // Look for a match in subcategories global state
       const match = Object.entries(subcategories).find((entry) => {
         const lcName = name.toLowerCase();
         if (getSubcategoryName(entry[1]).toLowerCase() === lcName) return true;

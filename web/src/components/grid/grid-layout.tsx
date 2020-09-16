@@ -92,7 +92,7 @@ type Props = {
 
 /**
  * Grid component containing tea cards. Filters tea cards based on
- * central filter state.
+ * global filter state.
  *
  * @component
  * @subcategory Main

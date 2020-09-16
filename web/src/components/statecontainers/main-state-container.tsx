@@ -14,7 +14,7 @@ type Props = {
 };
 
 /**
- * Wraps and organizes central state providers.
+ * Wraps and organizes global state providers.
  *
  * @component
  * @subcategory State containers

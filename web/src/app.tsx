@@ -42,8 +42,8 @@ export type Route = {
 };
 
 /**
- * Main app component. Checks if user is logged in and divert to selected route.
- * Routes are wrapped in central state provider.
+ * Base app component. Checks if user is logged in and diverts to selected route.
+ * Routes are wrapped in global state provider.
  *
  * @component
  * @subcategory Main
@@ -56,7 +56,7 @@ function App(): ReactElement {
   const [route, setRoute] = useState<Route>({ route: "MAIN" });
 
   /**
-   * Returns React component based on route name, passing optional route payload.
+   * Returns component based on route name, passing optional route payload.
    *
    * @param {Route} route - Route data
    * @returns {ReactElement}
@@ -100,7 +100,7 @@ function App(): ReactElement {
    * @param {Route} route - Route data
    * @returns {ReactElement}
    */
-  function getAuth(route: Route): ReactElement {
+  function getAuthRoute(route: Route): ReactElement {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("reset_token");
 
@@ -119,7 +119,7 @@ function App(): ReactElement {
     <ThemeProvider theme={mainTheme}>
       <CssBaseline />
       {!isLoggedIn ? (
-        getAuth(route)
+        getAuthRoute(route)
       ) : (
         <MainStateContainer>
           <>

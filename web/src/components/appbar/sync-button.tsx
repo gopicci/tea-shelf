@@ -60,7 +60,7 @@ function SyncButton(): ReactElement {
       const res = await APIRequest("/tea/", "GET");
       const body = await res.json();
 
-      // Update central teas state
+      // Update global teas state
       teaDispatch({ type: "SET", data: offlineTeas.concat(body) });
 
       // Update teas cache
@@ -75,7 +75,7 @@ function SyncButton(): ReactElement {
       const res = await APIRequest("/category/", "GET");
       const body = await res.json();
 
-      // Update central categories state
+      // Update global categories state
       subcategoriesDispatch({ type: "SET", data: body });
 
       // Update categories cache
@@ -90,7 +90,7 @@ function SyncButton(): ReactElement {
       const res = await APIRequest("/subcategory/", "GET");
       const body = await res.json();
 
-      // Update central subcategories state
+      // Update global subcategories state
       subcategoriesDispatch({ type: "SET", data: body });
 
       // Update subcategories cache
@@ -105,7 +105,7 @@ function SyncButton(): ReactElement {
       const res = await APIRequest("/vendor/", "GET");
       const body = await res.json();
 
-      // Update central vendors state
+      // Update global vendors state
       vendorDispatch({ type: "SET", data: body });
 
       // Update vendors cache

@@ -49,7 +49,7 @@ function FilterList({ entry, list }: Props): ReactElement {
   const dispatch = useContext(FilterDispatch);
 
   /**
-   * Dispatches central filter state updates.
+   * Dispatches global filter state updates.
    *
    * @param {ChangeEvent} event - Filter changing event
    */

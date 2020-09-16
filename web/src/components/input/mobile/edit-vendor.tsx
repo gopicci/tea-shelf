@@ -40,7 +40,7 @@ type Props = {
 
 /**
  * Mobile tea creation vendor input component. Shows a list and autocomplete from
- * central vendors state, with option to add extra.
+ * global vendors state, with option to add extra.
  *
  * @component
  * @subcategory Mobile input
