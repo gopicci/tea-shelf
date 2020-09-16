@@ -47,7 +47,7 @@ def test_brewing_model():
     assert brewing.weight == 5
     assert brewing.initial.total_seconds() == 10
     assert brewing.increments.total_seconds() == 3
-    assert str(brewing) == "5g 99°c 10s + 3s"
+    assert str(brewing) == "5g 99°c 10s +3s"
 
 
 @pytest.mark.django_db
@@ -159,7 +159,7 @@ def test_category_categoryname_model():
     category = Category(name="OOLONG", gongfu_brewing=gongfu, western_brewing=western)
     category.save()
     assert category.name == "OOLONG"
-    assert str(category.gongfu_brewing) == "5g 99°c 10s + 3s"
+    assert str(category.gongfu_brewing) == "5g 99°c 10s +3s"
     assert type(category.western_brewing) == Brewing
 
     categoryname = CategoryName(category=category, name="blue")
