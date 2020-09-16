@@ -83,7 +83,7 @@ function Settings({ setRoute, isMobile }: Props): ReactElement {
   const email = getUser()?.email;
 
   /** Routes back to main */
-  function handleBack() {
+  function handleBack(): void {
     setRoute({ route: "MAIN" });
   }
 

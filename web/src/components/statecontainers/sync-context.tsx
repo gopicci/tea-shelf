@@ -16,7 +16,7 @@ export type SyncAction = {
   type: "SET_SYNCED" | "SET_NOT_SYNCED";
 };
 
-function reducer(state: boolean, action: SyncAction) {
+function reducer(state: boolean, action: SyncAction): boolean {
   switch (action.type) {
     case "SET_SYNCED":
       return true;

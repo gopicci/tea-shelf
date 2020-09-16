@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, {ReactElement, useContext} from 'react';
 import { ClickAwayListener, Snackbar } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
@@ -23,14 +23,14 @@ const useStyles = makeStyles((theme) => ({
  * @component
  * @subcategory Main
  */
-function CustomSnackbar() {
+function CustomSnackbar(): ReactElement {
   const classes = useStyles();
 
   const state = useContext(SnackbarState);
   const dispatch = useContext(SnackbarDispatch);
 
   /** Resets snackbar state */
-  function handleClose() {
+  function handleClose(): void {
     dispatch({ type: "RESET" });
   }
 

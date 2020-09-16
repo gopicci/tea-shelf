@@ -148,7 +148,7 @@ function InputForm({
   }
 
   /** Goes back to previous route. */
-  function handlePrevious() {
+  function handlePrevious(): void {
     if (setImageLoadDone) setImageLoadDone(false);
     else setRoute({ route: "TEA_DETAILS", payload: route.payload });
   }

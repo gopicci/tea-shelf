@@ -62,7 +62,7 @@ function MainLayout(props: Props): ReactElement {
   const [open, setOpen] = useState(false);
 
   /** Sets route to CREATE */
-  function handleCreate() {
+  function handleCreate(): void {
     setRoute({ route: "CREATE" });
   }
 

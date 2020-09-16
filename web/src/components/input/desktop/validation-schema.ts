@@ -51,7 +51,7 @@ const brewingValidation = Yup.object()
  *
  * @memberOf InputForm
  */
-export function validationSchema() {
+export function validationSchema(): object {
   return Yup.object().shape({
     name: Yup.string()
       .max(50, "Too long, max length 50 characters")

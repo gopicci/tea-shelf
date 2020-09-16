@@ -19,7 +19,7 @@ type Action = {
   type: "SWITCH_VIEW" | "SWITCH_UNITS" | "SWITCH_BREWING";
 };
 
-function reducer(state: Settings, action: Action) {
+function reducer(state: Settings, action: Action): Settings {
   switch (action.type) {
     case "SWITCH_VIEW":
       return { ...state, gridView: !state.gridView };

@@ -74,12 +74,12 @@ function SortFilter({ setRoute }: Props): ReactElement {
   }, [setRoute]);
 
   /** Sets route to main */
-  function handleClose() {
+  function handleClose(): void {
     setRoute({ route: "MAIN" });
   }
 
   /** Resets filter state */
-  function handleReset() {
+  function handleReset(): void {
     dispatch({
       type: "RESET",
     });
