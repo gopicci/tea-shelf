@@ -35,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Instance tea data state for initial values on edit mode */
   teaData: TeaRequest;
+  /** Sets tea data state */
+  setTeaData: (data: TeaRequest) => void;
   /** Save callback from MobileInput */
   handleSave: () => void;
   /** Routes to previous stage */
@@ -51,6 +53,7 @@ type Props = {
  */
 function InputLayout({
   teaData,
+  setTeaData,
   handleSave,
   handlePrevious,
   setEditRoute,
@@ -60,8 +63,24 @@ function InputLayout({
 
   const categories = useContext(CategoriesState);
 
-  function handleClick(event: MouseEvent) {
+  /**
+   * Routes to edit component on input item click.
+   *
+   * @param {MouseEvent} event - Mouse click event
+   */
+  function handleClick(event: MouseEvent): void {
     setEditRoute(event.currentTarget.id);
+  }
+
+  /**
+   * Removes input item data on clear icon click.
+   *
+   * @param {MouseEvent} event - Mouse click event
+   */
+  function handleClear(event: MouseEvent): void {
+    let item = event.currentTarget.id;
+    if (item === "weight") item = "weight_left";
+    setTeaData({ ...teaData, [item]: undefined });
   }
 
   return (
@@ -114,12 +133,14 @@ function InputLayout({
                 : ""
             }
             handleClick={handleClick}
+            handleClear={handleClear}
           />
           <InputItem
             key="year"
             name="year"
             value={teaData.year ? String(teaData.year) : ""}
             handleClick={handleClick}
+            handleClear={handleClear}
           />
           <InputItem
             key="origin"
@@ -130,12 +151,14 @@ function InputLayout({
                 : ""
             }
             handleClick={handleClick}
+            handleClear={handleClear}
           />
           <InputItem
             key="vendor"
             name="vendor"
             value={teaData.vendor?.name ? teaData.vendor.name : ""}
             handleClick={handleClick}
+            handleClear={handleClear}
           />
           <InputItem
             key="weight"
@@ -149,6 +172,7 @@ function InputLayout({
                 : ""
             }
             handleClick={handleClick}
+            handleClear={handleClear}
           />
           <InputItem
             key="price"
@@ -162,6 +186,7 @@ function InputLayout({
                 : ""
             }
             handleClick={handleClick}
+            handleClear={handleClear}
             noTitle
             noBorder
           />

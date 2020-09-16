@@ -98,13 +98,13 @@ function MobileInput({
   }
 
   /** Goes back to previous route. */
-  function handlePrevious() {
+  function handlePrevious(): void {
     if (setImageLoadDone) setImageLoadDone(false);
     else setRoute({ route: "TEA_DETAILS", payload: route.payload });
   }
 
   /** Sets edit route to input layout component */
-  function handleBackToLayout() {
+  function handleBackToLayout(): void {
     setEditRoute("input_layout");
   }
 
@@ -134,7 +134,7 @@ function MobileInput({
 
   const inputProps: InputProps = { handleBackToLayout, teaData, setTeaData };
 
-  function renderSwitch(editRoute: string) {
+  function renderSwitch(editRoute: string): ReactElement {
     switch (editRoute) {
       case "input_layout":
         return (

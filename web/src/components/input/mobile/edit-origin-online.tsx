@@ -135,7 +135,6 @@ function EditOriginOnline({
         clearOnBlur
         freeSolo
         fullWidth
-        value={teaData.origin ? getOriginName(teaData.origin) : ""}
         ListboxProps={{ style: { maxHeight: "60vh" } }}
         PaperComponent={({ children }) => <Box>{children}</Box>}
         renderInput={(params) => (
