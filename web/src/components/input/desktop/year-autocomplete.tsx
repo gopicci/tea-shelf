@@ -45,7 +45,7 @@ function YearAutocomplete({ formikProps }: Props): ReactElement {
    * @param {ChangeEvent<any>} event - onChange event
    * @param {string} value - Input value
    */
-  function handleOnChange(event: ChangeEvent<any>, value: string | null) {
+  function handleOnChange(event: ChangeEvent<any>, value: string | null): void {
     if (event) {
       event.target.name = "year";
       handleChange(event);
