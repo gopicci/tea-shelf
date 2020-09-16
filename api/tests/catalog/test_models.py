@@ -13,6 +13,7 @@ from catalog.models import (
     Brewing,
     Origin,
     Category,
+    CategoryName,
     Subcategory,
     SubcategoryName,
     Vendor,
@@ -140,7 +141,7 @@ def test_origin_model_validators():
 
 
 @pytest.mark.django_db
-def test_category_model():
+def test_category_categoryname_model():
     gongfu = Brewing(
         temperature=99,
         weight=5,
@@ -160,6 +161,10 @@ def test_category_model():
     assert category.name == "OOLONG"
     assert str(category.gongfu_brewing) == "5g 99°c 10s + 3s"
     assert type(category.western_brewing) == Brewing
+
+    categoryname = CategoryName(category=category, name="blue")
+    categoryname.save()
+    assert categoryname.name == "blue"
 
 
 @pytest.mark.django_db
