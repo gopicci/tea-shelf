@@ -3,7 +3,14 @@ from django.core.exceptions import ValidationError
 
 def validate_username(username):
     """
-    Raise a validation error if username exists
+    Raises a validation error if username exists
+
+    Args:
+        username: Username string.
+    Returns:
+        Username string.
+    Raises:
+        ValidationError: Username already exists.
     """
     from .models import CustomUser
 

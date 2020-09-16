@@ -196,9 +196,7 @@ class OriginSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        """
-        Returns existing origin or creates a new one.
-        """
+        """ Returns existing origin or creates a new one. """
         return get_or_create_origin(validated_data)
 
 
@@ -264,9 +262,7 @@ class SubcategorySerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        """
-        Returns existing subcategory or creates a new one.
-        """
+        """ Returns existing subcategory or creates a new one. """
         return custom_get_or_create(Subcategory, validated_data)
 
 
@@ -286,9 +282,7 @@ class VendorSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        """
-        Returns existing vendor or creates a new one.
-        """
+        """ Returns existing vendor or creates a new one. """
         return custom_get_or_create(Vendor, validated_data)
 
 
@@ -312,9 +306,7 @@ class TeaSerializer(serializers.ModelSerializer):
         read_only_fields = ("user",)
 
     def to_representation(self, instance):
-        """
-        Returns image relative path.
-        """
+        """ Returns image relative path. """
         response = super(TeaSerializer, self).to_representation(instance)
         if instance.image:
             response["image"] = instance.image.url
@@ -323,6 +315,13 @@ class TeaSerializer(serializers.ModelSerializer):
     def extract_nested_fields(self, validated_data):
         """
         Extracts nested fields from validated data and removes null entries.
+
+        Args:
+            validated_data: Request validated data.
+
+        Returns:
+            Tuple with validated data cleaned of nested entries and dictionary
+            containing nested objects.
         """
         nested_data = {}
 
@@ -379,6 +378,12 @@ class TeaSerializer(serializers.ModelSerializer):
         """
         Creates separate instances for nested fields and assigns them
         to the provided tea instance.
+
+        Args:
+            instance: Tea instance.
+            nested_data: Dictionary containing nested objects.
+        Returns:
+            Saved tea instance with nested objects.
         """
         if "gongfu" in nested_data:
             gongfu_instance, _ = Brewing.objects.get_or_create(**nested_data["gongfu"])

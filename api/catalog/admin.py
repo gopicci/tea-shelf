@@ -31,7 +31,7 @@ make_public.short_description = "Mark selected as public"
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
     """
-    Registering CustomUser model.
+    Registers CustomUser model.
     """
 
     list_display = (
@@ -46,7 +46,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 class CategoryNameInline(admin.TabularInline):
     """
-    Defining CategoryName model as Subcategory tabular inline.
+    Defines CategoryName model as Subcategory tabular inline.
     """
 
     model = CategoryName
@@ -56,7 +56,7 @@ class CategoryNameInline(admin.TabularInline):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     """
-    Registering Category model.
+    Registers Category model.
     """
 
     list_display = (
@@ -69,7 +69,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class BrewingForm(ModelForm):
     """
-    Custom GongfuBrewing form returns instance on save if existing.
+    Custom Brewing form returns instance on save if existing.
     """
 
     def clean(self):
@@ -87,7 +87,7 @@ class BrewingForm(ModelForm):
 @admin.register(Brewing)
 class BrewingAdmin(admin.ModelAdmin):
     """
-    Registering GongfuBrewing model.
+    Registers Brewing model.
     """
 
     list_display = (
@@ -118,6 +118,10 @@ class OriginForm(ModelForm):
         return self.save()
 
     def save(self, commit=True):
+        """
+        Checks if public or user private matching instance exists and returns it.
+        If not creates a new one.
+        """
         query_data = {"country": self.cleaned_data["country"], "is_public": True}
         if "region" in self.cleaned_data:
             query_data["region"] = self.cleaned_data["region"]
@@ -144,7 +148,7 @@ class OriginForm(ModelForm):
 @admin.register(Origin)
 class OriginAdmin(admin.ModelAdmin):
     """
-    Registering Origin model.
+    Registers Origin model.
     """
 
     list_display = (
@@ -166,7 +170,7 @@ class OriginAdmin(admin.ModelAdmin):
 
     def get_changeform_initial_data(self, request):
         """
-        Setting current user and published as default.
+        Sets current user and public as default.
         """
         get_data = super(OriginAdmin, self).get_changeform_initial_data(request)
         get_data["user"] = request.user.pk
@@ -176,7 +180,7 @@ class OriginAdmin(admin.ModelAdmin):
 
 class SubcategoryNameInline(admin.TabularInline):
     """
-    Defining SubcategoryName model as Subcategory tabular inline.
+    Defines SubcategoryName model as Subcategory tabular inline.
     """
 
     model = SubcategoryName
@@ -186,7 +190,7 @@ class SubcategoryNameInline(admin.TabularInline):
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     """
-    Registering Subcategory model.
+    Registers Subcategory model.
     """
 
     list_display = (
@@ -215,7 +219,7 @@ class SubcategoryAdmin(admin.ModelAdmin):
 
     def get_changeform_initial_data(self, request):
         """
-        Setting current user and published as default.
+        Sets current user and public as default.
         """
         get_data = super(SubcategoryAdmin, self).get_changeform_initial_data(request)
         get_data["user"] = request.user.pk
@@ -225,7 +229,7 @@ class SubcategoryAdmin(admin.ModelAdmin):
 
 class VendorNameInline(admin.TabularInline):
     """
-    Defining VendorName model as Vendor tabular inline.
+    Defines VendorName model as Vendor tabular inline.
     """
 
     model = VendorTrademark
@@ -234,7 +238,7 @@ class VendorNameInline(admin.TabularInline):
 
 class VendorForm(ModelForm):
     """
-    Custom WesternBrewing form returns instance on save if existing.
+    Custom Vendor form returns instance on save if existing.
     """
 
     def clean(self):
@@ -250,7 +254,7 @@ class VendorForm(ModelForm):
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
     """
-    Registering Vendor model.
+    Registers Vendor model.
     """
 
     list_display = (
@@ -278,7 +282,7 @@ class VendorAdmin(admin.ModelAdmin):
 
     def get_changeform_initial_data(self, request):
         """
-        Setting current user and published as default.
+        Sets current user and public as default.
         """
         get_data = super(VendorAdmin, self).get_changeform_initial_data(request)
         get_data["user"] = request.user.pk
@@ -289,7 +293,7 @@ class VendorAdmin(admin.ModelAdmin):
 @admin.register(Tea)
 class TeaAdmin(admin.ModelAdmin):
     """
-    Registering Tea model.
+    Registers Tea model.
     """
 
     list_display = (
@@ -316,7 +320,7 @@ class TeaAdmin(admin.ModelAdmin):
 
     def get_changeform_initial_data(self, request):
         """
-        Setting current user as default.
+        Sets current user as default.
         """
         get_data = super(TeaAdmin, self).get_changeform_initial_data(request)
         get_data["user"] = request.user.pk

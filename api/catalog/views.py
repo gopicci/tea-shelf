@@ -62,6 +62,7 @@ class UserView(RetrieveAPIView):
     lookup_field = "pk"
 
     def get_object(self, *args, **kwargs):
+        """ Gets current user from request. """
         return self.request.user
 
 
@@ -74,6 +75,7 @@ class UpdatePasswordView(UpdateAPIView):
     lookup_field = "pk"
 
     def get_object(self, *args, **kwargs):
+        """ Gets current user from request. """
         return self.request.user
 
 
@@ -83,8 +85,9 @@ def password_reset_token_created(sender, reset_password_token, *args, **kwargs):
     Unauthenticated user password reset token handler.
     When a token is created, an e-mail is sent to the user.
 
-    sender - View Class that sent the signal
-    reset_password_token : {user, key} - Token Model Object
+    Args:
+        sender: View Class that sent the signal.
+        reset_password_token: Token Model object in {user, key} format.
     """
 
     context = {
@@ -107,7 +110,7 @@ def password_reset_token_created(sender, reset_password_token, *args, **kwargs):
 
 class BrewingCreateView(CreateAPIView):
     """
-    Create brewing details.
+    Create brewing details view.
     """
 
     serializer_class = BrewingSerializer
@@ -115,7 +118,7 @@ class BrewingCreateView(CreateAPIView):
 
 class BrewingDetailView(RetrieveAPIView):
     """
-    Retrieve brewing details.
+    Retrieve brewing details view.
     """
 
     lookup_field = "pk"
@@ -125,18 +128,19 @@ class BrewingDetailView(RetrieveAPIView):
 
 class OriginCreateView(CreateAPIView):
     """
-    Create origin, passing current user to serializer.
+    Create origin view.
     """
 
     serializer_class = OriginSerializer
 
     def perform_create(self, serializer):
+        """ Passes current user to serializer. """
         serializer.save(user=self.request.user)
 
 
 class OriginDetailView(RetrieveAPIView):
     """
-    Retrieve origin details.
+    Retrieve origin details view.
     """
 
     lookup_field = "pk"
@@ -146,7 +150,7 @@ class OriginDetailView(RetrieveAPIView):
 
 class CategoryView(ListAPIView):
     """
-    List categories.
+    List categories view.
     """
 
     queryset = Category.objects.all()
@@ -155,41 +159,33 @@ class CategoryView(ListAPIView):
 
 class SubcategoryView(ListCreateAPIView):
     """
-    List and create subcategories.
+    List and create subcategories view.
     """
 
     serializer_class = SubcategorySerializer
 
     def get_queryset(self):
-        """
-        Lists only user owned and public subcategories.
-        """
+        """ Lists only user owned and public subcategories. """
         return Subcategory.objects.filter(Q(user=self.request.user) | Q(is_public=True))
 
     def perform_create(self, serializer):
-        """
-        Pass current user to serializer on create.
-        """
+        """ Passes current user to serializer on create. """
         serializer.save(user=self.request.user)
 
 
 class VendorView(ListCreateAPIView):
     """
-    List and create vendors.
+    List and create vendors view.
     """
 
     serializer_class = VendorSerializer
 
     def get_queryset(self):
-        """
-        Lists only user owned and public subcategories.
-        """
+        """ Lists only user owned and public subcategories. """
         return Vendor.objects.filter(Q(user=self.request.user) | Q(is_public=True))
 
     def perform_create(self, serializer):
-        """
-        Pass current user to serializer on create.
-        """
+        """ Passes current user to serializer on create. """
         serializer.save(user=self.request.user)
 
 
@@ -203,30 +199,33 @@ class TeaViewSet(ModelViewSet):
     http_method_names = ["get", "post", "head", "put", "delete", "options"]
 
     def get_queryset(self):
-        """
-        Allow access only to user instances.
-        """
+        """ Allows access only to user instances. """
         return Tea.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        """
-        Pass current user to serializer on create.
-        """
+        """ Passes current user to serializer on create. """
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
-        """
-        Pass current user to serializer on update.
-        """
+        """ Passes current user to serializer on update. """
         serializer.save(user=self.request.user)
 
 
 class VisionParserView(APIView):
     """
-    Runs base64 image data through vision parser to extract tea info.
+    Extract tea data view.
     """
 
     def post(self, request):
+        """
+        On post runs base64 image data through vision parser to extract tea info.
+
+        Args:
+            request: Request data, expects an image field as a base64 image data string
+
+        Returns:
+            Response object with extracted tea data or error info.
+        """
         try:
             image_data = request.data["image"].split(",")[1]
             if not image_data:
@@ -249,11 +248,19 @@ class PlacesAutocompleteView(APIView):
     """
     Wrapper view around Places API autocomplete. Groups requests
     on the same session based on token.
-
-    request - {input: str, token: str}
     """
 
     def post(self, request):
+        """
+        On post runs input and token through Places autocomplete.
+
+        Args:
+            request: Request data containing an input field with the
+                string to look up and a token field with the token
+                string for the grouping.
+        Returns:
+            Response object with the regions results or error info.
+        """
         try:
             gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
             results = gmaps.places_autocomplete(
@@ -278,11 +285,20 @@ class PlacesDetailsView(APIView):
     """
     Wrapper view around Places API details. Groups requests
     on the same session based on token.
-
-    request - {place_id: str, token: str}
     """
 
     def post(self, request):
+        """
+        On post runs place_id and token through Places details.
+
+        Args:
+            request: Request data containing a place_id field with the
+                ID string of the place to look up and a token field
+                with the token string for the grouping.
+        Returns:
+            Response object with results data containing adr_address and
+            geometry or error info.
+        """
         try:
             gmaps = googlemaps.Client(key=settings.MAPS_API_KEY)
             results = gmaps.place(

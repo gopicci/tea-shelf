@@ -17,14 +17,35 @@ from .models import (
 class VisionParser:
     """
     Gets text from an image through Vision API and extracts tea data from it.
+
+        Attributes:
+            client: Vision API client.
+            image: Vision client image.
+            category: Integer ID of found category.
+            subcategory: Integer ID of found subcategory.
+            vendor: Integer ID of found vendor.
+            tea_data: Dictionary containing all found tea data as well as
+                a reduced version of Vision text detection.
+            categories: List of Category instances.
+            categories_names: List of alternative categories names
+                as CategoryName objects.
+            subcategories: List of public Subcategory instances.
+            subcategories_names: List of alternative subcategories names
+                as SubcategoryName objects.
+            vendors: List of Vendor instances.
+
+        Usage example:
+            parser = VisionParser(image_data)
+            tea_data = parser.get_tea_data()
     """
 
     def __init__(self, data):
         """
-        Declares vision client, image and response data,
+        Declares vision client, image and response data attributes,
         loads relevant objects lists.
 
-        data : str - Base64 image data
+            Args:
+                data: Image data as base64 string.
         """
         self.client = vision.ImageAnnotatorClient()
         self.image = vision.types.Image(content=a2b_base64(data))
@@ -43,7 +64,28 @@ class VisionParser:
 
     def get_tea_data(self):
         """
-        Main parsing method, finds matches and returns extracted tea data.
+        Main parsing method, finds matches and returns extracted tea data if any.
+
+            Returns:
+                Dictionary containing all found tea data as well as a reduced
+                version of Vision text detection. For example:
+                {
+                    "dtd": {
+                        "blocks": [{
+                            "phrases": [{
+                                "words": ["foo", "bar"],
+                                "font_size": 10.5,
+                                "confidence": 0.8
+                                }]
+                            }]
+                        },
+                    "subcategory": 12,
+                    "subcategory_confidence": 0.8,
+                    "vendor": 3,
+                    "vendor_confidence": 1,
+                    "year": 2002,
+                    "name": "Foo bar tea"
+                }
         """
         # Detect text document
         document = self.document_text_detection()
@@ -62,8 +104,9 @@ class VisionParser:
             self.tea_data["subcategory_confidence"] = subcategory_match[1]
             if self.subcategory.category:
                 self.tea_data["category"] = self.subcategory.category.id
-        else:
-            # Subcategory not found, search for category instead
+
+        if not self.tea_data["category"]:
+            # Subcategory didn't provide category, search for it
             category_names = self.get_categories_lookup()
             category_match = self.find_match(document, category_names)
             if category_match:
@@ -95,19 +138,23 @@ class VisionParser:
 
     def document_text_detection(self):
         """
-        Runs document_text_detection through Vision API,
-        returns full_text_annotation.
+        Runs document_text_detection through Vision API.
 
-        image : vision.type.Image - Input file
+            Returns:
+                Vision client full_text_annotation document.
         """
         response = self.client.document_text_detection(image=self.image)
         return response.full_text_annotation
 
     def get_text_detection_word_list(self, document):
         """
-        Returns a list of all words from detected text
+        Returns a list of all words from detected text.
 
-        document - document_text_detection response
+            Args:
+                document: Vision document_text_detection response.
+
+            Returns:
+                List of single words as strings.
         """
         word_list = []
         for page in document.pages:
@@ -122,10 +169,15 @@ class VisionParser:
 
     def combine_words_list(self, word_list, length):
         """
-        Combines a word list in statements of defined length
+        Combines a word list in phrases of defined length.
 
-        word_list : [str] - List of words
-        length : int - Statements length
+            Args:
+                word_list: List of strings of single words.
+                length: Desired integer length of phrases.
+
+            Returns:
+                List of phrases. Each phrase being a string containing
+                the defined number of words separated by spaces.
         """
         statements_list = []
         for i in range(len(word_list) - length + 1):
@@ -135,11 +187,18 @@ class VisionParser:
 
     def find_match(self, document, items):
         """
-        Searches for any item of items in detected data response.
-        Returns best match and score ratio if any
+        Searches for any item of a list of string in a text detection document.
+        Returns best match and score ratio if any.
 
-        document - document_text_detection response
-        items : [str] - List of items to search for
+        Args:
+            document: Vision client document_text_detection response.
+            items: List of strings with items to search for.
+
+        Returns:
+            If a match is found it returns a tuple with the matched string and
+            highest confidence score, for example:
+
+            ("foo bar", 0.8)
         """
         single_words_list = self.get_text_detection_word_list(document)
         combined_words_list = (
@@ -178,9 +237,13 @@ class VisionParser:
 
     def find_year(self, document):
         """
-        Searches and returns year from detected text
+        Searches for a year in a text detection document.
 
-        document - document_text_detection response
+        Args:
+            document: Vision client document_text_detection response.
+
+        Returns:
+            If a year is found it returns it as an integer.
         """
         # need to cover '90 cases
         words_list = self.get_text_detection_word_list(document)
@@ -195,9 +258,22 @@ class VisionParser:
 
     def get_area_from_bounding_box(self, bounding_box):
         """
-        Returns area from a list of vertices
+        Calculates an area from a list of vertices
 
-        bonding_box.vertices : [{x: float, y: float}] - List of vertices
+        Args:
+            bonding_box: A dictionary with a list of vertices as float values.
+                For example: {
+                    vertices: [
+                        {
+                            x: 15.5,
+                            y: 76.2
+                        },
+                        ...
+                    ]
+                }
+
+        Returns:
+            Area as a float number if there are at least 4 vertices, otherwise 0.
         """
         vertices = [vertex for vertex in bounding_box.vertices if vertex.x and vertex.y]
         area_sum = 0
@@ -207,7 +283,6 @@ class VisionParser:
             )
         area_sum += vertices[-1].x * vertices[0].y - vertices[-1].y * vertices[0].x
 
-        # cutoff for now
         if len(vertices) < 4:
             return 0
 
@@ -215,22 +290,33 @@ class VisionParser:
 
     def reduced_data_parser(self, document):
         """
-        Returns a reduced version of text_detection response data structure to help processing name.
+        Reduces text_detection response data structure to help processing the tea name.
         Determines phrases as chunks with an end of line and drops paragraphs/pages
 
-        reduced_data = {
-            'blocks': [{
-                'phrases': [{
-                    'words': [],
-                    'font_size': float,
-                    'confidence': float,
-                }]
-            }]
-        }
+        Args:
+            document: Vision client document_text_detection response.
 
-        document - document_text_detection response
+        Returns:
+            Reduced data structure, for example:
+
+            {
+                'blocks': [
+                    {
+                        'phrases': [
+                            {
+                                'words': ["foo", "bar"],
+                                'font_size': 13.5,
+                                'confidence': 0.8,
+                            },
+                            ...
+                        ]
+                    },
+                    ...
+                ]
+            }
         """
         blocks = []
+
         for page in document.pages:
             for block in page.blocks:
                 phrases = []
@@ -266,14 +352,36 @@ class VisionParser:
                             phrase_area = 0
                             phrase_confidence = 0
                 blocks.append({"phrases": phrases})
+
         return {"blocks": blocks}
 
     def cleaned_data_parser(self, data):
         """
-        Grabs text_detection response data reduced by reduced_data_parser and cleans it up
-        based on defined restrictions
+        Cleans up reduced text detection data of unwanted words,
+        based on declared restrictions.
 
-        data : {} - reduced_data_parser data
+        Args:
+            data: Dictionary of text detection data reduced through
+                reduced_data_parser method.
+
+        Returns:
+            Cleaned up data in reduced data structure format, for example:
+
+            {
+                'blocks': [
+                    {
+                        'phrases': [
+                            {
+                                'words': ["foo", "bar"],
+                                'font_size': 13.5,
+                                'confidence': 0.8,
+                            },
+                            ...
+                        ]
+                    },
+                    ...
+                ]
+            }
         """
         # Restrictions:
         min_confidence = 0.8
@@ -352,13 +460,18 @@ class VisionParser:
                     )
             if cleaned_phrases:
                 cleaned_blocks.append({"phrases": cleaned_phrases})
+
         return {"blocks": cleaned_blocks}
 
     def format_join(self, data):
         """
-        Returns a properly formatted string out of a words and punctuation list
+        Returns a properly formatted string out of a words and punctuation list.
 
-        data : [str] - Words list
+        Args:
+            data: List of words as strings.
+
+        Returns:
+            String with properly formatted phrase.
         """
         words = data
 
@@ -391,7 +504,13 @@ class VisionParser:
 
     def title(self, name):
         """
-        Using re.sub for capitalizing as string.title() doesn't count for numbers
+        String capitalizer that uses re.sub to make up for
+        string.title() not counting for numbers.
+
+        Args:
+            name: String to capitalize.
+        Returns:
+            Capitalized string
         """
         return re.sub(
             r"[A-Za-z0-9]+('[A-Za-z0-9]+)?",
@@ -401,19 +520,23 @@ class VisionParser:
 
     def find_name(self, document):
         """
-        Guesses tea name, based on biggest elements remaining
-        after eliminating other known data with a certain
-        ratio
+        Guesses tea name. Based on biggest elements remaining in the
+        text detection after eliminating other known data with a
+        certain confidence ratio.
 
-        document - document_text_detection response
+        Args:
+            document: Vision client document_text_detection response.
+
+        Returns:
+            Guessed name as string.
         """
         reduced_data = self.reduced_data_parser(document)
         cleaned_data = self.cleaned_data_parser(reduced_data)
 
-        # blocks not a driven event, could use in certain occasions
+        # Blocks not a driven event, could use in certain occasions
 
-        # case 1: grab biggest elements after cleanup within a certain ratio
-        keep_ratio = 0.4  # 0.35 ?
+        # Grab biggest elements after cleanup within a certain ratio
+        keep_ratio = 0.4
 
         biggest_font_size = 0
         for block in cleaned_data["blocks"]:
@@ -457,11 +580,15 @@ class VisionParser:
 
     def get_en_zh_ratio(self, document):
         """
-        Returns ratio between english and chinese characters.
+        Calculates ratio between english and chinese characters.
         Not currently used as Vision Chinese recognition isn't
         quite good yet.
 
-        document - document_text_detection response
+        Args:
+            document: Vision client document_text_detection response.
+        Returns:
+            Ratio of english to chinese characters as float, or 10
+            if no chinese characters were found.
         """
         word_list = self.get_text_detection_word_list(document)
         text_detection_string = "".join(word_list)
@@ -481,7 +608,11 @@ class VisionParser:
 
     def get_subcategories_lookup(self):
         """
-        Builds list of subcategory names to use in match lookup
+        Builds list of subcategories names to use in match lookup,
+        using standard, translated and alternative subcategories names.
+
+        Returns:
+            List of strings with possible subcategories names.
         """
         lookup_names = [s.name.lower() for s in self.subcategories]
         lookup_names += [s.translated_name.lower() for s in self.subcategories]
@@ -490,7 +621,11 @@ class VisionParser:
 
     def get_categories_lookup(self):
         """
-        Builds list of category names to use in match lookup
+        Builds list of categories names to use in match lookup,
+        using standard and alternative categories names.
+
+        Returns:
+            List of strings with possible categories names.
         """
         lookup_names = [c.name.lower() for c in self.categories]
         lookup_names += [c.name.lower() for c in self.categories_names]
@@ -498,7 +633,11 @@ class VisionParser:
 
     def get_vendors_lookup(self):
         """
-        Builds list of vendor names and websites to use in match lookup
+        Builds list of vendors names to use in match lookup,
+        using vendors names and websites.
+
+        Returns:
+            List of strings with possible vendor names.
         """
         lookup_names = [v.name.lower() for v in self.vendors]
         lookup_names += [v.website.lower() for v in self.vendors]
@@ -506,7 +645,12 @@ class VisionParser:
 
     def get_subcategory_from_name(self, name):
         """
-        Returns a subcategory object from its name
+        Searches for a subcategory from a string.
+
+        Args:
+            name: Standard, translated or alternative name of the subcategory as string.
+        Returns:
+            Subcategory object.
         """
         sub = next(
             (s.subcategory for s in self.subcategories_names if s.name.lower() == name),
@@ -525,7 +669,12 @@ class VisionParser:
 
     def get_category_from_name(self, name):
         """
-        Returns a category object from its name
+        Searches for a category from a string.
+
+        Args:
+            name: Name or alternative name of the category as string.
+        Returns:
+            Category object.
         """
         sub = next(
             (c.category for c in self.categories_names if c.name.lower() == name), None,
@@ -536,7 +685,12 @@ class VisionParser:
 
     def get_vendor_from_name(self, name):
         """
-        Returns a vendor object from its name
+        Searches for a vendor from a string.
+
+        Args:
+            name: Name or website of the vendor as string.
+        Returns:
+            Vendor object.
         """
         sub = next(
             (
