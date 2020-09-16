@@ -1,20 +1,22 @@
-from binascii import a2b_base64
 import difflib
-from google.cloud import vision
 import re
+from binascii import a2b_base64
+
+from google.cloud import vision
+
 from .models import (
+    Category,
+    CategoryName,
     Subcategory,
     SubcategoryName,
     Vendor,
     VendorTrademark,
-    Category,
-    CategoryName,
 )
 
 
 class VisionParser:
     """
-    Extracts text from an image through Vision API and parses it to pull out tea data.
+    Gets text from an image through Vision API and extracts tea data from it.
     """
 
     def __init__(self, data):
@@ -27,11 +29,12 @@ class VisionParser:
         self.client = vision.ImageAnnotatorClient()
         self.image = vision.types.Image(content=a2b_base64(data))
 
-        self.tea_data = {}
-
         self.category = None
         self.subcategory = None
         self.vendor = None
+
+        self.tea_data = {}
+
         self.categories = Category.objects.all()
         self.categories_names = CategoryName.objects.all()
         self.subcategories = Subcategory.objects.filter(is_public=True)
@@ -40,23 +43,27 @@ class VisionParser:
 
     def get_tea_data(self):
         """
-        Main method returning extracted tea data.
+        Main parsing method, finds matches and returns extracted tea data.
         """
+        # Detect text document
         document = self.document_text_detection()
+
+        # Reduces detected text data to a more readable format
         self.tea_data["dtd"] = self.reduced_data_parser(document)
 
-        # Disabling as Chinese text recognition isn't quite good yet
-        # en_zh_ratio = get_en_zh_ratio(document)
-
+        # Builds list of subcategory names to look for
         subcategory_names = self.get_subcategories_lookup()
+        # Search for a subcategory from the list in the document
         subcategory_match = self.find_match(document, subcategory_names)
         if subcategory_match:
+            # Subcategory found, add to response data
             self.subcategory = self.get_subcategory_from_name(subcategory_match[0])
             self.tea_data["subcategory"] = self.subcategory.id
             self.tea_data["subcategory_confidence"] = subcategory_match[1]
             if self.subcategory.category:
                 self.tea_data["category"] = self.subcategory.category.id
         else:
+            # Subcategory not found, search for category instead
             category_names = self.get_categories_lookup()
             category_match = self.find_match(document, category_names)
             if category_match:
@@ -65,6 +72,7 @@ class VisionParser:
                     self.tea_data["category"] = self.category.id
                     self.tea_data["category_confidence"] = category_match[1]
 
+        # Search for vendor
         vendor_names = self.get_vendors_lookup()
         vendor_match = self.find_match(document, vendor_names)
         if vendor_match:
@@ -73,10 +81,12 @@ class VisionParser:
                 self.tea_data["vendor"] = self.vendor.id
                 self.tea_data["vendor_confidence"] = vendor_match[1]
 
+        # Search for year
         year = self.find_year(document)
         if year:
             self.tea_data["year"] = year
 
+        # Build a name
         name = self.find_name(document)
         if name:
             self.tea_data["name"] = name
@@ -85,7 +95,7 @@ class VisionParser:
 
     def document_text_detection(self):
         """
-        Runs document_text_detection through vision API,
+        Runs document_text_detection through Vision API,
         returns full_text_annotation.
 
         image : vision.type.Image - Input file
@@ -447,7 +457,9 @@ class VisionParser:
 
     def get_en_zh_ratio(self, document):
         """
-        Returns ratio between english and chinese characters
+        Returns ratio between english and chinese characters.
+        Not currently used as Vision Chinese recognition isn't
+        quite good yet.
 
         document - document_text_detection response
         """
