@@ -14,12 +14,12 @@ from .models import (
 
 class VisionParser:
     """
-    Vision API image text extractor and parser.
+    Extracts text from an image through Vision API and parses it to pull out tea data.
     """
 
     def __init__(self, data):
         """
-        Declares vision client, image and response tea data,
+        Declares vision client, image and response data,
         loads relevant objects lists.
 
         data : str - Base64 image data

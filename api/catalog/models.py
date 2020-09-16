@@ -21,6 +21,9 @@ class UserManager(BaseUserManager):
     def _create_user(
         self, email, password, is_staff, is_active, is_superuser, **extra_fields
     ):
+        """
+        Checks for email and saves user with defaults and current times.
+        """
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -39,15 +42,21 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password, **extra_fields):
+        """
+        Default is_active.
+        """
         return self._create_user(email, password, False, True, False, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
+        """
+        Default is_active, is_staff and is_superuser.
+        """
         return self._create_user(email, password, True, True, True, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
-    Model defining a custom user with email as identifier.
+    Model defining a custom user with unique email and UUID PK.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -61,18 +70,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    def __str__(self):
-        return self.email
-
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
 
+    def __str__(self):
+        return self.email
+
 
 class Brewing(models.Model):
     """
-    Model defining a set of gongfu brewing instructions.
-    Temperature in Celsius, weight in grams, initial brewing time and increments in seconds.
+    Model defining a set of brewing instructions.
+    Temperature is in Celsius, weight in grams, initial brewing time and increments in seconds.
+    The combination of all fields serves as unique constraint.
     """
 
     temperature = models.PositiveSmallIntegerField(
@@ -103,8 +113,8 @@ class Brewing(models.Model):
 
     def __str__(self):
         """
-        Returns weight, temperature, initial brewing time, brewing time increments
-        in standard gongfu brewing style, ie: 5g 99°c 20s +5
+        Returns weight, temperature, initial brewing time and increments
+        in standard tea brewing style "5g 99°c 20s +5s".
         """
         return (
             str(int(self.weight) if self.weight.is_integer() else "%.1f" % self.weight)
@@ -112,7 +122,7 @@ class Brewing(models.Model):
             + str(self.temperature)
             + "°c "
             + format_delta(self.initial)
-            + " + "
+            + " +"
             + format_delta(self.increments)
         )
 
@@ -120,6 +130,8 @@ class Brewing(models.Model):
 class Origin(models.Model):
     """
     Model defining a geographic indication.
+    Country definition is required and a combination of country,
+    region and locality serves as unique constraint.
     """
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -150,6 +162,9 @@ class Origin(models.Model):
         ]
 
     def __str__(self):
+        """
+        Returns an origin name in "locality, region, country" format.
+        """
         origin_name = ""
         if self.locality:
             origin_name += str(self.locality) + ", "
@@ -161,7 +176,7 @@ class Origin(models.Model):
 
 class Category(models.Model):
     """
-    Model defining a macro tea category with suggested brewing instructions.
+    Model defining a macro tea category.
     """
 
     CATEGORIES = (
@@ -191,7 +206,7 @@ class Category(models.Model):
 
 class CategoryName(models.Model):
     """
-    Model defining a category alternative names.
+    Model defining a category alternative name, used to help with text recognition.
     """
 
     name = models.CharField(max_length=50)
@@ -226,6 +241,9 @@ class Subcategory(models.Model):
     )
 
     def __str__(self):
+        """
+        Returns subcategory name in "name (translated_name)" format
+        """
         if self.translated_name:
             return f"{self.name} ({self.translated_name})"
         return self.name
@@ -233,7 +251,7 @@ class Subcategory(models.Model):
 
 class SubcategoryName(models.Model):
     """
-    Model defining a subcategory alternative names.
+    Model defining a subcategory alternative name, uded to help with text recognition.
     """
 
     name = models.CharField(max_length=50)
@@ -265,7 +283,7 @@ class Vendor(models.Model):
 
 class VendorTrademark(models.Model):
     """
-    Model defining common vendors trademarks to help with text from image parsing.
+    Model defining common vendor trademarks, used to help parsing text from image.
     """
 
     name = models.CharField(max_length=50)
@@ -276,6 +294,9 @@ class VendorTrademark(models.Model):
 
 
 def get_upload_path(instance, filename):
+    """
+    Image upload path
+    """
     return f"{instance.user.id}/{filename}"
 
 

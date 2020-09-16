@@ -55,7 +55,7 @@ class LoginView(TokenObtainPairView):
 
 class UserView(RetrieveAPIView):
     """
-    Logged in user detail view.
+    Authenticated user detail view.
     """
 
     serializer_class = UserSerializer
@@ -67,7 +67,7 @@ class UserView(RetrieveAPIView):
 
 class UpdatePasswordView(UpdateAPIView):
     """
-    Update password view, requires authentication.
+    Authenticated user password update view.
     """
 
     serializer_class = UserSerializer
@@ -80,13 +80,11 @@ class UpdatePasswordView(UpdateAPIView):
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, reset_password_token, *args, **kwargs):
     """
-    Handles password reset tokens
-    When a token is created, an e-mail needs to be sent to the user
-    :param sender: View Class that sent the signal
-    :param reset_password_token: Token Model Object
-    :param args:
-    :param kwargs:
-    :return:
+    Unauthenticated user password reset token handler.
+    When a token is created, an e-mail is sent to the user.
+
+    sender - View Class that sent the signal
+    reset_password_token : {user, key} - Token Model Object
     """
 
     context = {
@@ -98,13 +96,9 @@ def password_reset_token_created(sender, reset_password_token, *args, **kwargs):
     email_plaintext_message = render_to_string("user_reset_password.txt", context)
 
     msg = EmailMultiAlternatives(
-        # title:
         f"Password Reset for {settings.DOMAIN}",
-        # message:
         email_plaintext_message,
-        # from:
         f"noreply@{settings.DOMAIN}",
-        # to:
         [reset_password_token.user.email],
     )
     msg.attach_alternative(email_html_message, "text/txt")
@@ -113,7 +107,7 @@ def password_reset_token_created(sender, reset_password_token, *args, **kwargs):
 
 class BrewingCreateView(CreateAPIView):
     """
-    Create gongfu brewing details.
+    Create brewing details.
     """
 
     serializer_class = BrewingSerializer
@@ -121,7 +115,7 @@ class BrewingCreateView(CreateAPIView):
 
 class BrewingDetailView(RetrieveAPIView):
     """
-    Retrieve gongfu brewing details.
+    Retrieve brewing details.
     """
 
     lookup_field = "pk"
@@ -131,7 +125,7 @@ class BrewingDetailView(RetrieveAPIView):
 
 class OriginCreateView(CreateAPIView):
     """
-    Create origin passing current user.
+    Create origin, passing current user to serializer.
     """
 
     serializer_class = OriginSerializer
@@ -168,11 +162,14 @@ class SubcategoryView(ListCreateAPIView):
 
     def get_queryset(self):
         """
-        Lists only user owned and pre-saved subcategories.
+        Lists only user owned and public subcategories.
         """
         return Subcategory.objects.filter(Q(user=self.request.user) | Q(is_public=True))
 
     def perform_create(self, serializer):
+        """
+        Pass current user to serializer on create.
+        """
         serializer.save(user=self.request.user)
 
 
@@ -185,11 +182,14 @@ class VendorView(ListCreateAPIView):
 
     def get_queryset(self):
         """
-        Lists only user owned and pre-saved subcategories.
+        Lists only user owned and public subcategories.
         """
         return Vendor.objects.filter(Q(user=self.request.user) | Q(is_public=True))
 
     def perform_create(self, serializer):
+        """
+        Pass current user to serializer on create.
+        """
         serializer.save(user=self.request.user)
 
 
@@ -209,15 +209,21 @@ class TeaViewSet(ModelViewSet):
         return Tea.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        """
+        Pass current user to serializer on create.
+        """
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
+        """
+        Pass current user to serializer on update.
+        """
         serializer.save(user=self.request.user)
 
 
 class VisionParserView(APIView):
     """
-    Get tea data from vision parser
+    Runs base64 image data through vision parser to extract tea info.
     """
 
     def post(self, request):
@@ -241,7 +247,10 @@ class VisionParserView(APIView):
 
 class PlacesAutocompleteView(APIView):
     """
-    Wrapper view around Places API autocomplete
+    Wrapper view around Places API autocomplete. Groups requests
+    on the same session based on token.
+
+    request - {input: str, token: str}
     """
 
     def post(self, request):
@@ -267,7 +276,10 @@ class PlacesAutocompleteView(APIView):
 
 class PlacesDetailsView(APIView):
     """
-    Wrapper view around Places API details
+    Wrapper view around Places API details. Groups requests
+    on the same session based on token.
+
+    request - {place_id: str, token: str}
     """
 
     def post(self, request):

@@ -15,7 +15,7 @@ from .models import Brewing, Category, Origin, Subcategory, Tea, Vendor
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    Custom user serializer, validates that both password match on creation.
+    Custom user serializer, validates that both passwords match on creation.
     """
 
     password1 = serializers.CharField(write_only=True)
@@ -39,6 +39,9 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
+        """
+        Checks that both passwords match and satisfy AUTH_PASSWORD_VALIDATORS.
+        """
         if data["password1"] != data["password2"]:
             raise serializers.ValidationError("Passwords must match.")
         validate_password(
@@ -50,6 +53,9 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        """
+        Drops extra password on create.
+        """
         data = {
             key: value
             for key, value in validated_data.items()
@@ -60,6 +66,9 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
+        """
+        Updates user password.
+        """
         instance.set_password(validated_data["password1"])
         instance.save()
         return instance
@@ -75,6 +84,9 @@ class LoginSerializer(TokenObtainPairSerializer):
 
     @classmethod
     def get_token(cls, user):
+        """
+        Adds user data to token.
+        """
         token = super().get_token(user)
         user_data = UserSerializer(user).data
         for key, value in user_data.items():
@@ -83,6 +95,9 @@ class LoginSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
+        """
+        Checks user authentication and returns a new pair of tokens.
+        """
         user = authenticate(username=attrs["email"], password=attrs["password"])
         if not user:
             raise serializers.ValidationError("Incorrect email or password.")
@@ -99,7 +114,7 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 class BrewingSerializer(serializers.ModelSerializer):
     """
-    Brewing model serializer returns instance if existing or creates a new one.
+    Brewing model serializer.
     """
 
     class Meta:
@@ -107,6 +122,10 @@ class BrewingSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
+        """
+        Sets defaults for missing input values then returns instance if existing
+        or creates a new one.
+        """
         if not validated_data["temperature"]:
             validated_data["temperature"] = 0
         if not validated_data["weight"]:
@@ -136,19 +155,20 @@ def get_or_create_origin(validated_data):
     else:
         query_data["locality"] = ""
 
-    try:
+    try:  # Get existing public
         instance = Origin.objects.get(**query_data)
     except Origin.DoesNotExist:
-        try:
+        try:  # Get existing user owned
             query_data["is_public"] = False
             query_data["user"] = validated_data["user"]
             instance = Origin.objects.get(**query_data)
         except Origin.DoesNotExist:
             instance = None
 
-    if not instance:
+    if not instance:  # Create new
         instance = Origin(**validated_data)
 
+    # Add latitude and longitude if any as instance might be missing them
     if "latitude" in validated_data and not instance.latitude:
         instance.latitude = validated_data["latitude"]
 
@@ -162,7 +182,7 @@ def get_or_create_origin(validated_data):
 
 class OriginSerializer(serializers.ModelSerializer):
     """
-    Origin model serializer, passes request user on creation.
+    Origin model serializer, user based.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
@@ -177,7 +197,7 @@ class OriginSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Checks if public origin exists or user already has it.
+        Returns existing origin or creates a new one.
         """
         return get_or_create_origin(validated_data)
 
@@ -207,17 +227,17 @@ def custom_get_or_create(model, validated_data):
     """
     query_data = {"name": validated_data["name"], "is_public": True}
 
-    try:
+    try:  # Get public instance
         instance = model.objects.get(**query_data)
     except model.DoesNotExist:
-        try:
+        try:  # Get user owned instance
             query_data["is_public"] = False
             query_data["user"] = validated_data["user"]
             instance = model.objects.get(**query_data)
         except model.DoesNotExist:
             instance = None
 
-    if not instance:
+    if not instance:  # Create new
         instance = model(**validated_data)
         instance.save()
 
@@ -226,7 +246,7 @@ def custom_get_or_create(model, validated_data):
 
 class SubcategorySerializer(serializers.ModelSerializer):
     """
-    Subcategory model serializer, passes request user on creation, nested
+    Subcategory model serializer. User based with nested
     brewings and origin.
     """
 
@@ -244,12 +264,15 @@ class SubcategorySerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        """
+        Returns existing subcategory or creates a new one.
+        """
         return custom_get_or_create(Subcategory, validated_data)
 
 
 class VendorSerializer(serializers.ModelSerializer):
     """
-    Vendor serializer, passes request user on creation.
+    Vendor serializer, user based.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
@@ -263,13 +286,16 @@ class VendorSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        """
+        Returns existing vendor or creates a new one.
+        """
         return custom_get_or_create(Vendor, validated_data)
 
 
 class TeaSerializer(serializers.ModelSerializer):
     """
-    Tea serializer with nested brewings, origin and vendor,
-    passes request user on creation. Expects image as base64.
+    Tea serializer. User based with nested brewings, origin, subcategory
+    and vendor. Expects image data as base64.
     """
 
     user = serializers.ReadOnlyField(source="user.pk")
@@ -351,7 +377,8 @@ class TeaSerializer(serializers.ModelSerializer):
 
     def assign_nested_data(self, instance, nested_data):
         """
-        Creates separate instances for nested fields and assigns them to tea instance.
+        Creates separate instances for nested fields and assigns them
+        to the provided tea instance.
         """
         if "gongfu" in nested_data:
             gongfu_instance, _ = Brewing.objects.get_or_create(**nested_data["gongfu"])
