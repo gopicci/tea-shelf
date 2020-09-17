@@ -90,9 +90,11 @@ class VisionParser:
                 "name": "Foo bar tea"
             }
         """
+
+        # Extract tea data
         self.document = self.document_text_detection()
 
-        # Reduces detected text data to a more readable format
+        # Reduce detected text data to a more readable format
         self.tea_data["dtd"] = self.reduced_data_parser()
 
         # Build lists of names to look for
@@ -103,7 +105,16 @@ class VisionParser:
         # Search for vendor
         vendor_match, vendor_confidence = self.find_match(vendor_names)
         if vendor_match:
+            # Vendor found
             self.vendor = self.get_vendor_from_name(vendor_match)
+
+            # Sometimes vendor names contain a category name
+            # If that's the case drop them unless it's a sure match
+            for name in category_names:
+                if name in vendor_match and vendor_confidence < 1:
+                    self.vendor = None
+
+            # Update response data with vendor
             if self.vendor:
                 self.tea_data["vendor"] = self.vendor.id
                 self.tea_data["vendor_confidence"] = vendor_confidence
@@ -114,8 +125,10 @@ class VisionParser:
             # Category found
             self.category = self.get_category_from_name(category_match)
 
+            # Sometimes vendor names contain a category name
+            # If the found category name is contained in the vendor
+            # and the latter is sure match drop the category
             if vendor_confidence == 1 and category_match in vendor_match:
-                # Sometimes vendor names contain a category name
                 self.category = None
 
         # Search for a subcategory from the list in the document
@@ -129,7 +142,8 @@ class VisionParser:
                 and self.subcategory.category.id
                 and self.subcategory.category.id != self.category
             ):
-                # Different categories
+                # Found both subcategory and category and they don't match
+                # with each other
                 if subcategory_confidence < 1 and category_confidence == 1:
                     # Subcategory not sure, category is sure, ditch subcategory
                     self.subcategory = None
@@ -137,12 +151,14 @@ class VisionParser:
                     # Subcategory category confidence ratio is enough, ditch category
                     self.category = None
 
+        # Update response data with subcategory
         if self.subcategory:
             self.tea_data["subcategory"] = self.subcategory.id
             self.tea_data["subcategory_confidence"] = subcategory_confidence
             if self.subcategory.category:
                 self.tea_data["category"] = self.subcategory.category.id
 
+        # Update response data with category
         if self.category:
             self.tea_data["category"] = self.category.id
             self.tea_data["category_confidence"] = category_confidence
