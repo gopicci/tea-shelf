@@ -18,25 +18,26 @@ class VisionParser:
     """
     Gets text from an image through Vision API and extracts tea data from it.
 
-        Attributes:
-            client: Vision API client.
-            image: Vision client image.
-            category: Integer ID of found category.
-            subcategory: Integer ID of found subcategory.
-            vendor: Integer ID of found vendor.
-            tea_data: Dictionary containing all found tea data as well as
-                a reduced version of Vision text detection.
-            categories: List of Category instances.
-            categories_names: List of alternative categories names
-                as CategoryName objects.
-            subcategories: List of public Subcategory instances.
-            subcategories_names: List of alternative subcategories names
-                as SubcategoryName objects.
-            vendors: List of Vendor instances.
+    Attributes:
+        client: Vision API client.
+        image: Vision client image.
+        document: Detected text document
+        category: Integer ID of found category.
+        subcategory: Integer ID of found subcategory.
+        vendor: Integer ID of found vendor.
+        tea_data: Dictionary containing all found tea data as well as
+            a reduced version of Vision text detection.
+        categories: List of Category instances.
+        categories_names: List of alternative categories names
+            as CategoryName objects.
+        subcategories: List of public Subcategory instances.
+        subcategories_names: List of alternative subcategories names
+            as SubcategoryName objects.
+        vendors: List of Vendor instances.
 
-        Usage example:
-            parser = VisionParser(image_data)
-            tea_data = parser.get_tea_data()
+    Usage example:
+        parser = VisionParser(image_data)
+        tea_data = parser.get_tea_data()
     """
 
     def __init__(self, data):
@@ -44,11 +45,13 @@ class VisionParser:
         Declares vision client, image and response data attributes,
         loads relevant objects lists.
 
-            Args:
-                data: Image data as base64 string.
+        Args:
+            data: Image data as base64 string.
         """
         self.client = vision.ImageAnnotatorClient()
         self.image = vision.types.Image(content=a2b_base64(data))
+
+        self.document = None
 
         self.category = None
         self.subcategory = None
@@ -66,71 +69,91 @@ class VisionParser:
         """
         Main parsing method, finds matches and returns extracted tea data if any.
 
-            Returns:
-                Dictionary containing all found tea data as well as a reduced
-                version of Vision text detection. For example:
-                {
-                    "dtd": {
-                        "blocks": [{
-                            "phrases": [{
-                                "words": ["foo", "bar"],
-                                "font_size": 10.5,
-                                "confidence": 0.8
-                                }]
+        Returns:
+            Dictionary containing all found tea data as well as a reduced
+            version of Vision text detection. For example:
+            {
+                "dtd": {
+                    "blocks": [{
+                        "phrases": [{
+                            "words": ["foo", "bar"],
+                            "font_size": 10.5,
+                            "confidence": 0.8
                             }]
-                        },
-                    "subcategory": 12,
-                    "subcategory_confidence": 0.8,
-                    "vendor": 3,
-                    "vendor_confidence": 1,
-                    "year": 2002,
-                    "name": "Foo bar tea"
-                }
+                        }]
+                    },
+                "subcategory": 12,
+                "subcategory_confidence": 0.8,
+                "vendor": 3,
+                "vendor_confidence": 1,
+                "year": 2002,
+                "name": "Foo bar tea"
+            }
         """
-        # Detect text document
-        document = self.document_text_detection()
+        self.document = self.document_text_detection()
 
         # Reduces detected text data to a more readable format
-        self.tea_data["dtd"] = self.reduced_data_parser(document)
+        self.tea_data["dtd"] = self.reduced_data_parser()
 
-        # Builds list of subcategory names to look for
+        # Build lists of names to look for
+        category_names = self.get_categories_lookup()
         subcategory_names = self.get_subcategories_lookup()
+        vendor_names = self.get_vendors_lookup()
+
+        # Search for vendor
+        vendor_match, vendor_confidence = self.find_match(vendor_names)
+        if vendor_match:
+            self.vendor = self.get_vendor_from_name(vendor_match)
+            if self.vendor:
+                self.tea_data["vendor"] = self.vendor.id
+                self.tea_data["vendor_confidence"] = vendor_confidence
+
+        # Search for a category from the list in the document
+        category_match, category_confidence = self.find_match(category_names)
+        if category_match:
+            # Category found
+            self.category = self.get_category_from_name(category_match)
+
+            if vendor_confidence == 1 and category_match in vendor_match:
+                # Sometimes vendor names contain a category name
+                self.category = None
+
         # Search for a subcategory from the list in the document
-        subcategory_match = self.find_match(document, subcategory_names)
+        subcategory_match, subcategory_confidence = self.find_match(subcategory_names)
         if subcategory_match:
-            # Subcategory found, add to response data
-            self.subcategory = self.get_subcategory_from_name(subcategory_match[0])
+            # Subcategory found
+            self.subcategory = self.get_subcategory_from_name(subcategory_match)
+
+            if (
+                self.category
+                and self.subcategory.category.id
+                and self.subcategory.category.id != self.category
+            ):
+                # Different categories
+                if subcategory_confidence < 1 and category_confidence == 1:
+                    # Subcategory not sure, category is sure, ditch subcategory
+                    self.subcategory = None
+                else:
+                    # Subcategory category confidence ratio is enough, ditch category
+                    self.category = None
+
+        if self.subcategory:
             self.tea_data["subcategory"] = self.subcategory.id
-            self.tea_data["subcategory_confidence"] = subcategory_match[1]
+            self.tea_data["subcategory_confidence"] = subcategory_confidence
             if self.subcategory.category:
                 self.tea_data["category"] = self.subcategory.category.id
 
-        if not self.tea_data["category"]:
-            # Subcategory didn't provide category, search for it
-            category_names = self.get_categories_lookup()
-            category_match = self.find_match(document, category_names)
-            if category_match:
-                self.category = self.get_category_from_name(category_match[0])
-                if self.category:
-                    self.tea_data["category"] = self.category.id
-                    self.tea_data["category_confidence"] = category_match[1]
-
-        # Search for vendor
-        vendor_names = self.get_vendors_lookup()
-        vendor_match = self.find_match(document, vendor_names)
-        if vendor_match:
-            self.vendor = self.get_vendor_from_name(vendor_match[0])
-            if self.vendor:
-                self.tea_data["vendor"] = self.vendor.id
-                self.tea_data["vendor_confidence"] = vendor_match[1]
+        if self.category:
+            self.tea_data["category"] = self.category.id
+            self.tea_data["category_confidence"] = category_confidence
 
         # Search for year
-        year = self.find_year(document)
+        year = self.find_year()
         if year:
             self.tea_data["year"] = year
 
         # Build a name
-        name = self.find_name(document)
+        name = self.find_name()
         if name:
             self.tea_data["name"] = name
 
@@ -140,24 +163,21 @@ class VisionParser:
         """
         Runs document_text_detection through Vision API.
 
-            Returns:
-                Vision client full_text_annotation document.
+        Returns:
+            Vision client full_text_annotation document.
         """
         response = self.client.document_text_detection(image=self.image)
         return response.full_text_annotation
 
-    def get_text_detection_word_list(self, document):
+    def get_text_detection_word_list(self):
         """
         Returns a list of all words from detected text.
 
-            Args:
-                document: Vision document_text_detection response.
-
-            Returns:
-                List of single words as strings.
+        Returns:
+            List of single words as strings.
         """
         word_list = []
-        for page in document.pages:
+        for page in self.document.pages:
             for block in page.blocks:
                 for paragraph in block.paragraphs:
                     for word in paragraph.words:
@@ -171,13 +191,13 @@ class VisionParser:
         """
         Combines a word list in phrases of defined length.
 
-            Args:
-                word_list: List of strings of single words.
-                length: Desired integer length of phrases.
+        Args:
+            word_list: List of strings of single words.
+            length: Desired integer length of phrases.
 
-            Returns:
-                List of phrases. Each phrase being a string containing
-                the defined number of words separated by spaces.
+        Returns:
+            List of phrases. Each phrase being a string containing
+            the defined number of words separated by spaces.
         """
         statements_list = []
         for i in range(len(word_list) - length + 1):
@@ -185,13 +205,12 @@ class VisionParser:
             statements_list.append(statement)
         return statements_list
 
-    def find_match(self, document, items):
+    def find_match(self, items):
         """
         Searches for any item of a list of string in a text detection document.
         Returns best match and score ratio if any.
 
         Args:
-            document: Vision client document_text_detection response.
             items: List of strings with items to search for.
 
         Returns:
@@ -200,7 +219,7 @@ class VisionParser:
 
             ("foo bar", 0.8)
         """
-        single_words_list = self.get_text_detection_word_list(document)
+        single_words_list = self.get_text_detection_word_list()
         combined_words_list = (
             single_words_list
             + self.combine_words_list(single_words_list, 2)
@@ -209,7 +228,7 @@ class VisionParser:
         )
         no_spaces_text = "".join(single_words_list)
 
-        # First search for a match in single, double, triple or quadruple words combos
+        # First search for a match in words combos
         highest_score = 0
         best_match = ""
         for name in combined_words_list:
@@ -235,18 +254,17 @@ class VisionParser:
         if best_match and highest_score > 0:
             return best_match, highest_score
 
-    def find_year(self, document):
+        return None, None
+
+    def find_year(self):
         """
         Searches for a year in a text detection document.
-
-        Args:
-            document: Vision client document_text_detection response.
 
         Returns:
             If a year is found it returns it as an integer.
         """
         # need to cover '90 cases
-        words_list = self.get_text_detection_word_list(document)
+        words_list = self.get_text_detection_word_list()
         base_year = 1900
         for word in words_list:
             if word.startswith(("19", "20")) and word[0:4].isdigit():
@@ -256,12 +274,14 @@ class VisionParser:
         if base_year > 1900:
             return base_year
 
+        return None
+
     def get_area_from_bounding_box(self, bounding_box):
         """
         Calculates an area from a list of vertices
 
         Args:
-            bonding_box: A dictionary with a list of vertices as float values.
+            bounding_box: A dictionary with a list of vertices as float values.
                 For example: {
                     vertices: [
                         {
@@ -288,13 +308,10 @@ class VisionParser:
 
         return abs(area_sum) / 2
 
-    def reduced_data_parser(self, document):
+    def reduced_data_parser(self):
         """
         Reduces text_detection response data structure to help processing the tea name.
         Determines phrases as chunks with an end of line and drops paragraphs/pages
-
-        Args:
-            document: Vision client document_text_detection response.
 
         Returns:
             Reduced data structure, for example:
@@ -317,7 +334,7 @@ class VisionParser:
         """
         blocks = []
 
-        for page in document.pages:
+        for page in self.document.pages:
             for block in page.blocks:
                 phrases = []
                 for paragraph in block.paragraphs:
@@ -404,15 +421,16 @@ class VisionParser:
 
         cleaned_blocks = []
         for block in data["blocks"]:
+
             cleaned_phrases = []
             for phrase in block["phrases"]:
-                # drop phrase if confidence is below level
+                # Drop entire phrase if confidence is below level
                 if phrase["confidence"] < min_confidence:
                     continue
 
                 cleaned_words = []
                 for word in phrase["words"]:
-                    # Drop single characters
+                    # Drop single characters words
                     if len(word) < 2:
                         continue
 
@@ -421,14 +439,14 @@ class VisionParser:
                         match = difflib.get_close_matches(
                             word.lower(), vendor_name, cutoff=0.8
                         )
-                        if match and match[0].lower() != "tea":  # mmmmh
+                        if match and match[0].lower() != "tea":
                             continue
                         if word.lower() in trademark_words:
                             continue
 
-                    # Drop word with unallowed symbols
+                    # Drop word with not allowed symbols
                     if allowed_characters.match(word):
-                        # check if word is year
+                        # Check if word is a year
                         if any(char.isdigit() for char in word):
                             if word.startswith(("19", "20")) and word[0:4].isdigit():
                                 if len(word) == 5 and (
@@ -437,16 +455,15 @@ class VisionParser:
                                     cleaned_words.append(word[0:4] + "s")
                                 elif len(word) >= 4:
                                     cleaned_words.append(word[0:4])
-                        # Check if word is website or common word
+                        # Check if word is a website or common word
                         elif (
                             not any(w in word for w in web_words.split(" "))
                             and word.lower() not in drop_common_words
                         ):
                             cleaned_words.append(word)
+
                 if cleaned_words:
-                    if (
-                        len(cleaned_words) == 1 and cleaned_words[0].lower() == "tea"
-                    ):  # mmmmh 2
+                    if len(cleaned_words) == 1 and cleaned_words[0].lower() == "tea":
                         continue
                     font_size = (
                         phrase["font_size"] * len(cleaned_words) / len(phrase["words"])
@@ -458,6 +475,7 @@ class VisionParser:
                             "confidence": phrase["confidence"],
                         }
                     )
+
             if cleaned_phrases:
                 cleaned_blocks.append({"phrases": cleaned_phrases})
 
@@ -504,7 +522,7 @@ class VisionParser:
 
     def title(self, name):
         """
-        String capitalizer that uses re.sub to make up for
+        Capitalizes string using re.sub to make up for
         string.title() not counting for numbers.
 
         Args:
@@ -518,19 +536,16 @@ class VisionParser:
             name,
         )
 
-    def find_name(self, document):
+    def find_name(self):
         """
         Guesses tea name. Based on biggest elements remaining in the
         text detection after eliminating other known data with a
         certain confidence ratio.
 
-        Args:
-            document: Vision client document_text_detection response.
-
         Returns:
             Guessed name as string.
         """
-        reduced_data = self.reduced_data_parser(document)
+        reduced_data = self.reduced_data_parser()
         cleaned_data = self.cleaned_data_parser(reduced_data)
 
         # Blocks not a driven event, could use in certain occasions
@@ -578,19 +593,17 @@ class VisionParser:
 
         return self.title(name)
 
-    def get_en_zh_ratio(self, document):
+    def get_en_zh_ratio(self):
         """
         Calculates ratio between english and chinese characters.
         Not currently used as Vision Chinese recognition isn't
         quite good yet.
 
-        Args:
-            document: Vision client document_text_detection response.
         Returns:
             Ratio of english to chinese characters as float, or 10
             if no chinese characters were found.
         """
-        word_list = self.get_text_detection_word_list(document)
+        word_list = self.get_text_detection_word_list()
         text_detection_string = "".join(word_list)
         chinese_characters = 0
         english_characters = 0
