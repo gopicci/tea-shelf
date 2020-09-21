@@ -4,18 +4,11 @@ import { CloudDone, Refresh } from "@material-ui/icons";
 import localforage from "localforage";
 import { getOfflineTeas, uploadOffline } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
-import { makeStyles } from "@material-ui/core/styles";
 import { SyncDispatch, SyncState } from "../statecontainers/sync-context";
 import { SnackbarDispatch } from "../statecontainers/snackbar-context";
 import { TeaDispatch } from "../statecontainers/tea-context";
 import { SubcategoriesDispatch } from "../statecontainers/subcategories-context";
 import { VendorsDispatch } from "../statecontainers/vendors-context";
-
-const useStyles = makeStyles((theme) => ({
-  circularProgress: {
-    color: theme.palette.common.white,
-  },
-}));
 
 /**
  * Sync icon button component. Callback runs on mount and on click.
@@ -26,8 +19,6 @@ const useStyles = makeStyles((theme) => ({
  * @subcategory Main
  */
 function SyncButton(): ReactElement {
-  const classes = useStyles();
-
   const [isSyncing, setSyncing] = useState(false);
 
   const sync = useContext(SyncState);
@@ -133,11 +124,7 @@ function SyncButton(): ReactElement {
 
   return isSyncing ? (
     <IconButton aria-label="refresh">
-      <CircularProgress
-        className={classes.circularProgress}
-        size={20}
-        thickness={5}
-      />
+      <CircularProgress size={20} thickness={5} />
     </IconButton>
   ) : (
     <Tooltip title="Refresh">
