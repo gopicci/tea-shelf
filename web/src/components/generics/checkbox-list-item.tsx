@@ -65,7 +65,7 @@ function CheckboxListItem({
   const formListClasses = formListStyles();
 
   return (
-    <ListItem className={formListClasses.listItem} key={name} button>
+    <ListItem className={formListClasses.listItem} key={name}>
       <Box className={formListClasses.listItemBox}>
         <FormControlLabel
           labelPlacement="start"
