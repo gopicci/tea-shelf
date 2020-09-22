@@ -78,9 +78,13 @@ function MainLayout(props: Props): ReactElement {
           <GridLayout {...props} />
         </Box>
         {!isMobile &&
-          ["CREATE", "TEA_DETAILS", "EDIT", "SETTINGS"].includes(route.route) && (
-            <DialogLayout {...props} />
-          )}
+          [
+            "CREATE",
+            "TEA_DETAILS",
+            "EDIT",
+            "SETTINGS",
+            "CONFIRMATION",
+          ].includes(route.route) && <DialogLayout {...props} />}
         {isMobile && (
           <Fab
             aria-label="add tea"

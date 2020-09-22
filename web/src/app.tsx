@@ -16,7 +16,7 @@ import MobileInput from "./components/input/mobile/mobile-input";
 import Settings from "./components/settings";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
-import { TeaInstance } from "./services/models";
+import { Confirmation, TeaInstance } from "./services/models";
 
 /**
  * Defines type for app's main routing state.
@@ -36,9 +36,12 @@ export type Route = {
     | "ARCHIVE"
     | "SETTINGS"
     | "REGISTER"
-    | "PASSWORD_REQUEST";
+    | "PASSWORD_REQUEST"
+    | "CONFIRMATION";
   /** Optional route payload */
   payload?: TeaInstance;
+  /** Optional route confirmation */
+  confirmation?: Confirmation;
 };
 
 /**
@@ -56,7 +59,8 @@ function App(): ReactElement {
   const [route, setRoute] = useState<Route>({ route: "MAIN" });
 
   /**
-   * Returns component based on route name, passing optional route payload.
+   * Returns component based on route name, passing optional route payload
+   * or callback.
    *
    * @param {Route} route - Route data
    * @returns {ReactElement}
@@ -71,6 +75,7 @@ function App(): ReactElement {
     switch (route.route) {
       case "MAIN":
       case "ARCHIVE":
+      case "CONFIRMATION":
         return <MainLayout {...props} />;
       case "FILTER":
         return <SortFilter {...props} />;
@@ -110,7 +115,7 @@ function App(): ReactElement {
       case "PASSWORD_REQUEST":
         return <PasswordRequest setRoute={setRoute} />;
       default:
-        if (token) return <PasswordReset setRoute={setRoute} token={token}/>;
+        if (token) return <PasswordReset setRoute={setRoute} token={token} />;
         else return <Login setRoute={setRoute} />;
     }
   }

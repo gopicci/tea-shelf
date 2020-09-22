@@ -264,3 +264,13 @@ export interface Settings {
   /** Gongfu brewing or western */
   gongfu?: boolean;
 }
+
+/**
+ * Confirmation dialog structure.
+ */
+export interface Confirmation {
+  /** Confirmation message */
+  message: string;
+  /** Confirmation action callback */
+  callback: () => void;
+}

@@ -1,8 +1,13 @@
-import React, { ChangeEvent, ReactElement, useState } from "react";
+import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
 import { Box, Button, Paper, TextField, Typography } from "@material-ui/core";
 import { Notes } from "@material-ui/icons";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
-import { TeaInstance, TeaRequest } from "../../../services/models";
+import {
+  Confirmation,
+  TeaInstance,
+  TeaRequest,
+} from "../../../services/models";
+import { Route } from "../../../app";
 
 /**
  * DetailsBoxNotes props.
@@ -14,6 +19,10 @@ type Props = {
   teaData: TeaInstance;
   /** Handles tea posting process */
   handleEdit: (data: TeaRequest, id?: number | string) => void;
+  /** Set confirmation on close */
+  setConfirmation: (confirmation: Confirmation) => void;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
 };
 
 /**
@@ -23,11 +32,27 @@ type Props = {
  * @component
  * @subcategory Details desktop
  */
-function DetailsBoxNotes({ teaData, handleEdit }: Props): ReactElement {
+function DetailsBoxNotes({
+  teaData,
+  handleEdit,
+  setConfirmation,
+  setRoute,
+}: Props): ReactElement {
   const classes = desktopDetailsStyles();
 
   const [notesEditing, setNotesEditing] = useState(false);
   const [notes, setNotes] = useState(teaData.notes ? teaData.notes : "");
+
+  useEffect(() => {
+    if (notesEditing)
+      setConfirmation({
+        message: "Save notes?",
+        callback: () => {
+          handleEdit({ ...teaData, notes: notes }, teaData.id);
+          setRoute({ route: "MAIN" });
+        },
+      });
+  }, [handleEdit, notes, notesEditing, setConfirmation, setRoute, teaData]);
 
   /**
    * Updates local notes state on text input change.

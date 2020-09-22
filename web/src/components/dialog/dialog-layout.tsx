@@ -1,10 +1,12 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { Dialog } from "@material-ui/core";
 import Create from "../create";
 import InputForm from "../input/desktop/input-form";
 import DesktopDetailsLayout from "../details/desktop/desktop-details-layout";
+import Settings from "../settings";
+import ConfirmationLayout from "./confirmation-layout";
 import { Route } from "../../app";
-import Settings from '../settings';
+import { Confirmation } from "../../services/models";
 
 /**
  * DialogLayout props.
@@ -21,8 +23,8 @@ type Props = {
 };
 
 /**
- * Desktop dialog component, used for creating and editing teas,
- * as well as visualizing tea instances details (through Edit component).
+ * Generic desktop dialog component, used for creating and editing teas,
+ * visualizing tea instances details and confirmation purposes.
  *
  * @component
  * @subcategory Main
@@ -30,13 +32,21 @@ type Props = {
 function DialogLayout(props: Props): ReactElement {
   const { route, setRoute } = props;
 
+  const [confirmation, setConfirmation] = useState<Confirmation | undefined>(
+    undefined
+  );
+
   /** Sets route to main closing the dialog */
   function handleClose(): void {
-    setRoute({ route: "MAIN" });
+    if (confirmation)
+      setRoute({ route: "CONFIRMATION", confirmation: confirmation });
+    else setRoute({ route: "MAIN" });
   }
 
   return (
     <Dialog
+      disableBackdropClick={route.route === "CONFIRMATION"}
+      disableEscapeKeyDown={route.route === "CONFIRMATION"}
       fullWidth
       maxWidth={route.route === "TEA_DETAILS" ? "md" : "sm"}
       open={true}
@@ -44,8 +54,15 @@ function DialogLayout(props: Props): ReactElement {
     >
       {route.route === "CREATE" && <Create {...props} />}
       {route.route === "EDIT" && <InputForm {...props} />}
-      {route.route === "TEA_DETAILS" && <DesktopDetailsLayout {...props} />}
+      {route.route === "TEA_DETAILS" && (
+        <DesktopDetailsLayout
+          {...props}
+          setConfirmation={setConfirmation}
+          handleClose={handleClose}
+        />
+      )}
       {route.route === "SETTINGS" && <Settings {...props} />}
+      {route.route === "CONFIRMATION" && <ConfirmationLayout {...props} />}
     </Dialog>
   );
 }

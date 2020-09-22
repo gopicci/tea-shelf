@@ -10,7 +10,7 @@ import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeasState } from "../../statecontainers/tea-context";
 import { EditorContext, HandleEdit } from "../../editor";
 import { Route } from "../../../app";
-import { TeaInstance } from "../../../services/models";
+import { Confirmation, TeaInstance } from "../../../services/models";
 
 /**
  * DesktopDetailsLayout props.
@@ -22,6 +22,10 @@ type Props = {
   route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
+  /** Set confirmation on close */
+  setConfirmation: (confirmation: Confirmation) => void;
+  /** Handles dialog close */
+  handleClose: () => void;
 };
 
 /**
@@ -30,7 +34,12 @@ type Props = {
  * @component
  * @subcategory Details desktop
  */
-function DesktopDetailsLayout({ route, setRoute }: Props): ReactElement {
+function DesktopDetailsLayout({
+  route,
+  setRoute,
+  setConfirmation,
+  handleClose,
+}: Props): ReactElement {
   const classes = desktopDetailsStyles();
 
   const handleEdit: HandleEdit = useContext(EditorContext);
@@ -47,17 +56,17 @@ function DesktopDetailsLayout({ route, setRoute }: Props): ReactElement {
     (value) => value.id === teaData?.category
   );
 
-  /** Routes to main. */
-  function handleClose(): void {
-    setRoute({ route: "MAIN" });
-  }
-
   return (
     <>
       {teaData && (
         <DialogContent className={classes.content}>
           <DetailsBoxMain teaData={teaData} handleEdit={handleEdit} />
-          <DetailsBoxNotes teaData={teaData} handleEdit={handleEdit} />
+          <DetailsBoxNotes
+            teaData={teaData}
+            handleEdit={handleEdit}
+            setConfirmation={setConfirmation}
+            setRoute={setRoute}
+          />
           {teaData.origin && <DetailsBoxOrigin origin={teaData.origin} />}
           {(teaData.subcategory?.description || category?.description) && (
             <DetailsBoxDescription teaData={teaData} />
