@@ -74,7 +74,9 @@ function DesktopDetailsLayout({
         </DialogContent>
       )}
       <DialogActions className={classes.actions}>
-        {teaData && <ActionIcons teaData={teaData} setRoute={setRoute} />}
+        {teaData && (
+          <ActionIcons teaData={teaData} setRoute={setRoute} confirmDelete />
+        )}
         <Button onClick={handleClose}>Close</Button>
       </DialogActions>
     </>

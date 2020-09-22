@@ -25,6 +25,8 @@ type Props = {
   teaData: TeaInstance;
   /** Set app's main route */
   setRoute: (route: Route) => void;
+  /** Ask for confirmation before deleting */
+  confirmDelete?: boolean;
 };
 
 /**
@@ -34,7 +36,11 @@ type Props = {
  * @component
  * @subcategory Generics
  */
-function ActionIcons({ teaData, setRoute }: Props): ReactElement {
+function ActionIcons({
+  teaData,
+  setRoute,
+  confirmDelete,
+}: Props): ReactElement {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
@@ -90,12 +96,30 @@ function ActionIcons({ teaData, setRoute }: Props): ReactElement {
     try {
       await deleteTea(teaData);
       setRoute({ route: "MAIN" });
-      snackbarDispatch({ type: "SUCCESS", data: "Tea successfully deleted" });
+      snackbarDispatch({
+        type: "SUCCESS",
+        data: "Tea successfully deleted",
+      });
       teaDispatch({ type: "DELETE", data: teaData });
     } catch (e) {
       console.error(e);
       snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
     }
+  }
+
+  /**
+   * Asks for confirmation before deleting.
+   */
+  async function handleConfirmation(): Promise<void> {
+    if (confirmDelete)
+      setRoute({
+        route: "CONFIRMATION",
+        confirmation: {
+          message: "Delete " + teaData.name + "?",
+          callback: handleDelete,
+        },
+      });
+    else await handleDelete();
   }
 
   return (
@@ -152,7 +176,7 @@ function ActionIcons({ teaData, setRoute }: Props): ReactElement {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleDelete}>Delete</MenuItem>
+        <MenuItem onClick={handleConfirmation}>Delete</MenuItem>
       </Menu>
     </Box>
   );
