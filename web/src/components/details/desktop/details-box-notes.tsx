@@ -20,7 +20,7 @@ type Props = {
   /** Handles tea posting process */
   handleEdit: (data: TeaRequest, id?: number | string) => void;
   /** Set confirmation on close */
-  setConfirmation: (confirmation: Confirmation) => void;
+  setConfirmation: (confirmation?: Confirmation) => void;
   /** Set app's main route */
   setRoute: (route: Route) => void;
 };
@@ -52,6 +52,7 @@ function DetailsBoxNotes({
           setRoute({ route: "MAIN" });
         },
       });
+    else setConfirmation(undefined);
   }, [handleEdit, notes, notesEditing, setConfirmation, setRoute, teaData]);
 
   /**

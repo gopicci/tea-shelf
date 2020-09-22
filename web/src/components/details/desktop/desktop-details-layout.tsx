@@ -23,7 +23,7 @@ type Props = {
   /** Set app's main route */
   setRoute: (route: Route) => void;
   /** Set confirmation on close */
-  setConfirmation: (confirmation: Confirmation) => void;
+  setConfirmation: (confirmation?: Confirmation) => void;
   /** Handles dialog close */
   handleClose: () => void;
 };
