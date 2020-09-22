@@ -67,6 +67,8 @@ type Props = {
   setRoute: (route: Route) => void;
   /** Mobile mode or desktop */
   isMobile: boolean;
+  /** Set drawer open state */
+  setOpen: (state: boolean) => void;
 };
 
 /**
@@ -75,8 +77,15 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
+function DrawerContent({ route, setRoute, isMobile, setOpen }: Props): ReactElement {
   const classes = useStyles();
+
+  function handleClick(route: Route): void {
+    setRoute(route)
+    if (isMobile) {
+      setOpen(false);
+    }
+  }
 
   return (
     <Box className={classes.root}>
@@ -93,7 +102,7 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
               className={classes.item}
               button
               key="add"
-              onClick={() => setRoute({ route: "CREATE" })}
+              onClick={() => handleClick({ route: "CREATE" })}
               aria-label="add tea"
             >
               <ListItemIcon>
@@ -107,7 +116,7 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
             button
             key="catalog"
             selected={route.route === "MAIN"}
-            onClick={() => setRoute({ route: "MAIN" })}
+            onClick={() => handleClick({ route: "MAIN" })}
           >
             <ListItemIcon
               className={
@@ -132,7 +141,7 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
             button
             key="archive"
             selected={route.route === "ARCHIVE"}
-            onClick={() => setRoute({ route: "ARCHIVE" })}
+            onClick={() => handleClick({ route: "ARCHIVE" })}
           >
             <ListItemIcon
               className={
@@ -155,7 +164,7 @@ function DrawerContent({ route, setRoute, isMobile }: Props): ReactElement {
               className={classes.item}
               button
               key="settings"
-              onClick={() => setRoute({ route: "SETTINGS" })}
+              onClick={() => handleClick({ route: "SETTINGS" })}
             >
               <ListItemIcon>
                 <Settings />
