@@ -77,7 +77,7 @@ function ActionIcons({
       teaData.id,
       "Tea successfully archived."
     );
-    setRoute({ route: "MAIN", payload: teaData });
+    setRoute({ route: "MAIN" });
   }
 
   /** Unarchives tea */
@@ -87,6 +87,7 @@ function ActionIcons({
       teaData.id,
       "Tea successfully unarchived."
     );
+    setRoute({ route: "ARCHIVE" });
   }
 
   /**
