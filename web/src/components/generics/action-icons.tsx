@@ -152,7 +152,7 @@ function ActionIcons({
           className={classes.icon}
           onClick={handleEditClick}
           size="small"
-          aria-label="archive"
+          aria-label="edit"
         >
           <Edit fontSize="small" />
         </IconButton>
