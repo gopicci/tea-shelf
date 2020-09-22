@@ -1,5 +1,10 @@
 import React, { ReactElement } from "react";
-import { Button, DialogActions, DialogContent } from "@material-ui/core";
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from "@material-ui/core";
 import { desktopDetailsStyles } from "../../style/desktop-details-styles";
 import { Route } from "../../app";
 
@@ -36,8 +41,8 @@ function ConfirmationLayout({ route, setRoute }: Props): ReactElement {
 
   return (
     <>
-      <DialogContent className={classes.content}>
-        {route.confirmation?.message}
+      <DialogContent className={classes.messageBox}>
+        <Typography variant="h5">{route.confirmation?.message}</Typography>
       </DialogContent>
       <DialogActions className={classes.actions}>
         <Button onClick={handleCancel}>Cancel</Button>

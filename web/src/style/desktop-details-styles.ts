@@ -184,4 +184,13 @@ export const desktopDetailsStyles = makeStyles({
     justifyContent: "space-between",
     margin: theme.spacing(2),
   },
+  messageBox: {
+    "&.MuiDialogContent-root:first-child": {
+      padding: theme.spacing(6),
+    },
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
 });
