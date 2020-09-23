@@ -1,4 +1,4 @@
-describe("Desktop editing", {viewportWidth: 1000}, () => {
+describe("Desktop editing", { viewportWidth: 1000 }, () => {
   before(() => {
     cy.login();
     cy.visit("/");
@@ -8,7 +8,7 @@ describe("Desktop editing", {viewportWidth: 1000}, () => {
     cy.server();
     cy.route("POST", "**/api/tea/**").as("tea");
     cy.get('div[aria-label="add tea"]').click();
-    cy.get('span').contains("Skip").click();
+    cy.get("span").contains("Skip").click();
     cy.get('input[name="name"]').type("test");
     cy.get('div[aria-label="category"]').click();
     cy.get("li").contains("Oolong").click();
@@ -21,14 +21,15 @@ describe("Desktop editing", {viewportWidth: 1000}, () => {
 
     cy.server();
     cy.route("PUT", "**/api/tea/**").as("put");
-    cy.get('label[for="customized-empty-2-5"]').click({force: true});
+    cy.get('label[for="customized-empty-2-5"]').click({ force: true });
     cy.wait("@put");
     cy.get("span:visible").contains("Close").click();
   });
 
   it("Can edit tea.", () => {
     cy.get('button[aria-label="test"]').first().click();
-    cy.get("span").contains("Edit").click();
+
+    cy.get('button[aria-label="edit"]').click();
     cy.get('input[name="name"]').type("test edit");
     cy.get('div[aria-label="category"]').click();
     cy.get("li").contains("Black").click();
@@ -44,8 +45,27 @@ describe("Desktop editing", {viewportWidth: 1000}, () => {
     cy.get("span").contains("Save").click();
     cy.wait("@put2");
     cy.get("p").contains("test notes").should("exist");
-    cy.get("span").contains("Edit notes").should("exist");
-    cy.get("span").contains("Close").click({force: true});
+    cy.get("span").contains("Edit notes").click();
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get("span").contains("Close").click();
+    });
+    cy.get("div").contains("Save notes?").should("exist");
+    cy.server();
+    cy.route("PUT", "**/api/tea/**").as("put");
+    cy.get("span").contains("Ok").click();
+    cy.wait("@put");
   });
 
+  it("Can delete tea.", () => {
+    cy.get('button[aria-label="test"]').first().click();
+    cy.get('div[role="dialog"]').within(() => {
+      cy.get('button[aria-label="menu"]').click();
+    });
+    cy.get("li").contains("Delete").click();
+    cy.server();
+    cy.route("DELETE", "**/api/tea/**").as("delete");
+    cy.get("span").contains("Ok").click();
+    cy.wait("@delete");
+    cy.get("div").contains("Tea successfully deleted").should("exist");
+  });
 });

@@ -24,12 +24,12 @@ describe("Desktop creation", {viewportWidth: 1000}, () => {
     cy.get('span').contains("Skip").click();
     cy.get('input[name="name"]').type("test");
     cy.get('div[aria-label="category"]').click();
-    cy.get("li").contains("Oolong").click();
-    cy.get("div").contains("Oolong").should("exist");
+    cy.get("li").contains("Yellow").click();
+    cy.get("div").contains("Yellow").should("exist");
     cy.get('div[aria-label="subcategory"]').click();
     cy.get("li").contains("Assam").click();
     cy.get("div").contains("Black").should("exist");
-    cy.get("div").contains("Oolong").should("not.exist");
+    cy.get("div").contains("Yellow").should("not.exist");
     cy.get('input[id="year"]').type("2001");
     cy.get('input[name="weight_left"]').type("6");
     cy.get('div[aria-label="measure"]').click();
