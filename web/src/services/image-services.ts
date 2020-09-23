@@ -27,7 +27,6 @@ export function fileToBase64(file: File): Promise<string> {
     else {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      console.log(reader);
 
       reader.onloadend = (e) => {
         const img = new Image();
@@ -38,9 +37,7 @@ export function fileToBase64(file: File): Promise<string> {
           canvas.height = img.height;
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, img.width, img.height);
-          console.log(ctx?.getImageData(0, 0, img.width, img.height));
           const dataURL = canvas.toDataURL("image/jpeg", 90);
-          console.log(dataURL);
           resolve(dataURL);
         };
         if (typeof reader.result === "string") img.src = reader.result;
