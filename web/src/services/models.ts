@@ -43,6 +43,22 @@ interface FormBrewingModel extends BrewingModel {
 }
 
 /**
+ * Brewing session data structure.
+ */
+export interface BrewingSession {
+  /** Instance of the tea being used */
+  tea?: TeaInstance;
+  /** Session brewing details */
+  brewing: BrewingModel;
+  /** Creation date */
+  created_on: string;
+  /** Current infusion number */
+  current_infusion: number;
+  /** Completion status */
+  is_completed: boolean;
+}
+
+/**
  * Origin data structure.
  */
 export interface OriginModel {
@@ -273,20 +289,4 @@ export interface Confirmation {
   message: string;
   /** Confirmation action callback */
   callback: () => void;
-}
-
-/**
- * Brewing session data structure.
- */
-export interface Session {
-  /** Instance of the tea being used */
-  tea?: TeaInstance;
-  /** Session brewing details */
-  brewing: BrewingModel;
-  /** Creation date */
-  created_on: string;
-  /** Current infusion number */
-  current_infusion: number;
-  /** Completion status */
-  is_completed: boolean;
 }
