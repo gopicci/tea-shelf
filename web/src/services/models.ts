@@ -59,6 +59,15 @@ export interface BrewingSession {
 }
 
 /**
+ * Extension of BrewingSession that defines a session instance,
+ * with required ID.
+ */
+export interface BrewingSessionInstance extends BrewingSession {
+  /** Instance ID, UUID string if coming from API, number if generated offline */
+  id: string | number;
+}
+
+/**
  * Origin data structure.
  */
 export interface OriginModel {
