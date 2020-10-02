@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import {
   Box,
   Button,
@@ -7,9 +7,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import GenericAppBar from "../generics/generic-app-bar";
 import { ArrowBack } from "@material-ui/icons";
-import Countdown from "react-countdown";
+import GenericAppBar from "../generics/generic-app-bar";
+import SessionClock from "./session-clock";
+import { BrewingModel, BrewingSession } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,28 +28,33 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "100%",
     justifyContent: "space-between",
   },
-  timer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    flexGrow: 1,
-  },
-  timerFont: {
-    fontSize: "30vw",
-    lineHeight: 1,
-  },
   endButton: {
     width: "100%",
   },
 }));
 
-type CountdownProps = {
-  minutes: number;
-  seconds: number;
-};
-
+/**
+ * Brewing session layout component.
+ *
+ * @component
+ * @subcategory Brewing session
+ */
 function SessionLayout(): ReactElement {
   const classes = useStyles();
+
+  const brewing: BrewingModel = {
+    temperature: 95,
+    weight: 5,
+    initial: "00:00:10",
+    increments: "00:00:05",
+  };
+
+  const [session, setSession] = useState<BrewingSession>({
+    brewing: brewing,
+    created_on: String(Date.now()),
+    current_infusion: 1,
+    is_completed: false,
+  });
 
   return (
     <Box className={classes.root}>
@@ -65,31 +71,12 @@ function SessionLayout(): ReactElement {
       <Typography variant="h1">Name</Typography>
       <Typography variant="h5">Started on date</Typography>
       <Box className={classes.row}>
-        <Typography variant="h4">Temp</Typography>
-        <Typography variant="h4">Infusion</Typography>
-      </Box>
-      <Box className={classes.timer}>
-        <Typography className={classes.timerFont}>
-          <Countdown
-            date={Date.now() + 10000}
-            renderer={({
-              minutes,
-              seconds,
-            }: CountdownProps): ReactElement => {
-              return (
-                <span>
-                  {String(minutes).padStart(2, "0")}:
-                  {String(seconds).padStart(2, "0")}
-                </span>
-              );
-            }}
-            onComplete={() => console.log("end")}
-          />
+        <Typography variant="h4">Temp {session.brewing.temperature}</Typography>
+        <Typography variant="h4">
+          Infusion {session.current_infusion}
         </Typography>
-        <Button variant="contained" color="secondary">
-          Brew/Cancel
-        </Button>
       </Box>
+      <SessionClock session={session} setSession={setSession} />
       <Button className={classes.endButton}>End session</Button>
     </Box>
   );
