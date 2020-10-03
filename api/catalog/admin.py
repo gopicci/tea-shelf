@@ -5,6 +5,7 @@ from django.utils.html import format_html
 
 from .models import (
     Brewing,
+    BrewingSession,
     Category,
     CategoryName,
     CustomUser,
@@ -343,3 +344,40 @@ class TeaAdmin(admin.ModelAdmin):
             return None
         link = reverse("admin:catalog_subcategory_change", args=[obj.subcategory.id])
         return format_html(f'<a href="{link}">{obj.subcategory.name}</a>')
+
+
+@admin.register(BrewingSession)
+class BrewingSessionAdmin(admin.ModelAdmin):
+    """
+    Registers BrewingSession model.
+    """
+
+    list_display = (
+        "id",
+        "created_on",
+        "tea",
+        "user",
+        "is_completed",
+    )
+    list_filter = (
+        "user",
+        "is_completed",
+    )
+    ordering = ("-created_on",)
+
+    def get_changeform_initial_data(self, request):
+        """
+        Sets current user as default.
+        """
+        get_data = super(BrewingSessionAdmin, self).get_changeform_initial_data(request)
+        get_data["user"] = request.user.pk
+        return get_data
+
+    def link_to_tea(self, obj):
+        """
+        Tea list entry links to foreignkey update page.
+        """
+        if not obj.tea:
+            return None
+        link = reverse("admin:catalog_tea_change", args=[obj.tea.id])
+        return format_html(f'<a href="{link}">{obj.tea.name}</a>')

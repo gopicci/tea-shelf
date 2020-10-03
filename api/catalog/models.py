@@ -373,7 +373,7 @@ class BrewingSession(models.Model):
         default=1, validators=[MinValueValidator(1)]
     )
     created_on = models.DateTimeField(auto_now_add=True)
-    is_completed = models.BooleanField(default=True)
+    is_completed = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.id
+        return str(self.id)

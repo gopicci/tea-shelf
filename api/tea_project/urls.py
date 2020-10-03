@@ -21,6 +21,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from catalog.views import (
     BrewingCreateView,
     BrewingDetailView,
+    BrewingSessionViewSet,
     CategoryView,
     LoginView,
     OriginCreateView,
@@ -40,6 +41,7 @@ from .views import ping
 
 router = routers.SimpleRouter()
 router.register(r"tea", TeaViewSet, basename="tea")
+router.register(r"brewing_session", BrewingSessionViewSet, basename="brewing_session")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

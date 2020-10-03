@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from catalog.serializers import (
     BrewingSerializer,
+    BrewingSessionSerializer,
     OriginSerializer,
     CategorySerializer,
     SubcategorySerializer,
@@ -165,3 +166,23 @@ def test_invalid_tea_serializer(client):
     assert not serializer.is_valid()
     assert serializer.data == invalid_serializer_data
     assert serializer.errors == {"name": ["This field is required."]}
+
+
+@pytest.mark.django_db
+def test_valid_brewing_session_serializer(client):
+    valid_serializer_data = {"brewing": {"temperature": 90}}
+    serializer = BrewingSessionSerializer(data=valid_serializer_data)
+    assert serializer.is_valid()
+    assert serializer.validated_data == valid_serializer_data
+    assert serializer.errors == {}
+
+
+@pytest.mark.django_db
+def test_invalid_brewing_session_serializer(client):
+    invalid_serializer_data = {"current_infusion": 0}
+    serializer = BrewingSessionSerializer(data=invalid_serializer_data)
+    assert not serializer.is_valid()
+    assert serializer.data == invalid_serializer_data
+    assert serializer.errors == {
+        "current_infusion": ["Ensure this value is greater than or equal to 1."]
+    }

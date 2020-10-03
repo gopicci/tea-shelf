@@ -10,7 +10,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Brewing, Category, Origin, Subcategory, Tea, Vendor
+from .models import Brewing, BrewingSession, Category, Origin, Subcategory, Tea, Vendor
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -112,6 +112,25 @@ class LoginSerializer(TokenObtainPairSerializer):
         return data
 
 
+def get_or_create_brewing(validated_data):
+    """
+    Sets defaults for missing input values then returns instance if existing
+    or creates a new one.
+    """
+    if "temperature" not in validated_data or not validated_data["temperature"]:
+        validated_data["temperature"] = 0
+    if "weight" not in validated_data or not validated_data["weight"]:
+        validated_data["weight"] = 0
+    if "initial" not in validated_data or not validated_data["initial"]:
+        validated_data["initial"] = timedelta(seconds=0)
+    if "increments" not in validated_data or not validated_data["increments"]:
+        validated_data["increments"] = timedelta(seconds=0)
+
+    instance, _ = Brewing.objects.get_or_create(**validated_data)
+
+    return instance
+
+
 class BrewingSerializer(serializers.ModelSerializer):
     """
     Brewing model serializer.
@@ -126,18 +145,7 @@ class BrewingSerializer(serializers.ModelSerializer):
         Sets defaults for missing input values then returns instance if existing
         or creates a new one.
         """
-        if not validated_data["temperature"]:
-            validated_data["temperature"] = 0
-        if not validated_data["weight"]:
-            validated_data["weight"] = 0
-        if not validated_data["initial"]:
-            validated_data["initial"] = timedelta(seconds=0)
-        if not validated_data["increments"]:
-            validated_data["increments"] = timedelta(seconds=0)
-
-        instance, _ = Brewing.objects.get_or_create(**validated_data)
-
-        return instance
+        return get_or_create_brewing(validated_data)
 
 
 def get_or_create_origin(validated_data):
@@ -386,14 +394,10 @@ class TeaSerializer(serializers.ModelSerializer):
             Saved tea instance with nested objects.
         """
         if "gongfu" in nested_data:
-            gongfu_instance, _ = Brewing.objects.get_or_create(**nested_data["gongfu"])
-            instance.gongfu_brewing = gongfu_instance
+            instance.gongfu_brewing = get_or_create_brewing(nested_data["gongfu"])
 
         if "western" in nested_data:
-            western_instance, _ = Brewing.objects.get_or_create(
-                **nested_data["western"]
-            )
-            instance.western_brewing = western_instance
+            instance.western_brewing = get_or_create_brewing(nested_data["western"])
 
         if "origin" in nested_data:
             instance.origin = get_or_create_origin(nested_data["origin"])
@@ -431,3 +435,54 @@ class TeaSerializer(serializers.ModelSerializer):
             setattr(instance, k, v)
 
         return self.assign_nested_data(instance, nested_data)
+
+
+class BrewingSessionSerializer(serializers.ModelSerializer):
+    """
+    BrewingSession serializer. User based with nested brewing.
+    """
+
+    user = serializers.ReadOnlyField(source="user.pk")
+    brewing = BrewingSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = BrewingSession
+        fields = "__all__"
+        read_only_fields = ("user",)
+
+    def create(self, validated_data):
+        """
+        Nested create, removes null brewing entries and creates a brewing instance
+        before feeding it to the tea instance.
+        """
+        brewing = {}
+
+        if "brewing" in validated_data and validated_data["brewing"] is not None:
+            brewing = validated_data.pop("brewing")
+
+        instance = BrewingSession.objects.create(**validated_data)
+
+        if brewing:
+            instance.brewing = get_or_create_brewing(brewing)
+
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        """
+        Nested update, removes null brewing entries and creates a brewing instance
+        before feeding it to the tea instance.
+        """
+        brewing = {}
+
+        if "brewing" in validated_data and validated_data["brewing"] is not None:
+            brewing = validated_data.pop("brewing")
+
+        for k, v in validated_data.items():
+            setattr(instance, k, v)
+
+        if brewing:
+            instance.brewing = get_or_create_brewing(brewing)
+
+        instance.save()
+        return instance

@@ -20,9 +20,10 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import Brewing, Category, Origin, Subcategory, Tea, Vendor
+from .models import Brewing, BrewingSession, Category, Origin, Subcategory, Tea, Vendor
 from .serializers import (
     BrewingSerializer,
+    BrewingSessionSerializer,
     CategorySerializer,
     LoginSerializer,
     OriginSerializer,
@@ -317,3 +318,25 @@ class PlacesDetailsView(APIView):
             return Response(
                 data={key: f"Missing {key} field"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class BrewingSessionViewSet(ModelViewSet):
+    """
+    Brewing session view set.
+    """
+
+    lookup_field = "id"
+    serializer_class = BrewingSessionSerializer
+    http_method_names = ["get", "post", "head", "put", "delete", "options"]
+
+    def get_queryset(self):
+        """ Allows access only to user instances. """
+        return BrewingSession.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """ Passes current user to serializer on create. """
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        """ Passes current user to serializer on update. """
+        serializer.save(user=self.request.user)

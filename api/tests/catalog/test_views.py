@@ -295,3 +295,107 @@ def test_users_cannot_view_others_teas(client, token):
 
     resp = client.get(f"/api/tea/{_id2}/", HTTP_AUTHORIZATION=f"Bearer {token}")
     assert resp.status_code == 404
+
+
+@override_settings(REST_FRAMEWORK=auth_override)
+@pytest.mark.django_db
+def test_user_can_crud_brewing_session(client, token):
+    resp = client.post(
+        "/api/brewing_session/",
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+
+    resp = client.get("/api/brewing_session/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+    assert len(resp.data) > 0
+    _id = resp.data[0]["id"]
+    resp = client.get(
+        f"/api/brewing_session/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
+    )
+    assert resp.status_code == 200
+    assert resp.data["current_infusion"] == 1
+    assert not resp.data["brewing"]
+
+    resp = client.put(
+        f"/api/brewing_session/{_id}/",
+        {"brewing": {"temperature": 90}},
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 200
+    assert resp.data["brewing"]["temperature"] == 90
+
+    resp = client.delete(
+        f"/api/brewing_session/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
+    )
+    assert resp.status_code == 204
+
+    resp = client.get(
+        f"/api/brewing_session/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
+    )
+    assert resp.status_code == 404
+
+
+@override_settings(REST_FRAMEWORK=auth_override)
+@pytest.mark.django_db
+def test_users_cannot_view_others_brewing_sessions(client, token):
+    resp = client.post(
+        "/api/brewing_session/",
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
+    )
+    assert resp.status_code == 201
+
+    resp = client.get("/api/brewing_session/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+    assert len(resp.data) > 0
+    _id = resp.data[0]["id"]
+    resp = client.get(f"/api/brewing_session/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    assert resp.status_code == 200
+
+    resp = client.post(
+        "/api/register/",
+        {
+            "email": "test2@test.com",
+            "password1": "pAzzw0rd!",
+            "password2": "pAzzw0rd!",
+        },
+        content_type="application/json",
+    )
+    resp = client.post(
+        "/api/login/",
+        {"email": "test2@test.com", "password": "pAzzw0rd!"},
+        content_type="application/json",
+    )
+    token2 = resp.data["access"]
+
+    resp = client.get("/api/brewing_session/", HTTP_AUTHORIZATION=f"Bearer {token2}")
+    assert resp.status_code == 200
+    assert len(resp.data) == 0
+    resp = client.get(
+        f"/api/brewing_session/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token2}"
+    )
+    assert resp.status_code == 404
+
+    resp = client.post(
+        "/api/brewing_session/",
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token2}",
+    )
+    assert resp.status_code == 201
+
+    resp = client.get("/api/brewing_session/", HTTP_AUTHORIZATION=f"Bearer {token2}")
+    assert resp.status_code == 200
+    assert len(resp.data) > 0
+    _id2 = resp.data[0]["id"]
+    resp = client.get(
+        f"/api/brewing_session/{_id2}/", HTTP_AUTHORIZATION=f"Bearer {token2}"
+    )
+    assert resp.status_code == 200
+
+    resp = client.get(
+        f"/api/brewing_session/{_id2}/", HTTP_AUTHORIZATION=f"Bearer {token}"
+    )
+    assert resp.status_code == 404

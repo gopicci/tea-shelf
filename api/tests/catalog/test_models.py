@@ -11,6 +11,7 @@ from django.db import IntegrityError, transaction
 from catalog.models import (
     CustomUser,
     Brewing,
+    BrewingSession,
     Origin,
     Category,
     CategoryName,
@@ -363,3 +364,39 @@ def test_tea_model_validators():
         tea.full_clean()
         tea.save()
     assert len(Tea.objects.all()) == 0
+
+
+@pytest.mark.django_db
+def test_brewing_session_model():
+    user = CustomUser(email="test@test.com")
+    user.save()
+    category = Category(name="OOLONG")
+    category.save()
+    tea = Tea(user=user, name="Da Hong Pao")
+    tea.save()
+    brewing = Brewing(
+        temperature=99,
+        weight=5,
+        initial=timedelta(seconds=10),
+        increments=timedelta(seconds=3),
+    )
+    brewing.save()
+    session = BrewingSession(user=user, tea=tea, brewing=brewing)
+    session.save()
+    assert session.user.email == "test@test.com"
+    assert session.tea.name == "Da Hong Pao"
+    assert session.brewing.temperature == 99
+    assert session.current_infusion == 1
+    assert not session.is_completed
+    assert session.created_on
+
+
+@pytest.mark.django_db
+def test_brewing_session_model_validators():
+    user = CustomUser(email="test@test.com")
+    user.save()
+    session = BrewingSession(user=user, current_infusion=0)
+    with pytest.raises(ValidationError):
+        session.full_clean()
+        session.save()
+    assert len(BrewingSession.objects.all()) == 0
