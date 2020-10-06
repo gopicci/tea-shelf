@@ -11,18 +11,22 @@ export const gridStyles = makeStyles({
     }),
   },
   gridRoot: {
-    [theme.breakpoints.down("sm")]: {
-      padding: 0,
-      paddingTop: theme.spacing(6),
-    },
     maxWidth: "100%",
+    padding: 0,
   },
   listRoot: {
     maxWidth: 600,
+    padding: 0,
   },
   gridItem: {
-    width: 240,
+    minWidth: 240,
+    maxWidth: 240,
+    display: "flex",
     padding: theme.spacing(2),
+    "& .MuiPaper-root": {
+      display: "flex",
+      flexGrow: 1,
+    },
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.complex,
@@ -34,6 +38,10 @@ export const gridStyles = makeStyles({
     [theme.breakpoints.down("sm")]: {
       padding: theme.spacing(0.5),
       paddingTop: theme.spacing(1),
+    },
+    "& .MuiPaper-root": {
+      display: "flex",
+      flexGrow: 1,
     },
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,
@@ -63,6 +71,7 @@ export const gridStyles = makeStyles({
   gridCard: {
     position: "relative",
     minHeight: 200,
+    flexGrow: 1,
     display: "flex",
     flexDirection: "column",
     justifyContent: "top",
@@ -84,9 +93,19 @@ export const gridStyles = makeStyles({
     }),
   },
   dateCard: {
+    display: "flex",
+    flexGrow: 1,
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.complex,
+    }),
+  },
+  centerContent: {
+    flexGrow: 1,
+    display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: -theme.spacing(4),
   },
   disabledCard: {
     position: "absolute",
@@ -156,5 +175,13 @@ export const gridStyles = makeStyles({
   },
   icon: {
     color: theme.palette.text.secondary,
+  },
+  extraTopPadding: {
+    paddingTop: theme.spacing(6),
+  },
+  rowSpace: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });

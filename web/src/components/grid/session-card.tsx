@@ -56,16 +56,21 @@ function SessionCard({
         onClick={handleCardClick}
       >
         <CardContent className={classes.content}>
-          <Box className={classes.topBox}>
-            <Typography gutterBottom variant="h5">
-              {dateFormat(started, "ddd dS, h:MM TT")}
+          <Box className={classes.rowSpace}>
+            <Typography gutterBottom variant="caption">
+              {gridView
+                ? dateFormat(started, "ddd dS")
+                : dateFormat(started, "dddd dS")}
             </Typography>
-            <Typography gutterBottom variant="subtitle1">
-              {teaData?.name}
+            <Typography gutterBottom variant="caption">
+              {dateFormat(started, "h:MM TT")}
             </Typography>
           </Box>
+          <Typography gutterBottom variant="h5" className={classes.centerContent}>
+            {teaData?.name}
+          </Typography>
           <Box className={classes.bottomBox}>
-            <Typography variant="body2">
+            <Typography variant="caption">
               Infusions: {sessionData.current_infusion}
             </Typography>
           </Box>

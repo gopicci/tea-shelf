@@ -216,7 +216,8 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
       className={clsx(
         classes.root,
         settings.gridView && classes.gridRoot,
-        !settings.gridView && classes.listRoot
+        !settings.gridView && classes.listRoot,
+        isMobile && route.route !== "SESSIONS" && classes.extraTopPadding
       )}
     >
       <Grid container justify="center">

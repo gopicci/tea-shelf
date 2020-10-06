@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     width: "80%",
     margin: "auto",
     marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(2),
     padding: "auto",
   },
   accordion: {
