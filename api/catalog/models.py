@@ -333,7 +333,7 @@ class Tea(models.Model):
     )
 
     created_on = models.DateTimeField(auto_now_add=True)
-    last_consumed_on = models.DateTimeField(auto_now=True)
+    last_consumed_on = models.DateTimeField(null=True, blank=True)
 
     price = models.FloatField(
         default=0, validators=[MinValueValidator(0)], null=True, blank=True
@@ -373,6 +373,7 @@ class BrewingSession(models.Model):
         default=1, validators=[MinValueValidator(1)]
     )
     created_on = models.DateTimeField(auto_now_add=True)
+    last_brewed_on = models.DateTimeField(null=True, blank=True)
     is_completed = models.BooleanField(default=False)
 
     def __str__(self):
