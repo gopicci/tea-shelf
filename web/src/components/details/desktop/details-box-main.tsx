@@ -31,7 +31,7 @@ type Props = {
   /** Tea instance data */
   teaData: TeaInstance;
   /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
+  handleTeaEdit: (data: TeaRequest, id?: number | string) => void;
 };
 
 /**
@@ -41,7 +41,7 @@ type Props = {
  * @component
  * @subcategory Details desktop
  */
-function DetailsBoxMain({ teaData, handleEdit }: Props): ReactElement {
+function DetailsBoxMain({ teaData, handleTeaEdit }: Props): ReactElement {
   const classes = desktopDetailsStyles();
 
   const settings = useContext(SettingsState);
@@ -68,7 +68,7 @@ function DetailsBoxMain({ teaData, handleEdit }: Props): ReactElement {
    * @param {number} value - Star rating
    */
   function handleRatingChange(value: number | null): void {
-    handleEdit(
+    handleTeaEdit(
       { ...teaData, rating: value ? value * 2 : undefined },
       teaData.id
     );

@@ -10,7 +10,7 @@ import localforage from "localforage";
 import {
   genericReducer,
   GenericAction,
-  uploadOffline,
+  uploadOfflineTeas,
 } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import { TeaInstance } from "../../services/models";
@@ -40,7 +40,7 @@ function TeaContext({ children }: Props): ReactElement {
     async function syncTeas(): Promise<void> {
       try {
         // Try to upload offline tea entries
-        await uploadOffline();
+        await uploadOfflineTeas();
       } catch (e) {
         console.error(e);
       }

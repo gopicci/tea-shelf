@@ -23,7 +23,7 @@ import { fahrenheitToCelsius } from "../../../services/parsing-services";
 import { validationSchema } from "./validation-schema";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
-import { EditorContext, HandleEdit } from "../../editor";
+import { EditorContext, HandleTeaEdit } from "../../edit-tea";
 import { SettingsState } from "../../statecontainers/settings-context";
 import { Route } from "../../../app";
 import {
@@ -70,7 +70,7 @@ function InputForm({
 
   const settings = useContext(SettingsState);
 
-  const handleEdit: HandleEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
   const categories = useContext(CategoriesState);
 
   const teaData = route.payload;
@@ -139,10 +139,10 @@ function InputForm({
     if (Object.keys(western).length) data["western_brewing"] = western;
 
     if (values.id) {
-      handleEdit(data, values.id);
+      handleTeaEdit(data, values.id);
       setRoute({ route: "TEA_DETAILS", payload: { ...data, id: values.id } });
     } else {
-      handleEdit(data, undefined, "Tea successfully added.");
+      handleTeaEdit(data, undefined, "Tea successfully added.");
       setRoute({ route: "MAIN" });
     }
   }

@@ -2,13 +2,19 @@ import React, { ReactElement, useCallback, useContext, useState } from "react";
 import { CircularProgress, IconButton, Tooltip } from "@material-ui/core";
 import { CloudDone, Refresh } from "@material-ui/icons";
 import localforage from "localforage";
-import { getOfflineTeas, uploadOffline } from "../../services/sync-services";
+import {
+  getOfflineTeas,
+  getOfflineSessions,
+  uploadOfflineTeas,
+  uploadOfflineSessions,
+} from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import { SyncDispatch, SyncState } from "../statecontainers/sync-context";
 import { SnackbarDispatch } from "../statecontainers/snackbar-context";
 import { TeaDispatch } from "../statecontainers/tea-context";
 import { SubcategoriesDispatch } from "../statecontainers/subcategories-context";
 import { VendorsDispatch } from "../statecontainers/vendors-context";
+import { SessionDispatch } from "../statecontainers/session-context";
 
 /**
  * Sync icon button component. Callback runs on mount and on click.
@@ -25,6 +31,7 @@ function SyncButton(): ReactElement {
   const syncDispatch = useContext(SyncDispatch);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
+  const sessionDispatch = useContext(SessionDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorDispatch = useContext(VendorsDispatch);
 
@@ -37,7 +44,9 @@ function SyncButton(): ReactElement {
 
     try {
       // Try to upload offline tea entries
-      await uploadOffline();
+      await uploadOfflineTeas();
+      // Try to upload offline brewing sessions entries
+      await uploadOfflineSessions();
     } catch (e) {
       console.error(e);
       error = e;
@@ -56,6 +65,24 @@ function SyncButton(): ReactElement {
 
       // Update teas cache
       await localforage.setItem("teas", body);
+    } catch (e) {
+      console.error(e);
+      error = e;
+    }
+
+    try {
+      // Get remaining offline sessions
+      const offlineSessions = await getOfflineSessions();
+
+      // Download sessions from API
+      const res = await APIRequest("/brewing_session/", "GET");
+      const body = await res.json();
+
+      // Update global teas state
+      sessionDispatch({ type: "SET", data: offlineSessions.concat(body) });
+
+      // Update teas cache
+      await localforage.setItem("sessions", body);
     } catch (e) {
       console.error(e);
       error = e;
@@ -119,6 +146,7 @@ function SyncButton(): ReactElement {
     subcategoriesDispatch,
     syncDispatch,
     teaDispatch,
+    sessionDispatch,
     vendorDispatch,
   ]);
 

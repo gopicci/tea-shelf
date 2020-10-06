@@ -8,7 +8,7 @@ import ActionIcons from "../../generics/action-icons";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeasState } from "../../statecontainers/tea-context";
-import { EditorContext, HandleEdit } from "../../editor";
+import { EditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { Confirmation, TeaInstance } from "../../../services/models";
 
@@ -42,7 +42,7 @@ function DesktopDetailsLayout({
 }: Props): ReactElement {
   const classes = desktopDetailsStyles();
 
-  const handleEdit: HandleEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
   const categories = useContext(CategoriesState);
   const teas = useContext(TeasState);
 
@@ -60,10 +60,10 @@ function DesktopDetailsLayout({
     <>
       {teaData && (
         <DialogContent className={classes.content}>
-          <DetailsBoxMain teaData={teaData} handleEdit={handleEdit} />
+          <DetailsBoxMain teaData={teaData} handleTeaEdit={handleTeaEdit} />
           <DetailsBoxNotes
             teaData={teaData}
-            handleEdit={handleEdit}
+            handleTeaEdit={handleTeaEdit}
             setConfirmation={setConfirmation}
             setRoute={setRoute}
           />

@@ -3,7 +3,7 @@ import LoadImage from "./input/desktop/load-image";
 import InputForm from "./input/desktop/input-form";
 import { Route } from "../app";
 import { TeaModel } from "../services/models";
-import { EditorContext, HandleEdit } from "./editor";
+import { EditorContext, HandleTeaEdit } from "./edit-tea";
 import MobileInput from "./input/mobile/mobile-input";
 import CaptureImage from "./input/mobile/capture-image";
 
@@ -34,7 +34,7 @@ function Create({ route, setRoute, isMobile }: Props): ReactElement {
   const [imageData, setImageData] = useState("");
   const [visionData, setVisionData] = useState({} as TeaModel);
 
-  const handleEdit: HandleEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
 
   /** Routes to main. */
   function handleClose(): void {
@@ -51,7 +51,7 @@ function Create({ route, setRoute, isMobile }: Props): ReactElement {
   const inputProps = {
     route,
     setRoute,
-    handleEdit,
+    handleTeaEdit,
     imageData,
     visionData,
     setImageLoadDone,

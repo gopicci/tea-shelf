@@ -41,7 +41,7 @@ type Props = {
   /** Set app's main route */
   setRoute: (route: Route) => void;
   /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
+  handleTeaEdit: (data: TeaRequest, id?: number | string) => void;
 };
 
 /**
@@ -50,7 +50,7 @@ type Props = {
  * @component
  * @subcategory Details mobile
  */
-function EditNotes({ teaData, setRoute, handleEdit }: Props): ReactElement {
+function EditNotes({ teaData, setRoute, handleTeaEdit }: Props): ReactElement {
   const classes = useStyles();
 
   const [notes, setNotes] = useState(teaData.notes ? teaData.notes : "");
@@ -70,7 +70,7 @@ function EditNotes({ teaData, setRoute, handleEdit }: Props): ReactElement {
    * Upload notes, updates state and routes back to tea details.
    */
   function handleSave(): void {
-    handleEdit({ ...teaData, notes: notes }, teaData.id);
+    handleTeaEdit({ ...teaData, notes: notes }, teaData.id);
     handlePrevious();
   }
 

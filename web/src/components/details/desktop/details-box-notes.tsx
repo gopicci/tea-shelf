@@ -18,7 +18,7 @@ type Props = {
   /** Tea instance data */
   teaData: TeaInstance;
   /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
+  handleTeaEdit: (data: TeaRequest, id?: number | string) => void;
   /** Set confirmation on close */
   setConfirmation: (confirmation?: Confirmation) => void;
   /** Set app's main route */
@@ -34,7 +34,7 @@ type Props = {
  */
 function DetailsBoxNotes({
   teaData,
-  handleEdit,
+  handleTeaEdit,
   setConfirmation,
   setRoute,
 }: Props): ReactElement {
@@ -48,12 +48,12 @@ function DetailsBoxNotes({
       setConfirmation({
         message: "Save notes?",
         callback: () => {
-          handleEdit({ ...teaData, notes: notes }, teaData.id);
+          handleTeaEdit({ ...teaData, notes: notes }, teaData.id);
           setRoute({ route: "MAIN" });
         },
       });
     else setConfirmation(undefined);
-  }, [handleEdit, notes, notesEditing, setConfirmation, setRoute, teaData]);
+  }, [handleTeaEdit, notes, notesEditing, setConfirmation, setRoute, teaData]);
 
   /**
    * Updates local notes state on text input change.
@@ -66,7 +66,7 @@ function DetailsBoxNotes({
 
   /** Updates tea instance with notes changes. */
   function handleNotesSave(): void {
-    handleEdit({ ...teaData, notes: notes }, teaData.id);
+    handleTeaEdit({ ...teaData, notes: notes }, teaData.id);
     setNotesEditing(false);
   }
 

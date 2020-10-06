@@ -45,9 +45,9 @@ interface FormBrewingModel extends BrewingModel {
 /**
  * Brewing session data structure.
  */
-export interface BrewingSession {
-  /** Instance of the tea being used */
-  tea?: TeaInstance;
+export interface SessionModel {
+  /** ID of the tea being used */
+  tea?: string;
   /** Session brewing details */
   brewing: BrewingModel;
   /** Creation date */
@@ -62,7 +62,7 @@ export interface BrewingSession {
  * Extension of BrewingSession that defines a session instance,
  * with required ID.
  */
-export interface BrewingSessionInstance extends BrewingSession {
+export interface SessionInstance extends SessionModel {
   /** Instance ID, UUID string if coming from API, number if generated offline */
   id: string | number;
 }

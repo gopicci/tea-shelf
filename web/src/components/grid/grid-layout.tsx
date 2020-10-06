@@ -3,7 +3,12 @@ import { Box, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import TeaCard from "./tea-card";
-import { getSubcategoryName } from "../../services/parsing-services";
+import SessionCard from "./session-card";
+import {
+  getSubcategoryName,
+  getTeaDetails,
+} from "../../services/parsing-services";
+import { getCategoryName } from "../../services/parsing-services";
 import { TeasState } from "../statecontainers/tea-context";
 import { FilterState } from "../statecontainers/filter-context";
 import { SettingsState } from "../statecontainers/settings-context";
@@ -13,7 +18,8 @@ import { VendorsState } from "../statecontainers/vendors-context";
 import { SearchState } from "../statecontainers/search-context";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
-import { getCategoryName } from "../../services/parsing-services";
+import { SessionsState } from "../statecontainers/session-context";
+import SessionsGrid from "./sessions-grid";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -105,6 +111,7 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
   const vendors = useContext(VendorsState);
   const filterState = useContext(FilterState);
   const teasState = useContext(TeasState);
+  const sessionsState = useContext(SessionsState);
   const settings = useContext(SettingsState);
   const searchState = useContext(SearchState);
 
@@ -280,7 +287,10 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
       )}
     >
       <Grid container justify="center">
-        {filteredTeas &&
+        {route.route === "SESSIONS" ? (
+          <SessionsGrid setRoute={setRoute} isMobile={isMobile} />
+        ) : (
+          filteredTeas &&
           filteredTeas.map((tea, i) => (
             <Grid
               item
@@ -297,7 +307,8 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
                 setRoute={setRoute}
               />
             </Grid>
-          ))}
+          ))
+        )}
       </Grid>
     </Box>
   );

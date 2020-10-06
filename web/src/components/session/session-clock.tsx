@@ -9,7 +9,7 @@ import { Box, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Countdown from "react-countdown";
 import { parseHMSToSeconds } from "../../services/parsing-services";
-import { BrewingSession } from "../../services/models";
+import { SessionModel } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   clockBox: {
@@ -42,9 +42,9 @@ type CountdownProps = {
  */
 type Props = {
   /** Brewing session state */
-  session: BrewingSession;
+  session: SessionModel;
   /** Set brewing session state */
-  setSession: (session: BrewingSession) => void;
+  setSession: (session: SessionModel) => void;
 };
 
 /**

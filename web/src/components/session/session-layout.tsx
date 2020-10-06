@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
-import { BrewingModel, BrewingSession } from "../../services/models";
+import { BrewingModel, SessionModel } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +49,7 @@ function SessionLayout(): ReactElement {
     increments: "00:00:05",
   };
 
-  const [session, setSession] = useState<BrewingSession>({
+  const [session, setSession] = useState<SessionModel>({
     brewing: brewing,
     created_on: String(Date.now()),
     current_infusion: 1,

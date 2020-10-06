@@ -4,7 +4,8 @@ import {
   SubcategoryModel,
   OriginModel,
   TeaRequest,
-} from './models';
+  TeaInstance,
+} from "./models";
 
 /**
  * Gets category name from list of categories based on id.
@@ -19,7 +20,8 @@ export function getCategoryName(
   id: number
 ): string {
   const category = Object.values(categories).find((value) => value.id === id);
-  if (category?.name) return category.name.charAt(0) + category.name.slice(1).toLowerCase();
+  if (category?.name)
+    return category.name.charAt(0) + category.name.slice(1).toLowerCase();
   else return "";
 }
 
@@ -146,16 +148,24 @@ export function parseSecondsToHMS(seconds: number): string {
 export function brewingTimesToSeconds(request: TeaRequest): TeaRequest {
   let newRequest = { ...request };
   if (newRequest.gongfu_brewing?.initial) {
-    newRequest.gongfu_brewing.initial = parseHMSToSeconds(newRequest.gongfu_brewing.initial).toString();
+    newRequest.gongfu_brewing.initial = parseHMSToSeconds(
+      newRequest.gongfu_brewing.initial
+    ).toString();
   }
   if (newRequest.western_brewing?.initial) {
-    newRequest.western_brewing.initial = parseHMSToSeconds(newRequest.western_brewing.initial).toString();
+    newRequest.western_brewing.initial = parseHMSToSeconds(
+      newRequest.western_brewing.initial
+    ).toString();
   }
   if (newRequest.gongfu_brewing?.increments) {
-    newRequest.gongfu_brewing.increments = parseHMSToSeconds(newRequest.gongfu_brewing.increments).toString();
+    newRequest.gongfu_brewing.increments = parseHMSToSeconds(
+      newRequest.gongfu_brewing.increments
+    ).toString();
   }
   if (newRequest.western_brewing?.increments) {
-    newRequest.western_brewing.increments = parseHMSToSeconds(newRequest.western_brewing.increments).toString();
+    newRequest.western_brewing.increments = parseHMSToSeconds(
+      newRequest.western_brewing.increments
+    ).toString();
   }
   return newRequest;
 }
@@ -170,16 +180,24 @@ export function brewingTimesToSeconds(request: TeaRequest): TeaRequest {
 export function brewingTimesToHMS(request: TeaRequest): TeaRequest {
   let newRequest = { ...request };
   if (newRequest.gongfu_brewing?.initial) {
-    newRequest.gongfu_brewing.initial = parseSecondsToHMS(parseInt(newRequest.gongfu_brewing.initial));
+    newRequest.gongfu_brewing.initial = parseSecondsToHMS(
+      parseInt(newRequest.gongfu_brewing.initial)
+    );
   }
   if (newRequest.western_brewing?.initial) {
-    newRequest.western_brewing.initial = parseSecondsToHMS(parseInt(newRequest.western_brewing.initial));
+    newRequest.western_brewing.initial = parseSecondsToHMS(
+      parseInt(newRequest.western_brewing.initial)
+    );
   }
   if (newRequest.gongfu_brewing?.increments) {
-    newRequest.gongfu_brewing.increments = parseSecondsToHMS(parseInt(newRequest.gongfu_brewing.increments));
+    newRequest.gongfu_brewing.increments = parseSecondsToHMS(
+      parseInt(newRequest.gongfu_brewing.increments)
+    );
   }
   if (newRequest.western_brewing?.increments) {
-    newRequest.western_brewing.increments = parseSecondsToHMS(parseInt(newRequest.western_brewing.increments));
+    newRequest.western_brewing.increments = parseSecondsToHMS(
+      parseInt(newRequest.western_brewing.increments)
+    );
   }
   return newRequest;
 }
@@ -195,4 +213,16 @@ export function getCountryCode(country: string): string {
   if (countryCodes[country]) return countryCodes[country];
   if (Object.values(countryCodes).includes(country)) return country;
   return "";
+}
+
+/**
+ * Returns a tea instance from an ID.
+ *
+ * @category Services
+ * @param {TeaInstance[]} teas - List of teas
+ * @param {string} id - Lookup tea ID
+ * @returns {TeaInstance|undefined}
+ */
+export function getTeaDetails(teas: TeaInstance[], id: string) {
+  return Object.values(teas).find((value) => value.id === id);
 }

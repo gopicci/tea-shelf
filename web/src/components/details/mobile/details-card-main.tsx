@@ -33,7 +33,7 @@ type Props = {
   /** Tea instance data */
   teaData: TeaInstance;
   /** Handles tea posting process */
-  handleEdit: (data: TeaRequest, id?: number | string) => void;
+  handleTeaEdit: (data: TeaRequest, id?: number | string) => void;
 };
 
 /**
@@ -43,7 +43,7 @@ type Props = {
  * @component
  * @subcategory Details mobile
  */
-function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
+function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
   const classes = mobileDetailsStyles();
 
   const settings = useContext(SettingsState);
@@ -59,7 +59,7 @@ function DetailsCardMain({ teaData, handleEdit }: Props): ReactElement {
    * @param {number} value - Star rating
    */
   function handleRatingChange(value: number | null): void {
-    handleEdit(
+    handleTeaEdit(
       { ...teaData, rating: value ? value * 2 : undefined },
       teaData.id
     );

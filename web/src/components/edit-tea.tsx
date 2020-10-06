@@ -33,11 +33,11 @@ type Props = {
 };
 
 /**
- * handleEdit function type.
+ * handleTeaEdit function type.
  *
- * @memberOf Editor
+ * @memberOf EditTea
  */
-export type HandleEdit = (
+export type HandleTeaEdit = (
   /** Request data. */
   data: TeaRequest,
   /** Optional ID for editing request. */
@@ -46,7 +46,7 @@ export type HandleEdit = (
   message?: string
 ) => void;
 
-export const EditorContext = createContext({} as HandleEdit);
+export const EditorContext = createContext({} as HandleTeaEdit);
 
 /**
  * Provides tea instance editing to components that needs it.
@@ -54,7 +54,7 @@ export const EditorContext = createContext({} as HandleEdit);
  * @component
  * @subcategory Main
  */
-function Editor({ children }: Props): ReactElement {
+function EditTea({ children }: Props): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const subcategories = useContext(SubcategoriesState);
@@ -67,7 +67,7 @@ function Editor({ children }: Props): ReactElement {
    * Handles tea instance edit/creation process. Updates state and saves instance locally
    * first. Then tries to sync local cache with API.
    */
-  const handleEdit: HandleEdit = async (
+  const handleTeaEdit: HandleTeaEdit = async (
     teaData,
     id,
     message
@@ -155,10 +155,10 @@ function Editor({ children }: Props): ReactElement {
   };
 
   return (
-    <EditorContext.Provider value={handleEdit}>
+    <EditorContext.Provider value={handleTeaEdit}>
       {children}
     </EditorContext.Provider>
   );
 }
 
-export default Editor;
+export default EditTea;

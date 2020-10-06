@@ -7,7 +7,7 @@ import PasswordRequest from "./components/auth/password-request";
 import PasswordReset from "./components/auth/password-reset";
 import MainLayout from "./components/main-layout";
 import SortFilter from "./components/filters/sort-filter";
-import Editor from "./components/editor";
+import EditTea from "./components/edit-tea";
 import CustomSnackbar from "./components/snackbar/custom-snackbar";
 import MainStateContainer from "./components/statecontainers/main-state-container";
 import Create from "./components/create";
@@ -37,7 +37,8 @@ export type Route = {
     | "SETTINGS"
     | "REGISTER"
     | "PASSWORD_REQUEST"
-    | "CONFIRMATION";
+    | "CONFIRMATION"
+    | "SESSIONS";
   /** Optional route payload */
   payload?: TeaInstance;
   /** Optional route confirmation */
@@ -75,6 +76,7 @@ function App(): ReactElement {
     switch (route.route) {
       case "MAIN":
       case "ARCHIVE":
+      case "SESSIONS":
       case "CONFIRMATION":
         return <MainLayout {...props} />;
       case "FILTER":
@@ -128,7 +130,7 @@ function App(): ReactElement {
       ) : (
         <MainStateContainer>
           <>
-            <Editor>{getRoute(route)}</Editor>
+            <EditTea>{getRoute(route)}</EditTea>
             <CustomSnackbar />
           </>
         </MainStateContainer>

@@ -9,7 +9,7 @@ import DetailsCardVendor from "./details-card-vendor";
 import DetailsCardDescription from "./details-card-description";
 import EditNotes from "./edit-notes";
 import { TeasState } from "../../statecontainers/tea-context";
-import { EditorContext, HandleEdit } from "../../editor";
+import { EditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { TeaInstance } from "../../../services/models";
 
@@ -51,7 +51,7 @@ type Props = {
 function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
-  const handleEdit: HandleEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
   const teas = useContext(TeasState);
 
   const [teaData, setTeaData] = useState<TeaInstance | undefined>();
@@ -86,7 +86,7 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
         (route.route === "EDIT_NOTES" ? (
           <EditNotes
             teaData={teaData}
-            handleEdit={handleEdit}
+            handleTeaEdit={handleTeaEdit}
             setRoute={setRoute}
           />
         ) : (
@@ -94,7 +94,7 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
             <DetailsAppBar setRoute={setRoute} teaData={teaData} />
             <Toolbar />
             <Box className={classes.page}>
-              <DetailsCardMain teaData={teaData} handleEdit={handleEdit} />
+              <DetailsCardMain teaData={teaData} handleTeaEdit={handleTeaEdit} />
               <DetailsCardNotes setRoute={setRoute} teaData={teaData} />
               {teaData.vendor && <DetailsCardVendor vendor={teaData.vendor} />}
               {teaData.origin && <DetailsCardOrigin origin={teaData.origin} />}

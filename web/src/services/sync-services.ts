@@ -2,12 +2,21 @@ import localforage from "localforage";
 import validator from "validator";
 import { APIRequest } from "./auth-services";
 import { brewingTimesToSeconds } from "./parsing-services";
-import { TeaInstance, SubcategoryModel, VendorModel } from "./models";
+import {
+  TeaInstance,
+  SubcategoryModel,
+  VendorModel,
+  SessionInstance,
+} from "./models";
 
 /**
  * Models allowed to be used in the generic services requiring an instance ID.
  */
-type genericModels = TeaInstance | SubcategoryModel | VendorModel;
+type genericModels =
+  | TeaInstance
+  | SessionInstance
+  | SubcategoryModel
+  | VendorModel;
 
 /**
  * Generic reducer actions.
@@ -87,39 +96,45 @@ export function generateUniqueId(array: genericModels[]): number {
 }
 
 /**
- * Uploads a tea instance, returns a response promise.
+ * Uploads a tea or brewing session instance, returns a response promise.
  *
  * @category Services
  * @returns {Promise<Response>}
  */
-export async function uploadInstance(tea: TeaInstance): Promise<Response> {
-  let request = JSON.parse(JSON.stringify(tea));
+export async function uploadInstance(
+  instance: TeaInstance | SessionInstance
+): Promise<Response> {
+  const endpoint = "name" in instance ? "tea" : "brewing_session";
+
+  let request = JSON.parse(JSON.stringify(instance));
 
   request = brewingTimesToSeconds(request);
 
   // String UUID means API generated, instance has been previously uploaded
-  if (typeof tea.id === "string" && validator.isUUID(tea.id)) {
+  if (typeof instance.id === "string" && validator.isUUID(instance.id)) {
     // Remove image from PUT request
     if (request.image) delete request.image;
-    return APIRequest(`/tea/${request.id}/`, "PUT", JSON.stringify(request));
+    return APIRequest(
+      `/${endpoint}/${request.id}/`,
+      "PUT",
+      JSON.stringify(request)
+    );
   } else {
-    return APIRequest("/tea/", "POST", JSON.stringify(tea));
+    return APIRequest(`/${endpoint}/`, "POST", JSON.stringify(instance));
   }
 }
 
 /**
- * Tries to upload offline teas from storage to API. If successful releases
- * the cache.
+ * Tries to upload offline tea instances from storage to API.
+ * If successful releases the cache.
  *
  * @category Services
  */
-export async function uploadOffline(): Promise<void> {
+export async function uploadOfflineTeas(): Promise<void> {
   const offlineTeas = await localforage.getItem<TeaInstance[]>("offline-teas");
-
   if (!offlineTeas) return;
 
   let failed: TeaInstance[] = [];
-
   let error = "";
 
   const requests = offlineTeas.map(async (tea) => {
@@ -143,6 +158,41 @@ export async function uploadOffline(): Promise<void> {
 }
 
 /**
+ * Tries to upload offline brewing session instances from storage to API.
+ * If successful releases the cache.
+ *
+ * @category Services
+ */
+export async function uploadOfflineSessions(): Promise<void> {
+  const offlineSessions = await localforage.getItem<SessionInstance[]>(
+    "offline-sessions"
+  );
+  if (!offlineSessions) return;
+
+  let failed: SessionInstance[] = [];
+  let error = "";
+
+  const requests = offlineSessions.map(async (session) => {
+    try {
+      await uploadInstance(session);
+    } catch (e) {
+      // Save failed instance if proper
+      if (e.message !== "Bad Request") failed.push(session);
+      error = e.message;
+    }
+  });
+
+  await Promise.allSettled(requests);
+
+  if (failed.length) {
+    await localforage.setItem<SessionInstance[]>("offline-sessions", failed);
+    throw new Error(error);
+  } else {
+    await localforage.setItem("offline-sessions", []);
+  }
+}
+
+/**
  * Gets offline teas (not uploaded yet) from storage.
  *
  * @returns {Promise<TeaInstance[]>}
@@ -151,6 +201,20 @@ export async function uploadOffline(): Promise<void> {
 export async function getOfflineTeas(): Promise<TeaInstance[]> {
   const cache = await localforage.getItem<TeaInstance[]>("offline-teas");
   if (!cache) return localforage.setItem("offline-teas", []);
+  else return Promise.all(cache);
+}
+
+/**
+ * Gets offline sessions (not uploaded yet) from storage.
+ *
+ * @returns {Promise<SessionInstance[]>}
+ * @category Services
+ */
+export async function getOfflineSessions(): Promise<SessionInstance[]> {
+  const cache = await localforage.getItem<SessionInstance[]>(
+    "offline-sessions"
+  );
+  if (!cache) return localforage.setItem("offline-sessions", []);
   else return Promise.all(cache);
 }
 

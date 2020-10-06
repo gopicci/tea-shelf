@@ -11,7 +11,7 @@ import EditWeightList from "./edit-weight-list";
 import EditWeightInput from "./edit-weight-input";
 import EditTime from "./edit-time";
 import EditPrice from "./edit-price";
-import { EditorContext, HandleEdit } from "../../editor";
+import { EditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { TeaModel, TeaRequest } from "../../../services/models";
 
@@ -61,7 +61,7 @@ function MobileInput({
   imageData,
   visionData,
 }: Props): ReactElement {
-  const handleEdit: HandleEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
 
   const [editRoute, setEditRoute] = useState("input_layout");
 
@@ -86,13 +86,13 @@ function MobileInput({
       teaData.subcategory.category = teaData.category;
 
     if (route.payload) {
-      handleEdit(teaData, route.payload.id);
+      handleTeaEdit(teaData, route.payload.id);
       setRoute({
         route: "TEA_DETAILS",
         payload: { ...teaData, id: route.payload.id },
       });
     } else {
-      handleEdit(teaData, undefined, "Tea successfully added.");
+      handleTeaEdit(teaData, undefined, "Tea successfully added.");
       setRoute({ route: "MAIN" });
     }
   }

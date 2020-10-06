@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { deleteTea } from "../../services/sync-services";
 import { SnackbarDispatch } from "../statecontainers/snackbar-context";
 import { TeaDispatch } from "../statecontainers/tea-context";
-import { EditorContext } from "../editor";
+import { EditorContext } from "../edit-tea";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
 
@@ -45,7 +45,7 @@ function ActionIcons({
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
 
-  const handleEdit = useContext(EditorContext);
+  const handleTeaEdit = useContext(EditorContext);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
 
@@ -72,7 +72,7 @@ function ActionIcons({
   /** Archives tea */
   function handleArchive(): void {
     setAnchorEl(undefined);
-    handleEdit(
+    handleTeaEdit(
       { ...teaData, is_archived: true },
       teaData.id,
       "Tea successfully archived."
@@ -82,7 +82,7 @@ function ActionIcons({
 
   /** Unarchives tea */
   function handleUnArchive(): void {
-    handleEdit(
+    handleTeaEdit(
       { ...teaData, is_archived: false },
       teaData.id,
       "Tea successfully unarchived."
