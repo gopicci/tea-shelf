@@ -73,7 +73,8 @@ function MainLayout(props: Props): ReactElement {
       <Box className={classes.page}>
         <DrawerLayout open={open} setOpen={setOpen} {...props} />
         <Box className={classes.mainBox}>
-          {teas.length > 0 &&
+          {route.route !== "SESSIONS" &&
+            teas.length > 0 &&
             (isMobile ? <FilterBar {...props} /> : <FilterAccordion />)}
           <GridLayout {...props} />
         </Box>

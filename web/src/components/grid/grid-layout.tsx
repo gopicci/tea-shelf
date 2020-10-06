@@ -1,14 +1,11 @@
 import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { Box, Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
+import SessionsGrid from "./sessions-grid";
 import TeaCard from "./tea-card";
-import SessionCard from "./session-card";
-import {
-  getSubcategoryName,
-  getTeaDetails,
-} from "../../services/parsing-services";
+import { getSubcategoryName } from "../../services/parsing-services";
 import { getCategoryName } from "../../services/parsing-services";
+import { gridStyles } from "../../style/grid-styles";
 import { TeasState } from "../statecontainers/tea-context";
 import { FilterState } from "../statecontainers/filter-context";
 import { SettingsState } from "../statecontainers/settings-context";
@@ -18,69 +15,6 @@ import { VendorsState } from "../statecontainers/vendors-context";
 import { SearchState } from "../statecontainers/search-context";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
-import { SessionsState } from "../statecontainers/session-context";
-import SessionsGrid from "./sessions-grid";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    margin: "auto",
-    padding: theme.spacing(2),
-    transition: theme.transitions.create("all", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.complex,
-    }),
-  },
-  gridRoot: {
-    [theme.breakpoints.down("sm")]: {
-      padding: 0,
-      paddingTop: theme.spacing(6),
-    },
-    maxWidth: "100%",
-  },
-  listRoot: {
-    maxWidth: 600,
-  },
-  gridItem: {
-    width: 240,
-    padding: theme.spacing(2),
-    transition: theme.transitions.create("all", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.complex,
-    }),
-  },
-  listItem: {
-    width: "100%",
-    padding: theme.spacing(1),
-    [theme.breakpoints.down("sm")]: {
-      padding: theme.spacing(0.5),
-      paddingTop: theme.spacing(1),
-    },
-    transition: theme.transitions.create("all", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.complex,
-    }),
-  },
-  sortByBox: {
-    display: "flex",
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingTop: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
-      paddingTop: theme.spacing(1),
-    },
-    "& .MuiButtonBase-root": {
-      padding: 0,
-    },
-  },
-  reverseButton: {
-    display: "flex",
-    cursor: "pointer",
-  },
-  sortByText: {
-    flexGrow: 1,
-    margin: "auto",
-  },
-}));
 
 /**
  * GridLayout props.
@@ -104,14 +38,13 @@ type Props = {
  * @subcategory Main
  */
 function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
-  const classes = useStyles();
+  const classes = gridStyles();
 
   const categories = useContext(CategoriesState);
   const subcategories = useContext(SubcategoriesState);
   const vendors = useContext(VendorsState);
   const filterState = useContext(FilterState);
   const teasState = useContext(TeasState);
-  const sessionsState = useContext(SessionsState);
   const settings = useContext(SettingsState);
   const searchState = useContext(SearchState);
 

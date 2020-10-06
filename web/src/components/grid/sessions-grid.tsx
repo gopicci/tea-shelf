@@ -1,41 +1,17 @@
 import React, { ReactElement, useContext } from "react";
 import { Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import SessionCard from "./session-card";
 import DateCard from "./date-card";
 import { getTeaDetails } from "../../services/parsing-services";
+import { gridStyles } from "../../style/grid-styles";
 import { TeasState } from "../statecontainers/tea-context";
 import { SettingsState } from "../statecontainers/settings-context";
 import { SessionsState } from "../statecontainers/session-context";
-
 import { Route } from "../../app";
 import { SessionInstance } from "../../services/models";
 
-const useStyles = makeStyles((theme) => ({
-  gridItem: {
-    width: 240,
-    padding: theme.spacing(2),
-    transition: theme.transitions.create("all", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.complex,
-    }),
-  },
-  listItem: {
-    width: "100%",
-    padding: theme.spacing(1),
-    [theme.breakpoints.down("sm")]: {
-      padding: theme.spacing(0.5),
-      paddingTop: theme.spacing(1),
-    },
-    transition: theme.transitions.create("all", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.complex,
-    }),
-  },
-}));
-
 /**
- * Groups sessions state in a structured object by year/month.
+ * Structured object to group sessions state by year/month.
  *
  * @memberOf SessionsGrid
  */
@@ -65,41 +41,36 @@ type Props = {
  * @subcategory Main
  */
 function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
-  const classes = useStyles();
+  const classes = gridStyles();
 
   const teasState = useContext(TeasState);
   const sessionsState = useContext(SessionsState);
   const settings = useContext(SettingsState);
 
-  let data: SessionsData = {};
+  const data = sessionsState.reduce((obj: SessionsData, session) => {
+    const date = new Date(session.created_on);
+    const year = date.getFullYear();
+    const month = date.getMonth();
 
-  if (sessionsState !== undefined)
-    sessionsState.map((session) => {
-      const date = new Date(session.created_on);
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      let list: SessionInstance[] = [...data[year][month]];
-      list.push(session);
-      data = {
-        ...data,
-        [year]: {
-          ...data[year],
-          [month]: list,
-        },
+    if (!obj[year]?.[month])
+      obj[year] = {
+        ...obj[year],
+        [month]: [],
       };
+
+    obj[year][month].push(session);
+    obj[year][month].sort((a, b) => {
+      return Date.parse(b.created_on) - Date.parse(a.created_on);
     });
-  const checkboxList = years.reduce(
-    (obj: { [index: string]: boolean }, item) => {
-      obj[item.toLowerCase()] = false;
-      return obj;
-    },
-    {}
-  );
+
+    return obj;
+  }, {});
+
   return (
     <>
       {data &&
         Object.entries(data).map(([year, months]) => {
-          Object.entries(months).map(([month, sessions]) => {
+          return Object.entries(months).map(([month, sessions]) => {
             let cards: ReactElement[] = [];
 
             cards.push(
@@ -113,7 +84,7 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
                 key={year + month}
               >
                 <DateCard
-                  date={new Date(`${month}/${year}`)}
+                  date={new Date(parseInt(year), parseInt(month))}
                   gridView={!!(settings.gridView && !isMobile)}
                 />
               </Grid>
@@ -121,16 +92,26 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
 
             sessions.map((session) =>
               cards.push(
-                <SessionCard
-                  sessionData={session}
-                  teaData={
-                    session.tea
-                      ? getTeaDetails(teasState, session.tea)
-                      : undefined
+                <Grid
+                  item
+                  className={
+                    settings.gridView && !isMobile
+                      ? classes.gridItem
+                      : classes.listItem
                   }
-                  gridView={!!(settings.gridView && !isMobile)}
-                  setRoute={setRoute}
-                />
+                  key={session.id}
+                >
+                  <SessionCard
+                    sessionData={session}
+                    teaData={
+                      session.tea
+                        ? getTeaDetails(teasState, session.tea)
+                        : undefined
+                    }
+                    gridView={!!(settings.gridView && !isMobile)}
+                    setRoute={setRoute}
+                  />
+                </Grid>
               )
             );
 
