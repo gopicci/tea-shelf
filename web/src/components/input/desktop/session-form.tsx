@@ -8,20 +8,23 @@ import {
   FormControlLabel,
   Switch,
 } from "@material-ui/core";
-
+import validator from "validator";
 import InputFormBrewing from "./input-form-brewing";
-import { fahrenheitToCelsius } from "../../../services/parsing-services";
+import TeaAutocomplete from "./tea-autocomplete";
+import {
+  fahrenheitToCelsius,
+  getTeaDetails,
+} from "../../../services/parsing-services";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { SessionEditorContext, HandleSessionEdit } from "../../edit-session";
 import { SettingsState } from "../../statecontainers/settings-context";
+import { TeasState } from "../../statecontainers/tea-context";
 import { Route } from "../../../app";
 import {
   BrewingModel,
   SessionFormModel,
   SessionModel,
 } from "../../../services/models";
-import TeaAutocomplete from "./tea-autocomplete";
-import validator from "validator";
 
 /**
  * SessionForm props.
@@ -46,6 +49,7 @@ function SessionForm({ route, setRoute }: Props): ReactElement {
   const classes = desktopFormStyles();
 
   const settings = useContext(SettingsState);
+  const teas = useContext(TeasState);
 
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
@@ -61,12 +65,13 @@ function SessionForm({ route, setRoute }: Props): ReactElement {
     let data = {} as SessionModel;
 
     if (values.tea) {
-      if (typeof values.tea === "string") data["name"] = values.tea;
-      else if (
-        typeof values.tea.id === "string" &&
-        validator.isUUID(values.tea.id)
-      )
-        data["tea"] = values.tea.id;
+      if (validator.isUUID(values.tea)) {
+        const teaInstance = getTeaDetails(teas, values.tea);
+        if (teaInstance) {
+          data["tea"] = values.tea;
+          data["name"] = teaInstance.name;
+        }
+      } else data["name"] = values.tea;
     }
 
     let brewing: BrewingModel = {};

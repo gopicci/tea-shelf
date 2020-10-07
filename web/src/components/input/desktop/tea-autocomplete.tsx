@@ -63,26 +63,16 @@ function TeaAutocomplete({ formikProps }: Props): ReactElement {
         return entry.name.toLowerCase() === name.toLowerCase();
       });
       if (match) {
-        // Match found, update tea field
+        // Match found, update tea field with ID
         const tea: TeaInstance = match[1];
-        setFieldValue("tea", tea);
-
-        // Update brewings if present
-        if (tea.western_brewing)
-          setFieldValue("western_brewing", {
-            ...tea.western_brewing,
-            fahrenheit: values.western_brewing.fahrenheit,
-          });
-        if (tea.gongfu_brewing)
-          setFieldValue("gongfu_brewing", {
-            ...tea.gongfu_brewing,
-            fahrenheit: values.western_brewing.fahrenheit,
-          });
+        setFieldValue("tea", tea.id);
       } else {
         // No match found, add new
         setFieldValue("tea", { name: name });
       }
-    } else setFieldValue("tea", {});
+      // Set session name to entered name
+      setFieldValue("name", name);
+    } else setFieldValue("tea", "");
   }
 
   /**
@@ -128,9 +118,7 @@ function TeaAutocomplete({ formikProps }: Props): ReactElement {
       handleHomeEndKeys
       fullWidth
       freeSolo
-      value={
-        values.tea
-      }
+      value={values.tea}
       options={options ? options : []}
       getOptionLabel={(option: Option): string => {
         if (typeof option === "string") return option;

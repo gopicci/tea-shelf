@@ -356,6 +356,7 @@ class BrewingSessionAdmin(admin.ModelAdmin):
         "id",
         "created_on",
         "tea",
+        "name",
         "user",
         "is_completed",
     )
