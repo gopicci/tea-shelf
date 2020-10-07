@@ -366,6 +366,7 @@ class BrewingSession(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     tea = models.ForeignKey(Tea, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=50, null=True, blank=True)
     brewing = models.ForeignKey(
         Brewing, related_name="+", on_delete=models.SET_NULL, null=True, blank=True
     )
