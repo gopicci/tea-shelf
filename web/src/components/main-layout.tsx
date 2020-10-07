@@ -89,13 +89,13 @@ function MainLayout(props: Props): ReactElement {
       <Box className={classes.page}>
         <DrawerLayout open={open} setOpen={setOpen} {...props} />
         <Box className={classes.mainBox}>
-          {route.route === "SESSIONS"
+          {["SESSIONS", "CREATE_SESSION", "SESSION_DETAILS"].includes(route.route)
             ? !isMobile && (
                 <Button
                   className={classes.addSession}
                   onClick={handleCreateSession}
                 >
-                  Start brewing
+                  Custom brewing
                 </Button>
               )
             : teas.length > 0 &&
@@ -110,6 +110,7 @@ function MainLayout(props: Props): ReactElement {
             "CREATE_SESSION",
             "SETTINGS",
             "CONFIRMATION",
+            "SESSION_DETAILS",
           ].includes(route.route) && <DialogLayout {...props} />}
         {isMobile &&
           (route.route === "SESSIONS" ? (

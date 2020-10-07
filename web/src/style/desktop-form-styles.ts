@@ -18,6 +18,15 @@ export const desktopFormStyles = makeStyles({
     justifyContent: "space-between",
     padding: theme.spacing(1),
   },
+  brewingRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginLeft: theme.spacing(4),
+    marginRight: theme.spacing(4),
+    marginBottom: theme.spacing(4),
+  },
   justifyLeft: {
     display: "flex",
     flexDirection: "row",
@@ -118,5 +127,10 @@ export const desktopFormStyles = makeStyles({
   },
   listItemName: {
     fontWeight: 400,
+  },
+  title: {
+    margin: "auto",
+    marginTop: theme.spacing(6),
+    marginBottom: theme.spacing(6),
   },
 });

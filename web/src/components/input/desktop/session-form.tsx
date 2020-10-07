@@ -1,30 +1,14 @@
 import React, { ReactElement, useContext } from "react";
 import { Formik, Form, FormikValues, FormikProps } from "formik";
-import {
-  Box,
-  Button,
-  Typography,
-  FormGroup,
-  FormControlLabel,
-  Switch,
-} from "@material-ui/core";
+import { Box, Button, TextField, Typography } from "@material-ui/core";
 import validator from "validator";
-import InputFormBrewing from "./input-form-brewing";
-import TeaAutocomplete from "./tea-autocomplete";
-import {
-  fahrenheitToCelsius,
-  getTeaDetails,
-} from "../../../services/parsing-services";
+import { getTeaDetails } from "../../../services/parsing-services";
+import { sessionValidationSchema } from "./validation-schema";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { SessionEditorContext, HandleSessionEdit } from "../../edit-session";
-import { SettingsState } from "../../statecontainers/settings-context";
 import { TeasState } from "../../statecontainers/tea-context";
 import { Route } from "../../../app";
-import {
-  BrewingModel,
-  SessionFormModel,
-  SessionModel,
-} from "../../../services/models";
+import { BrewingModel, SessionModel } from "../../../services/models";
 
 /**
  * SessionForm props.
@@ -32,8 +16,6 @@ import {
  * @memberOf SessionForm
  */
 type Props = {
-  /** App's main route state, might contain payload for initial values on edit mode */
-  route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
 };
@@ -45,15 +27,12 @@ type Props = {
  * @component
  * @subcategory Desktop input
  */
-function SessionForm({ route, setRoute }: Props): ReactElement {
+function SessionForm({ setRoute }: Props): ReactElement {
   const classes = desktopFormStyles();
 
-  const settings = useContext(SettingsState);
   const teas = useContext(TeasState);
 
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
-
-  const sessionData = route.sessionPayload;
 
   /**
    * Saving process. Serializes data, calls edit
@@ -76,62 +55,59 @@ function SessionForm({ route, setRoute }: Props): ReactElement {
 
     let brewing: BrewingModel = {};
 
-    if (values[values.brewing_type].temperature) {
-      if (values[values.brewing_type].fahrenheit)
-        brewing["temperature"] = fahrenheitToCelsius(
-          parseInt(values[values.brewing_type].temperature)
-        );
-      else
-        brewing["temperature"] = parseInt(
-          values[values.brewing_type].temperature
-        );
-    }
-    if (values[values.brewing_type].weight)
-      brewing["weight"] = parseFloat(values[values.brewing_type].weight);
-    if (values[values.brewing_type].initial)
-      brewing["initial"] = values[values.brewing_type].initial;
-    if (values[values.brewing_type].increments)
-      brewing["increments"] = values[values.brewing_type].increments;
+    if (values.brewing.temperature)
+      brewing["temperature"] = parseInt(
+        values[values.brewing_type].temperature
+      );
+
+    if (values.brewing.weight)
+      brewing["weight"] = parseFloat(values.brewing.weight);
+
+    brewing["initial"] = values.brewing.initial;
+    brewing["increments"] = values.brewing.increments;
 
     if (Object.keys(brewing).length) data["brewing"] = brewing;
 
+    data["current_infusion"] = values.current_infusion;
+    data["is_completed"] = values.is_completed;
+
     handleSessionEdit(data, undefined, "Brewing session successfully created.");
-    setRoute({ route: "MAIN" });
+    setRoute({ route: "SESSIONS" });
   }
 
   /** Goes back to previous route. */
   function handlePrevious(): void {
-    setRoute({ route: "MAIN" });
+    setRoute({ route: "SESSIONS" });
   }
 
   /**
    * Initial form values. Loads teaData or visionData if any,
    * then initializes required fields.
    */
-  let initialValues: SessionFormModel = {
-    brewing: sessionData?.brewing ? sessionData.brewing : {},
-    created_on: sessionData?.created_on ? sessionData.created_on : "",
-    current_infusion: sessionData?.current_infusion
-      ? sessionData.current_infusion
-      : 1,
-    is_completed: sessionData?.is_completed ? sessionData.is_completed : false,
-    western_brewing: {
-      fahrenheit: false,
+  let initialValues: SessionModel = {
+    brewing: {
+      initial: "00:00:20",
+      increments: "00:00:05",
     },
-    gongfu_brewing: {
-      fahrenheit: false,
-    },
-    brewing_type: settings.gongfu ? "gongfu_brewing" : "western_brewing",
+    created_on: "",
+    current_infusion: 1,
+    is_completed: false,
   };
 
   return (
     <Box className={classes.root}>
-      <Formik initialValues={initialValues} onSubmit={handleSave}>
-        {(formikProps: FormikProps<SessionFormModel>) => {
+      <Box className={classes.title}>
+        <Typography variant="h4">Create Custom Brewing</Typography>
+      </Box>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={sessionValidationSchema}
+        onSubmit={handleSave}
+      >
+        {(formikProps: FormikProps<SessionModel>) => {
           const {
             submitForm,
             values,
-            setFieldValue,
             handleChange,
             handleBlur,
             touched,
@@ -139,43 +115,63 @@ function SessionForm({ route, setRoute }: Props): ReactElement {
           } = formikProps;
           return (
             <Form>
-              <Box className={classes.divider}>
-                <Typography variant="caption">Select a tea</Typography>
+              <Box className={classes.brewingRow}>
+                <Typography variant="h5">Initial time</Typography>
+                <TextField
+                  name={"brewing.initial"}
+                  label="Initial"
+                  aria-label={"initial"}
+                  inputProps={{ maxLength: 8 }}
+                  size="small"
+                  variant="outlined"
+                  value={
+                    values.brewing.initial ? values.brewing.initial : "00:00:00"
+                  }
+                  className={classes.initial}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={
+                    !!(
+                      touched["brewing"]?.initial && errors["brewing"]?.initial
+                    )
+                  }
+                  helperText={
+                    touched["brewing"]?.initial && errors["brewing"]?.initial
+                  }
+                />
               </Box>
-              <Box className={classes.row}>
-                <TeaAutocomplete formikProps={formikProps} />
+              <Box className={classes.brewingRow}>
+                <Typography variant="h5">Increments</Typography>
+                <TextField
+                  name={"brewing.increments"}
+                  label="Increments"
+                  aria-label={"increments"}
+                  inputProps={{ maxLength: 8 }}
+                  size="small"
+                  variant="outlined"
+                  value={
+                    values.brewing.increments
+                      ? values.brewing.increments
+                      : "00:00:00"
+                  }
+                  className={classes.increments}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={
+                    !!(
+                      touched["brewing"]?.increments &&
+                      errors["brewing"]?.increments
+                    )
+                  }
+                  helperText={
+                    touched["brewing"]?.increments &&
+                    errors["brewing"]?.increments
+                  }
+                />
               </Box>
-              <Box className={classes.divider}>
-                <Typography variant="caption">
-                  Or enter custom brewing instructions
-                </Typography>
-                <FormGroup>
-                  <FormControlLabel
-                    name="brewing"
-                    className={classes.brewingSwitch}
-                    aria-label="brewing"
-                    value={values.brewing_type}
-                    control={<Switch size="small" color="default" />}
-                    label={
-                      <Typography variant="caption">
-                        {values.brewing_type === "gongfu_brewing"
-                          ? "Gongfu"
-                          : "Western"}
-                      </Typography>
-                    }
-                    labelPlacement="start"
-                    onChange={() => {
-                      values.brewing_type === "gongfu_brewing"
-                        ? setFieldValue("brewing", "western_brewing")
-                        : setFieldValue("brewing", "gongfu_brewing");
-                    }}
-                  />
-                </FormGroup>
-              </Box>
-              <InputFormBrewing formikProps={formikProps} />
               <Box className={classes.bottom}>
                 <Button onClick={handlePrevious} aria-label="back">
-                  Back
+                  Cancel
                 </Button>
                 <Button onClick={submitForm} aria-label="save">
                   Save

@@ -20,7 +20,7 @@ import VendorAutocomplete from "./vendor-autocomplete";
 import OriginAutocomplete from "./origin-autocomplete";
 import InputFormBrewing from "./input-form-brewing";
 import { fahrenheitToCelsius } from "../../../services/parsing-services";
-import { validationSchema } from "./validation-schema";
+import { teaValidationSchema } from "./validation-schema";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { SettingsState } from "../../statecontainers/settings-context";
@@ -140,7 +140,10 @@ function InputForm({
 
     if (values.id) {
       handleTeaEdit(data, values.id);
-      setRoute({ route: "TEA_DETAILS", teaPayload: { ...data, id: values.id } });
+      setRoute({
+        route: "TEA_DETAILS",
+        teaPayload: { ...data, id: values.id },
+      });
     } else {
       handleTeaEdit(data, undefined, "Tea successfully added.");
       setRoute({ route: "MAIN" });
@@ -201,7 +204,7 @@ function InputForm({
       />
       <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        validationSchema={teaValidationSchema}
         onSubmit={handleSave}
       >
         {(formikProps: FormikProps<InputFormModel>) => {
@@ -351,8 +354,8 @@ function InputForm({
                     labelPlacement="start"
                     onChange={() => {
                       values.brewing_type === "gongfu_brewing"
-                        ? setFieldValue("brewing", "western_brewing")
-                        : setFieldValue("brewing", "gongfu_brewing");
+                        ? setFieldValue("brewing_type", "western_brewing")
+                        : setFieldValue("brewing_type", "gongfu_brewing");
                     }}
                   />
                 </FormGroup>

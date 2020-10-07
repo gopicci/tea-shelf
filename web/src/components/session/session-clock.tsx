@@ -9,7 +9,7 @@ import { Box, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Countdown from "react-countdown";
 import { parseHMSToSeconds } from "../../services/parsing-services";
-import { SessionModel } from "../../services/models";
+import { SessionInstance } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   clockBox: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   clock: {
-    fontSize: "30vw",
+    fontSize: 200,
     lineHeight: 1,
     marginBottom: theme.spacing(2),
   },
@@ -42,9 +42,9 @@ type CountdownProps = {
  */
 type Props = {
   /** Brewing session state */
-  session: SessionModel;
+  session: SessionInstance;
   /** Set brewing session state */
-  setSession: (session: SessionModel) => void;
+  setSession: (session: SessionInstance) => void;
 };
 
 /**
@@ -123,6 +123,7 @@ function SessionClock({ session, setSession }: Props): ReactElement {
       <Button
         variant="contained"
         color="secondary"
+        disabled={session.is_completed}
         onClick={counting ? handleCancel : handleStart}
       >
         {counting ? "Cancel" : "Start"}

@@ -57,7 +57,7 @@ function EditSession({ children }: Props): ReactElement {
   ): Promise<void> => {
     try {
       let offlineSessions = await getOfflineSessions();
-      let date = String(Date.now());
+      let date = new Date().toISOString();
 
       // Update context with request
       if (id)

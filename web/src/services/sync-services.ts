@@ -1,7 +1,6 @@
 import localforage from "localforage";
 import validator from "validator";
 import { APIRequest } from "./auth-services";
-import { brewingTimesToSeconds } from "./parsing-services";
 import {
   TeaInstance,
   SubcategoryModel,
@@ -104,11 +103,9 @@ export function generateUniqueId(array: genericModels[]): number {
 export async function uploadInstance(
   instance: TeaInstance | SessionInstance
 ): Promise<Response> {
-  const endpoint = "name" in instance ? "tea" : "brewing_session";
+  const endpoint = "category" in instance ? "tea" : "brewing_session";
 
   let request = JSON.parse(JSON.stringify(instance));
-
-  request = brewingTimesToSeconds(request);
 
   // String UUID means API generated, instance has been previously uploaded
   if (typeof instance.id === "string" && validator.isUUID(instance.id)) {

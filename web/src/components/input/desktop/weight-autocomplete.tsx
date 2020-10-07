@@ -3,7 +3,6 @@ import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { FormikProps } from "formik";
 import { InputFormModel } from "../../../services/models";
-import { SessionFormModel } from "../../../services/models";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 /**
@@ -13,7 +12,7 @@ import { desktopFormStyles } from "../../../style/desktop-form-styles";
  */
 type Props = {
   /** Formik form render methods and props */
-  formikProps: FormikProps<InputFormModel> | FormikProps<SessionFormModel>;
+  formikProps: FormikProps<InputFormModel>;
 };
 
 /**

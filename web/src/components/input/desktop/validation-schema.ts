@@ -51,7 +51,7 @@ const brewingValidation = Yup.object()
  *
  * @memberOf InputForm
  */
-export function validationSchema(): object {
+export function teaValidationSchema(): object {
   return Yup.object().shape({
     name: Yup.string()
       .trim()
@@ -107,5 +107,32 @@ export function validationSchema(): object {
       .nullable(),
     gongfu_brewing: brewingValidation,
     western_brewing: brewingValidation,
+  });
+}
+
+/**
+ * Desktop session creation form validation schema.
+ *
+ * @memberOf SessionForm
+ */
+export function sessionValidationSchema(): object {
+  return Yup.object().shape({
+    name: Yup.string().trim().max(50, "Too long, max length 50 characters"),
+    brewing: Yup.object().shape({
+      initial: Yup.string()
+        .notOneOf(["00:00:00"], "Required")
+        .matches(
+          /^(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/,
+          "Must be in 23:59:59 format"
+        )
+        .required("Required"),
+      increments: Yup.string()
+        .notOneOf(["00:00:00"], "Required")
+        .matches(
+          /^(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)$/,
+          "Must be in 23:59:59 format"
+        )
+        .required("Required"),
+    }),
   });
 }

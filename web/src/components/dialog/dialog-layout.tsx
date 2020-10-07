@@ -5,9 +5,10 @@ import InputForm from "../input/desktop/input-form";
 import DesktopDetailsLayout from "../details/desktop/desktop-details-layout";
 import Settings from "../settings";
 import ConfirmationLayout from "./confirmation-layout";
-import SessionForm from '../input/desktop/session-form';
+import SessionForm from "../input/desktop/session-form";
 import { Route } from "../../app";
 import { Confirmation } from "../../services/models";
+import SessionLayout from "../session/session-layout";
 
 /**
  * DialogLayout props.
@@ -37,10 +38,12 @@ function DialogLayout(props: Props): ReactElement {
     undefined
   );
 
-  /** Sets route to main closing the dialog */
+  /** Sets route closing the dialog */
   function handleClose(): void {
     if (confirmation)
       setRoute({ route: "CONFIRMATION", confirmation: confirmation });
+    else if (["CREATE_SESSION", "SESSION_DETAILS"].includes(route.route))
+      setRoute({ route: "SESSIONS" });
     else setRoute({ route: "MAIN" });
   }
 
@@ -63,6 +66,9 @@ function DialogLayout(props: Props): ReactElement {
         />
       )}
       {route.route === "CREATE_SESSION" && <SessionForm {...props} />}
+      {route.route === "SESSION_DETAILS" && (
+        <SessionLayout {...props} handleClose={handleClose} />
+      )}
       {route.route === "SETTINGS" && <Settings {...props} />}
       {route.route === "CONFIRMATION" && <ConfirmationLayout {...props} />}
     </Dialog>

@@ -5,7 +5,6 @@ import { FormikProps } from "formik";
 import { celsiusToFahrenheit } from "../../../services/parsing-services";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { InputFormModel } from "../../../services/models";
-import { SessionFormModel } from "../../../services/models";
 
 /**
  * TempAutocomplete props.
@@ -14,7 +13,7 @@ import { SessionFormModel } from "../../../services/models";
  */
 type Props = {
   /** Formik form render methods and props */
-  formikProps: FormikProps<InputFormModel> | FormikProps<SessionFormModel>;
+  formikProps: FormikProps<InputFormModel>;
 };
 
 /**

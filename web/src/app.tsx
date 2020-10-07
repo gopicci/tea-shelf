@@ -40,7 +40,8 @@ export type Route = {
     | "PASSWORD_REQUEST"
     | "CONFIRMATION"
     | "SESSIONS"
-    | "CREATE_SESSION";
+    | "CREATE_SESSION"
+    | "SESSION_DETAILS";
   /** Optional route tea data payload */
   teaPayload?: TeaInstance;
   /** Optional route brewing session data payload */
@@ -98,6 +99,8 @@ function App(): ReactElement {
         if (isMobile) return <MobileDetailsLayout {...props} />;
         else return <MainLayout {...props} />;
       case "CREATE_SESSION":
+        return <MainLayout {...props} />;
+      case "SESSION_DETAILS":
         return <MainLayout {...props} />;
       case "SETTINGS":
         if (isMobile) return <Settings {...props} />;

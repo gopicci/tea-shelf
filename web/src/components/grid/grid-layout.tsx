@@ -221,7 +221,7 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
       )}
     >
       <Grid container justify="center">
-        {route.route === "SESSIONS" ? (
+        {["SESSIONS", "CREATE_SESSION"].includes(route.route) ? (
           <SessionsGrid setRoute={setRoute} isMobile={isMobile} />
         ) : (
           filteredTeas &&

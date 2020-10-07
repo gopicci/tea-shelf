@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
-import { BrewingModel, SessionModel } from "../../services/models";
+import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
+import { SessionInstance } from "../../services/models";
+import { Route } from "../../app";
+import dateFormat from "dateformat";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,42 +37,77 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
+ * SessionLayout props.
+ *
+ * @memberOf SessionLayout
+ */
+type Props = {
+  /** App's main route state */
+  route: Route;
+  /** Mobile mode or desktop */
+  isMobile: boolean;
+  /** Handles dialog close */
+  handleClose: () => void;
+};
+
+/**
  * Brewing session layout component.
  *
  * @component
  * @subcategory Brewing session
  */
-function SessionLayout(): ReactElement {
+function SessionLayout({ route, isMobile, handleClose }: Props): ReactElement {
   const classes = useStyles();
 
-  const brewing: BrewingModel = {
-    temperature: 95,
-    weight: 5,
-    initial: "00:00:10",
-    increments: "00:00:05",
-  };
+  const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
-  const [session, setSession] = useState<SessionModel>({
-    brewing: brewing,
-    created_on: String(Date.now()),
-    current_infusion: 1,
-    is_completed: false,
-  });
+  const date = route.sessionPayload?.created_on
+    ? new Date(route.sessionPayload.created_on)
+    : undefined;
+
+  const [session, setSession] = useState<SessionInstance>(
+    route.sessionPayload ? route.sessionPayload : ({} as SessionInstance)
+  );
+
+  useEffect(() => {
+    if (session !== route.sessionPayload) {
+      handleSessionEdit(session, session.id);
+    }
+  }, [handleSessionEdit, route.sessionPayload, session]);
+
+  async function handleEndSession() {
+    try {
+      await handleSessionEdit({ ...session, is_completed: true }, session.id);
+    } catch (e) {
+      console.error(e);
+    }
+    handleClose();
+  }
+
+  async function handleResumeSession() {
+    await setSession({ ...session, is_completed: false });
+  }
 
   return (
     <Box className={classes.root}>
-      <GenericAppBar>
-        <Toolbar>
-          <Box className={classes.row}>
-            <IconButton edge="start" aria-label="back">
-              <ArrowBack />
-            </IconButton>
-          </Box>
-        </Toolbar>
-      </GenericAppBar>
-      <Toolbar />
-      <Typography variant="h1">Name</Typography>
-      <Typography variant="h5">Started on date</Typography>
+      {isMobile && (
+        <>
+          <GenericAppBar>
+            <Toolbar>
+              <Box className={classes.row}>
+                <IconButton edge="start" aria-label="back">
+                  <ArrowBack />
+                </IconButton>
+              </Box>
+            </Toolbar>
+          </GenericAppBar>
+          <Toolbar />
+        </>
+      )}
+      <Typography variant="h1">{session.name}</Typography>
+      {date && (
+        <Typography variant="h5">Started on {dateFormat(date, "dddd, mmmm dS, yyyy, h:MM TT")}</Typography>
+      )}
       <Box className={classes.row}>
         <Typography variant="h4">Temp {session.brewing.temperature}</Typography>
         <Typography variant="h4">
@@ -77,7 +115,15 @@ function SessionLayout(): ReactElement {
         </Typography>
       </Box>
       <SessionClock session={session} setSession={setSession} />
-      <Button className={classes.endButton}>End session</Button>
+      {session.is_completed ? (
+        <Button className={classes.endButton} onClick={handleResumeSession}>
+          Resume session
+        </Button>
+      ) : (
+        <Button className={classes.endButton} onClick={handleEndSession}>
+          End session
+        </Button>
+      )}
     </Box>
   );
 }

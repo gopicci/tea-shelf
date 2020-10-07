@@ -4,8 +4,8 @@ import {
   SubcategoryModel,
   OriginModel,
   TeaRequest,
-  TeaInstance,
-} from "./models";
+  TeaInstance, SessionModel,
+} from './models';
 
 /**
  * Gets category name from list of categories based on id.
@@ -136,70 +136,6 @@ export function parseHMSToSeconds(time: string): number {
  */
 export function parseSecondsToHMS(seconds: number): string {
   return new Date(seconds * 1000).toISOString().substr(11, 8);
-}
-
-/**
- * Converts tea request brewing time from API dd hh:mm:ss format into seconds.
- *
- * @param {TeaRequest} request - TeaRequest object
- * @returns {TeaRequest}
- * @category Services
- */
-export function brewingTimesToSeconds(request: TeaRequest): TeaRequest {
-  let newRequest = { ...request };
-  if (newRequest.gongfu_brewing?.initial) {
-    newRequest.gongfu_brewing.initial = parseHMSToSeconds(
-      newRequest.gongfu_brewing.initial
-    ).toString();
-  }
-  if (newRequest.western_brewing?.initial) {
-    newRequest.western_brewing.initial = parseHMSToSeconds(
-      newRequest.western_brewing.initial
-    ).toString();
-  }
-  if (newRequest.gongfu_brewing?.increments) {
-    newRequest.gongfu_brewing.increments = parseHMSToSeconds(
-      newRequest.gongfu_brewing.increments
-    ).toString();
-  }
-  if (newRequest.western_brewing?.increments) {
-    newRequest.western_brewing.increments = parseHMSToSeconds(
-      newRequest.western_brewing.increments
-    ).toString();
-  }
-  return newRequest;
-}
-
-/**
- * Converts tea request brewing time from seconds to hh:mm:ss format.
- *
- * @param {TeaRequest} request - TeaRequest object
- * @returns {TeaRequest}
- * @category Services
- */
-export function brewingTimesToHMS(request: TeaRequest): TeaRequest {
-  let newRequest = { ...request };
-  if (newRequest.gongfu_brewing?.initial) {
-    newRequest.gongfu_brewing.initial = parseSecondsToHMS(
-      parseInt(newRequest.gongfu_brewing.initial)
-    );
-  }
-  if (newRequest.western_brewing?.initial) {
-    newRequest.western_brewing.initial = parseSecondsToHMS(
-      parseInt(newRequest.western_brewing.initial)
-    );
-  }
-  if (newRequest.gongfu_brewing?.increments) {
-    newRequest.gongfu_brewing.increments = parseSecondsToHMS(
-      parseInt(newRequest.gongfu_brewing.increments)
-    );
-  }
-  if (newRequest.western_brewing?.increments) {
-    newRequest.western_brewing.increments = parseSecondsToHMS(
-      parseInt(newRequest.western_brewing.increments)
-    );
-  }
-  return newRequest;
 }
 
 /**

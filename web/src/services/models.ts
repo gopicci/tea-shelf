@@ -61,20 +61,6 @@ export interface SessionModel {
 }
 
 /**
- * Extension of tea model that includes extra fields needed in input forms.
- */
-export interface SessionFormModel extends SessionModel {
-  /** Brewing type, follows API naming convention */
-  brewing_type: "gongfu_brewing" | "western_brewing";
-  /** Gongfu brewing model includes measure */
-  gongfu_brewing: FormBrewingModel;
-  /** Western brewing model includes measure */
-  western_brewing: FormBrewingModel;
-  /** Enabling string indexing */
-  [index: string]: any;
-}
-
-/**
  * Extension of BrewingSession that defines a session instance,
  * with required ID and creation date.
  */

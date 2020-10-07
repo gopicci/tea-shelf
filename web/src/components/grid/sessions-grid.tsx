@@ -2,7 +2,6 @@ import React, { ReactElement, useContext } from "react";
 import { Grid } from "@material-ui/core";
 import SessionCard from "./session-card";
 import DateCard from "./date-card";
-import { getTeaDetails } from "../../services/parsing-services";
 import { gridStyles } from "../../style/grid-styles";
 import { TeasState } from "../statecontainers/tea-context";
 import { SettingsState } from "../statecontainers/settings-context";
@@ -103,11 +102,6 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
                 >
                   <SessionCard
                     sessionData={session}
-                    teaData={
-                      session.tea
-                        ? getTeaDetails(teasState, session.tea)
-                        : undefined
-                    }
                     gridView={!!(settings.gridView && !isMobile)}
                     setRoute={setRoute}
                   />

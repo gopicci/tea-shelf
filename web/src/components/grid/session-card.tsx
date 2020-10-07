@@ -9,7 +9,7 @@ import {
 import dateFormat from "dateformat";
 import { gridStyles } from "../../style/grid-styles";
 import { Route } from "../../app";
-import { SessionInstance, TeaInstance } from "../../services/models";
+import { SessionInstance } from "../../services/models";
 
 /**
  * SessionCard props.
@@ -20,8 +20,6 @@ import { SessionInstance, TeaInstance } from "../../services/models";
 type Props = {
   /** Session instance data */
   sessionData: SessionInstance;
-  /** Optional sssion tea instance data */
-  teaData?: TeaInstance;
   /** Grid or list mode */
   gridView: boolean;
   /** Set app's main route */
@@ -36,7 +34,6 @@ type Props = {
  */
 function SessionCard({
   sessionData,
-  teaData,
   gridView,
   setRoute,
 }: Props): ReactElement {
@@ -44,7 +41,7 @@ function SessionCard({
 
   /** Sets main route to tea details */
   function handleCardClick(): void {
-    //setRoute({ route: "SESSION_DETAILS", sessionPayload: sessionData });
+    setRoute({ route: "SESSION_DETAILS", sessionPayload: sessionData });
   }
 
   const started = new Date(sessionData.created_on);
@@ -67,7 +64,7 @@ function SessionCard({
             </Typography>
           </Box>
           <Typography gutterBottom variant="h5" className={classes.centerContent}>
-            {teaData?.name}
+            {sessionData.name}
           </Typography>
           <Box className={classes.bottomBox}>
             <Typography variant="caption">
