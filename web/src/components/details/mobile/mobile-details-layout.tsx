@@ -9,7 +9,7 @@ import DetailsCardVendor from "./details-card-vendor";
 import DetailsCardDescription from "./details-card-description";
 import EditNotes from "./edit-notes";
 import { TeasState } from "../../statecontainers/tea-context";
-import { EditorContext, HandleTeaEdit } from "../../edit-tea";
+import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { TeaInstance } from "../../../services/models";
 
@@ -51,14 +51,14 @@ type Props = {
 function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
   const classes = useStyles();
 
-  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(TeaEditorContext);
   const teas = useContext(TeasState);
 
   const [teaData, setTeaData] = useState<TeaInstance | undefined>();
 
   useEffect(() => {
-    setTeaData(Object.values(teas).find((tea) => tea.id === route.payload?.id));
-  }, [route.payload, teas]);
+    setTeaData(Object.values(teas).find((tea) => tea.id === route.teaPayload?.id));
+  }, [route.teaPayload, teas]);
 
   useEffect(() => {
     /**

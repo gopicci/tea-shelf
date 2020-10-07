@@ -11,7 +11,7 @@ import EditWeightList from "./edit-weight-list";
 import EditWeightInput from "./edit-weight-input";
 import EditTime from "./edit-time";
 import EditPrice from "./edit-price";
-import { EditorContext, HandleTeaEdit } from "../../edit-tea";
+import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { TeaModel, TeaRequest } from "../../../services/models";
 
@@ -61,7 +61,7 @@ function MobileInput({
   imageData,
   visionData,
 }: Props): ReactElement {
-  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(TeaEditorContext);
 
   const [editRoute, setEditRoute] = useState("input_layout");
 
@@ -70,7 +70,7 @@ function MobileInput({
     name: "",
     category: 0,
     ...visionData,
-    ...route.payload,
+    ...route.teaPayload,
   });
 
   /**
@@ -85,11 +85,11 @@ function MobileInput({
     if (teaData.subcategory && !teaData.subcategory.category)
       teaData.subcategory.category = teaData.category;
 
-    if (route.payload) {
-      handleTeaEdit(teaData, route.payload.id);
+    if (route.teaPayload) {
+      handleTeaEdit(teaData, route.teaPayload.id);
       setRoute({
         route: "TEA_DETAILS",
-        payload: { ...teaData, id: route.payload.id },
+        teaPayload: { ...teaData, id: route.teaPayload.id },
       });
     } else {
       handleTeaEdit(teaData, undefined, "Tea successfully added.");
@@ -100,7 +100,7 @@ function MobileInput({
   /** Goes back to previous route. */
   function handlePrevious(): void {
     if (setImageLoadDone) setImageLoadDone(false);
-    else setRoute({ route: "TEA_DETAILS", payload: route.payload });
+    else setRoute({ route: "TEA_DETAILS", teaPayload: route.teaPayload });
   }
 
   /** Sets edit route to input layout component */
@@ -120,7 +120,7 @@ function MobileInput({
       event.preventDefault();
       if (editRoute === "input_layout") {
         if (setImageLoadDone) setImageLoadDone(false);
-        else setRoute({ route: "TEA_DETAILS", payload: route.payload });
+        else setRoute({ route: "TEA_DETAILS", teaPayload: route.teaPayload });
       } else setEditRoute("input_layout");
     }
 
@@ -130,7 +130,7 @@ function MobileInput({
     return () => {
       window.removeEventListener("popstate", onBackButtonEvent);
     };
-  }, [editRoute, route.payload, setImageLoadDone, setRoute]);
+  }, [editRoute, route.teaPayload, setImageLoadDone, setRoute]);
 
   const inputProps: InputProps = { handleBackToLayout, teaData, setTeaData };
 

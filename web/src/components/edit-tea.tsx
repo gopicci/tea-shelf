@@ -46,7 +46,7 @@ export type HandleTeaEdit = (
   message?: string
 ) => void;
 
-export const EditorContext = createContext({} as HandleTeaEdit);
+export const TeaEditorContext = createContext({} as HandleTeaEdit);
 
 /**
  * Provides tea instance editing to components that needs it.
@@ -155,9 +155,9 @@ function EditTea({ children }: Props): ReactElement {
   };
 
   return (
-    <EditorContext.Provider value={handleTeaEdit}>
+    <TeaEditorContext.Provider value={handleTeaEdit}>
       {children}
-    </EditorContext.Provider>
+    </TeaEditorContext.Provider>
   );
 }
 

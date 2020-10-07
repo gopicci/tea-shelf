@@ -3,14 +3,14 @@ import LoadImage from "./input/desktop/load-image";
 import InputForm from "./input/desktop/input-form";
 import { Route } from "../app";
 import { TeaModel } from "../services/models";
-import { EditorContext, HandleTeaEdit } from "./edit-tea";
+import { TeaEditorContext, HandleTeaEdit } from "./edit-tea";
 import MobileInput from "./input/mobile/mobile-input";
 import CaptureImage from "./input/mobile/capture-image";
 
 /**
- * DesktopCreate props.
+ * CreateTea props.
  *
- * @memberOf Create
+ * @memberOf CreateTea
  */
 type Props = {
   /** App's main route state */
@@ -29,12 +29,12 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function Create({ route, setRoute, isMobile }: Props): ReactElement {
+function CreateTea({ route, setRoute, isMobile }: Props): ReactElement {
   const [imageLoadDone, setImageLoadDone] = useState(false);
   const [imageData, setImageData] = useState("");
   const [visionData, setVisionData] = useState({} as TeaModel);
 
-  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(TeaEditorContext);
 
   /** Routes to main. */
   function handleClose(): void {
@@ -66,4 +66,4 @@ function Create({ route, setRoute, isMobile }: Props): ReactElement {
   }
 }
 
-export default Create;
+export default CreateTea;

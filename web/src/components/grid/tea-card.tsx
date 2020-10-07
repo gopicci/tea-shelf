@@ -48,7 +48,7 @@ function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
 
   /** Sets main route to tea details */
   function handleCardClick(): void {
-    setRoute({ route: "TEA_DETAILS", payload: teaData });
+    setRoute({ route: "TEA_DETAILS", teaPayload: teaData });
   }
 
   return (

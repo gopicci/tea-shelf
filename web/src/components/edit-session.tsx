@@ -11,7 +11,6 @@ import {
   uploadInstance,
 } from "../services/sync-services";
 import { SnackbarDispatch } from "./statecontainers/snackbar-context";
-import { TeaDispatch } from "./statecontainers/tea-context";
 import { SessionDispatch } from "./statecontainers/session-context";
 import { SyncDispatch } from "./statecontainers/sync-context";
 import { SessionInstance, SessionModel } from "../services/models";
@@ -25,7 +24,7 @@ type Props = {
  *
  * @memberOf EditSession
  */
-export type handleSessionEdit = (
+export type HandleSessionEdit = (
   /** Request data. */
   data: SessionModel,
   /** Optional ID for editing request. */
@@ -34,7 +33,7 @@ export type handleSessionEdit = (
   message?: string
 ) => void;
 
-export const EditorContext = createContext({} as handleSessionEdit);
+export const SessionEditorContext = createContext({} as HandleSessionEdit);
 
 /**
  * Provides brewing session instance editing to components that needs it.
@@ -44,7 +43,6 @@ export const EditorContext = createContext({} as handleSessionEdit);
  */
 function EditSession({ children }: Props): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
-  const teaDispatch = useContext(TeaDispatch);
   const sessionDispatch = useContext(SessionDispatch);
   const syncDispatch = useContext(SyncDispatch);
 
@@ -52,30 +50,36 @@ function EditSession({ children }: Props): ReactElement {
    * Handles brewing session instance edit/creation process. Updates state and saves instance locally
    * first. Then tries to sync local cache with API.
    */
-  const handleSessionEdit: handleSessionEdit = async (
+  const handleSessionEdit: HandleSessionEdit = async (
     sessionData,
     id,
     message
   ): Promise<void> => {
     try {
       let offlineSessions = await getOfflineSessions();
+      let date = String(Date.now());
 
       // Update context with request
       if (id)
         sessionDispatch({ type: "EDIT", data: { ...sessionData, id: id } });
       else {
         id = generateUniqueId(offlineSessions);
-        sessionDispatch({ type: "ADD", data: { ...sessionData, id: id } });
+        sessionDispatch({
+          type: "ADD",
+          data: { ...sessionData, id: id, created_on: date },
+        });
       }
 
       // If session already present in cache remove before adding again
       for (const session of offlineSessions)
-        if (session.id === id)
+        if (session.id === id) {
+          date = String(session.created_on);
           offlineSessions.splice(offlineSessions.indexOf(session), 1);
+        }
 
       await localforage.setItem<SessionInstance[]>("offline-sessions", [
         ...offlineSessions,
-        { ...sessionData, id: id },
+        { ...sessionData, id: id, created_on: date },
       ]);
 
       syncDispatch({ type: "SET_NOT_SYNCED" });
@@ -85,9 +89,12 @@ function EditSession({ children }: Props): ReactElement {
       const body = await response.json();
 
       // Update context
-      teaDispatch({
+      sessionDispatch({
         type: "EDIT_ID",
-        data: { instance: { ...sessionData, id }, newID: body.id },
+        data: {
+          instance: { ...{ ...sessionData, created_on: body.created_on }, id },
+          newID: body.id,
+        },
       });
 
       // Delete offline entry
@@ -120,9 +127,9 @@ function EditSession({ children }: Props): ReactElement {
   };
 
   return (
-    <EditorContext.Provider value={handleSessionEdit}>
+    <SessionEditorContext.Provider value={handleSessionEdit}>
       {children}
-    </EditorContext.Provider>
+    </SessionEditorContext.Provider>
   );
 }
 

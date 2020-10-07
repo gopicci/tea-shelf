@@ -76,7 +76,7 @@ function EditNotes({ teaData, setRoute, handleTeaEdit }: Props): ReactElement {
 
   /** Sets route to tea details. */
   function handlePrevious(): void {
-    setRoute({ route: "TEA_DETAILS", payload: teaData });
+    setRoute({ route: "TEA_DETAILS", teaPayload: teaData });
   }
 
   return (

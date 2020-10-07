@@ -28,7 +28,7 @@ function DetailsCardNotes({ teaData, setRoute }: Props): ReactElement {
 
   /** Routes to notes editor. */
   function handleEditNotes(): void {
-    setRoute({ route: "EDIT_NOTES", payload: teaData });
+    setRoute({ route: "EDIT_NOTES", teaPayload: teaData });
   }
 
   return (

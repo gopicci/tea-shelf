@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { deleteTea } from "../../services/sync-services";
 import { SnackbarDispatch } from "../statecontainers/snackbar-context";
 import { TeaDispatch } from "../statecontainers/tea-context";
-import { EditorContext } from "../edit-tea";
+import { TeaEditorContext } from "../edit-tea";
 import { Route } from "../../app";
 import { TeaInstance } from "../../services/models";
 
@@ -45,7 +45,7 @@ function ActionIcons({
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
 
-  const handleTeaEdit = useContext(EditorContext);
+  const handleTeaEdit = useContext(TeaEditorContext);
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
 
@@ -66,7 +66,7 @@ function ActionIcons({
   /** Routes to tea instance edit page. */
   function handleEditClick(): void {
     setAnchorEl(undefined);
-    setRoute({ route: "EDIT", payload: teaData });
+    setRoute({ route: "EDIT_TEA", teaPayload: teaData });
   }
 
   /** Archives tea */

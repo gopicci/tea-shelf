@@ -46,8 +46,10 @@ interface FormBrewingModel extends BrewingModel {
  * Brewing session data structure.
  */
 export interface SessionModel {
-  /** ID of the tea being used */
+  /** Optional ID of the tea being used */
   tea?: string;
+  /** Optional name for the session */
+  name?: string;
   /** Session brewing details */
   brewing: BrewingModel;
   /** Creation date */
@@ -59,12 +61,28 @@ export interface SessionModel {
 }
 
 /**
+ * Extension of tea model that includes extra fields needed in input forms.
+ */
+export interface SessionFormModel extends SessionModel {
+  /** Brewing type, follows API naming convention */
+  brewing_type: "gongfu_brewing" | "western_brewing";
+  /** Gongfu brewing model includes measure */
+  gongfu_brewing: FormBrewingModel;
+  /** Western brewing model includes measure */
+  western_brewing: FormBrewingModel;
+  /** Enabling string indexing */
+  [index: string]: any;
+}
+
+/**
  * Extension of BrewingSession that defines a session instance,
- * with required ID.
+ * with required ID and creation date.
  */
 export interface SessionInstance extends SessionModel {
   /** Instance ID, UUID string if coming from API, number if generated offline */
   id: string | number;
+  /** Creation date */
+  created_on: string;
 }
 
 /**
@@ -192,7 +210,7 @@ export interface TeaInstance extends TeaRequest {
  */
 export interface InputFormModel extends TeaInstance {
   /** Brewing type, follows API naming convention */
-  brewing: "gongfu_brewing" | "western_brewing";
+  brewing_type: "gongfu_brewing" | "western_brewing";
   /** Gongfu brewing model includes measure */
   gongfu_brewing: FormBrewingModel;
   /** Western brewing model includes measure */

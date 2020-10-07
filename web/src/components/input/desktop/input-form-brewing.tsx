@@ -9,11 +9,12 @@ import {
 import { FormikProps } from "formik";
 import TempAutocomplete from "./temp-autocomplete";
 import WeightAutocomplete from "./weight-autocomplete";
-import { InputFormModel } from "../../../services/models";
 import {
   celsiusToFahrenheit,
   fahrenheitToCelsius,
 } from "../../../services/parsing-services";
+import { InputFormModel } from "../../../services/models";
+import { SessionFormModel } from "../../../services/models";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 /**
@@ -23,7 +24,7 @@ import { desktopFormStyles } from "../../../style/desktop-form-styles";
  */
 type Props = {
   /** Formik form render methods and props */
-  formikProps: FormikProps<InputFormModel>;
+  formikProps: FormikProps<InputFormModel> | FormikProps<SessionFormModel>;
 };
 
 /**
@@ -58,18 +59,18 @@ function InputFormBrewing({ formikProps }: Props): ReactElement {
               name="degrees"
               aria-label="degrees"
               value={
-                values[values.brewing].fahrenheit ? "fahrenheit" : "celsius"
+                values[values.brewing_type].fahrenheit ? "fahrenheit" : "celsius"
               }
               onChange={(e) => {
                 handleChange(e);
                 const fahrenheit = e.target.value === "fahrenheit";
-                let temp = values[values.brewing]?.temperature;
+                let temp = values[values.brewing_type]?.temperature;
                 if (temp)
                   if (fahrenheit) temp = celsiusToFahrenheit(temp);
                   else temp = fahrenheitToCelsius(temp);
-                setFieldValue(values.brewing + ".temperature", temp);
+                setFieldValue(values.brewing_type + ".temperature", temp);
                 setFieldValue(
-                  values.brewing + ".fahrenheit",
+                  values.brewing_type + ".fahrenheit",
                   e.target.value === "fahrenheit"
                 );
               }}
@@ -85,15 +86,15 @@ function InputFormBrewing({ formikProps }: Props): ReactElement {
       <Box className={classes.row}>
         <Box className={classes.justifyLeft}>
           <TextField
-            name={values.brewing + ".initial"}
+            name={values.brewing_type + ".initial"}
             label="Initial time"
-            aria-label={values.brewing + "_initial"}
+            aria-label={values.brewing_type + "_initial"}
             inputProps={{ maxLength: 8 }}
             size="small"
             variant="outlined"
             value={
-              values[values.brewing]?.initial
-                ? String(values[values.brewing]?.initial)
+              values[values.brewing_type]?.initial
+                ? String(values[values.brewing_type]?.initial)
                 : "00:00:00"
             }
             className={classes.initial}
@@ -101,27 +102,27 @@ function InputFormBrewing({ formikProps }: Props): ReactElement {
             onBlur={handleBlur}
             error={
               !!(
-                touched[values.brewing]?.initial &&
-                errors[values.brewing]?.initial
+                touched[values.brewing_type]?.initial &&
+                errors[values.brewing_type]?.initial
               )
             }
             helperText={
-              touched[values.brewing]?.initial &&
-              errors[values.brewing]?.initial
+              touched[values.brewing_type]?.initial &&
+              errors[values.brewing_type]?.initial
             }
           />
         </Box>
         <Box className={classes.justifyRight}>
           <TextField
-            name={values.brewing + ".increments"}
+            name={values.brewing_type + ".increments"}
             label="Increments"
-            aria-label={values.brewing + "increments"}
+            aria-label={values.brewing_type + "increments"}
             inputProps={{ maxLength: 8 }}
             size="small"
             variant="outlined"
             value={
-              values[values.brewing]?.increments
-                ? String(values[values.brewing]?.increments)
+              values[values.brewing_type]?.increments
+                ? String(values[values.brewing_type]?.increments)
                 : "00:00:00"
             }
             className={classes.increments}
@@ -129,13 +130,13 @@ function InputFormBrewing({ formikProps }: Props): ReactElement {
             onBlur={handleBlur}
             error={
               !!(
-                touched[values.brewing]?.increments &&
-                errors[values.brewing]?.increments
+                touched[values.brewing_type]?.increments &&
+                errors[values.brewing_type]?.increments
               )
             }
             helperText={
-              touched[values.brewing]?.increments &&
-              errors[values.brewing]?.increments
+              touched[values.brewing_type]?.increments &&
+              errors[values.brewing_type]?.increments
             }
           />
         </Box>

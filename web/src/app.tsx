@@ -8,15 +8,16 @@ import PasswordReset from "./components/auth/password-reset";
 import MainLayout from "./components/main-layout";
 import SortFilter from "./components/filters/sort-filter";
 import EditTea from "./components/edit-tea";
+import EditSession from "./components/edit-session";
 import CustomSnackbar from "./components/snackbar/custom-snackbar";
 import MainStateContainer from "./components/statecontainers/main-state-container";
-import Create from "./components/create";
+import CreateTea from "./components/create-tea";
 import MobileDetailsLayout from "./components/details/mobile/mobile-details-layout";
 import MobileInput from "./components/input/mobile/mobile-input";
 import Settings from "./components/settings";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
-import { Confirmation, TeaInstance } from "./services/models";
+import { Confirmation, SessionInstance, TeaInstance } from "./services/models";
 
 /**
  * Defines type for app's main routing state.
@@ -29,8 +30,8 @@ export type Route = {
   route:
     | "MAIN"
     | "FILTER"
-    | "CREATE"
-    | "EDIT"
+    | "CREATE_TEA"
+    | "EDIT_TEA"
     | "EDIT_NOTES"
     | "TEA_DETAILS"
     | "ARCHIVE"
@@ -38,9 +39,12 @@ export type Route = {
     | "REGISTER"
     | "PASSWORD_REQUEST"
     | "CONFIRMATION"
-    | "SESSIONS";
-  /** Optional route payload */
-  payload?: TeaInstance;
+    | "SESSIONS"
+    | "CREATE_SESSION";
+  /** Optional route tea data payload */
+  teaPayload?: TeaInstance;
+  /** Optional route brewing session data payload */
+  sessionPayload?: SessionInstance;
   /** Optional route confirmation */
   confirmation?: Confirmation;
 };
@@ -81,10 +85,10 @@ function App(): ReactElement {
         return <MainLayout {...props} />;
       case "FILTER":
         return <SortFilter {...props} />;
-      case "CREATE":
-        if (isMobile) return <Create {...props} />;
+      case "CREATE_TEA":
+        if (isMobile) return <CreateTea {...props} />;
         else return <MainLayout {...props} />;
-      case "EDIT":
+      case "EDIT_TEA":
         if (isMobile) return <MobileInput {...props} />;
         else return <MainLayout {...props} />;
       case "EDIT_NOTES":
@@ -93,6 +97,8 @@ function App(): ReactElement {
       case "TEA_DETAILS":
         if (isMobile) return <MobileDetailsLayout {...props} />;
         else return <MainLayout {...props} />;
+      case "CREATE_SESSION":
+        return <MainLayout {...props} />;
       case "SETTINGS":
         if (isMobile) return <Settings {...props} />;
         else return <MainLayout {...props} />;
@@ -130,7 +136,9 @@ function App(): ReactElement {
       ) : (
         <MainStateContainer>
           <>
-            <EditTea>{getRoute(route)}</EditTea>
+            <EditTea>
+              <EditSession>{getRoute(route)}</EditSession>
+            </EditTea>
             <CustomSnackbar />
           </>
         </MainStateContainer>

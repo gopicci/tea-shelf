@@ -44,7 +44,7 @@ function SessionCard({
 
   /** Sets main route to tea details */
   function handleCardClick(): void {
-    //setRoute({ route: "SESSION_DETAILS", payload: sessionData });
+    //setRoute({ route: "SESSION_DETAILS", sessionPayload: sessionData });
   }
 
   const started = new Date(sessionData.created_on);

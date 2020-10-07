@@ -1,10 +1,11 @@
 import React, { ReactElement, useState } from "react";
 import { Dialog } from "@material-ui/core";
-import Create from "../create";
+import CreateTea from "../create-tea";
 import InputForm from "../input/desktop/input-form";
 import DesktopDetailsLayout from "../details/desktop/desktop-details-layout";
 import Settings from "../settings";
 import ConfirmationLayout from "./confirmation-layout";
+import SessionForm from '../input/desktop/session-form';
 import { Route } from "../../app";
 import { Confirmation } from "../../services/models";
 
@@ -52,8 +53,8 @@ function DialogLayout(props: Props): ReactElement {
       open={true}
       onClose={handleClose}
     >
-      {route.route === "CREATE" && <Create {...props} />}
-      {route.route === "EDIT" && <InputForm {...props} />}
+      {route.route === "CREATE_TEA" && <CreateTea {...props} />}
+      {route.route === "EDIT_TEA" && <InputForm {...props} />}
       {route.route === "TEA_DETAILS" && (
         <DesktopDetailsLayout
           {...props}
@@ -61,6 +62,7 @@ function DialogLayout(props: Props): ReactElement {
           handleClose={handleClose}
         />
       )}
+      {route.route === "CREATE_SESSION" && <SessionForm {...props} />}
       {route.route === "SETTINGS" && <Settings {...props} />}
       {route.route === "CONFIRMATION" && <ConfirmationLayout {...props} />}
     </Dialog>

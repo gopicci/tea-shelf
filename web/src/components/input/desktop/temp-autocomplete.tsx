@@ -3,8 +3,9 @@ import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { FormikProps } from "formik";
 import { celsiusToFahrenheit } from "../../../services/parsing-services";
-import { InputFormModel } from "../../../services/models";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
+import { InputFormModel } from "../../../services/models";
+import { SessionFormModel } from "../../../services/models";
 
 /**
  * TempAutocomplete props.
@@ -13,7 +14,7 @@ import { desktopFormStyles } from "../../../style/desktop-form-styles";
  */
 type Props = {
   /** Formik form render methods and props */
-  formikProps: FormikProps<InputFormModel>;
+  formikProps: FormikProps<InputFormModel> | FormikProps<SessionFormModel>;
 };
 
 /**
@@ -36,7 +37,7 @@ function TempAutocomplete({ formikProps }: Props): ReactElement {
 
   const options = [...Array(100)]
     .map((_, b) =>
-      String(values[values.brewing]?.fahrenheit ? celsiusToFahrenheit(b) : b)
+      String(values[values.brewing_type]?.fahrenheit ? celsiusToFahrenheit(b) : b)
     )
     .reverse();
 
@@ -60,8 +61,8 @@ function TempAutocomplete({ formikProps }: Props): ReactElement {
       options={options}
       freeSolo
       value={
-        values[values.brewing]?.temperature
-          ? String(values[values.brewing]?.temperature)
+        values[values.brewing_type]?.temperature
+          ? String(values[values.brewing_type]?.temperature)
           : ""
       }
       renderInput={(params) => (
@@ -76,13 +77,13 @@ function TempAutocomplete({ formikProps }: Props): ReactElement {
           onBlur={handleBlur}
           error={
             !!(
-              touched[values.brewing]?.temperature &&
-              errors[values.brewing]?.temperature
+              touched[values.brewing_type]?.temperature &&
+              errors[values.brewing_type]?.temperature
             )
           }
           helperText={
-            touched[values.brewing]?.temperature &&
-            errors[values.brewing]?.temperature
+            touched[values.brewing_type]?.temperature &&
+            errors[values.brewing_type]?.temperature
           }
         />
       )}

@@ -3,6 +3,7 @@ import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { FormikProps } from "formik";
 import { InputFormModel } from "../../../services/models";
+import { SessionFormModel } from "../../../services/models";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 /**
@@ -12,7 +13,7 @@ import { desktopFormStyles } from "../../../style/desktop-form-styles";
  */
 type Props = {
   /** Formik form render methods and props */
-  formikProps: FormikProps<InputFormModel>;
+  formikProps: FormikProps<InputFormModel> | FormikProps<SessionFormModel>;
 };
 
 /**
@@ -59,8 +60,8 @@ function WeightAutocomplete({ formikProps }: Props): ReactElement {
       freeSolo
       options={options}
       value={
-        values[values.brewing]?.weight
-          ? String(values[values.brewing]?.weight)
+        values[values.brewing_type]?.weight
+          ? String(values[values.brewing_type]?.weight)
           : ""
       }
       renderInput={(params) => (
@@ -75,11 +76,11 @@ function WeightAutocomplete({ formikProps }: Props): ReactElement {
           onBlur={handleBlur}
           error={
             !!(
-              touched[values.brewing]?.weight && errors[values.brewing]?.weight
+              touched[values.brewing_type]?.weight && errors[values.brewing_type]?.weight
             )
           }
           helperText={
-            touched[values.brewing]?.weight && errors[values.brewing]?.weight
+            touched[values.brewing_type]?.weight && errors[values.brewing_type]?.weight
           }
         />
       )}

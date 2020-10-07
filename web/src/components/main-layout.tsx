@@ -1,12 +1,5 @@
 import React, { ReactElement, useContext, useState } from "react";
-import {
-  Box,
-  Button,
-  Fab,
-  ListItemIcon,
-  SvgIcon,
-  Toolbar,
-} from "@material-ui/core";
+import { Box, Button, Fab, SvgIcon, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { CameraAlt } from "@material-ui/icons";
 import SearchAppBar from "./appbar/search-app-bar";
@@ -79,9 +72,14 @@ function MainLayout(props: Props): ReactElement {
   // Drawer state
   const [open, setOpen] = useState(false);
 
-  /** Sets route to CREATE */
-  function handleCreate(): void {
-    setRoute({ route: "CREATE" });
+  /** Sets route to CREATE_TEA */
+  function handleCreateTea(): void {
+    setRoute({ route: "CREATE_TEA" });
+  }
+
+  /** Sets route to CREATE_SESSION */
+  function handleCreateSession(): void {
+    setRoute({ route: "CREATE_SESSION" });
   }
 
   return (
@@ -93,7 +91,12 @@ function MainLayout(props: Props): ReactElement {
         <Box className={classes.mainBox}>
           {route.route === "SESSIONS"
             ? !isMobile && (
-                <Button className={classes.addSession}>Start brewing</Button>
+                <Button
+                  className={classes.addSession}
+                  onClick={handleCreateSession}
+                >
+                  Start brewing
+                </Button>
               )
             : teas.length > 0 &&
               (isMobile ? <FilterBar {...props} /> : <FilterAccordion />)}
@@ -101,9 +104,10 @@ function MainLayout(props: Props): ReactElement {
         </Box>
         {!isMobile &&
           [
-            "CREATE",
+            "CREATE_TEA",
             "TEA_DETAILS",
-            "EDIT",
+            "EDIT_TEA",
+            "CREATE_SESSION",
             "SETTINGS",
             "CONFIRMATION",
           ].includes(route.route) && <DialogLayout {...props} />}
@@ -113,7 +117,7 @@ function MainLayout(props: Props): ReactElement {
               aria-label="start brewing"
               color="secondary"
               className={classes.fab}
-              onClick={handleCreate}
+              onClick={handleCreateSession}
             >
               <SvgIcon
                 shapeRendering="geometricPrecision"
@@ -128,7 +132,7 @@ function MainLayout(props: Props): ReactElement {
               aria-label="add tea"
               color="secondary"
               className={classes.fab}
-              onClick={handleCreate}
+              onClick={handleCreateTea}
             >
               <CameraAlt />
             </Fab>

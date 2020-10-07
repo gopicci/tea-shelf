@@ -21,9 +21,8 @@ import OriginAutocomplete from "./origin-autocomplete";
 import InputFormBrewing from "./input-form-brewing";
 import { fahrenheitToCelsius } from "../../../services/parsing-services";
 import { validationSchema } from "./validation-schema";
-import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
-import { EditorContext, HandleTeaEdit } from "../../edit-tea";
+import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { SettingsState } from "../../statecontainers/settings-context";
 import { Route } from "../../../app";
 import {
@@ -33,6 +32,7 @@ import {
   TeaRequest,
 } from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
+import { desktopFormStyles } from "../../../style/desktop-form-styles";
 
 /**
  * InputForm props.
@@ -70,10 +70,10 @@ function InputForm({
 
   const settings = useContext(SettingsState);
 
-  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(TeaEditorContext);
   const categories = useContext(CategoriesState);
 
-  const teaData = route.payload;
+  const teaData = route.teaPayload;
 
   /**
    * Saving process. Serializes data, calls edit
@@ -140,7 +140,7 @@ function InputForm({
 
     if (values.id) {
       handleTeaEdit(data, values.id);
-      setRoute({ route: "TEA_DETAILS", payload: { ...data, id: values.id } });
+      setRoute({ route: "TEA_DETAILS", teaPayload: { ...data, id: values.id } });
     } else {
       handleTeaEdit(data, undefined, "Tea successfully added.");
       setRoute({ route: "MAIN" });
@@ -150,7 +150,7 @@ function InputForm({
   /** Goes back to previous route. */
   function handlePrevious(): void {
     if (setImageLoadDone) setImageLoadDone(false);
-    else setRoute({ route: "TEA_DETAILS", payload: route.payload });
+    else setRoute({ route: "TEA_DETAILS", teaPayload: route.teaPayload });
   }
 
   /**
@@ -186,7 +186,7 @@ function InputForm({
       ...teaData?.gongfu_brewing,
       fahrenheit: false,
     },
-    brewing: settings.gongfu ? "gongfu_brewing" : "western_brewing",
+    brewing_type: settings.gongfu ? "gongfu_brewing" : "western_brewing",
     measure: settings.metric ? "g" : "oz",
   };
 
@@ -339,18 +339,18 @@ function InputForm({
                     name="brewing"
                     className={classes.brewingSwitch}
                     aria-label="brewing"
-                    value={values.brewing}
+                    value={values.brewing_type}
                     control={<Switch size="small" color="default" />}
                     label={
                       <Typography variant="caption">
-                        {values.brewing === "gongfu_brewing"
+                        {values.brewing_type === "gongfu_brewing"
                           ? "Gongfu"
                           : "Western"}
                       </Typography>
                     }
                     labelPlacement="start"
                     onChange={() => {
-                      values.brewing === "gongfu_brewing"
+                      values.brewing_type === "gongfu_brewing"
                         ? setFieldValue("brewing", "western_brewing")
                         : setFieldValue("brewing", "gongfu_brewing");
                     }}

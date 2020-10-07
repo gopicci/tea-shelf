@@ -107,7 +107,7 @@ function DrawerContent({
               className={classes.item}
               button
               key="add"
-              onClick={() => handleClick({ route: "CREATE" })}
+              onClick={() => handleClick({ route: "CREATE_TEA" })}
               aria-label="add tea"
             >
               <ListItemIcon>

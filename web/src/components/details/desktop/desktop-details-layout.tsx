@@ -8,7 +8,7 @@ import ActionIcons from "../../generics/action-icons";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { TeasState } from "../../statecontainers/tea-context";
-import { EditorContext, HandleTeaEdit } from "../../edit-tea";
+import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { Confirmation, TeaInstance } from "../../../services/models";
 
@@ -42,15 +42,15 @@ function DesktopDetailsLayout({
 }: Props): ReactElement {
   const classes = desktopDetailsStyles();
 
-  const handleTeaEdit: HandleTeaEdit = useContext(EditorContext);
+  const handleTeaEdit: HandleTeaEdit = useContext(TeaEditorContext);
   const categories = useContext(CategoriesState);
   const teas = useContext(TeasState);
 
   const [teaData, setTeaData] = useState<TeaInstance | undefined>();
 
   useEffect(() => {
-    setTeaData(Object.values(teas).find((tea) => tea.id === route.payload?.id));
-  }, [route.payload, teas]);
+    setTeaData(Object.values(teas).find((tea) => tea.id === route.teaPayload?.id));
+  }, [route.teaPayload, teas]);
 
   const category = Object.values(categories).find(
     (value) => value.id === teaData?.category
