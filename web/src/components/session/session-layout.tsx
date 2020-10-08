@@ -11,9 +11,15 @@ import { ArrowBack } from "@material-ui/icons";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
-import { SessionInstance } from "../../services/models";
+import { Clock, SessionInstance, SessionModel } from "../../services/models";
 import { Route } from "../../app";
 import dateFormat from "dateformat";
+import { ClockDispatch, ClocksState } from "../statecontainers/clocks-context";
+import {
+  getFinishDate,
+  parseHMSToSeconds,
+} from "../../services/parsing-services";
+import localforage from "localforage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,15 +72,30 @@ function SessionLayout({
 }: Props): ReactElement {
   const classes = useStyles();
 
+  const clocksState = useContext(ClocksState);
+  const clockDispatch = useContext(ClockDispatch);
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
-
-  const date = route.sessionPayload?.created_on
-    ? new Date(route.sessionPayload.created_on)
-    : undefined;
 
   const [session, setSession] = useState<SessionInstance>(
     route.sessionPayload ? route.sessionPayload : ({} as SessionInstance)
   );
+
+  // Searches for a running clock in global state
+  const clock = clocksState.find((clock) => clock.id === session.id);
+  const clockFinish = clock && getFinishDate(clock.starting_time, session);
+
+  const [counting, setCounting] = useState(!!clock);
+
+  const [startDate, setStartDate] = useState(
+    clock ? clock.starting_time : Date.now()
+  );
+  const [finishDate, setFinishDate] = useState(
+    clockFinish ? clockFinish : getFinishDate(Date.now(), session)
+  );
+
+  if (clockFinish && clockFinish < Date.now()) {
+    handleComplete();
+  }
 
   useEffect(() => {
     if (session !== route.sessionPayload) {
@@ -82,8 +103,94 @@ function SessionLayout({
     }
   }, [handleSessionEdit, route.sessionPayload, session]);
 
+  /**
+   * Adds counting clock to global state and cache.
+   */
+  async function addClock(): Promise<void> {
+    try {
+      setCounting(true);
+      setStartDate(Date.now());
+      const clock = { id: session.id, starting_time: Date.now() };
+      clockDispatch({
+        type: "ADD",
+        data: clock,
+      });
+      let clocks = await localforage.getItem<Clock[]>("clocks");
+      if (clocks) clocks.push(clock);
+      else clocks = [clock];
+      await localforage.setItem<Clock[]>("clocks", clocks);
+    } catch (e) {
+      console.error(e);
+      await handleCancel();
+    }
+  }
+
+  /**
+   * Resets countdown, deleting clock instance from global
+   * state and cache.
+   */
+  async function handleCancel(): Promise<void> {
+    try {
+      setCounting(false);
+      setFinishDate(getFinishDate(Date.now(), session));
+      await removeClock();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * On countdown completion removes clock from global state
+   * and cache, then updates brewing session.
+   */
+  async function handleComplete(): Promise<void> {
+    try {
+      await removeClock();
+
+      setCounting(false);
+
+      const increments = session.brewing.increments
+        ? parseHMSToSeconds(session.brewing.increments)
+        : 0;
+      setFinishDate(getFinishDate(Date.now(), session) + increments * 1000);
+
+      setSession({
+        ...session,
+        current_infusion: session.current_infusion + 1,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * Deletes session clock instance from global
+   * state and cache.
+   */
+  async function removeClock(): Promise<void> {
+    try {
+      await clockDispatch({
+        type: "DELETE",
+        data: {
+          id: session.id,
+          starting_time: startDate,
+        },
+      });
+
+      let clocks = await localforage.getItem<Clock[]>("clocks");
+      if (clocks)
+        await localforage.setItem<Clock[]>(
+          "clocks",
+          clocks.filter((clock) => clock.id !== session.id)
+        );
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   async function handleEndSession() {
     try {
+      await handleCancel();
       await handleSessionEdit({ ...session, is_completed: true }, session.id);
     } catch (e) {
       console.error(e);
@@ -93,6 +200,7 @@ function SessionLayout({
   }
 
   function handleResumeSession() {
+    setFinishDate(getFinishDate(Date.now(), session));
     setSession({ ...session, is_completed: false });
   }
 
@@ -117,9 +225,13 @@ function SessionLayout({
         </>
       )}
       <Typography variant="h1">{session.name}</Typography>
-      {date && (
+      {route.sessionPayload?.created_on && (
         <Typography variant="h5">
-          Started on {dateFormat(date, "dddd, mmmm dS, yyyy, h:MM TT")}
+          Started on{" "}
+          {dateFormat(
+            new Date(route.sessionPayload.created_on),
+            "dddd, mmmm dS, yyyy, h:MM TT"
+          )}
         </Typography>
       )}
       <Box className={classes.row}>
@@ -128,7 +240,14 @@ function SessionLayout({
           Infusion {session.current_infusion}
         </Typography>
       </Box>
-      <SessionClock session={session} setSession={setSession} />
+      <SessionClock
+        session={session}
+        date={finishDate}
+        counting={counting}
+        addClock={addClock}
+        handleCancel={handleCancel}
+        handleComplete={handleComplete}
+      />
       {session.is_completed ? (
         <Button className={classes.endButton} onClick={handleResumeSession}>
           Resume session

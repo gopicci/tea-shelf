@@ -79,8 +79,8 @@ export interface SessionInstance extends SessionModel {
 export interface Clock {
   /** Brewing session instance ID, UUID string if coming from API, number if generated offline */
   id: string | number;
-  /** Brewing starting time */
-  starting_time: string;
+  /** Brewing starting time as Date.now() milliseconds */
+  starting_time: number;
 }
 
 /**

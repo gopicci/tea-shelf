@@ -44,6 +44,8 @@ function ClockContext({ children }: Props): ReactElement {
         // Get clocks from cache
         const cached = await localforage.getItem<Clock[]>("clocks");
 
+        if (!cached) return;
+
         // Remove finished clocks
         for (const clock of cached) {
           const session = sessions.find((s) => s.id === clock.id);
@@ -56,7 +58,7 @@ function ClockContext({ children }: Props): ReactElement {
             const initial = parseHMSToSeconds(session.brewing.initial);
             const increments = parseHMSToSeconds(session.brewing.increments);
             const total = initial + increments * (session.current_infusion - 1);
-            const finish = new Date().getSeconds() + total * 1000;
+            const finish = Date.now() + total * 1000;
             if (start < finish) clocks.push(clock);
           }
         }

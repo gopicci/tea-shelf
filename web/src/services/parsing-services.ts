@@ -4,7 +4,7 @@ import {
   SubcategoryModel,
   OriginModel,
   TeaRequest,
-  TeaInstance, SessionModel,
+  TeaInstance, SessionModel, SessionInstance,
 } from './models';
 
 /**
@@ -161,4 +161,22 @@ export function getCountryCode(country: string): string {
  */
 export function getTeaDetails(teas: TeaInstance[], id: string) {
   return Object.values(teas).find((value) => value.id === id);
+}
+
+/**
+ * Derives countdown finish time from session and starting date.
+ *
+ * @param {SessionInstance} session - Brewing session instance
+ * @param {number} start - Starting date in milliseconds
+ * @returns {number}
+ */
+export function getFinishDate(start: number, session: SessionInstance) {
+  const brewing = session.brewing;
+  const initial = brewing.initial ? parseHMSToSeconds(brewing.initial) : 0;
+  const increments = brewing.increments
+    ? parseHMSToSeconds(brewing.increments)
+    : 0;
+  return (
+    start + (initial + increments * (session.current_infusion - 1)) * 1000
+  );
 }

@@ -90,6 +90,7 @@ function SessionForm({ setRoute }: Props): ReactElement {
       increments: "00:00:05",
     },
     created_on: "",
+    last_brewed_on: "",
     current_infusion: 1,
     is_completed: false,
   };

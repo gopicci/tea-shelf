@@ -9,9 +9,13 @@ import React, {
 import { Box, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Countdown from "react-countdown";
-import { parseHMSToSeconds } from "../../services/parsing-services";
-import { SessionInstance } from "../../services/models";
-import { ClockDispatch } from "../statecontainers/clocks-context";
+import {
+  getFinishDate,
+  parseHMSToSeconds,
+} from "../../services/parsing-services";
+import { ClockDispatch, ClocksState } from "../statecontainers/clocks-context";
+import { Clock, SessionInstance } from "../../services/models";
+import localforage from "localforage";
 
 const useStyles = makeStyles((theme) => ({
   clockBox: {
@@ -48,8 +52,16 @@ type CountdownProps = {
 type Props = {
   /** Brewing session state */
   session: SessionInstance;
-  /** Set brewing session state */
-  setSession: (session: SessionInstance) => void;
+  /** Countdown date */
+  date: number;
+  /** Countdown counting state */
+  counting: boolean;
+  /** Adds counting clock to global state and cache */
+  addClock: () => void;
+  /** Handles countdown completion */
+  handleComplete: () => void;
+  /** Handles countdown cancellation */
+  handleCancel: () => void;
 };
 
 /**
@@ -58,62 +70,24 @@ type Props = {
  * @component
  * @subcategory Brewing session
  */
-function SessionClock({ session, setSession }: Props): ReactElement {
+function SessionClock({
+  session,
+  date,
+  counting,
+  addClock,
+  handleComplete,
+  handleCancel,
+}: Props): ReactElement {
   const classes = useStyles();
-
-  const clockDispatch = useContext(ClockDispatch);
-
-  const [counting, setCounting] = useState(false);
-
-  /**
-   * Derives countdown time based on session brewing data and
-   * current infusion.
-   *
-   * @returns {string}
-   */
-  const dateFromBrewing: () => number = useCallback(() => {
-    const brewing = session.brewing;
-    const initial = brewing.initial ? parseHMSToSeconds(brewing.initial) : 0;
-    const increments = brewing.increments
-      ? parseHMSToSeconds(brewing.increments)
-      : 0;
-    const total = initial + increments * (session.current_infusion - 1);
-    return Date.now() + total * 1000;
-  }, [session.brewing, session.current_infusion]);
-
-  const [date, setDate] = useState(dateFromBrewing);
-
-  useEffect(() => setDate(dateFromBrewing), [dateFromBrewing, session]);
 
   const clockRef = useRef({} as Countdown);
 
-  /** Starts clock */
+  /**
+   * Starts countdown, adding clock to global state and cache.
+   */
   function handleStart(): void {
     clockRef.current.start();
-    setCounting(true);
-    clockDispatch({
-      type: "ADD",
-      data: { id: session.id, starting_time: new Date().toISOString() },
-    });
-  }
-
-  /** Resets clock */
-  function handleCancel(): void {
-    setDate(dateFromBrewing);
-    setCounting(false);
-    clockDispatch({
-      type: "DELETE",
-      data: { id: session.id },
-    });
-  }
-
-  /**
-   * On countdown completion updates brewing session
-   * state incrementing current infusion
-   * */
-  function handleComplete(): void {
-    setSession({ ...session, current_infusion: session.current_infusion + 1 });
-    setCounting(false);
+    addClock();
   }
 
   return (
@@ -123,7 +97,7 @@ function SessionClock({ session, setSession }: Props): ReactElement {
           key={date}
           date={date}
           ref={clockRef}
-          autoStart={false}
+          autoStart={counting}
           renderer={({ minutes, seconds }: CountdownProps): ReactElement => {
             return (
               <span>
