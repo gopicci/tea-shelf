@@ -18,6 +18,7 @@ import Settings from "./components/settings";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { Confirmation, SessionInstance, TeaInstance } from "./services/models";
+import SessionLayout from "./components/session/session-layout";
 
 /**
  * Defines type for app's main routing state.
@@ -101,7 +102,8 @@ function App(): ReactElement {
       case "CREATE_SESSION":
         return <MainLayout {...props} />;
       case "SESSION_DETAILS":
-        return <MainLayout {...props} />;
+        if (isMobile) return <SessionLayout {...props} />;
+        else return <MainLayout {...props} />;
       case "SETTINGS":
         if (isMobile) return <Settings {...props} />;
         else return <MainLayout {...props} />;

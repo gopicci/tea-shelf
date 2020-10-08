@@ -54,6 +54,8 @@ export interface SessionModel {
   brewing: BrewingModel;
   /** Creation date */
   created_on: string;
+  /** Date of last brewing */
+  last_brewed_on: string;
   /** Current infusion number */
   current_infusion: number;
   /** Completion status */
@@ -62,13 +64,23 @@ export interface SessionModel {
 
 /**
  * Extension of BrewingSession that defines a session instance,
- * with required ID and creation date.
+ * with required ID, creation date and brewing state.
  */
 export interface SessionInstance extends SessionModel {
   /** Instance ID, UUID string if coming from API, number if generated offline */
   id: string | number;
   /** Creation date */
   created_on: string;
+}
+
+/**
+ * Clock data structure, represents brewing sessions currently running.
+ */
+export interface Clock {
+  /** Brewing session instance ID, UUID string if coming from API, number if generated offline */
+  id: string | number;
+  /** Brewing starting time */
+  starting_time: string;
 }
 
 /**

@@ -1,6 +1,7 @@
 import React, {
   ReactElement,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -10,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Countdown from "react-countdown";
 import { parseHMSToSeconds } from "../../services/parsing-services";
 import { SessionInstance } from "../../services/models";
+import { ClockDispatch } from "../statecontainers/clocks-context";
 
 const useStyles = makeStyles((theme) => ({
   clockBox: {
@@ -19,9 +21,12 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   clock: {
-    fontSize: 200,
     lineHeight: 1,
     marginBottom: theme.spacing(2),
+    fontSize: 200,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "30vw",
+    },
   },
 }));
 
@@ -56,6 +61,8 @@ type Props = {
 function SessionClock({ session, setSession }: Props): ReactElement {
   const classes = useStyles();
 
+  const clockDispatch = useContext(ClockDispatch);
+
   const [counting, setCounting] = useState(false);
 
   /**
@@ -84,12 +91,20 @@ function SessionClock({ session, setSession }: Props): ReactElement {
   function handleStart(): void {
     clockRef.current.start();
     setCounting(true);
+    clockDispatch({
+      type: "ADD",
+      data: { id: session.id, starting_time: new Date().toISOString() },
+    });
   }
 
   /** Resets clock */
   function handleCancel(): void {
     setDate(dateFromBrewing);
     setCounting(false);
+    clockDispatch({
+      type: "DELETE",
+      data: { id: session.id },
+    });
   }
 
   /**

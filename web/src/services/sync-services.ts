@@ -6,6 +6,7 @@ import {
   SubcategoryModel,
   VendorModel,
   SessionInstance,
+  Clock,
 } from "./models";
 
 /**
@@ -15,7 +16,8 @@ type genericModels =
   | TeaInstance
   | SessionInstance
   | SubcategoryModel
-  | VendorModel;
+  | VendorModel
+  | Clock;
 
 /**
  * Generic reducer actions.

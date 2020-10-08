@@ -44,10 +44,12 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** App's main route state */
   route: Route;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
   /** Mobile mode or desktop */
   isMobile: boolean;
   /** Handles dialog close */
-  handleClose: () => void;
+  handleClose?: () => void;
 };
 
 /**
@@ -56,7 +58,12 @@ type Props = {
  * @component
  * @subcategory Brewing session
  */
-function SessionLayout({ route, isMobile, handleClose }: Props): ReactElement {
+function SessionLayout({
+  route,
+  setRoute,
+  isMobile,
+  handleClose,
+}: Props): ReactElement {
   const classes = useStyles();
 
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
@@ -81,11 +88,16 @@ function SessionLayout({ route, isMobile, handleClose }: Props): ReactElement {
     } catch (e) {
       console.error(e);
     }
-    handleClose();
+    if (handleClose) handleClose();
+    else setRoute({ route: "SESSIONS" });
   }
 
-  async function handleResumeSession() {
-    await setSession({ ...session, is_completed: false });
+  function handleResumeSession() {
+    setSession({ ...session, is_completed: false });
+  }
+
+  function handleBack() {
+    setRoute({ route: "SESSIONS" });
   }
 
   return (
@@ -95,7 +107,7 @@ function SessionLayout({ route, isMobile, handleClose }: Props): ReactElement {
           <GenericAppBar>
             <Toolbar>
               <Box className={classes.row}>
-                <IconButton edge="start" aria-label="back">
+                <IconButton edge="start" aria-label="back" onClick={handleBack}>
                   <ArrowBack />
                 </IconButton>
               </Box>
@@ -106,7 +118,9 @@ function SessionLayout({ route, isMobile, handleClose }: Props): ReactElement {
       )}
       <Typography variant="h1">{session.name}</Typography>
       {date && (
-        <Typography variant="h5">Started on {dateFormat(date, "dddd, mmmm dS, yyyy, h:MM TT")}</Typography>
+        <Typography variant="h5">
+          Started on {dateFormat(date, "dddd, mmmm dS, yyyy, h:MM TT")}
+        </Typography>
       )}
       <Box className={classes.row}>
         <Typography variant="h4">Temp {session.brewing.temperature}</Typography>
