@@ -1,21 +1,11 @@
 import React, {
   ReactElement,
-  useCallback,
-  useContext,
-  useEffect,
   useRef,
-  useState,
 } from "react";
 import { Box, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Countdown from "react-countdown";
-import {
-  getFinishDate,
-  parseHMSToSeconds,
-} from "../../services/parsing-services";
-import { ClockDispatch, ClocksState } from "../statecontainers/clocks-context";
-import { Clock, SessionInstance } from "../../services/models";
-import localforage from "localforage";
+import { SessionInstance } from "../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   clockBox: {

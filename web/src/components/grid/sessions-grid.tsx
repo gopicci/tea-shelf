@@ -101,7 +101,7 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
                   key={session.id}
                 >
                   <SessionCard
-                    sessionData={session}
+                    session={session}
                     gridView={!!(settings.gridView && !isMobile)}
                     setRoute={setRoute}
                   />

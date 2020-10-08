@@ -8,18 +8,18 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
+import localforage from "localforage";
+import dateFormat from "dateformat";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
-import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
-import { Clock, SessionInstance, SessionModel } from "../../services/models";
-import { Route } from "../../app";
-import dateFormat from "dateformat";
-import { ClockDispatch, ClocksState } from "../statecontainers/clocks-context";
 import {
   getFinishDate,
   parseHMSToSeconds,
 } from "../../services/parsing-services";
-import localforage from "localforage";
+import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
+import { ClockDispatch, ClocksState } from "../statecontainers/clocks-context";
+import { Clock, SessionInstance } from "../../services/models";
+import { Route } from "../../app";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,7 +80,7 @@ function SessionLayout({
     route.sessionPayload ? route.sessionPayload : ({} as SessionInstance)
   );
 
-  // Searches for a running clock in global state
+  // Search for a running clock in global state
   const clock = clocksState.find((clock) => clock.id === session.id);
   const clockFinish = clock && getFinishDate(clock.starting_time, session);
 
@@ -93,9 +93,7 @@ function SessionLayout({
     clockFinish ? clockFinish : getFinishDate(Date.now(), session)
   );
 
-  if (clockFinish && clockFinish < Date.now()) {
-    handleComplete();
-  }
+  if (clockFinish && clockFinish < Date.now()) handleComplete();
 
   useEffect(() => {
     if (session !== route.sessionPayload) {
@@ -188,7 +186,7 @@ function SessionLayout({
     }
   }
 
-  async function handleEndSession() {
+  async function handleEndSession(): Promise<void> {
     try {
       await handleCancel();
       await handleSessionEdit({ ...session, is_completed: true }, session.id);
@@ -199,12 +197,12 @@ function SessionLayout({
     else setRoute({ route: "SESSIONS" });
   }
 
-  function handleResumeSession() {
+  function handleResumeSession(): void {
     setFinishDate(getFinishDate(Date.now(), session));
     setSession({ ...session, is_completed: false });
   }
 
-  function handleBack() {
+  function handleBack(): void {
     setRoute({ route: "SESSIONS" });
   }
 

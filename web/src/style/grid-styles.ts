@@ -182,6 +182,7 @@ export const gridStyles = makeStyles({
   rowSpace: {
     display: "flex",
     flexDirection: "row",
+    flexGrow: 1,
     justifyContent: "space-between",
   },
 });
