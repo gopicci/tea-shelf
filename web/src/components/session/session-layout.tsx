@@ -12,12 +12,9 @@ import localforage from "localforage";
 import dateFormat from "dateformat";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
-import {
-  getFinishDate,
-  parseHMSToSeconds,
-} from "../../services/parsing-services";
+import { getEndDate, parseHMSToSeconds } from "../../services/parsing-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
-import { ClockDispatch, ClocksState } from "../statecontainers/clocks-context";
+import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
 
@@ -72,7 +69,7 @@ function SessionLayout({
 }: Props): ReactElement {
   const classes = useStyles();
 
-  const clocksState = useContext(ClocksState);
+  const clocks = useContext(ClocksState);
   const clockDispatch = useContext(ClockDispatch);
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
@@ -81,19 +78,18 @@ function SessionLayout({
   );
 
   // Search for a running clock in global state
-  const clock = clocksState.find((clock) => clock.id === session.id);
-  const clockFinish = clock && getFinishDate(clock.starting_time, session);
+  const clock = clocks && clocks.find((c) => c.id === session.id);
+  const expiration = clock && getEndDate(clock.starting_time, session);
+  const expired = expiration && expiration < Date.now();
+  if (expired) handleComplete();
 
-  const [counting, setCounting] = useState(!!clock);
-
+  const [counting, setCounting] = useState(!!(clock && !expired));
   const [startDate, setStartDate] = useState(
     clock ? clock.starting_time : Date.now()
   );
-  const [finishDate, setFinishDate] = useState(
-    clockFinish ? clockFinish : getFinishDate(Date.now(), session)
+  const [endDate, setEndDate] = useState(
+    expiration ? expiration : getEndDate(Date.now(), session)
   );
-
-  if (clockFinish && clockFinish < Date.now()) handleComplete();
 
   useEffect(() => {
     if (session !== route.sessionPayload) {
@@ -108,15 +104,15 @@ function SessionLayout({
     try {
       setCounting(true);
       setStartDate(Date.now());
-      const clock = { id: session.id, starting_time: Date.now() };
+      const newClock = { id: session.id, starting_time: Date.now() };
       clockDispatch({
         type: "ADD",
-        data: clock,
+        data: newClock,
       });
-      let clocks = await localforage.getItem<Clock[]>("clocks");
-      if (clocks) clocks.push(clock);
-      else clocks = [clock];
-      await localforage.setItem<Clock[]>("clocks", clocks);
+      let cachedClocks = await localforage.getItem<Clock[]>("clocks");
+      if (cachedClocks) cachedClocks.push(newClock);
+      else cachedClocks = [newClock];
+      await localforage.setItem<Clock[]>("clocks", cachedClocks);
     } catch (e) {
       console.error(e);
       await handleCancel();
@@ -130,7 +126,7 @@ function SessionLayout({
   async function handleCancel(): Promise<void> {
     try {
       setCounting(false);
-      setFinishDate(getFinishDate(Date.now(), session));
+      setEndDate(getEndDate(Date.now(), session));
       await removeClock();
     } catch (e) {
       console.error(e);
@@ -150,7 +146,7 @@ function SessionLayout({
       const increments = session.brewing.increments
         ? parseHMSToSeconds(session.brewing.increments)
         : 0;
-      setFinishDate(getFinishDate(Date.now(), session) + increments * 1000);
+      setEndDate(getEndDate(Date.now(), session) + increments * 1000);
 
       setSession({
         ...session,
@@ -167,6 +163,12 @@ function SessionLayout({
    */
   async function removeClock(): Promise<void> {
     try {
+      let cachedClocks = await localforage.getItem<Clock[]>("clocks");
+      if (cachedClocks)
+        await localforage.setItem<Clock[]>(
+          "clocks",
+          cachedClocks.filter((c) => c.id !== session.id)
+        );
       await clockDispatch({
         type: "DELETE",
         data: {
@@ -174,13 +176,6 @@ function SessionLayout({
           starting_time: startDate,
         },
       });
-
-      let clocks = await localforage.getItem<Clock[]>("clocks");
-      if (clocks)
-        await localforage.setItem<Clock[]>(
-          "clocks",
-          clocks.filter((clock) => clock.id !== session.id)
-        );
     } catch (e) {
       console.error(e);
     }
@@ -198,7 +193,7 @@ function SessionLayout({
   }
 
   function handleResumeSession(): void {
-    setFinishDate(getFinishDate(Date.now(), session));
+    setEndDate(getEndDate(Date.now(), session));
     setSession({ ...session, is_completed: false });
   }
 
@@ -240,7 +235,7 @@ function SessionLayout({
       </Box>
       <SessionClock
         session={session}
-        date={finishDate}
+        date={endDate}
         counting={counting}
         addClock={addClock}
         handleCancel={handleCancel}

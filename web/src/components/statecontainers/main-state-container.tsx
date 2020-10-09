@@ -9,7 +9,7 @@ import FilterContext from "./filter-context";
 import SnackbarContext from "./snackbar-context";
 import SearchContext from "./search-context";
 import SessionContext from "./session-context";
-import ClockContext from "./clocks-context";
+import ClockContext from "./clock-context";
 
 type Props = {
   children: ReactChild;
@@ -30,13 +30,13 @@ function MainStateContainer({ children }: Props): ReactElement {
             <VendorsContext>
               <TeaContext>
                 <FilterContext>
-                  <SessionContext>
-                    <ClockContext>
+                  <ClockContext>
+                    <SessionContext>
                       <SearchContext>
                         <SettingsContext>{children}</SettingsContext>
                       </SearchContext>
-                    </ClockContext>
-                  </SessionContext>
+                    </SessionContext>
+                  </ClockContext>
                 </FilterContext>
               </TeaContext>
             </VendorsContext>

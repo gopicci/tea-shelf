@@ -3,9 +3,9 @@ import {
   CategoryModel,
   SubcategoryModel,
   OriginModel,
-  TeaRequest,
-  TeaInstance, SessionModel, SessionInstance,
-} from './models';
+  TeaInstance,
+  SessionInstance,
+} from "./models";
 
 /**
  * Gets category name from list of categories based on id.
@@ -170,13 +170,11 @@ export function getTeaDetails(teas: TeaInstance[], id: string) {
  * @param {number} start - Starting date in milliseconds
  * @returns {number}
  */
-export function getFinishDate(start: number, session: SessionInstance) {
+export function getEndDate(start: number, session: SessionInstance) {
   const brewing = session.brewing;
   const initial = brewing.initial ? parseHMSToSeconds(brewing.initial) : 0;
   const increments = brewing.increments
     ? parseHMSToSeconds(brewing.increments)
     : 0;
-  return (
-    start + (initial + increments * (session.current_infusion - 1)) * 1000
-  );
+  return start + (initial + increments * (session.current_infusion - 1)) * 1000;
 }

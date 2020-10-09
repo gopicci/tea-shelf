@@ -30,8 +30,6 @@ type Props = {
 function SessionForm({ setRoute }: Props): ReactElement {
   const classes = desktopFormStyles();
 
-  const teas = useContext(TeasState);
-
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
   /**
@@ -42,16 +40,6 @@ function SessionForm({ setRoute }: Props): ReactElement {
    */
   function handleSave(values: FormikValues): void {
     let data = {} as SessionModel;
-
-    if (values.tea) {
-      if (validator.isUUID(values.tea)) {
-        const teaInstance = getTeaDetails(teas, values.tea);
-        if (teaInstance) {
-          data["tea"] = values.tea;
-          data["name"] = teaInstance.name;
-        }
-      } else data["name"] = values.tea;
-    }
 
     let brewing: BrewingModel = {};
 

@@ -3,6 +3,7 @@ import React, {
   Dispatch,
   ReactChild,
   ReactElement,
+  useContext,
   useEffect,
   useReducer,
 } from "react";
@@ -13,7 +14,8 @@ import {
   uploadOfflineSessions,
 } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
-import { SessionInstance } from "../../services/models";
+import { ClockDispatch } from "./clock-context";
+import { Clock, SessionInstance } from "../../services/models";
 
 export const SessionsState = createContext<SessionInstance[]>([]);
 export const SessionDispatch = createContext({} as Dispatch<GenericAction>);
@@ -31,6 +33,8 @@ type Props = {
 function SessionContext({ children }: Props): ReactElement {
   const [state, dispatch] = useReducer(genericReducer, []);
 
+  const clockDispatch = useContext(ClockDispatch);
+
   useEffect(() => {
     /**
      * Updates the state cache first on state changes.
@@ -41,6 +45,9 @@ function SessionContext({ children }: Props): ReactElement {
       try {
         // Try to upload offline brewing session entries
         await uploadOfflineSessions();
+        // If successful clocks cache has new IDs, update state
+        const clocks = await localforage.getItem<Clock[]>("clocks");
+        clockDispatch({ type: "SET", data: clocks });
       } catch (e) {
         console.error(e);
       }
@@ -77,14 +84,24 @@ function SessionContext({ children }: Props): ReactElement {
               )
           );
 
+        const sessions = offlineSessions.concat(onlineSessions);
+
         // Update the state
-        dispatch({ type: "SET", data: offlineSessions.concat(onlineSessions) });
+        dispatch({ type: "SET", data: sessions });
 
         // Update the cache
         await localforage.setItem<SessionInstance[]>(
           "sessions",
           onlineSessions
         );
+
+        // Remove clocks that don't have a matching session ID
+        const cachedClocks = await localforage.getItem<Clock[]>("clocks");
+        const filteredClocks = cachedClocks.filter((c) =>
+          sessions.some((s) => s.id === c.id)
+        );
+        clockDispatch({ type: "SET", data: filteredClocks });
+        await localforage.setItem<Clock[]>("clocks", filteredClocks);
       } catch (e) {
         console.error(e);
       }

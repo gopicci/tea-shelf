@@ -168,12 +168,25 @@ export async function uploadOfflineSessions(): Promise<void> {
   );
   if (!offlineSessions) return;
 
+  let clocks = await localforage.getItem<Clock[]>("clocks");
+
   let failed: SessionInstance[] = [];
   let error = "";
 
   const requests = offlineSessions.map(async (session) => {
     try {
-      await uploadInstance(session);
+      const res = await uploadInstance(session);
+
+      // If there are any session clocks, update with new ID
+      const clock = clocks.find((c) => c.id === session.id);
+      if (clock) {
+        const body = await res?.json();
+        if (typeof body.id === "string") {
+          clocks.push({ id: body.id, starting_time: clock.starting_time });
+          clocks = clocks.filter((c) => c.id !== clock.id);
+          await localforage.setItem<Clock[]>("clocks", clocks);
+        }
+      }
     } catch (e) {
       // Save failed instance if proper
       if (e.message !== "Bad Request") failed.push(session);

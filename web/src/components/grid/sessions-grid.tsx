@@ -42,7 +42,6 @@ type Props = {
 function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
   const classes = gridStyles();
 
-  const teasState = useContext(TeasState);
   const sessionsState = useContext(SessionsState);
   const settings = useContext(SettingsState);
 

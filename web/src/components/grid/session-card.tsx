@@ -1,4 +1,10 @@
-import React, { ReactElement, useContext, useRef, useState } from "react";
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Box,
   Card,
@@ -11,13 +17,10 @@ import Countdown from "react-countdown";
 import { gridStyles } from "../../style/grid-styles";
 import { Route } from "../../app";
 import { Clock, SessionInstance } from "../../services/models";
-import { ClockDispatch, ClocksState } from "../statecontainers/clocks-context";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
-import {
-  getFinishDate,
-  parseHMSToSeconds,
-} from "../../services/parsing-services";
+import { getEndDate } from "../../services/parsing-services";
 import localforage from "localforage";
+import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 
 /**
  * Countdown props.
@@ -55,21 +58,18 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
 
   const clockRef = useRef({} as Countdown);
 
-  const clocksState = useContext(ClocksState);
-  const clockDispatch = useContext(ClockDispatch);
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
+  const clocks = useContext(ClocksState);
+  const clockDispatch = useContext(ClockDispatch);
+
   // Search for a running clock in global state
-  const clock = clocksState.find((clock) => clock.id === session.id);
-  const clockFinish = clock && getFinishDate(clock.starting_time, session);
+  const clock = clocks && clocks.find((c) => c.id === session.id);
+  const expiration = clock && getEndDate(clock.starting_time, session);
+  const expired = expiration && expiration < Date.now();
+  if (expired) handleComplete();
 
-  const [counting, setCounting] = useState(!!clock);
-
-  const [finishDate, setFinishDate] = useState(
-    clockFinish ? clockFinish : getFinishDate(Date.now(), session)
-  );
-
-  if (clockFinish && clockFinish < Date.now()) handleComplete();
+  const endDate = expiration ? expiration : getEndDate(Date.now(), session);
 
   /**
    * On countdown completion removes clock from global state
@@ -79,17 +79,11 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
     try {
       await removeClock();
 
-      setCounting(false);
-
-      const increments = session.brewing.increments
-        ? parseHMSToSeconds(session.brewing.increments)
-        : 0;
-      setFinishDate(getFinishDate(Date.now(), session) + increments * 1000);
-
       handleSessionEdit(
         {
           ...session,
           current_infusion: session.current_infusion + 1,
+          last_brewed_on: new Date().toISOString(),
         },
         session.id
       );
@@ -105,6 +99,12 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   async function removeClock(): Promise<void> {
     try {
       if (clock) {
+        let clocks = await localforage.getItem<Clock[]>("clocks");
+        if (clocks)
+          await localforage.setItem<Clock[]>(
+            "clocks",
+            clocks.filter((c) => c.id !== session.id)
+          );
         await clockDispatch({
           type: "DELETE",
           data: {
@@ -112,13 +112,6 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
             starting_time: clock.starting_time,
           },
         });
-
-        let clocks = await localforage.getItem<Clock[]>("clocks");
-        if (clocks)
-          await localforage.setItem<Clock[]>(
-            "clocks",
-            clocks.filter((clock) => clock.id !== session.id)
-          );
       }
     } catch (e) {
       console.error(e);
@@ -163,10 +156,10 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
               </Typography>
               <Typography variant="caption">
                 <Countdown
-                  key={finishDate}
-                  date={finishDate}
+                  key={endDate}
+                  date={endDate}
                   ref={clockRef}
-                  autoStart={counting}
+                  autoStart={!!(clock && !expired)}
                   renderer={({
                     minutes,
                     seconds,
