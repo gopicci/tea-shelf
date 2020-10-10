@@ -3,7 +3,6 @@ import { Grid } from "@material-ui/core";
 import SessionCard from "./session-card";
 import DateCard from "./date-card";
 import { gridStyles } from "../../style/grid-styles";
-import { TeasState } from "../statecontainers/tea-context";
 import { SettingsState } from "../statecontainers/settings-context";
 import { SessionsState } from "../statecontainers/session-context";
 import { Route } from "../../app";

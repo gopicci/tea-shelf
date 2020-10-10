@@ -1,10 +1,4 @@
-import React, {
-  ReactElement,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ReactElement, useContext, useRef } from "react";
 import {
   Box,
   Card,
@@ -14,13 +8,13 @@ import {
 } from "@material-ui/core";
 import dateFormat from "dateformat";
 import Countdown from "react-countdown";
-import { gridStyles } from "../../style/grid-styles";
+import localforage from "localforage";
+import { getEndDate } from "../../services/parsing-services";
+import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
+import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { Route } from "../../app";
 import { Clock, SessionInstance } from "../../services/models";
-import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
-import { getEndDate } from "../../services/parsing-services";
-import localforage from "localforage";
-import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
+import { gridStyles } from "../../style/grid-styles";
 
 /**
  * Countdown props.
@@ -126,7 +120,11 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   const createdOn = new Date(session.created_on);
 
   return (
-    <Card variant="outlined">
+    <Card
+      variant="outlined"
+      className={classes.cardPulse}
+      style={!!(clock && !expired) ? undefined : { animation: "none" }}
+    >
       <CardActionArea
         className={gridView ? classes.gridCard : classes.listCard}
         onClick={handleCardClick}

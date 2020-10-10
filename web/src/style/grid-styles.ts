@@ -10,6 +10,18 @@ export const gridStyles = makeStyles({
       duration: theme.transitions.duration.complex,
     }),
   },
+  cardPulse: {
+    animationName: "$pulse",
+    animationDuration: "1.0s",
+    animationDirection: "alternate",
+    animationTimingFunction: "ease-in-out",
+    animationIterationCount: "infinite",
+  },
+  "@keyframes pulse": {
+    "100%": {
+      backgroundColor: theme.palette.action.selected,
+    },
+  },
   gridRoot: {
     maxWidth: "100%",
     padding: 0,

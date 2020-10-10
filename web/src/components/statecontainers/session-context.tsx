@@ -107,7 +107,7 @@ function SessionContext({ children }: Props): ReactElement {
       }
     }
     syncSessions();
-  }, []);
+  }, [clockDispatch]);
 
   return (
     <SessionsState.Provider value={state as SessionInstance[]}>

@@ -1,12 +1,9 @@
 import React, { ReactElement, useContext } from "react";
 import { Formik, Form, FormikValues, FormikProps } from "formik";
 import { Box, Button, TextField, Typography } from "@material-ui/core";
-import validator from "validator";
-import { getTeaDetails } from "../../../services/parsing-services";
 import { sessionValidationSchema } from "./validation-schema";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";
 import { SessionEditorContext, HandleSessionEdit } from "../../edit-session";
-import { TeasState } from "../../statecontainers/tea-context";
 import { Route } from "../../../app";
 import { BrewingModel, SessionModel } from "../../../services/models";
 
