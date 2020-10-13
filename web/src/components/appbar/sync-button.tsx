@@ -15,6 +15,8 @@ import { TeaDispatch } from "../statecontainers/tea-context";
 import { SubcategoriesDispatch } from "../statecontainers/subcategories-context";
 import { VendorsDispatch } from "../statecontainers/vendors-context";
 import { SessionDispatch } from "../statecontainers/session-context";
+import { ClockDispatch } from "../statecontainers/clock-context";
+import { Clock } from "../../services/models";
 
 /**
  * Sync icon button component. Callback runs on mount and on click.
@@ -32,6 +34,7 @@ function SyncButton(): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const sessionDispatch = useContext(SessionDispatch);
+  const clockDispatch = useContext(ClockDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorDispatch = useContext(VendorsDispatch);
 
@@ -76,13 +79,23 @@ function SyncButton(): ReactElement {
 
       // Download sessions from API
       const res = await APIRequest("/brewing_session/", "GET");
-      const body = await res.json();
+      const onlineSessions = await res.json();
+
+      const sessions = offlineSessions.concat(onlineSessions);
 
       // Update global teas state
-      sessionDispatch({ type: "SET", data: offlineSessions.concat(body) });
+      sessionDispatch({ type: "SET", data: sessions });
 
       // Update teas cache
-      await localforage.setItem("sessions", body);
+      await localforage.setItem("sessions", onlineSessions);
+
+      // Remove clocks that don't have a matching session ID
+      const cachedClocks = await localforage.getItem<Clock[]>("clocks");
+      const filteredClocks = cachedClocks.filter((c) =>
+        sessions.some((s) => s.id === c.id)
+      );
+      clockDispatch({ type: "SET", data: filteredClocks });
+      await localforage.setItem<Clock[]>("clocks", filteredClocks);
     } catch (e) {
       console.error(e);
       error = e;
