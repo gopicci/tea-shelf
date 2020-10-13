@@ -3,20 +3,27 @@ import {
   Box,
   Button,
   IconButton,
+  SvgIcon,
   Toolbar,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { ArrowBack } from "@material-ui/icons";
+import { ArrowBack, FitnessCenter } from "@material-ui/icons";
 import localforage from "localforage";
 import dateFormat from "dateformat";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
-import { getEndDate, parseHMSToSeconds } from "../../services/parsing-services";
+import {
+  celsiusToFahrenheit,
+  getEndDate,
+  parseHMSToSeconds,
+} from "../../services/parsing-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
+import EditInfusion from "../input/mobile/edit-infusion";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +39,38 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     minWidth: "100%",
+    alignItems: "center",
+  },
+  spaceBetween: {
     justifyContent: "space-between",
+  },
+  suggestions: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    justifyContent: "space-between",
+    marginLeft: theme.spacing(2),
+    paddingTop: theme.spacing(4),
+  },
+  icon: {
+    color: theme.palette.text.secondary,
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+    marginRight: theme.spacing(1),
+  },
+  infusionButton: {
+    "& .MuiButton-label": {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    marginTop: theme.spacing(4),
+    marginRight: theme.spacing(2),
+    padding: theme.spacing(2),
+  },
+  infusion: {
+    fontSize: theme.spacing(6),
   },
   endButton: {
     width: "100%",
@@ -77,6 +115,8 @@ function SessionLayout({
     route.sessionPayload ? route.sessionPayload : ({} as SessionInstance)
   );
 
+  const [editInfusion, setEditInfusion] = useState(false);
+
   // Search for a running clock in global state
   const clock = clocks && clocks.find((c) => c.id === session.id);
   const expiration = clock && getEndDate(clock.starting_time, session);
@@ -93,6 +133,7 @@ function SessionLayout({
 
   useEffect(() => {
     if (session !== route.sessionPayload) {
+      setEndDate(getEndDate(Date.now(), session));
       handleSessionEdit(session, session.id);
     }
   }, [handleSessionEdit, route.sessionPayload, session]);
@@ -197,20 +238,39 @@ function SessionLayout({
     setSession({ ...session, is_completed: false });
   }
 
+  function handleBackToLayout(): void {
+    handleCancel();
+    setEditInfusion(false);
+  }
+
   function handleBack(): void {
     setRoute({ route: "SESSIONS" });
   }
 
-  return (
+  return editInfusion ? (
+    <EditInfusion
+      session={session}
+      setSession={setSession}
+      handleBackToLayout={handleBackToLayout}
+    />
+  ) : (
     <Box className={classes.root}>
       {isMobile && (
         <>
           <GenericAppBar>
             <Toolbar>
-              <Box className={classes.row}>
+              <Box className={clsx(classes.row, classes.spaceBetween)}>
                 <IconButton edge="start" aria-label="back" onClick={handleBack}>
                   <ArrowBack />
                 </IconButton>
+                {route.sessionPayload?.created_on && (
+                  <Typography variant="h5">
+                    {dateFormat(
+                      new Date(route.sessionPayload.created_on),
+                      "d mmm yyyy, h:MM TT"
+                    )}
+                  </Typography>
+                )}
               </Box>
             </Toolbar>
           </GenericAppBar>
@@ -218,20 +278,45 @@ function SessionLayout({
         </>
       )}
       <Typography variant="h1">{session.name}</Typography>
-      {route.sessionPayload?.created_on && (
-        <Typography variant="h5">
-          Started on{" "}
-          {dateFormat(
-            new Date(route.sessionPayload.created_on),
-            "dddd, mmmm dS, yyyy, h:MM TT"
+      <Box className={clsx(classes.row, classes.spaceBetween)}>
+        <Box className={classes.suggestions}>
+          {session.brewing.temperature && (
+            <Box className={classes.row}>
+              <SvgIcon className={classes.icon} viewBox="0 0 24 24">
+                <path d="M15 13V5a3 3 0 0 0-6 0v8a5 5 0 1 0 6 0m-3-9a1 1 0 0 1 1 1v3h-2V5a1 1 0 0 1 1-1z" />
+              </SvgIcon>
+              <Box>
+                <Typography variant="h4">
+                  {session.brewing.temperature}°c
+                </Typography>
+                <Typography variant="h4">
+                  {celsiusToFahrenheit(session.brewing.temperature)}F
+                </Typography>
+              </Box>
+            </Box>
           )}
-        </Typography>
-      )}
-      <Box className={classes.row}>
-        <Typography variant="h4">Temp {session.brewing.temperature}</Typography>
-        <Typography variant="h4">
-          Infusion {session.current_infusion}
-        </Typography>
+          {session.brewing.weight && (
+            <Box className={classes.row}>
+              <FitnessCenter className={classes.icon} />
+              <Typography variant="h4">
+                {session.brewing.weight}g/100ml
+              </Typography>
+            </Box>
+          )}
+        </Box>
+        {isMobile && (
+          <Button
+            variant="outlined"
+            className={classes.infusionButton}
+            onClick={() => setEditInfusion(true)}
+            disabled={session.is_completed}
+          >
+            <Typography variant="h4">Infusion</Typography>
+            <Typography variant="h1" className={classes.infusion}>
+              {session.current_infusion}
+            </Typography>
+          </Button>
+        )}
       </Box>
       <SessionClock
         session={session}
