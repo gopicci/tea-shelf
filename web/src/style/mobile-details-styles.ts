@@ -99,6 +99,10 @@ export const mobileDetailsStyles = makeStyles({
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(2),
   },
+  brewingButton: {
+    padding: theme.spacing(2),
+    width: "100%",
+  },
   weightSwitch: {
     marginBottom: theme.spacing(2),
   },
@@ -125,5 +129,8 @@ export const mobileDetailsStyles = makeStyles({
   mapBox: {
     flexGrow: 1,
     marginBottom: -theme.spacing(1),
+  },
+  brewingBox: {
+    marginBottom: 0,
   },
 });

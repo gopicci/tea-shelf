@@ -118,6 +118,7 @@ export const gridStyles = makeStyles({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    textAlign: "center",
   },
   disabledCard: {
     position: "absolute",
@@ -194,7 +195,6 @@ export const gridStyles = makeStyles({
   rowSpace: {
     display: "flex",
     flexDirection: "row",
-    flexGrow: 1,
     justifyContent: "space-between",
   },
 });

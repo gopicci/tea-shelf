@@ -147,32 +147,30 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
           >
             {session.name}
           </Typography>
-          <Box className={classes.bottomBox}>
-            <Box className={classes.rowSpace}>
-              <Typography variant="caption">
-                Infusions: {session.current_infusion}
-              </Typography>
-              <Typography variant="caption">
-                <Countdown
-                  key={endDate}
-                  date={endDate}
-                  ref={clockRef}
-                  autoStart={!!(clock && !expired)}
-                  renderer={({
-                    minutes,
-                    seconds,
-                  }: CountdownProps): ReactElement => {
-                    return (
-                      <span>
-                        {String(minutes).padStart(2, "0")}:
-                        {String(seconds).padStart(2, "0")}
-                      </span>
-                    );
-                  }}
-                  onComplete={handleComplete}
-                />
-              </Typography>
-            </Box>
+          <Box className={classes.rowSpace}>
+            <Typography variant="caption">
+              Infusions: {session.current_infusion}
+            </Typography>
+            <Typography variant="caption">
+              <Countdown
+                key={endDate}
+                date={endDate}
+                ref={clockRef}
+                autoStart={!!(clock && !expired)}
+                renderer={({
+                  minutes,
+                  seconds,
+                }: CountdownProps): ReactElement => {
+                  return (
+                    <span>
+                      {String(minutes).padStart(2, "0")}:
+                      {String(seconds).padStart(2, "0")}
+                    </span>
+                  );
+                }}
+                onComplete={handleComplete}
+              />
+            </Typography>
           </Box>
         </CardContent>
         {session.is_completed && <Box className={classes.disabledCard} />}

@@ -1,6 +1,7 @@
 import React, { ReactElement, useContext, useState } from "react";
 import {
   Box,
+  Button,
   Card,
   FormControlLabel,
   FormGroup,
@@ -21,8 +22,15 @@ import InputBrewing from "../../input/mobile/input-brewing";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { SettingsState } from "../../statecontainers/settings-context";
-import { TeaInstance, TeaRequest } from "../../../services/models";
+import {
+  BrewingModel,
+  SessionModel,
+  TeaInstance,
+  TeaRequest,
+} from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
+import { FormikValues } from "formik";
+import {HandleSessionEdit, SessionEditorContext} from '../../edit-session';
 
 /**
  * DetailsCardMain props.
@@ -50,6 +58,8 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
   const categories = useContext(CategoriesState);
   const category = getCategoryName(categories, teaData.category);
 
+  const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
+
   const [rating, setRating] = useState(teaData?.rating);
   const [gongfu, setGongfu] = useState(settings.gongfu);
 
@@ -69,6 +79,36 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
   /** Updates brewing switch state. */
   function handleSwitch(): void {
     setGongfu(!gongfu);
+  }
+
+  function handleStartSession(): void {
+    let data = {} as SessionModel;
+
+    let brewing: BrewingModel = {};
+
+    const brewingType = gongfu ? "gongfu_brewing" : "western_brewing";
+
+    if (teaData[brewingType]?.temperature)
+      brewing["temperature"] = teaData[brewingType]?.temperature;
+
+    if (teaData[brewingType]?.weight)
+      brewing["weight"] = teaData[brewingType]?.weight;
+
+    brewing["initial"] = teaData[brewingType]?.initial
+      ? teaData[brewingType]?.initial
+      : "00:00:00";
+    brewing["increments"] = teaData[brewingType]?.increments
+      ? teaData[brewingType]?.increments
+      : "00:00:00";
+
+    data["brewing"] = brewing;
+
+    data["name"] = teaData.name;
+    data["current_infusion"] = 1;
+    data["is_completed"] = false;
+
+    handleSessionEdit(data, undefined, "Brewing session successfully created.");
+    //setRoute({ route: "SESSIONS" });
   }
 
   return (
@@ -110,7 +150,7 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
         </Box>
       </Box>
       <Box className={classes.divider} />
-      <Box className={classes.genericBox}>
+      <Box className={clsx(classes.genericBox, classes.brewingBox)}>
         <Box className={classes.row}>
           <Icon className={clsx(classes.lineIcon, classes.brewingIcon)}>
             <SvgIcon
@@ -144,6 +184,9 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
           />
         </Box>
       </Box>
+      <Button className={classes.brewingButton} onClick={handleStartSession}>
+        Start brewing
+      </Button>
       {!!(teaData.weight_left || teaData.price) && (
         <>
           <Box className={classes.divider} />
