@@ -22,6 +22,7 @@ import InputBrewing from "../../input/mobile/input-brewing";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { SettingsState } from "../../statecontainers/settings-context";
+import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
 import {
   BrewingModel,
   SessionModel,
@@ -29,8 +30,6 @@ import {
   TeaRequest,
 } from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
-import { FormikValues } from "formik";
-import {HandleSessionEdit, SessionEditorContext} from '../../edit-session';
 
 /**
  * DetailsCardMain props.

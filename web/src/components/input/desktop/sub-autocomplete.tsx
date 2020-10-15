@@ -7,7 +7,7 @@ import Autocomplete, {
 import { FilterOptionsState } from "@material-ui/lab";
 import { FormikProps } from "formik";
 import { getSubcategoryName } from "../../../services/parsing-services";
-import { InputFormModel, SubcategoryModel } from "../../../services/models";
+import { InputFormModel } from "../../../services/models";
 import { SubcategoriesState } from "../../statecontainers/subcategories-context";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { desktopFormStyles } from "../../../style/desktop-form-styles";

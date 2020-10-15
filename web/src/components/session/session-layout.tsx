@@ -10,7 +10,6 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack, FitnessCenter } from "@material-ui/icons";
 import localforage from "localforage";
-import dateFormat from "dateformat";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
 import {
@@ -263,14 +262,6 @@ function SessionLayout({
                 <IconButton edge="start" aria-label="back" onClick={handleBack}>
                   <ArrowBack />
                 </IconButton>
-                {route.sessionPayload?.created_on && (
-                  <Typography variant="h5">
-                    {dateFormat(
-                      new Date(route.sessionPayload.created_on),
-                      "d mmm yyyy, h:MM TT"
-                    )}
-                  </Typography>
-                )}
               </Box>
             </Toolbar>
           </GenericAppBar>

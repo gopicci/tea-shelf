@@ -1,9 +1,7 @@
-import React, { ChangeEvent, ReactElement, useContext } from "react";
+import React, { ChangeEvent, ReactElement } from "react";
 import InputAppBar from "./input-app-bar";
 import CheckboxList from "../../generics/checkbox-list";
-import { CategoriesState } from "../../statecontainers/categories-context";
-import { SessionInstance, TeaRequest } from "../../../services/models";
-import CheckboxListItem from "../../generics/checkbox-list-item";
+import { SessionInstance } from "../../../services/models";
 
 /**
  * EditInfusion props.

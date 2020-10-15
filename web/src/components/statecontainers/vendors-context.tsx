@@ -11,9 +11,9 @@ import { APIRequest } from "../../services/auth-services";
 import {
   generateUniqueId,
   GenericAction,
-  genericReducer,
-} from "../../services/sync-services";
-import { SubcategoryInstance, VendorInstance } from "../../services/models";
+  genericReducer, syncInstances,
+} from '../../services/sync-services';
+import { VendorInstance } from "../../services/models";
 
 export const VendorsState = createContext<VendorInstance[]>([]);
 export const VendorsDispatch = createContext({} as Dispatch<GenericAction>);
@@ -39,25 +39,7 @@ function VendorsContext({ children }: Props): ReactElement {
      */
     async function getVendors(): Promise<void> {
       try {
-        // Get cached vendors first
-        const localSub = await localforage.getItem<VendorInstance[]>("vendors");
-        if (localSub) dispatch({ type: "SET", data: localSub });
-
-        // Update with vendors from API
-        const res = await APIRequest("/vendor/", "GET");
-        const body = await res?.json();
-
-        // Add offline ID to new vendors
-        let vendors: VendorInstance[] = [];
-        for (const vendor of body) {
-          vendors.push({
-            ...vendor,
-            offline_id: await generateUniqueId(vendors),
-          });
-        }
-
-        dispatch({ type: "SET", data: vendors });
-        await localforage.setItem<VendorInstance[]>("vendors", vendors);
+        await syncInstances("vendor", dispatch);
       } catch (e) {
         console.error(e);
       }

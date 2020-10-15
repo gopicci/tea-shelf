@@ -11,8 +11,8 @@ import {
   genericReducer,
   GenericAction,
   uploadOfflineTeas,
-  generateUniqueId,
-} from "../../services/sync-services";
+  generateUniqueId, syncInstances,
+} from '../../services/sync-services';
 import { APIRequest } from "../../services/auth-services";
 import { TeaInstance } from "../../services/models";
 
@@ -47,47 +47,8 @@ function TeaContext({ children }: Props): ReactElement {
       }
 
       try {
-        // Get offline teas (not yet uploaded)
-        let offlineTeas = await localforage.getItem<TeaInstance[]>(
-          "offline-teas"
-        );
-        if (!offlineTeas) offlineTeas = [];
-
-        // Get cached teas if ID not already on offline
-        let localTeas = await localforage.getItem<TeaInstance[]>("teas");
-        if (!localTeas) localTeas = [];
-        else
-          localTeas = localTeas.filter(
-            (lt) => !offlineTeas.some((ot) => ot.offline_id === lt.offline_id)
-          );
-
-        // Set initial state merging cached data
-        dispatch({ type: "SET", data: offlineTeas.concat(localTeas) });
-
-        // Get online teas if API ID not already on offline ones
-        const res = await APIRequest("/tea/", "GET");
-        let onlineTeas = await res?.json();
-        if (!onlineTeas) onlineTeas = [];
-        else
-          onlineTeas = onlineTeas.filter(
-            (online: TeaInstance) =>
-              !offlineTeas.some(
-                (offline: TeaInstance) => offline.id === online.id
-              )
-          );
-
-        // Add offline ID to new teas
-        let apiTeas: TeaInstance[] = [];
-        for (const tea of offlineTeas.concat(onlineTeas)) {
-          if (!tea.offline_id)
-            apiTeas.push({ ...tea, offline_id: await generateUniqueId(apiTeas) });
-        }
-
-        // Update the state
-        dispatch({ type: "SET", data: offlineTeas.concat(apiTeas) });
-
-        // Update the cache
-        await localforage.setItem<TeaInstance[]>("teas", apiTeas);
+        // Update teas state
+        await syncInstances("tea", dispatch);
       } catch (e) {
         console.error(e);
       }

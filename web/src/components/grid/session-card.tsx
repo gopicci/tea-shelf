@@ -65,8 +65,14 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   const clockDispatch = useContext(ClockDispatch);
 
   const [clock, setClock] = useState<Clock | undefined>();
-  const [expired, setExpired] = useState(false);
   const [endDate, setEndDate] = useState(0);
+
+  useEffect(() => {
+    const match =
+      clocks && clocks.find((c) => c.offline_id === session.offline_id);
+    if (match) setClock(match);
+    else setClock(undefined);
+  }, [clocks, session.offline_id]);
 
   /**
    * Deletes session clock instance from global
@@ -74,26 +80,26 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
    */
   const removeClock = useCallback(async (): Promise<void> => {
     try {
-      if (clock !== undefined) {
-        let cached = await localforage.getItem<Clock[]>("clocks");
-        if (cached.length)
-          await localforage.setItem<Clock[]>(
-            "clocks",
-            cached.filter((c) => c.offline_id !== session.offline_id)
-          );
+      if (clock) {
         await clockDispatch({
           type: "DELETE",
-          data: {
-            offline_id: session.offline_id,
-            starting_time: clock.starting_time,
-          },
+          data: clock,
         });
+
+        let cached = await localforage.getItem<Clock[]>("clocks");
+        if (cached.length) {
+          await localforage.setItem<Clock[]>(
+            "clocks",
+            cached.filter((c) => c.offline_id !== clock.offline_id)
+          );
+        }
+
         setClock(undefined);
       }
     } catch (e) {
       console.error(e);
     }
-  }, [clock, clockDispatch, session.offline_id]);
+  }, [clock, clockDispatch]);
 
   /**
    * On countdown completion removes clock from global state
@@ -101,7 +107,6 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
    */
   const handleComplete = useCallback(async (): Promise<void> => {
     try {
-      setExpired(false);
       await removeClock();
 
       await handleSessionEdit(
@@ -118,29 +123,23 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   }, [handleSessionEdit, removeClock, session]);
 
   useEffect(() => {
-    async function clockInit() {
-      // Search for a running clock in global state
-      const match = clocks && clocks.find((c) => c.offline_id === session.offline_id);
-
-      if (match) {
-        setClock(match);
-        const expiration = getEndDate(match.starting_time, session);
-        if (expiration) {
-          if (expiration < Date.now()) {
-            setExpired(true);
-            await handleComplete();
-          }
-          setEndDate(expiration);
+    async function update() {
+      if (clock) {
+        const date = getEndDate(clock.starting_time, session);
+        if (date < Date.now()) {
+          // Clock is expired
+          await handleComplete();
         } else {
-          setEndDate(getEndDate(Date.now(), session));
+          // Clock not expired
+          setEndDate(date);
         }
       } else {
+        // No clock
         setEndDate(getEndDate(Date.now(), session));
-        setClock(undefined);
       }
     }
-    clockInit();
-  }, [clocks, handleComplete, session]);
+    update();
+  }, [clock, handleComplete, session]);
 
   /** Sets main route to tea details */
   function handleCardClick(): void {
@@ -153,7 +152,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
     <Card
       variant="outlined"
       className={classes.cardPulse}
-      style={!!(clock && !expired) ? undefined : { animation: "none" }}
+      style={!!clock ? undefined : { animation: "none" }}
     >
       <CardActionArea
         className={gridView ? classes.gridCard : classes.listCard}
@@ -179,27 +178,29 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
           </Typography>
           <Box className={classes.rowSpace}>
             <Typography variant="caption">
-              Infusions: {session.current_infusion}
+              Infusion: {session.current_infusion}
             </Typography>
             <Typography variant="caption">
-              <Countdown
-                key={endDate}
-                date={endDate}
-                ref={clockRef}
-                autoStart={!!(clock && !expired)}
-                renderer={({
-                  minutes,
-                  seconds,
-                }: CountdownProps): ReactElement => {
-                  return (
-                    <span>
-                      {String(minutes).padStart(2, "0")}:
-                      {String(seconds).padStart(2, "0")}
-                    </span>
-                  );
-                }}
-                onComplete={handleComplete}
-              />
+              {endDate > 0 && (
+                <Countdown
+                  key={endDate}
+                  date={endDate}
+                  ref={clockRef}
+                  autoStart={!!clock}
+                  renderer={({
+                    minutes,
+                    seconds,
+                  }: CountdownProps): ReactElement => {
+                    return (
+                      <span>
+                        {String(minutes).padStart(2, "0")}:
+                        {String(seconds).padStart(2, "0")}
+                      </span>
+                    );
+                  }}
+                  onComplete={handleComplete}
+                />
+              )}
             </Typography>
           </Box>
         </CardContent>

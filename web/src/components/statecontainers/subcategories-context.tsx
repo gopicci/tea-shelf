@@ -11,8 +11,8 @@ import { APIRequest } from "../../services/auth-services";
 import {
   generateUniqueId,
   GenericAction,
-  genericReducer,
-} from "../../services/sync-services";
+  genericReducer, syncInstances,
+} from '../../services/sync-services';
 import { SubcategoryInstance } from "../../services/models";
 
 export const SubcategoriesState = createContext<SubcategoryInstance[]>([]);
@@ -41,31 +41,7 @@ function SubcategoriesContext({ children }: Props): ReactElement {
      */
     async function getSubcategories(): Promise<void> {
       try {
-        // Get cached subcategories first
-        const localSub = await localforage.getItem<SubcategoryInstance[]>(
-          "subcategories"
-        );
-        if (localSub) dispatch({ type: "SET", data: localSub });
-
-        // Update with subcategories from API
-        const res = await APIRequest("/subcategory/", "GET");
-        const body = await res?.json();
-
-        // Add offline ID to new categories
-        let subcategories: SubcategoryInstance[] = [];
-        for (const sub of body) {
-          subcategories.push({
-            ...sub,
-            offline_id: await generateUniqueId(subcategories),
-          });
-        }
-
-        // Update state and cache
-        dispatch({ type: "SET", data: subcategories });
-        await localforage.setItem<SubcategoryInstance[]>(
-          "subcategories",
-          subcategories
-        );
+        await syncInstances("subcategory", dispatch)
       } catch (e) {
         console.error(e);
       }

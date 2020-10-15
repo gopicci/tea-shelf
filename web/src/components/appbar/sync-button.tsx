@@ -7,6 +7,8 @@ import {
   getOfflineSessions,
   uploadOfflineTeas,
   uploadOfflineSessions,
+  generateUniqueId,
+  syncInstances,
 } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import { SyncDispatch, SyncState } from "../statecontainers/sync-context";
@@ -16,7 +18,6 @@ import { SubcategoriesDispatch } from "../statecontainers/subcategories-context"
 import { VendorsDispatch } from "../statecontainers/vendors-context";
 import { SessionDispatch } from "../statecontainers/session-context";
 import { ClockDispatch } from "../statecontainers/clock-context";
-import { Clock } from "../../services/models";
 import { Route } from "../../app";
 
 /**
@@ -69,48 +70,14 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
     }
 
     try {
-      // Get remaining offline teas
-      const offlineTeas = await getOfflineTeas();
-
-      // Download teas from API
-      const res = await APIRequest("/tea/", "GET");
-      const body = await res.json();
-
-      // Update global teas state
-      teaDispatch({ type: "SET", data: offlineTeas.concat(body) });
-
-      // Update teas cache
-      await localforage.setItem("teas", body);
+      await syncInstances("tea", teaDispatch);
     } catch (e) {
       console.error(e);
       error = e;
     }
 
     try {
-      // Get remaining offline sessions
-      const offlineSessions = await getOfflineSessions();
-
-      // Download sessions from API
-      const res = await APIRequest("/brewing_session/", "GET");
-      const onlineSessions = await res.json();
-
-      const sessions = offlineSessions.concat(onlineSessions);
-
-      // Update global teas state
-      sessionDispatch({ type: "SET", data: sessions });
-
-      // Update teas cache
-      await localforage.setItem("sessions", onlineSessions);
-
-      // Remove clocks that don't have a matching session ID
-      const cachedClocks = await localforage.getItem<Clock[]>("clocks");
-      if (cachedClocks) {
-        const filteredClocks = cachedClocks.filter((c) =>
-          sessions.some((s) => s.offline_id === c.offline_id)
-        );
-        clockDispatch({ type: "SET", data: filteredClocks });
-        await localforage.setItem<Clock[]>("clocks", filteredClocks);
-      }
+      await syncInstances("session", sessionDispatch);
     } catch (e) {
       console.error(e);
       error = e;
@@ -132,30 +99,14 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
     }
 
     try {
-      // Download subcategories from API
-      const res = await APIRequest("/subcategory/", "GET");
-      const body = await res.json();
-
-      // Update global subcategories state
-      subcategoriesDispatch({ type: "SET", data: body });
-
-      // Update subcategories cache
-      await localforage.setItem("subcategories", body);
+      await syncInstances("subcategory", subcategoriesDispatch);
     } catch (e) {
       console.error(e);
       error = e;
     }
 
     try {
-      // Download vendors from API
-      const res = await APIRequest("/vendor/", "GET");
-      const body = await res.json();
-
-      // Update global vendors state
-      vendorDispatch({ type: "SET", data: body });
-
-      // Update vendors cache
-      await localforage.setItem("vendors", body);
+      await syncInstances("vendor", vendorDispatch);
     } catch (e) {
       console.error(e);
       error = e;
