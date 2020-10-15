@@ -105,8 +105,8 @@ export interface OriginModel {
 export interface VendorModel {
   /** Vendor name */
   name: string;
-  /** Vendor API ID in UUID string format */
-  id?: string;
+  /** Vendor API ID */
+  id?: number;
   /** Vendor website */
   website?: string;
   /** Vendor origin */
@@ -130,7 +130,7 @@ export interface SubcategoryModel {
   /** Subcategory name */
   name: string;
   /** Subcategory ID */
-  id?: string;
+  id?: number;
   /** Macro category */
   category?: number;
   /** English name */
