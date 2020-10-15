@@ -116,14 +116,6 @@ export interface VendorModel {
 }
 
 /**
- * Vendor instance data structure with required offline ID.
- */
-export interface VendorInstance extends VendorModel {
-  /** Vendor instance ID, used for offline operations */
-  offline_id: number;
-}
-
-/**
  * Subcategory request data structure.
  */
 export interface SubcategoryModel {
@@ -145,14 +137,6 @@ export interface SubcategoryModel {
   description?: string;
   /** Description source website */
   description_source?: string;
-}
-
-/**
- * * Subcategory instance data structure with required offline ID.
- */
-export interface SubcategoryInstance extends SubcategoryModel {
-  /** Subcategory instance ID, used for offline operations */
-  offline_id: number;
 }
 
 /**
