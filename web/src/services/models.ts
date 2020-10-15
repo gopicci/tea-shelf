@@ -168,11 +168,11 @@ export interface TeaModel {
   /** Tea image */
   image?: string;
   /** Subcategory object */
-  subcategory?: SubcategoryInstance;
+  subcategory?: SubcategoryModel;
   /** Origin object */
   origin?: OriginModel;
   /** Vendor object */
-  vendor?: VendorInstance;
+  vendor?: VendorModel;
   /** Defines if tea is archived */
   is_archived?: boolean;
   /** Gongfu brewing object */
