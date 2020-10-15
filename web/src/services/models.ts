@@ -46,6 +46,8 @@ interface FormBrewingModel extends BrewingModel {
  * Brewing session data structure.
  */
 export interface SessionModel {
+  /** API instance ID as UUID string */
+  id?: string;
   /** Optional ID of the tea being used */
   tea?: string;
   /** Optional name for the session */
@@ -63,22 +65,20 @@ export interface SessionModel {
 }
 
 /**
- * Extension of BrewingSession that defines a session instance,
- * with required ID, creation date and brewing state.
+ * Extension of SessionModel that defines a session instance,
+ * with required ID.
  */
 export interface SessionInstance extends SessionModel {
-  /** Instance ID, UUID string if coming from API, number if generated offline */
-  id: string | number;
-  /** Creation date */
-  created_on: string;
+  /** Instance ID used for offline operations */
+  offline_id: number;
 }
 
 /**
  * Clock data structure, represents brewing sessions currently running.
  */
 export interface Clock {
-  /** Brewing session instance ID, UUID string if coming from API, number if generated offline */
-  id: string | number;
+  /** Brewing session instance offline ID */
+  offline_id: number;
   /** Brewing starting time as Date.now() milliseconds */
   starting_time: number;
 }
@@ -100,13 +100,13 @@ export interface OriginModel {
 }
 
 /**
- * Vendor instance data structure.
+ * Vendor request data structure.
  */
 export interface VendorModel {
   /** Vendor name */
   name: string;
-  /** Vendor ID */
-  id?: number | string;
+  /** Vendor API ID in UUID string format */
+  id?: string;
   /** Vendor website */
   website?: string;
   /** Vendor origin */
@@ -116,13 +116,21 @@ export interface VendorModel {
 }
 
 /**
- * Subcategory instance data structure.
+ * Vendor instance data structure with required offline ID.
+ */
+export interface VendorInstance extends VendorModel {
+  /** Vendor instance ID, used for offline operations */
+  offline_id: number;
+}
+
+/**
+ * Subcategory request data structure.
  */
 export interface SubcategoryModel {
   /** Subcategory name */
   name: string;
   /** Subcategory ID */
-  id?: number | string;
+  id?: string;
   /** Macro category */
   category?: number;
   /** English name */
@@ -140,11 +148,19 @@ export interface SubcategoryModel {
 }
 
 /**
+ * * Subcategory instance data structure with required offline ID.
+ */
+export interface SubcategoryInstance extends SubcategoryModel {
+  /** Subcategory instance ID, used for offline operations */
+  offline_id: number;
+}
+
+/**
  * Defines a lazy structure of a tea, mimicking all API model fields but without requirements.
  */
 export interface TeaModel {
-  /** Instance ID, UUID string if coming from API, number if generated offline */
-  id?: string | number;
+  /** API instance ID as UUID string */
+  id?: string;
   /** Tea name */
   name?: string;
   /** Category ID */
@@ -195,12 +211,12 @@ export interface TeaRequest extends TeaModel {
 }
 
 /**
- * Extension of TeaRequest that defines a tea instance data structure,
- * with required ID.
+ * Extension of TeaRequest that defines a tea instance,
+ * with required offline ID.
  */
 export interface TeaInstance extends TeaRequest {
-  /** Instance ID, UUID string if coming from API, number if generated offline */
-  id: string | number;
+  /** Tea instance ID, used for offline operations */
+  offline_id: number;
 }
 
 /**
@@ -220,7 +236,8 @@ export interface InputFormModel extends TeaInstance {
 }
 
 /**
- * Category data structure.
+ * Category instance data structure. Offline instances use
+ * same ID as API as categories are not mutable.
  */
 export interface CategoryModel {
   /** Instance ID */
