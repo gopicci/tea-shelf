@@ -75,19 +75,20 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   const removeClock = useCallback(async (): Promise<void> => {
     try {
       if (clock !== undefined) {
-        let clocks = await localforage.getItem<Clock[]>("clocks");
-        if (clocks)
+        let cached = await localforage.getItem<Clock[]>("clocks");
+        if (cached.length)
           await localforage.setItem<Clock[]>(
             "clocks",
-            clocks.filter((c) => c.offline_id !== session.offline_id)
+            cached.filter((c) => c.offline_id !== session.offline_id)
           );
-        clockDispatch({
+        await clockDispatch({
           type: "DELETE",
           data: {
             offline_id: session.offline_id,
             starting_time: clock.starting_time,
           },
         });
+        setClock(undefined);
       }
     } catch (e) {
       console.error(e);
@@ -100,9 +101,10 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
    */
   const handleComplete = useCallback(async (): Promise<void> => {
     try {
+      setExpired(false);
       await removeClock();
 
-      handleSessionEdit(
+      await handleSessionEdit(
         {
           ...session,
           current_infusion: session.current_infusion + 1,
@@ -126,7 +128,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
         if (expiration) {
           if (expiration < Date.now()) {
             setExpired(true);
-            handleComplete();
+            await handleComplete();
           }
           setEndDate(expiration);
         } else {
@@ -134,6 +136,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
         }
       } else {
         setEndDate(getEndDate(Date.now(), session));
+        setClock(undefined);
       }
     }
     clockInit();

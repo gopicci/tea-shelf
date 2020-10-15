@@ -89,9 +89,7 @@ function SessionContext({ children }: Props): ReactElement {
           if (!session.offline_id)
             apiSessions.push({
               ...session,
-              offline_id: await generateUniqueId(
-                offlineSessions.concat(onlineSessions)
-              ),
+              offline_id: await generateUniqueId(apiSessions),
             });
         }
         // Update the state
