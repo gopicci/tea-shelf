@@ -11,7 +11,7 @@ import {
   uploadInstance,
 } from "../services/sync-services";
 import { SnackbarDispatch } from "./statecontainers/snackbar-context";
-import { TeaDispatch } from "./statecontainers/tea-context";
+import { TeaDispatch, TeasState } from "./statecontainers/tea-context";
 import {
   SubcategoriesDispatch,
   SubcategoriesState,
@@ -22,7 +22,7 @@ import {
 } from "./statecontainers/vendors-context";
 import { SyncDispatch } from "./statecontainers/sync-context";
 import {
-  SubcategoryModel,
+  SubcategoryInstance,
   TeaInstance,
   TeaRequest,
   VendorModel,
@@ -41,7 +41,7 @@ export type HandleTeaEdit = (
   /** Request data. */
   data: TeaRequest,
   /** Optional ID for editing request. */
-  id?: number | string,
+  offline_id?: number,
   /** Optional snackbar success message */
   message?: string
 ) => void;
@@ -56,6 +56,7 @@ export const TeaEditorContext = createContext({} as HandleTeaEdit);
  */
 function EditTea({ children }: Props): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
+  const teas = useContext(TeasState);
   const teaDispatch = useContext(TeaDispatch);
   const subcategories = useContext(SubcategoriesState);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
@@ -68,50 +69,67 @@ function EditTea({ children }: Props): ReactElement {
    * first. Then tries to sync local cache with API.
    */
   const handleTeaEdit: HandleTeaEdit = async (
-    teaData,
-    id,
+    data,
+    offline_id,
     message
   ): Promise<void> => {
     try {
       let offlineTeas = await getOfflineTeas();
+      let id = offline_id;
+      let apiId = "";
 
       // Update context with request
-      if (id) teaDispatch({ type: "EDIT", data: { ...teaData, id: id } });
-      else {
-        id = generateUniqueId(offlineTeas);
-        teaDispatch({ type: "ADD", data: { ...teaData, id: id } });
+      if (id) {
+        const instance = Object.values(teas).find((t) => t.offline_id === id);
+        if (instance && instance.id) apiId = instance.id;
+        teaDispatch({ type: "EDIT", data: { ...data, offline_id: id } });
+      } else {
+        id = await generateUniqueId(teas);
+        teaDispatch({ type: "ADD", data: { ...data, offline_id: id } });
       }
 
       // If tea already present in cache remove before adding again
       for (const tea of offlineTeas)
-        if (tea.id === id) offlineTeas.splice(offlineTeas.indexOf(tea), 1);
+        if (tea.offline_id === id)
+          offlineTeas.splice(offlineTeas.indexOf(tea), 1);
 
       await localforage.setItem<TeaInstance[]>("offline-teas", [
         ...offlineTeas,
-        { ...teaData, id: id },
+        { ...data, offline_id: id },
       ]);
 
       syncDispatch({ type: "SET_NOT_SYNCED" });
 
       // New subcategory, update context and cache
-      if (teaData.subcategory && !subcategories.includes(teaData.subcategory)) {
+      if (
+        data.subcategory &&
+        !Object.values(subcategories).some(
+          (s) => s.name === data.subcategory?.name
+        )
+      ) {
         const subcategory = {
-          ...teaData.subcategory,
-          id: generateUniqueId(subcategories),
+          ...data.subcategory,
+          offline_id: await generateUniqueId(subcategories),
         };
         subcategoriesDispatch({
           type: "SET",
           data: subcategories.concat(subcategory),
         });
-        await localforage.setItem<SubcategoryModel[]>(
+        await localforage.setItem<SubcategoryInstance[]>(
           "subcategories",
           subcategories.concat(subcategory)
         );
       }
 
       // New vendor, update context and cache
-      if (teaData.vendor && !vendors.includes(teaData.vendor)) {
-        const vendor = { ...teaData.vendor, id: generateUniqueId(vendors) };
+      if (
+        data.vendor &&
+        !Object.values(vendors).some((v) => v.name === data.vendor?.name)
+      ) {
+        const vendor = {
+          ...data.vendor,
+          offline_id: await generateUniqueId(vendors),
+        };
         vendorsDispatch({ type: "SET", data: vendors.concat(vendor) });
         await localforage.setItem<VendorModel[]>(
           "vendors",
@@ -120,18 +138,16 @@ function EditTea({ children }: Props): ReactElement {
       }
 
       // Upload through API
-      const response = await uploadInstance({ ...teaData, id });
+      const response = await uploadInstance(data, apiId);
       const body = await response.json();
 
-      // Update context
-      teaDispatch({
-        type: "EDIT_ID",
-        data: { instance: { ...teaData, id }, newID: body.id },
-      });
+      // Update global state
+      teaDispatch({ type: "EDIT", data: { ...body, offline_id: id } });
 
       // Delete offline entry
       for (const tea of offlineTeas)
-        if (tea.id === id) offlineTeas.splice(offlineTeas.indexOf(tea), 1);
+        if (tea.offline_id === id)
+          offlineTeas.splice(offlineTeas.indexOf(tea), 1);
       await localforage.setItem<TeaInstance[]>("offline-teas", offlineTeas);
 
       // Update sync status

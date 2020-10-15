@@ -11,7 +11,10 @@ import {
   uploadInstance,
 } from "../services/sync-services";
 import { SnackbarDispatch } from "./statecontainers/snackbar-context";
-import { SessionDispatch } from "./statecontainers/session-context";
+import {
+  SessionDispatch,
+  SessionsState,
+} from "./statecontainers/session-context";
 import { SyncDispatch } from "./statecontainers/sync-context";
 import { SessionInstance, SessionModel } from "../services/models";
 
@@ -28,7 +31,7 @@ export type HandleSessionEdit = (
   /** Request data. */
   data: SessionModel,
   /** Optional ID for editing request. */
-  id?: number | string,
+  offline_id?: number,
   /** Optional snackbar success message */
   message?: string
 ) => void;
@@ -43,6 +46,7 @@ export const SessionEditorContext = createContext({} as HandleSessionEdit);
  */
 function EditSession({ children }: Props): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
+  const sessions = useContext(SessionsState);
   const sessionDispatch = useContext(SessionDispatch);
   const syncDispatch = useContext(SyncDispatch);
 
@@ -51,55 +55,55 @@ function EditSession({ children }: Props): ReactElement {
    * first. Then tries to sync local cache with API.
    */
   const handleSessionEdit: HandleSessionEdit = async (
-    sessionData,
-    id,
+    data,
+    offline_id,
     message
   ): Promise<void> => {
     try {
       let offlineSessions = await getOfflineSessions();
       let date = new Date().toISOString();
+      let id = offline_id;
+      let apiId = "";
 
       // Update context with request
-      if (id)
-        sessionDispatch({ type: "EDIT", data: { ...sessionData, id: id } });
-      else {
-        id = generateUniqueId(offlineSessions);
+      if (id) {
+        const instance = Object.values(sessions).find(
+          (s) => s.offline_id === id
+        );
+        if (instance && instance.id) apiId = instance.id;
+        sessionDispatch({ type: "EDIT", data: { ...data, offline_id: id } });
+      } else {
+        id = await generateUniqueId(sessions);
         sessionDispatch({
           type: "ADD",
-          data: { ...sessionData, id: id, created_on: date },
+          data: { ...data, offline_id: id, created_on: date },
         });
       }
 
-      // If session already present in cache remove before adding again
+      // If session already present in cache remove before adding the updated one
       for (const session of offlineSessions)
-        if (session.id === id) {
+        if (session.offline_id === id) {
           date = String(session.created_on);
           offlineSessions.splice(offlineSessions.indexOf(session), 1);
         }
 
       await localforage.setItem<SessionInstance[]>("offline-sessions", [
         ...offlineSessions,
-        { ...sessionData, id: id, created_on: date },
+        { ...data, offline_id: id, created_on: date },
       ]);
 
       syncDispatch({ type: "SET_NOT_SYNCED" });
 
       // Upload through API
-      const response = await uploadInstance({ ...sessionData, id });
+      const response = await uploadInstance(data, apiId);
       const body = await response.json();
 
-      // Update context
-      sessionDispatch({
-        type: "EDIT_ID",
-        data: {
-          instance: { ...{ ...sessionData, created_on: body.created_on }, id },
-          newID: body.id,
-        },
-      });
+      // Update global state
+      sessionDispatch({ type: "EDIT", data: { ...body, offline_id: id } });
 
       // Delete offline entry
       for (const session of offlineSessions)
-        if (session.id === id)
+        if (session.offline_id === id)
           offlineSessions.splice(offlineSessions.indexOf(session), 1);
       await localforage.setItem<SessionInstance[]>(
         "offline-sessions",

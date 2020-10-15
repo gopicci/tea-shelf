@@ -45,9 +45,6 @@ function SessionContext({ children }: Props): ReactElement {
       try {
         // Try to upload offline brewing session entries
         await uploadOfflineSessions();
-        // If successful clocks cache has new IDs, update state
-        const clocks = await localforage.getItem<Clock[]>("clocks");
-        clockDispatch({ type: "SET", data: clocks });
       } catch (e) {
         console.error(e);
       }
@@ -94,14 +91,6 @@ function SessionContext({ children }: Props): ReactElement {
           "sessions",
           onlineSessions
         );
-
-        // Remove clocks that don't have a matching session ID
-        const cachedClocks = await localforage.getItem<Clock[]>("clocks");
-        const filteredClocks = cachedClocks.filter((c) =>
-          sessions.some((s) => s.id === c.id)
-        );
-        clockDispatch({ type: "SET", data: filteredClocks });
-        await localforage.setItem<Clock[]>("clocks", filteredClocks);
       } catch (e) {
         console.error(e);
       }

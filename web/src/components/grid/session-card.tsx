@@ -1,4 +1,11 @@
-import React, { ReactElement, useContext, useRef } from "react";
+import React, {
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Box,
   Card,
@@ -57,19 +64,41 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   const clocks = useContext(ClocksState);
   const clockDispatch = useContext(ClockDispatch);
 
-  // Search for a running clock in global state
-  const clock = clocks && clocks.find((c) => c.id === session.id);
-  const expiration = clock && getEndDate(clock.starting_time, session);
-  const expired = expiration && expiration < Date.now();
-  if (expired) handleComplete();
+  const [clock, setClock] = useState<Clock | undefined>();
+  const [expired, setExpired] = useState(false);
+  const [endDate, setEndDate] = useState(0);
 
-  const endDate = expiration ? expiration : getEndDate(Date.now(), session);
+  /**
+   * Deletes session clock instance from global
+   * state and cache.
+   */
+  const removeClock = useCallback(async (): Promise<void> => {
+    try {
+      if (clock !== undefined) {
+        let clocks = await localforage.getItem<Clock[]>("clocks");
+        if (clocks)
+          await localforage.setItem<Clock[]>(
+            "clocks",
+            clocks.filter((c) => c.id !== session.offline_id)
+          );
+        clockDispatch({
+          type: "DELETE",
+          data: {
+            id: session.offline_id,
+            starting_time: clock.starting_time,
+          },
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [clock, clockDispatch, session.id]);
 
   /**
    * On countdown completion removes clock from global state
    * and cache, then updates brewing session.
    */
-  async function handleComplete(): Promise<void> {
+  const handleComplete = useCallback(async (): Promise<void> => {
     try {
       await removeClock();
 
@@ -84,33 +113,31 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
     } catch (e) {
       console.error(e);
     }
-  }
+  }, [handleSessionEdit, removeClock, session]);
 
-  /**
-   * Deletes session clock instance from global
-   * state and cache.
-   */
-  async function removeClock(): Promise<void> {
-    try {
-      if (clock) {
-        let clocks = await localforage.getItem<Clock[]>("clocks");
-        if (clocks)
-          await localforage.setItem<Clock[]>(
-            "clocks",
-            clocks.filter((c) => c.id !== session.id)
-          );
-        await clockDispatch({
-          type: "DELETE",
-          data: {
-            id: session.id,
-            starting_time: clock.starting_time,
-          },
-        });
+  useEffect(() => {
+    async function clockInit() {
+      // Search for a running clock in global state
+      const match = clocks && clocks.find((c) => c.id === session.id);
+
+      if (match) {
+        setClock(match);
+        const expiration = getEndDate(match.starting_time, session);
+        if (expiration) {
+          if (expiration < Date.now()) {
+            setExpired(true);
+            handleComplete();
+          }
+          setEndDate(expiration);
+        } else {
+          setEndDate(getEndDate(Date.now(), session));
+        }
+      } else {
+        setEndDate(getEndDate(Date.now(), session));
       }
-    } catch (e) {
-      console.error(e);
     }
-  }
+    clockInit();
+  }, [clocks, handleComplete, session]);
 
   /** Sets main route to tea details */
   function handleCardClick(): void {

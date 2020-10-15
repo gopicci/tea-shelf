@@ -96,7 +96,7 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
                       ? classes.gridItem
                       : classes.listItem
                   }
-                  key={session.id}
+                  key={session.offline_id}
                 >
                   <SessionCard
                     session={session}

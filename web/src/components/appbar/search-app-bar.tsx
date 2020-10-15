@@ -101,6 +101,8 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   /** Set drawer open state */
   setOpen: (state: boolean) => void;
+  /** App's main route state */
+  route: Route;
   /** Set app's main route */
   setRoute: (route: Route) => void;
   /** Mobile mode or desktop */
@@ -113,7 +115,7 @@ type Props = {
  * @component
  * @subcategory Main
  */
-function SearchAppBar({ setOpen, setRoute, isMobile }: Props): ReactElement {
+function SearchAppBar({ setOpen, route, setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
   const appBarClasses = appBarStyles();
 
@@ -235,7 +237,7 @@ function SearchAppBar({ setOpen, setRoute, isMobile }: Props): ReactElement {
           />
         </Box>
         <Box className={classes.user}>
-          <SyncButton />
+          <SyncButton route={route} setRoute={setRoute} />
           <Tooltip title={settings.gridView ? "List view" : "Grid view"}>
             <IconButton onClick={handleGridViewChange} aria-label="switch view">
               {settings.gridView ? <ViewStream /> : <ViewModule />}

@@ -17,6 +17,19 @@ import { VendorsDispatch } from "../statecontainers/vendors-context";
 import { SessionDispatch } from "../statecontainers/session-context";
 import { ClockDispatch } from "../statecontainers/clock-context";
 import { Clock } from "../../services/models";
+import { Route } from "../../app";
+
+/**
+ * SyncButton props.
+ *
+ * @memberOf SyncButton
+ */
+type Props = {
+  /** App's main route state */
+  route: Route;
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+};
 
 /**
  * Sync icon button component. Callback runs on mount and on click.
@@ -26,7 +39,7 @@ import { Clock } from "../../services/models";
  * @component
  * @subcategory Main
  */
-function SyncButton(): ReactElement {
+function SyncButton({ route, setRoute }: Props): ReactElement {
   const [isSyncing, setSyncing] = useState(false);
 
   const sync = useContext(SyncState);
@@ -91,11 +104,13 @@ function SyncButton(): ReactElement {
 
       // Remove clocks that don't have a matching session ID
       const cachedClocks = await localforage.getItem<Clock[]>("clocks");
-      const filteredClocks = cachedClocks.filter((c) =>
-        sessions.some((s) => s.id === c.id)
-      );
-      clockDispatch({ type: "SET", data: filteredClocks });
-      await localforage.setItem<Clock[]>("clocks", filteredClocks);
+      if (cachedClocks) {
+        const filteredClocks = cachedClocks.filter((c) =>
+          sessions.some((s) => s.id === c.id)
+        );
+        clockDispatch({ type: "SET", data: filteredClocks });
+        await localforage.setItem<Clock[]>("clocks", filteredClocks);
+      }
     } catch (e) {
       console.error(e);
       error = e;
@@ -154,13 +169,21 @@ function SyncButton(): ReactElement {
     } else {
       syncDispatch({ type: "SET_SYNCED" });
     }
+
+    // Get out of instance routes
+    if (["TEA_DETAILS", "EDIT_TEA", "EDIT_NOTES"].includes(route.route))
+      setRoute({ route: "MAIN" });
+    if (route.route === "SESSION_DETAILS") setRoute({ route: "SESSIONS" });
   }, [
-    snackbarDispatch,
-    subcategoriesDispatch,
-    syncDispatch,
+    route.route,
+    setRoute,
     teaDispatch,
     sessionDispatch,
+    clockDispatch,
+    subcategoriesDispatch,
     vendorDispatch,
+    syncDispatch,
+    snackbarDispatch,
   ]);
 
   return isSyncing ? (

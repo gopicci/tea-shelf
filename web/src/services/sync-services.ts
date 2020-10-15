@@ -1,22 +1,23 @@
 import localforage from "localforage";
-import validator from "validator";
 import { APIRequest } from "./auth-services";
 import {
   TeaInstance,
-  SubcategoryModel,
-  VendorModel,
   SessionInstance,
   Clock,
+  SubcategoryInstance,
+  VendorInstance,
+  TeaRequest,
+  SessionModel,
 } from "./models";
 
 /**
- * Models allowed to be used in the generic services requiring an instance ID.
+ * Models allowed to be used in the generic services requiring an offline instance ID.
  */
 type genericModels =
   | TeaInstance
   | SessionInstance
-  | SubcategoryModel
-  | VendorModel
+  | SubcategoryInstance
+  | VendorInstance
   | Clock;
 
 /**
@@ -31,11 +32,6 @@ export type GenericAction =
   | { type: "ADD"; data: genericModels }
   /** Edits an instance on the array */
   | { type: "EDIT"; data: genericModels }
-  /** Updates the ID of an instance on the array */
-  | {
-      type: "EDIT_ID";
-      data: { instance: genericModels; newID: number | string };
-    }
   /** Deletes an instance from the array */
   | { type: "DELETE"; data: genericModels };
 
@@ -61,19 +57,13 @@ export function genericReducer(
       return state?.concat(action.data);
     case "EDIT":
       return state?.map((item) =>
-        item.id === action.data.id ? action.data : item
-      );
-    case "EDIT_ID":
-      return state?.map((item) =>
-        item.id === action.data.instance.id
-          ? { ...action.data.instance, id: action.data.newID }
-          : item
+        item.offline_id === action.data.offline_id ? action.data : item
       );
     case "DELETE":
       let newState = [];
       if (state.length)
         for (const item of state)
-          if (item.id !== action.data.id) newState.push(item);
+          if (item.offline_id !== action.data.offline_id) newState.push(item);
       return newState;
     default:
       return [];
@@ -90,7 +80,7 @@ export function genericReducer(
 export function generateUniqueId(array: genericModels[]): number {
   let i = 1;
   for (const item of array) {
-    if (item.id === i) i += 1;
+    if (item.offline_id === i) i += 1;
     else return i;
   }
   return i;
@@ -100,26 +90,24 @@ export function generateUniqueId(array: genericModels[]): number {
  * Uploads a tea or brewing session instance, returns a response promise.
  *
  * @category Services
+ * @param {TeaRequest | SessionModel} data - Request object
+ * @param {string} [id] - Optional instance API ID
  * @returns {Promise<Response>}
  */
 export async function uploadInstance(
-  instance: TeaInstance | SessionInstance
+  data: TeaRequest | SessionModel,
+  id?: string
 ): Promise<Response> {
-  const endpoint = "category" in instance ? "tea" : "brewing_session";
-
-  let request = JSON.parse(JSON.stringify(instance));
+  const endpoint = "category" in data ? "tea" : "brewing_session";
 
   // String UUID means API generated, instance has been previously uploaded
-  if (typeof instance.id === "string" && validator.isUUID(instance.id)) {
+  if (id) {
+    let request = JSON.parse(JSON.stringify({ ...data, id: id }));
     // Remove image from PUT request
     if (request.image) delete request.image;
-    return APIRequest(
-      `/${endpoint}/${request.id}/`,
-      "PUT",
-      JSON.stringify(request)
-    );
+    return APIRequest(`/${endpoint}/${id}/`, "PUT", JSON.stringify(request));
   } else {
-    return APIRequest(`/${endpoint}/`, "POST", JSON.stringify(instance));
+    return APIRequest(`/${endpoint}/`, "POST", JSON.stringify(data));
   }
 }
 
@@ -168,25 +156,12 @@ export async function uploadOfflineSessions(): Promise<void> {
   );
   if (!offlineSessions) return;
 
-  let clocks = await localforage.getItem<Clock[]>("clocks");
-
   let failed: SessionInstance[] = [];
   let error = "";
 
   const requests = offlineSessions.map(async (session) => {
     try {
-      const res = await uploadInstance(session);
-
-      // If there are any session clocks, update with new ID
-      const clock = clocks.find((c) => c.id === session.id);
-      if (clock) {
-        const body = await res?.json();
-        if (typeof body.id === "string") {
-          clocks.push({ id: body.id, starting_time: clock.starting_time });
-          clocks = clocks.filter((c) => c.id !== clock.id);
-          await localforage.setItem<Clock[]>("clocks", clocks);
-        }
-      }
+      await uploadInstance(session);
     } catch (e) {
       // Save failed instance if proper
       if (e.message !== "Bad Request") failed.push(session);

@@ -5,13 +5,17 @@ import React, {
   ReactElement,
   useEffect,
   useReducer,
-} from 'react';
+} from "react";
 import localforage from "localforage";
 import { APIRequest } from "../../services/auth-services";
-import { GenericAction, genericReducer } from "../../services/sync-services";
-import { SubcategoryModel } from "../../services/models";
+import {
+  generateUniqueId,
+  GenericAction,
+  genericReducer,
+} from "../../services/sync-services";
+import { SubcategoryInstance } from "../../services/models";
 
-export const SubcategoriesState = createContext<SubcategoryModel[]>([]);
+export const SubcategoriesState = createContext<SubcategoryInstance[]>([]);
 export const SubcategoriesDispatch = createContext(
   {} as Dispatch<GenericAction>
 );
@@ -26,9 +30,7 @@ type Props = {
  * @component
  * @subcategory State containers
  */
-function SubcategoriesContext({
-  children,
-}: Props): ReactElement {
+function SubcategoriesContext({ children }: Props): ReactElement {
   const [state, dispatch] = useReducer(genericReducer, []);
 
   useEffect(() => {
@@ -40,7 +42,7 @@ function SubcategoriesContext({
     async function getSubcategories(): Promise<void> {
       try {
         // Get cached subcategories first
-        const localSub = await localforage.getItem<SubcategoryModel[]>(
+        const localSub = await localforage.getItem<SubcategoryInstance[]>(
           "subcategories"
         );
         if (localSub) dispatch({ type: "SET", data: localSub });
@@ -48,8 +50,20 @@ function SubcategoriesContext({
         // Update with subcategories from API
         const res = await APIRequest("/subcategory/", "GET");
         const body = await res?.json();
-        dispatch({ type: "SET", data: body });
-        await localforage.setItem<SubcategoryModel[]>("subcategories", body);
+
+        let subcategories: SubcategoryInstance[] = [];
+
+        for (const sub of body) {
+          if (sub.offline_id) subcategories.push(sub);
+          else
+            subcategories.push({
+              ...sub,
+              offline_id: await generateUniqueId(subcategories),
+            });
+        }
+
+        dispatch({ type: "SET", data: subcategories });
+        await localforage.setItem<SubcategoryInstance[]>("subcategories", subcategories);
       } catch (e) {
         console.error(e);
       }
@@ -58,7 +72,7 @@ function SubcategoriesContext({
   }, [state]);
 
   return (
-    <SubcategoriesState.Provider value={state as SubcategoryModel[]}>
+    <SubcategoriesState.Provider value={state as SubcategoryInstance[]}>
       <SubcategoriesDispatch.Provider value={dispatch}>
         {children}
       </SubcategoriesDispatch.Provider>

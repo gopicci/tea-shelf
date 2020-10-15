@@ -280,7 +280,7 @@ function SessionLayout({
       <Typography variant="h1">{session.name}</Typography>
       <Box className={clsx(classes.row, classes.spaceBetween)}>
         <Box className={classes.suggestions}>
-          {session.brewing.temperature && (
+          {!!(session.brewing.temperature && session.brewing.temperature > 0) && (
             <Box className={classes.row}>
               <SvgIcon className={classes.icon} viewBox="0 0 24 24">
                 <path d="M15 13V5a3 3 0 0 0-6 0v8a5 5 0 1 0 6 0m-3-9a1 1 0 0 1 1 1v3h-2V5a1 1 0 0 1 1-1z" />
@@ -295,7 +295,7 @@ function SessionLayout({
               </Box>
             </Box>
           )}
-          {session.brewing.weight && (
+          {!!(session.brewing.weight && session.brewing.weight > 0) && (
             <Box className={classes.row}>
               <FitnessCenter className={classes.icon} />
               <Typography variant="h4">

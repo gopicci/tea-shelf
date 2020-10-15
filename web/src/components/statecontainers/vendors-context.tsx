@@ -4,14 +4,18 @@ import React, {
   useEffect,
   useReducer,
   ReactElement,
-  ReactChild
-} from 'react';
+  ReactChild,
+} from "react";
 import localforage from "localforage";
 import { APIRequest } from "../../services/auth-services";
-import { GenericAction, genericReducer } from "../../services/sync-services";
-import { VendorModel } from "../../services/models";
+import {
+  generateUniqueId,
+  GenericAction,
+  genericReducer,
+} from "../../services/sync-services";
+import { SubcategoryInstance, VendorInstance } from "../../services/models";
 
-export const VendorsState = createContext<VendorModel[]>([]);
+export const VendorsState = createContext<VendorInstance[]>([]);
 export const VendorsDispatch = createContext({} as Dispatch<GenericAction>);
 
 type Props = {
@@ -36,14 +40,26 @@ function VendorsContext({ children }: Props): ReactElement {
     async function getVendors(): Promise<void> {
       try {
         // Get cached vendors first
-        const localSub = await localforage.getItem<VendorModel[]>("vendors");
+        const localSub = await localforage.getItem<VendorInstance[]>("vendors");
         if (localSub) dispatch({ type: "SET", data: localSub });
 
         // Update with vendors from API
         const res = await APIRequest("/vendor/", "GET");
         const body = await res?.json();
-        dispatch({ type: "SET", data: body });
-        await localforage.setItem<VendorModel[]>("vendors", body);
+
+        let vendors: SubcategoryInstance[] = [];
+
+        for (const vendor of body) {
+          if (vendor.offline_id) vendors.push(vendor);
+          else
+            vendors.push({
+              ...vendor,
+              offline_id: await generateUniqueId(vendors),
+            });
+        }
+
+        dispatch({ type: "SET", data: vendors });
+        await localforage.setItem<VendorInstance[]>("vendors", vendors);
       } catch (e) {
         console.error(e);
       }
@@ -52,7 +68,7 @@ function VendorsContext({ children }: Props): ReactElement {
   }, [state]);
 
   return (
-    <VendorsState.Provider value={state as VendorModel[]}>
+    <VendorsState.Provider value={state as VendorInstance[]}>
       <VendorsDispatch.Provider value={dispatch}>
         {children}
       </VendorsDispatch.Provider>
