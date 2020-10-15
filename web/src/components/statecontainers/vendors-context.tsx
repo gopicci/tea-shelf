@@ -47,15 +47,13 @@ function VendorsContext({ children }: Props): ReactElement {
         const res = await APIRequest("/vendor/", "GET");
         const body = await res?.json();
 
-        let vendors: SubcategoryInstance[] = [];
-
+        // Add offline ID to new vendors
+        let vendors: VendorInstance[] = [];
         for (const vendor of body) {
-          if (vendor.offline_id) vendors.push(vendor);
-          else
-            vendors.push({
-              ...vendor,
-              offline_id: await generateUniqueId(vendors),
-            });
+          vendors.push({
+            ...vendor,
+            offline_id: await generateUniqueId(vendors),
+          });
         }
 
         dispatch({ type: "SET", data: vendors });

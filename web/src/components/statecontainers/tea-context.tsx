@@ -64,7 +64,7 @@ function TeaContext({ children }: Props): ReactElement {
         // Set initial state merging cached data
         dispatch({ type: "SET", data: offlineTeas.concat(localTeas) });
 
-        // Get online teas if API ID not already on offline
+        // Get online teas if API ID not already on offline ones
         const res = await APIRequest("/tea/", "GET");
         let onlineTeas = await res?.json();
         if (!onlineTeas) onlineTeas = [];
@@ -76,11 +76,11 @@ function TeaContext({ children }: Props): ReactElement {
               )
           );
 
+        // Add offline ID to new teas
         let apiTeas: TeaInstance[] = [];
-
-        for (let tea of offlineTeas.concat(onlineTeas)) {
+        for (const tea of offlineTeas.concat(onlineTeas)) {
           if (!tea.offline_id)
-            apiTeas.push({ ...tea, offline_id: await generateUniqueId(offlineTeas.concat(onlineTeas)) });
+            apiTeas.push({ ...tea, offline_id: await generateUniqueId(apiTeas) });
         }
 
         // Update the state

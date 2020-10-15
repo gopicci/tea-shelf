@@ -138,7 +138,7 @@ function InputForm({
     if (Object.keys(gongfu).length) data["gongfu_brewing"] = gongfu;
     if (Object.keys(western).length) data["western_brewing"] = western;
 
-    if (values.offline_id) {
+    if (values.offline_id > 0) {
       handleTeaEdit(data, values.offline_id);
       setRoute({
         route: "TEA_DETAILS",
@@ -163,7 +163,7 @@ function InputForm({
   let initialValues: InputFormModel = {
     ...visionData,
     ...teaData,
-    offline_id: teaData?.offline_id ? teaData?.offline_id : "",
+    offline_id: teaData?.offline_id ? teaData?.offline_id : 0,
     name: teaData?.name
       ? teaData.name
       : visionData?.name

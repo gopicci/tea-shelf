@@ -51,19 +51,21 @@ function SubcategoriesContext({ children }: Props): ReactElement {
         const res = await APIRequest("/subcategory/", "GET");
         const body = await res?.json();
 
+        // Add offline ID to new categories
         let subcategories: SubcategoryInstance[] = [];
-
         for (const sub of body) {
-          if (sub.offline_id) subcategories.push(sub);
-          else
-            subcategories.push({
-              ...sub,
-              offline_id: await generateUniqueId(subcategories),
-            });
+          subcategories.push({
+            ...sub,
+            offline_id: await generateUniqueId(subcategories),
+          });
         }
 
+        // Update state and cache
         dispatch({ type: "SET", data: subcategories });
-        await localforage.setItem<SubcategoryInstance[]>("subcategories", subcategories);
+        await localforage.setItem<SubcategoryInstance[]>(
+          "subcategories",
+          subcategories
+        );
       } catch (e) {
         console.error(e);
       }
