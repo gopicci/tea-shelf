@@ -79,12 +79,12 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
         if (clocks)
           await localforage.setItem<Clock[]>(
             "clocks",
-            clocks.filter((c) => c.id !== session.offline_id)
+            clocks.filter((c) => c.offline_id !== session.offline_id)
           );
         clockDispatch({
           type: "DELETE",
           data: {
-            id: session.offline_id,
+            offline_id: session.offline_id,
             starting_time: clock.starting_time,
           },
         });
@@ -92,7 +92,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
     } catch (e) {
       console.error(e);
     }
-  }, [clock, clockDispatch, session.id]);
+  }, [clock, clockDispatch, session.offline_id]);
 
   /**
    * On countdown completion removes clock from global state
@@ -108,7 +108,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
           current_infusion: session.current_infusion + 1,
           last_brewed_on: new Date().toISOString(),
         },
-        session.id
+        session.offline_id
       );
     } catch (e) {
       console.error(e);
@@ -118,7 +118,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   useEffect(() => {
     async function clockInit() {
       // Search for a running clock in global state
-      const match = clocks && clocks.find((c) => c.id === session.id);
+      const match = clocks && clocks.find((c) => c.offline_id === session.offline_id);
 
       if (match) {
         setClock(match);

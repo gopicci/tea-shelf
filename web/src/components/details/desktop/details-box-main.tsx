@@ -31,7 +31,7 @@ type Props = {
   /** Tea instance data */
   teaData: TeaInstance;
   /** Handles tea posting process */
-  handleTeaEdit: (data: TeaRequest, id?: number | string) => void;
+  handleTeaEdit: (data: TeaRequest, id?: number) => void;
 };
 
 /**
@@ -70,7 +70,7 @@ function DetailsBoxMain({ teaData, handleTeaEdit }: Props): ReactElement {
   function handleRatingChange(value: number | null): void {
     handleTeaEdit(
       { ...teaData, rating: value ? value * 2 : undefined },
-      teaData.id
+      teaData.offline_id
     );
     setRating(value ? value * 2 : undefined);
   }

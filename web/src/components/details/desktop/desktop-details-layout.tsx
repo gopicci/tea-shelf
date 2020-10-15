@@ -49,7 +49,7 @@ function DesktopDetailsLayout({
   const [teaData, setTeaData] = useState<TeaInstance | undefined>();
 
   useEffect(() => {
-    setTeaData(Object.values(teas).find((tea) => tea.id === route.teaPayload?.id));
+    setTeaData(Object.values(teas).find((tea) => tea.offline_id === route.teaPayload?.offline_id));
   }, [route.teaPayload, teas]);
 
   const category = Object.values(categories).find(

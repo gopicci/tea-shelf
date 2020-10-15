@@ -41,7 +41,7 @@ type Props = {
   /** Set app's main route */
   setRoute: (route: Route) => void;
   /** Handles tea posting process */
-  handleTeaEdit: (data: TeaRequest, id?: number | string) => void;
+  handleTeaEdit: (data: TeaRequest, id?: number) => void;
 };
 
 /**
@@ -70,7 +70,7 @@ function EditNotes({ teaData, setRoute, handleTeaEdit }: Props): ReactElement {
    * Upload notes, updates state and routes back to tea details.
    */
   function handleSave(): void {
-    handleTeaEdit({ ...teaData, notes: notes }, teaData.id);
+    handleTeaEdit({ ...teaData, notes: notes }, teaData.offline_id);
     handlePrevious();
   }
 

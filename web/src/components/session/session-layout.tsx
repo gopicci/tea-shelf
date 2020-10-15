@@ -118,7 +118,7 @@ function SessionLayout({
   const [editInfusion, setEditInfusion] = useState(false);
 
   // Search for a running clock in global state
-  const clock = clocks && clocks.find((c) => c.id === session.id);
+  const clock = clocks && clocks.find((c) => c.offline_id === session.offline_id);
   const expiration = clock && getEndDate(clock.starting_time, session);
   const expired = expiration && expiration < Date.now();
   if (expired) handleComplete();
@@ -134,7 +134,7 @@ function SessionLayout({
   useEffect(() => {
     if (session !== route.sessionPayload) {
       setEndDate(getEndDate(Date.now(), session));
-      handleSessionEdit(session, session.id);
+      handleSessionEdit(session, session.offline_id);
     }
   }, [handleSessionEdit, route.sessionPayload, session]);
 
@@ -145,7 +145,7 @@ function SessionLayout({
     try {
       setCounting(true);
       setStartDate(Date.now());
-      const newClock = { id: session.id, starting_time: Date.now() };
+      const newClock = { offline_id: session.offline_id, starting_time: Date.now() };
       clockDispatch({
         type: "ADD",
         data: newClock,
@@ -208,12 +208,12 @@ function SessionLayout({
       if (cachedClocks)
         await localforage.setItem<Clock[]>(
           "clocks",
-          cachedClocks.filter((c) => c.id !== session.id)
+          cachedClocks.filter((c) => c.offline_id !== session.offline_id)
         );
       await clockDispatch({
         type: "DELETE",
         data: {
-          id: session.id,
+          offline_id: session.offline_id,
           starting_time: startDate,
         },
       });
@@ -225,7 +225,7 @@ function SessionLayout({
   async function handleEndSession(): Promise<void> {
     try {
       await handleCancel();
-      await handleSessionEdit({ ...session, is_completed: true }, session.id);
+      await handleSessionEdit({ ...session, is_completed: true }, session.offline_id);
     } catch (e) {
       console.error(e);
     }

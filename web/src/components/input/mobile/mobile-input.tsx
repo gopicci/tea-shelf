@@ -66,7 +66,7 @@ function MobileInput({
   const [editRoute, setEditRoute] = useState("input_layout");
 
   const [teaData, setTeaData] = useState<TeaRequest>({
-    id: undefined,
+    offline_id: undefined,
     name: "",
     category: 0,
     ...visionData,
@@ -86,10 +86,10 @@ function MobileInput({
       teaData.subcategory.category = teaData.category;
 
     if (route.teaPayload) {
-      handleTeaEdit(teaData, route.teaPayload.id);
+      handleTeaEdit(teaData, route.teaPayload.offline_id);
       setRoute({
         route: "TEA_DETAILS",
-        teaPayload: { ...teaData, id: route.teaPayload.id },
+        teaPayload: { ...teaData, offline_id: route.teaPayload.offline_id },
       });
     } else {
       handleTeaEdit(teaData, undefined, "Tea successfully added.");

@@ -80,7 +80,7 @@ function TeaContext({ children }: Props): ReactElement {
 
         for (let tea of offlineTeas.concat(onlineTeas)) {
           if (!tea.offline_id)
-            apiTeas.push({ ...tea, offline_id: await generateUniqueId(apiTeas) });
+            apiTeas.push({ ...tea, offline_id: await generateUniqueId(offlineTeas.concat(onlineTeas)) });
         }
 
         // Update the state

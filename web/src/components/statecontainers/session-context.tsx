@@ -12,10 +12,11 @@ import {
   genericReducer,
   GenericAction,
   uploadOfflineSessions,
+  generateUniqueId,
 } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import { ClockDispatch } from "./clock-context";
-import { Clock, SessionInstance } from "../../services/models";
+import { Clock, SessionInstance, TeaInstance } from "../../services/models";
 
 export const SessionsState = createContext<SessionInstance[]>([]);
 export const SessionDispatch = createContext({} as Dispatch<GenericAction>);
@@ -63,7 +64,8 @@ function SessionContext({ children }: Props): ReactElement {
         if (!localSessions) localSessions = [];
         else
           localSessions = localSessions.filter(
-            (ls) => !offlineSessions.some((os) => os.id === ls.id)
+            (ls) =>
+              !offlineSessions.some((os) => os.offline_id === ls.offline_id)
           );
 
         // Set initial state merging cached data
@@ -81,16 +83,22 @@ function SessionContext({ children }: Props): ReactElement {
               )
           );
 
-        const sessions = offlineSessions.concat(onlineSessions);
+        let apiSessions: SessionInstance[] = [];
 
+        for (let session of offlineSessions.concat(onlineSessions)) {
+          if (!session.offline_id)
+            apiSessions.push({
+              ...session,
+              offline_id: await generateUniqueId(
+                offlineSessions.concat(onlineSessions)
+              ),
+            });
+        }
         // Update the state
-        dispatch({ type: "SET", data: sessions });
+        dispatch({ type: "SET", data: offlineSessions.concat(apiSessions) });
 
         // Update the cache
-        await localforage.setItem<SessionInstance[]>(
-          "sessions",
-          onlineSessions
-        );
+        await localforage.setItem<SessionInstance[]>("sessions", apiSessions);
       } catch (e) {
         console.error(e);
       }

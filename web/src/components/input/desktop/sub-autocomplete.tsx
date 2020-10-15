@@ -61,30 +61,29 @@ function SubAutocomplete({ formikProps }: Props): ReactElement {
   function updateSubcategory(name: string): void {
     if (name) {
       // Look for a match in subcategories global state
-      const match = Object.entries(subcategories).find((entry) => {
+      const subcategory = Object.values(subcategories).find((sub) => {
         const lcName = name.toLowerCase();
-        if (getSubcategoryName(entry[1]).toLowerCase() === lcName) return true;
-        if (entry[1].name.toLowerCase() === lcName) return true;
-        return entry[1].translated_name?.toLowerCase() === lcName;
+        if (getSubcategoryName(sub).toLowerCase() === lcName) return true;
+        if (sub.name.toLowerCase() === lcName) return true;
+        return sub.translated_name?.toLowerCase() === lcName;
       });
-      if (match) {
+      if (subcategory) {
         // Match found, update subcategory field
-        const subcategory: SubcategoryModel = match[1];
         setFieldValue("subcategory", subcategory);
 
         // Update category field if present
         if (subcategory.category) {
-          const category = Object.entries(categories).find(
-            (entry) => entry[1].id === subcategory.category
+          const category = Object.values(categories).find(
+            (c) => c.id === subcategory.category
           );
           if (category) {
-            setFieldValue("category", category[1].id);
+            setFieldValue("category", category.id);
             setFieldValue("western_brewing", {
-              ...category[1].western_brewing,
+              ...category.western_brewing,
               fahrenheit: false,
             });
             setFieldValue("gongfu_brewing", {
-              ...category[1].gongfu_brewing,
+              ...category.gongfu_brewing,
               fahrenheit: false,
             });
           }

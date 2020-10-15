@@ -138,11 +138,11 @@ function InputForm({
     if (Object.keys(gongfu).length) data["gongfu_brewing"] = gongfu;
     if (Object.keys(western).length) data["western_brewing"] = western;
 
-    if (values.id) {
-      handleTeaEdit(data, values.id);
+    if (values.offline_id) {
+      handleTeaEdit(data, values.offline_id);
       setRoute({
         route: "TEA_DETAILS",
-        teaPayload: { ...data, id: values.id },
+        teaPayload: { ...data, offline_id: values.offline_id },
       });
     } else {
       handleTeaEdit(data, undefined, "Tea successfully added.");
@@ -163,7 +163,7 @@ function InputForm({
   let initialValues: InputFormModel = {
     ...visionData,
     ...teaData,
-    id: teaData?.id ? teaData?.id : "",
+    offline_id: teaData?.offline_id ? teaData?.offline_id : "",
     name: teaData?.name
       ? teaData.name
       : visionData?.name

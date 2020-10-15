@@ -74,7 +74,7 @@ function ActionIcons({
     setAnchorEl(undefined);
     handleTeaEdit(
       { ...teaData, is_archived: true },
-      teaData.id,
+      teaData.offline_id,
       "Tea successfully archived."
     );
     setRoute({ route: "MAIN" });
@@ -84,7 +84,7 @@ function ActionIcons({
   function handleUnArchive(): void {
     handleTeaEdit(
       { ...teaData, is_archived: false },
-      teaData.id,
+      teaData.offline_id,
       "Tea successfully unarchived."
     );
     setRoute({ route: "ARCHIVE" });

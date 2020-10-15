@@ -88,8 +88,8 @@ function InputLayout({
       <InputAppBar
         handleBackToLayout={handlePrevious}
         name="Tea"
-        actionName={teaData.id ? "Edit" : "Add"}
-        saveName={teaData.id ? "Save" : "Create"}
+        actionName={teaData.offline_id ? "Edit" : "Add"}
+        saveName={teaData.offline_id ? "Save" : "Create"}
         disableSave={!teaData.name || !teaData.category}
         handleSave={handleSave}
       />

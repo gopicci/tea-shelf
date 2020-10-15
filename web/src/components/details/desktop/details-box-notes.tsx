@@ -18,7 +18,7 @@ type Props = {
   /** Tea instance data */
   teaData: TeaInstance;
   /** Handles tea posting process */
-  handleTeaEdit: (data: TeaRequest, id?: number | string) => void;
+  handleTeaEdit: (data: TeaRequest, id?: number) => void;
   /** Set confirmation on close */
   setConfirmation: (confirmation?: Confirmation) => void;
   /** Set app's main route */
@@ -48,7 +48,7 @@ function DetailsBoxNotes({
       setConfirmation({
         message: "Save notes?",
         callback: () => {
-          handleTeaEdit({ ...teaData, notes: notes }, teaData.id);
+          handleTeaEdit({ ...teaData, notes: notes }, teaData.offline_id);
           setRoute({ route: "MAIN" });
         },
       });
@@ -66,7 +66,7 @@ function DetailsBoxNotes({
 
   /** Updates tea instance with notes changes. */
   function handleNotesSave(): void {
-    handleTeaEdit({ ...teaData, notes: notes }, teaData.id);
+    handleTeaEdit({ ...teaData, notes: notes }, teaData.offline_id);
     setNotesEditing(false);
   }
 

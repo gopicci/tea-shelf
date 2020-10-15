@@ -106,7 +106,7 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
       const cachedClocks = await localforage.getItem<Clock[]>("clocks");
       if (cachedClocks) {
         const filteredClocks = cachedClocks.filter((c) =>
-          sessions.some((s) => s.id === c.id)
+          sessions.some((s) => s.offline_id === c.offline_id)
         );
         clockDispatch({ type: "SET", data: filteredClocks });
         await localforage.setItem<Clock[]>("clocks", filteredClocks);
