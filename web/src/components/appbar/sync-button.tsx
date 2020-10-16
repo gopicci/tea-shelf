@@ -2,14 +2,7 @@ import React, { ReactElement, useCallback, useContext, useState } from "react";
 import { CircularProgress, IconButton, Tooltip } from "@material-ui/core";
 import { CloudDone, Refresh } from "@material-ui/icons";
 import localforage from "localforage";
-import {
-  getOfflineTeas,
-  getOfflineSessions,
-  uploadOfflineTeas,
-  uploadOfflineSessions,
-  generateUniqueId,
-  syncInstances,
-} from "../../services/sync-services";
+import { uploadOffline, syncInstances } from "../../services/sync-services";
 import { APIRequest } from "../../services/auth-services";
 import { SyncDispatch, SyncState } from "../statecontainers/sync-context";
 import { SnackbarDispatch } from "../statecontainers/snackbar-context";
@@ -17,7 +10,6 @@ import { TeaDispatch } from "../statecontainers/tea-context";
 import { SubcategoriesDispatch } from "../statecontainers/subcategories-context";
 import { VendorsDispatch } from "../statecontainers/vendors-context";
 import { SessionDispatch } from "../statecontainers/session-context";
-import { ClockDispatch } from "../statecontainers/clock-context";
 import { Route } from "../../app";
 
 /**
@@ -48,7 +40,6 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
   const teaDispatch = useContext(TeaDispatch);
   const sessionDispatch = useContext(SessionDispatch);
-  const clockDispatch = useContext(ClockDispatch);
   const subcategoriesDispatch = useContext(SubcategoriesDispatch);
   const vendorDispatch = useContext(VendorsDispatch);
 
@@ -61,9 +52,15 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
 
     try {
       // Try to upload offline tea entries
-      await uploadOfflineTeas();
+      await uploadOffline("tea");
+    } catch (e) {
+      console.error(e);
+      error = e;
+    }
+
+    try {
       // Try to upload offline brewing sessions entries
-      await uploadOfflineSessions();
+      await uploadOffline("session");
     } catch (e) {
       console.error(e);
       error = e;
@@ -127,14 +124,13 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
     if (route.route === "SESSION_DETAILS") setRoute({ route: "SESSIONS" });
   }, [
     route.route,
-    setRoute,
-    teaDispatch,
     sessionDispatch,
-    clockDispatch,
-    subcategoriesDispatch,
-    vendorDispatch,
-    syncDispatch,
+    setRoute,
     snackbarDispatch,
+    subcategoriesDispatch,
+    syncDispatch,
+    teaDispatch,
+    vendorDispatch,
   ]);
 
   return isSyncing ? (

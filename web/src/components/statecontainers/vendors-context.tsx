@@ -4,15 +4,13 @@ import React, {
   useEffect,
   useReducer,
   ReactElement,
-  ReactChild,
-} from "react";
-import localforage from "localforage";
-import { APIRequest } from "../../services/auth-services";
+  ReactChild, useState,
+} from 'react';
 import {
-  generateUniqueId,
   GenericAction,
-  genericReducer, syncInstances,
-} from '../../services/sync-services';
+  genericReducer,
+  syncInstances,
+} from "../../services/sync-services";
 import { VendorInstance } from "../../services/models";
 
 export const VendorsState = createContext<VendorInstance[]>([]);
@@ -30,6 +28,7 @@ type Props = {
  */
 function VendorsContext({ children }: Props): ReactElement {
   const [state, dispatch] = useReducer(genericReducer, []);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     /**
@@ -40,12 +39,16 @@ function VendorsContext({ children }: Props): ReactElement {
     async function getVendors(): Promise<void> {
       try {
         await syncInstances("vendor", dispatch);
+        setSyncing(false);
       } catch (e) {
         console.error(e);
       }
     }
-    if (!state.length) getVendors();
-  }, [state]);
+    if (!state.length && !syncing) {
+      setSyncing(true);
+      getVendors();
+    }
+  }, [state, syncing]);
 
   return (
     <VendorsState.Provider value={state as VendorInstance[]}>

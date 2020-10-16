@@ -10,7 +10,7 @@ import {
   TeaRequest,
   SessionModel,
 } from "./models";
-import { subcategories } from "../dev/DevData";
+import { getEndDate } from "./parsing-services";
 
 /**
  * Models allowed to be used in the generic services requiring an offline instance ID.
@@ -102,6 +102,8 @@ export async function uploadInstance(
 ): Promise<Response> {
   const endpoint = "category" in data ? "tea" : "brewing_session";
 
+  console.log("uploadInstance", id)
+
   // String UUID means API generated, instance has been previously uploaded
   if (id) {
     let request = JSON.parse(JSON.stringify({ ...data, id: id }));
@@ -114,70 +116,48 @@ export async function uploadInstance(
 }
 
 /**
- * Tries to upload offline tea instances from storage to API.
+ * Tries to upload teas or brewing sessions offline instances from storage to API.
  * If successful releases the cache.
  *
  * @category Services
+ * @param {"tea"|"session"} type - Instance type
  */
-export async function uploadOfflineTeas(): Promise<void> {
-  const offlineTeas = await localforage.getItem<TeaInstance[]>("offline-teas");
-  if (!offlineTeas) return;
+export async function uploadOffline(
+  type: "tea" | "session"
+): Promise<void> {
+  // Storage name
+  const storage = "offline-" + type + "s";
 
-  let failed: TeaInstance[] = [];
-  let error = "";
+  console.log("uploadOffline", type)
 
-  const requests = offlineTeas.map(async (tea) => {
-    try {
-      await uploadInstance(tea);
-    } catch (e) {
-      // Save failed instance if proper
-      if (e.message !== "Bad Request") failed.push(tea);
-      error = e.message;
-    }
-  });
-
-  await Promise.allSettled(requests);
-
-  if (failed.length) {
-    await localforage.setItem<TeaInstance[]>("offline-teas", failed);
-    throw new Error(error);
-  } else {
-    await localforage.setItem("offline-teas", []);
-  }
-}
-
-/**
- * Tries to upload offline brewing session instances from storage to API.
- * If successful releases the cache.
- *
- * @category Services
- */
-export async function uploadOfflineSessions(): Promise<void> {
-  const offlineSessions = await localforage.getItem<SessionInstance[]>(
-    "offline-sessions"
+  const offline = await localforage.getItem<TeaInstance | SessionInstance[]>(
+    storage
   );
-  if (!offlineSessions) return;
+  if (!offline) return;
 
-  let failed: SessionInstance[] = [];
+  let failed: TeaInstance | SessionInstance[] = [];
   let error = "";
 
-  const requests = offlineSessions.map(async (session) => {
-    try {
-      await uploadInstance(session);
-    } catch (e) {
-      // Save failed instance if proper
-      if (e.message !== "Bad Request") failed.push(session);
-      error = e.message;
+  const requests = offline.map(
+    async (instance: TeaInstance | SessionInstance) => {
+      try {
+        const request = {...instance, id: undefined, offline_id: undefined}
+        return uploadInstance(request, instance.id);
+      } catch (e) {
+        // Save failed instance if proper
+        if (e.message !== "Bad Request") failed.push(instance);
+        error = e.message;
+      }
     }
-  });
+  );
 
   await Promise.allSettled(requests);
 
   if (failed.length) {
-    await localforage.setItem<SessionInstance[]>("offline-sessions", failed);
+    await localforage.setItem<TeaInstance | SessionInstance[]>(storage, failed);
     throw new Error(error);
   } else {
-    await localforage.setItem("offline-sessions", []);
+    await localforage.setItem(storage, []);
   }
 }
 
@@ -273,7 +253,7 @@ export async function syncInstances(
   let online: GenericModels[] = [];
   if (body) {
     for (const instance of body) {
-      // Check that ID not already on locals
+      // Check that ID not already on offline instances
       if (!offline.some((o) => "id" in o && o.id === instance.id)) {
         const match = Object.values(locals).find(
           (l) => "id" in l && l.id === instance.id
@@ -288,7 +268,7 @@ export async function syncInstances(
           // New instance, generate new offline ID
           online.push({
             ...instance,
-            offline_id: await generateUniqueId(locals),
+            offline_id: await generateUniqueId(locals.concat(online)),
           });
         }
       }
@@ -297,35 +277,53 @@ export async function syncInstances(
 
   if (type === "session") {
     // Remove expired clocks
+    // Get clocks from storage
     const clocks = await localforage.getItem<Clock[]>("clocks");
+
+    // Clocks still running
     let running: Clock[] = [];
+
     for (const clock of clocks) {
-      if (clock.starting_time < Date.now()) {
-        // Clock expired, update session
-        offline.map((session) => {
-          if (
-            session.offline_id === clock.offline_id &&
-            "current_infusion" in session
-          )
-            return {
-              ...session,
-              current_infusion: session.current_infusion + 1,
-            };
-          else return session;
-        });
-        online.map((session) => {
-          if (
-            session.offline_id === clock.offline_id &&
-            "current_infusion" in session
-          )
-            return {
-              ...session,
-              current_infusion: session.current_infusion + 1,
-            };
-          else return session;
-        });
-      } else running.push(clock);
+      // Find clock session
+      const session = Object.values(offline.concat(locals)).find(
+        (s) => s.offline_id === clock.offline_id
+      ) as SessionInstance;
+
+      if (session) {
+        // Determine clock end date
+        const endDate = getEndDate(clock.starting_time, session);
+
+        if (endDate < Date.now()) {
+          // Clock expired, update session
+          offline.map((session) => {
+            if (
+              session.offline_id === clock.offline_id &&
+              "current_infusion" in session
+            )
+              return {
+                ...session,
+                current_infusion: session.current_infusion + 1,
+              };
+            else return session;
+          });
+          online.map((session) => {
+            if (
+              session.offline_id === clock.offline_id &&
+              "current_infusion" in session
+            )
+              return {
+                ...session,
+                current_infusion: session.current_infusion + 1,
+              };
+            else return session;
+          });
+        } else {
+          // Clock still running
+          running.push(clock);
+        }
+      }
     }
+    // Save running clocks to storage
     await localforage.setItem<Clock[]>("clocks", running);
   }
 

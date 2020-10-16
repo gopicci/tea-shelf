@@ -10,7 +10,7 @@ import React, {
 import {
   genericReducer,
   GenericAction,
-  uploadOfflineSessions, syncInstances,
+  uploadOffline, syncInstances,
 } from '../../services/sync-services';
 import { ClockDispatch } from "./clock-context";
 import { SessionInstance } from "../../services/models";
@@ -31,13 +31,11 @@ type Props = {
 function SessionContext({ children }: Props): ReactElement {
   const [state, dispatch] = useReducer(genericReducer, []);
 
-  const clockDispatch = useContext(ClockDispatch);
-
   useEffect(() => {
     async function syncSessions() {
       try {
         // Try to upload offline brewing session entries
-        await uploadOfflineSessions();
+        await uploadOffline("session");
       } catch (e) {
         console.error(e);
       }
@@ -50,7 +48,7 @@ function SessionContext({ children }: Props): ReactElement {
       }
     }
     syncSessions();
-  }, [clockDispatch]);
+  }, []);
 
   return (
     <SessionsState.Provider value={state as SessionInstance[]}>

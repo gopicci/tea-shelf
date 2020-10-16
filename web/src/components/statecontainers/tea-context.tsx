@@ -6,14 +6,12 @@ import React, {
   useEffect,
   useReducer,
 } from "react";
-import localforage from "localforage";
 import {
   genericReducer,
   GenericAction,
-  uploadOfflineTeas,
-  generateUniqueId, syncInstances,
-} from '../../services/sync-services';
-import { APIRequest } from "../../services/auth-services";
+  uploadOffline,
+  syncInstances,
+} from "../../services/sync-services";
 import { TeaInstance } from "../../services/models";
 
 export const TeasState = createContext<TeaInstance[]>([]);
@@ -41,7 +39,7 @@ function TeaContext({ children }: Props): ReactElement {
     async function syncTeas(): Promise<void> {
       try {
         // Try to upload offline tea entries
-        await uploadOfflineTeas();
+        await uploadOffline("tea");
       } catch (e) {
         console.error(e);
       }

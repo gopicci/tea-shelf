@@ -5,14 +5,13 @@ import React, {
   ReactElement,
   useEffect,
   useReducer,
+  useState,
 } from "react";
-import localforage from "localforage";
-import { APIRequest } from "../../services/auth-services";
 import {
-  generateUniqueId,
   GenericAction,
-  genericReducer, syncInstances,
-} from '../../services/sync-services';
+  genericReducer,
+  syncInstances,
+} from "../../services/sync-services";
 import { SubcategoryInstance } from "../../services/models";
 
 export const SubcategoriesState = createContext<SubcategoryInstance[]>([]);
@@ -32,6 +31,7 @@ type Props = {
  */
 function SubcategoriesContext({ children }: Props): ReactElement {
   const [state, dispatch] = useReducer(genericReducer, []);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     /**
@@ -41,13 +41,17 @@ function SubcategoriesContext({ children }: Props): ReactElement {
      */
     async function getSubcategories(): Promise<void> {
       try {
-        await syncInstances("subcategory", dispatch)
+        await syncInstances("subcategory", dispatch);
+        setSyncing(false);
       } catch (e) {
         console.error(e);
       }
     }
-    if (!state.length) getSubcategories();
-  }, [state]);
+    if (!state.length && !syncing) {
+      setSyncing(true);
+      getSubcategories();
+    }
+  }, [state, syncing]);
 
   return (
     <SubcategoriesState.Provider value={state as SubcategoryInstance[]}>
