@@ -5,6 +5,7 @@ import {
   OriginModel,
   TeaInstance,
   SessionInstance,
+  Clock,
 } from "./models";
 
 /**
@@ -177,4 +178,19 @@ export function getEndDate(start: number, session: SessionInstance) {
     ? parseHMSToSeconds(brewing.increments)
     : 0;
   return start + (initial + increments * (session.current_infusion - 1)) * 1000;
+}
+
+/**
+ * Returns true if a clock has expired.
+ *
+ * @param {Clock} clock - Clock object
+ * @param {SessionInstance} session - Related session instance
+ * @returns {boolean}
+ */
+export function isClockExpired(clock: Clock, session: SessionInstance) {
+  if (clock && session) {
+    const date = getEndDate(clock.starting_time, session);
+    if (date < Date.now()) return true;
+  }
+  return false;
 }

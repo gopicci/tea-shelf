@@ -1,6 +1,7 @@
 import { Dispatch } from "react";
 import localforage from "localforage";
 import { APIRequest } from "./auth-services";
+import { getEndDate } from "./parsing-services";
 import {
   TeaInstance,
   SessionInstance,
@@ -10,7 +11,6 @@ import {
   TeaRequest,
   SessionModel,
 } from "./models";
-import { getEndDate } from "./parsing-services";
 
 /**
  * Models allowed to be used in the generic services requiring an offline instance ID.
@@ -82,8 +82,7 @@ export function genericReducer(
 export function generateUniqueId(array: GenericModels[]): number {
   let i = 1;
   for (const item of array) {
-    if (item.offline_id === i) i += 1;
-    else return i;
+    if (item.offline_id >= i) i = item.offline_id + 1;
   }
   return i;
 }
@@ -102,7 +101,7 @@ export async function uploadInstance(
 ): Promise<Response> {
   const endpoint = "category" in data ? "tea" : "brewing_session";
 
-  console.log("uploadInstance", id)
+  console.log("uploadInstance", id);
 
   // String UUID means API generated, instance has been previously uploaded
   if (id) {
@@ -122,13 +121,11 @@ export async function uploadInstance(
  * @category Services
  * @param {"tea"|"session"} type - Instance type
  */
-export async function uploadOffline(
-  type: "tea" | "session"
-): Promise<void> {
+export async function uploadOffline(type: "tea" | "session"): Promise<void> {
   // Storage name
   const storage = "offline-" + type + "s";
 
-  console.log("uploadOffline", type)
+  console.log("uploadOffline", type);
 
   const offline = await localforage.getItem<TeaInstance | SessionInstance[]>(
     storage
@@ -141,8 +138,8 @@ export async function uploadOffline(
   const requests = offline.map(
     async (instance: TeaInstance | SessionInstance) => {
       try {
-        const request = {...instance, id: undefined, offline_id: undefined}
-        return uploadInstance(request, instance.id);
+        const request = { ...instance, id: undefined, offline_id: undefined };
+        await uploadInstance(request, instance.id);
       } catch (e) {
         // Save failed instance if proper
         if (e.message !== "Bad Request") failed.push(instance);
@@ -221,6 +218,7 @@ export async function syncInstances(
   dispatch: Dispatch<GenericAction>
 ): Promise<void> {
   // Define storage name and API endpoint
+  console.log("syncInstances", type);
   const storage = type === "subcategory" ? "subcategories" : type + "s";
   const endpoint = type === "session" ? "brewing_session" : type;
 
@@ -229,6 +227,8 @@ export async function syncInstances(
     "offline-" + storage
   );
   if (!offline) offline = [];
+
+  console.log("offline", offline)
 
   // Get cached API instances if ID not already on offline ones,
   // meaning they've been modified but not uploaded yet

@@ -1,4 +1,10 @@
-import React, { ReactElement, useContext, useEffect, useState } from "react";
+import React, {
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   Box,
   Button,
@@ -10,19 +16,16 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack, FitnessCenter } from "@material-ui/icons";
 import localforage from "localforage";
+import clsx from "clsx";
 import GenericAppBar from "../generics/generic-app-bar";
 import SessionClock from "./session-clock";
-import {
-  celsiusToFahrenheit,
-  getEndDate,
-  parseHMSToSeconds,
-} from "../../services/parsing-services";
+import EditInfusion from "../input/mobile/edit-infusion";
+import { celsiusToFahrenheit } from "../../services/parsing-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
-import EditInfusion from "../input/mobile/edit-infusion";
-import clsx from "clsx";
+import { SessionsState } from "../statecontainers/session-context";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,6 +77,20 @@ const useStyles = makeStyles((theme) => ({
   endButton: {
     width: "100%",
   },
+  clockBox: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    flexGrow: 1,
+  },
+  clock: {
+    lineHeight: 1,
+    marginBottom: theme.spacing(2),
+    fontSize: 200,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "30vw",
+    },
+  },
 }));
 
 /**
@@ -106,45 +123,55 @@ function SessionLayout({
 }: Props): ReactElement {
   const classes = useStyles();
 
+  const sessions = useContext(SessionsState);
   const clocks = useContext(ClocksState);
   const clockDispatch = useContext(ClockDispatch);
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
-  const [session, setSession] = useState<SessionInstance>(
-    route.sessionPayload ? route.sessionPayload : ({} as SessionInstance)
-  );
-
-  const [editInfusion, setEditInfusion] = useState(false);
-
-  // Search for a running clock in global state
-  const clock = clocks && clocks.find((c) => c.offline_id === session.offline_id);
-  const expiration = clock && getEndDate(clock.starting_time, session);
-  const expired = expiration && expiration < Date.now();
-  if (expired) handleComplete();
-
-  const [counting, setCounting] = useState(!!(clock && !expired));
+  const [clock, setClock] = useState<Clock | undefined>();
   const [startDate, setStartDate] = useState(
     clock ? clock.starting_time : Date.now()
   );
-  const [endDate, setEndDate] = useState(
-    expiration ? expiration : getEndDate(Date.now(), session)
+  const [editInfusion, setEditInfusion] = useState(false);
+
+  const getSession = useCallback(
+    (offline_id: number): SessionInstance => {
+      const session = Object.values(sessions).find(
+        (s) => s.offline_id === offline_id
+      );
+      return session ? session : ({} as SessionInstance);
+    },
+    [sessions]
+  );
+
+  const [session, setSession] = useState<SessionInstance>(
+    route.sessionPayload
+      ? getSession(route.sessionPayload.offline_id)
+      : ({} as SessionInstance)
   );
 
   useEffect(() => {
-    if (session !== route.sessionPayload) {
-      setEndDate(getEndDate(Date.now(), session));
-      handleSessionEdit(session, session.offline_id);
-    }
-  }, [handleSessionEdit, route.sessionPayload, session]);
+    const match =
+      clocks && clocks.find((c) => c.offline_id === session.offline_id);
+    if (match) setClock(match);
+    else setClock(undefined);
+  }, [clocks, session.offline_id]);
+
+  useEffect(() => {
+    if (route.sessionPayload)
+      setSession(getSession(route.sessionPayload.offline_id));
+  }, [getSession, route.sessionPayload]);
 
   /**
    * Adds counting clock to global state and cache.
    */
   async function addClock(): Promise<void> {
     try {
-      setCounting(true);
       setStartDate(Date.now());
-      const newClock = { offline_id: session.offline_id, starting_time: Date.now() };
+      const newClock = {
+        offline_id: session.offline_id,
+        starting_time: Date.now(),
+      };
       clockDispatch({
         type: "ADD",
         data: newClock,
@@ -155,45 +182,7 @@ function SessionLayout({
       await localforage.setItem<Clock[]>("clocks", cachedClocks);
     } catch (e) {
       console.error(e);
-      await handleCancel();
-    }
-  }
-
-  /**
-   * Resets countdown, deleting clock instance from global
-   * state and cache.
-   */
-  async function handleCancel(): Promise<void> {
-    try {
-      setCounting(false);
-      setEndDate(getEndDate(Date.now(), session));
       await removeClock();
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  /**
-   * On countdown completion removes clock from global state
-   * and cache, then updates brewing session.
-   */
-  async function handleComplete(): Promise<void> {
-    try {
-      await removeClock();
-
-      setCounting(false);
-
-      const increments = session.brewing.increments
-        ? parseHMSToSeconds(session.brewing.increments)
-        : 0;
-      setEndDate(getEndDate(Date.now(), session) + increments * 1000);
-
-      setSession({
-        ...session,
-        current_infusion: session.current_infusion + 1,
-      });
-    } catch (e) {
-      console.error(e);
     }
   }
 
@@ -201,7 +190,7 @@ function SessionLayout({
    * Deletes session clock instance from global
    * state and cache.
    */
-  async function removeClock(): Promise<void> {
+  const removeClock = useCallback(async (): Promise<void> => {
     try {
       let cachedClocks = await localforage.getItem<Clock[]>("clocks");
       if (cachedClocks)
@@ -219,12 +208,35 @@ function SessionLayout({
     } catch (e) {
       console.error(e);
     }
-  }
+  }, [clockDispatch, session.offline_id, startDate]);
+
+  /**
+   * On countdown completion removes clock from global state
+   * and cache, then updates brewing session.
+   */
+  const handleComplete = useCallback(async (): Promise<void> => {
+    if (clock) {
+      try {
+        const newSession = {
+          ...session,
+          current_infusion: session.current_infusion + 1,
+          last_brewed_on: new Date(clock.starting_time).toISOString(),
+        };
+        await removeClock();
+        await handleSessionEdit(newSession, session.offline_id);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [clock, handleSessionEdit, removeClock, session]);
 
   async function handleEndSession(): Promise<void> {
     try {
-      await handleCancel();
-      await handleSessionEdit({ ...session, is_completed: true }, session.offline_id);
+      await removeClock();
+      await handleSessionEdit(
+        { ...session, is_completed: true },
+        session.offline_id
+      );
     } catch (e) {
       console.error(e);
     }
@@ -232,13 +244,19 @@ function SessionLayout({
     else setRoute({ route: "SESSIONS" });
   }
 
-  function handleResumeSession(): void {
-    setEndDate(getEndDate(Date.now(), session));
-    setSession({ ...session, is_completed: false });
+  async function handleResumeSession(): Promise<void> {
+    try {
+      await handleSessionEdit(
+        { ...session, is_completed: false },
+        session.offline_id
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  function handleBackToLayout(): void {
-    handleCancel();
+  async function handleBackToLayout(): Promise<void> {
+    await removeClock();
     setEditInfusion(false);
   }
 
@@ -247,11 +265,7 @@ function SessionLayout({
   }
 
   return editInfusion ? (
-    <EditInfusion
-      session={session}
-      setSession={setSession}
-      handleBackToLayout={handleBackToLayout}
-    />
+    <EditInfusion session={session} handleBackToLayout={handleBackToLayout} />
   ) : (
     <Box className={classes.root}>
       {isMobile && (
@@ -271,7 +285,9 @@ function SessionLayout({
       <Typography variant="h1">{session.name}</Typography>
       <Box className={clsx(classes.row, classes.spaceBetween)}>
         <Box className={classes.suggestions}>
-          {!!(session.brewing.temperature && session.brewing.temperature > 0) && (
+          {!!(
+            session.brewing.temperature && session.brewing.temperature > 0
+          ) && (
             <Box className={classes.row}>
               <SvgIcon className={classes.icon} viewBox="0 0 24 24">
                 <path d="M15 13V5a3 3 0 0 0-6 0v8a5 5 0 1 0 6 0m-3-9a1 1 0 0 1 1 1v3h-2V5a1 1 0 0 1 1-1z" />
@@ -309,14 +325,23 @@ function SessionLayout({
           </Button>
         )}
       </Box>
-      <SessionClock
-        session={session}
-        date={endDate}
-        counting={counting}
-        addClock={addClock}
-        handleCancel={handleCancel}
-        handleComplete={handleComplete}
-      />
+      <Box className={classes.clockBox}>
+        <Typography className={classes.clock}>
+          <SessionClock
+            session={session}
+            clock={clock}
+            handleComplete={handleComplete}
+          />
+        </Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          disabled={session.is_completed}
+          onClick={clock ? removeClock : addClock}
+        >
+          {clock ? "Cancel" : "Start"}
+        </Button>
+      </Box>
       {session.is_completed ? (
         <Button className={classes.endButton} onClick={handleResumeSession}>
           Resume session

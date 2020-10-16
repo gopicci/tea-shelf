@@ -165,7 +165,7 @@ function EditTea({ children }: Props): ReactElement {
       else
         snackbarDispatch({
           type: "WARNING",
-          data: "Network error, tea saved locally.",
+          data: "Tea saved locally.",
         });
     }
   };

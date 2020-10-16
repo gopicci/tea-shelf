@@ -1,7 +1,8 @@
-import React, { ChangeEvent, ReactElement } from "react";
+import React, { ChangeEvent, ReactElement, useContext } from "react";
 import InputAppBar from "./input-app-bar";
 import CheckboxList from "../../generics/checkbox-list";
 import { SessionInstance } from "../../../services/models";
+import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
 
 /**
  * EditInfusion props.
@@ -10,10 +11,7 @@ import { SessionInstance } from "../../../services/models";
  */
 type Props = {
   /** Brewing session state */
-
   session: SessionInstance;
-  /** Sets brewing session state */
-  setSession: (session: SessionInstance) => void;
   /** Routes back to SessionLayout */
   handleBackToLayout: () => void;
 };
@@ -24,11 +22,9 @@ type Props = {
  * @component
  * @subcategory Mobile input
  */
-function EditInfusion({
-  session,
-  setSession,
-  handleBackToLayout,
-}: Props): ReactElement {
+function EditInfusion({ session, handleBackToLayout }: Props): ReactElement {
+  const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
+
   const length = 40;
   const infusions = [...Array(length)].map((_, i) => String(i + 1));
 
@@ -46,9 +42,20 @@ function EditInfusion({
    *
    * @param {ChangeEvent<HTMLInputElement>} event - Item select event
    */
-  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    let infusion = event.target.name;
-    setSession({ ...session, current_infusion: parseInt(infusion) });
+  async function handleChange(
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> {
+    try {
+      await handleSessionEdit(
+        {
+          ...session,
+          current_infusion: parseInt(event.target.name),
+        },
+        session.offline_id
+      );
+    } catch (e) {
+      console.error(e);
+    }
     handleBackToLayout();
   }
 

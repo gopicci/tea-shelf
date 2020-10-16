@@ -3,7 +3,6 @@ import React, {
   Dispatch,
   ReactChild,
   ReactElement,
-  useContext,
   useEffect,
   useReducer,
 } from "react";
@@ -12,7 +11,6 @@ import {
   GenericAction,
   uploadOffline, syncInstances,
 } from '../../services/sync-services';
-import { ClockDispatch } from "./clock-context";
 import { SessionInstance } from "../../services/models";
 
 export const SessionsState = createContext<SessionInstance[]>([]);

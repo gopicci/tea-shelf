@@ -80,6 +80,8 @@ function EditSession({ children }: Props): ReactElement {
         });
       }
 
+      console.log(offline_id, id, sessions);
+
       // If session already present in cache remove before adding the updated one
       for (const session of offlineSessions)
         if (session.offline_id === id) {
@@ -125,7 +127,7 @@ function EditSession({ children }: Props): ReactElement {
       else
         snackbarDispatch({
           type: "WARNING",
-          data: "Network error, tea saved locally.",
+          data: "Session saved locally.",
         });
     }
   };
