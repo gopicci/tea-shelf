@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext } from "react";
-import { Grid } from "@material-ui/core";
+import {Box, Grid} from '@material-ui/core';
 import SessionCard from "./session-card";
 import DateCard from "./date-card";
 import { gridStyles } from "../../style/grid-styles";
@@ -64,7 +64,7 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
   }, {});
 
   return (
-    <>
+    <Grid container justify="center" className={classes.sessionGrid}>
       {data &&
         Object.entries(data).map(([year, months]) => {
           return Object.entries(months).map(([month, sessions]) => {
@@ -110,7 +110,7 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
             return cards;
           });
         })}
-    </>
+    </Grid>
   );
 }
 

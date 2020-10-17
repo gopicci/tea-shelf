@@ -220,30 +220,32 @@ function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
         isMobile && route.route !== "SESSIONS" && classes.extraTopPadding
       )}
     >
-      <Grid container justify="center">
-        {["SESSIONS", "CREATE_SESSION", "SESSION_DETAILS"].includes(route.route) ? (
-          <SessionsGrid setRoute={setRoute} isMobile={isMobile} />
-        ) : (
-          filteredTeas &&
-          filteredTeas.map((tea, i) => (
-            <Grid
-              item
-              className={
-                settings.gridView && !isMobile
-                  ? classes.gridItem
-                  : classes.listItem
-              }
-              key={i}
-            >
-              <TeaCard
-                teaData={tea}
-                gridView={!!(settings.gridView && !isMobile)}
-                setRoute={setRoute}
-              />
-            </Grid>
-          ))
-        )}
-      </Grid>
+      {["SESSIONS", "CREATE_SESSION", "SESSION_DETAILS"].includes(
+        route.route
+      ) ? (
+        <SessionsGrid setRoute={setRoute} isMobile={isMobile} />
+      ) : (
+        <Grid container justify="center">
+          {filteredTeas &&
+            filteredTeas.map((tea, i) => (
+              <Grid
+                item
+                className={
+                  settings.gridView && !isMobile
+                    ? classes.gridItem
+                    : classes.listItem
+                }
+                key={i}
+              >
+                <TeaCard
+                  teaData={tea}
+                  gridView={!!(settings.gridView && !isMobile)}
+                  setRoute={setRoute}
+                />
+              </Grid>
+            ))}
+        </Grid>
+      )}
     </Box>
   );
 }

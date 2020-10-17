@@ -17,8 +17,17 @@ import {
 } from "./statecontainers/session-context";
 import { SyncDispatch } from "./statecontainers/sync-context";
 import { SessionInstance, SessionModel } from "../services/models";
+import { Route } from "../app";
 
+/**
+ * EditSession props.
+ *
+ * @memberOf EditSession
+ */
 type Props = {
+  /** Set app's main route */
+  setRoute: (route: Route) => void;
+  /** React children */
   children: ReactChild;
 };
 
@@ -44,7 +53,7 @@ export const SessionEditorContext = createContext({} as HandleSessionEdit);
  * @component
  * @subcategory Main
  */
-function EditSession({ children }: Props): ReactElement {
+function EditSession({ setRoute, children }: Props): ReactElement {
   const snackbarDispatch = useContext(SnackbarDispatch);
   const sessions = useContext(SessionsState);
   const sessionDispatch = useContext(SessionDispatch);
@@ -53,34 +62,40 @@ function EditSession({ children }: Props): ReactElement {
   /**
    * Handles brewing session instance edit/creation process. Updates state and saves instance locally
    * first. Then tries to sync local cache with API.
+   *
+   * @returns {Promise<number|undefined>} - Session offline ID
    */
   const handleSessionEdit: HandleSessionEdit = async (
     data,
     offline_id,
     message
   ): Promise<void> => {
+    let id = offline_id;
+
+    let date = new Date().toISOString();
+    let apiId = "";
+
+    // Update context with request
+    if (id) {
+      const instance = Object.values(sessions).find((s) => s.offline_id === id);
+      if (instance && instance.id) apiId = instance.id;
+      sessionDispatch({ type: "EDIT", data: { ...data, offline_id: id } });
+    } else {
+      id = await generateUniqueId(sessions);
+      sessionDispatch({
+        type: "ADD",
+        data: { ...data, offline_id: id, created_on: date },
+      });
+    }
+
+    if (id && !offline_id)
+      setRoute({
+        route: "SESSION_DETAILS",
+        sessionPayload: { ...data, offline_id: id },
+      });
+
     try {
       let offlineSessions = await getOfflineSessions();
-      let date = new Date().toISOString();
-      let id = offline_id;
-      let apiId = "";
-
-      // Update context with request
-      if (id) {
-        const instance = Object.values(sessions).find(
-          (s) => s.offline_id === id
-        );
-        if (instance && instance.id) apiId = instance.id;
-        sessionDispatch({ type: "EDIT", data: { ...data, offline_id: id } });
-      } else {
-        id = await generateUniqueId(sessions);
-        sessionDispatch({
-          type: "ADD",
-          data: { ...data, offline_id: id, created_on: date },
-        });
-      }
-
-      console.log(offline_id, id, sessions);
 
       // If session already present in cache remove before adding the updated one
       for (const session of offlineSessions)
@@ -124,11 +139,12 @@ function EditSession({ children }: Props): ReactElement {
     } catch (e) {
       if (e.message === "Bad Request")
         snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
-      else
+      else {
         snackbarDispatch({
           type: "WARNING",
           data: "Session saved locally.",
         });
+      }
     }
   };
 

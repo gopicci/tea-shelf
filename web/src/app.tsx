@@ -15,10 +15,11 @@ import CreateTea from "./components/create-tea";
 import MobileDetailsLayout from "./components/details/mobile/mobile-details-layout";
 import MobileInput from "./components/input/mobile/mobile-input";
 import Settings from "./components/settings";
+import SessionLayout from "./components/session/session-layout";
+import InputSession from './components/input/mobile/input-session';
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { Confirmation, SessionInstance, TeaInstance } from "./services/models";
-import SessionLayout from "./components/session/session-layout";
 
 /**
  * Defines type for app's main routing state.
@@ -100,7 +101,8 @@ function App(): ReactElement {
         if (isMobile) return <MobileDetailsLayout {...props} />;
         else return <MainLayout {...props} />;
       case "CREATE_SESSION":
-        return <MainLayout {...props} />;
+        if (isMobile) return <InputSession {...props} />;
+        else return <MainLayout {...props} />;
       case "SESSION_DETAILS":
         if (isMobile) return <SessionLayout {...props} />;
         else return <MainLayout {...props} />;
@@ -142,7 +144,7 @@ function App(): ReactElement {
         <MainStateContainer>
           <>
             <EditTea>
-              <EditSession>{getRoute(route)}</EditSession>
+              <EditSession setRoute={setRoute}>{getRoute(route)}</EditSession>
             </EditTea>
             <CustomSnackbar />
           </>

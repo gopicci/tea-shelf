@@ -6,15 +6,18 @@ import {
   TeaInstance,
   SessionInstance,
   Clock,
+  SessionModel,
+  BrewingModel,
+  TeaModel,
 } from "./models";
 
 /**
  * Gets category name from list of categories based on id.
  *
+ * @category Services
  * @param {CategoryModel[]} categories - List of categories
  * @param {number} id - Category ID
  * @returns {string}
- * @category Services
  */
 export function getCategoryName(
   categories: CategoryModel[],
@@ -30,9 +33,9 @@ export function getCategoryName(
  * Attempts to build subcategory name in preferred "name (translated_name)"
  * format or returns "name" otherwise.
  *
+ * @category Services
  * @param {SubcategoryModel} subcategory - Subcategory object
  * @returns {string}
- * @category Services
  */
 export function getSubcategoryName(subcategory: SubcategoryModel): string {
   if (subcategory.translated_name)
@@ -44,9 +47,9 @@ export function getSubcategoryName(subcategory: SubcategoryModel): string {
  * Attempts to build origin name towards an ideal "locality, region, country"
  * format depending on available data.
  *
+ * @category Services
  * @param {OriginModel} origin - Origin object
  * @returns {string}
- * @category Services
  */
 export function getOriginName(origin: OriginModel): string {
   let name = "";
@@ -59,9 +62,9 @@ export function getOriginName(origin: OriginModel): string {
 /**
  * Returns origin region if present, or locality, or country.
  *
+ * @category Services
  * @param {OriginModel} origin - Origin object
  * @returns {string}
- * @category Services
  */
 export function getOriginShortName(origin: OriginModel): string {
   if (origin.region) return origin.region;
@@ -72,9 +75,9 @@ export function getOriginShortName(origin: OriginModel): string {
 /**
  * Converts celsius to fahrenheit.
  *
+ * @category Services
  * @param {number} c - Celsius degrees
  * @returns {number}
- * @category Services
  */
 export function celsiusToFahrenheit(c: number): number {
   return Math.round((c * 9) / 5 + 32);
@@ -83,9 +86,9 @@ export function celsiusToFahrenheit(c: number): number {
 /**
  * Converts fahrenheit to celsius.
  *
+ * @category Services
  * @param {number} f - Fahrenheit degrees
  * @returns {number}
- * @category Services
  */
 export function fahrenheitToCelsius(f: number): number {
   return Math.round(((f - 32) * 5) / 9);
@@ -98,10 +101,10 @@ export function fahrenheitToCelsius(f: number): number {
  * toFixed trims decimals but also converts to string
  * toString removes trailing zeroes
  *
+ * @category Services
  * @param {number} input - Input float
  * @param {number} [crop] - Decimals to keep
  * @returns {string}
- * @category Services
  */
 export function cropToNoZeroes(input: number, crop?: number): string {
   return parseFloat(input.toFixed(crop ? crop : 0)).toString();
@@ -110,9 +113,9 @@ export function cropToNoZeroes(input: number, crop?: number): string {
 /**
  * Returns seconds from a string in API time format "hh:mm:ss".
  *
+ * @category Services
  * @param {string} time - Time in dd hh:mm:ss format
  * @returns {number}
- * @category Services
  */
 export function parseHMSToSeconds(time: string): number {
   if (time.includes(":")) {
@@ -131,9 +134,9 @@ export function parseHMSToSeconds(time: string): number {
 /**
  * Returns "hh:mm:ss" API time format from seconds.
  *
+ * @category Services
  * @param {number} seconds - Time in seconds
  * @returns {string}
- * @category Services
  */
 export function parseSecondsToHMS(seconds: number): string {
   return new Date(seconds * 1000).toISOString().substr(11, 8);
@@ -142,9 +145,9 @@ export function parseSecondsToHMS(seconds: number): string {
 /**
  * Returns country code from the country name/code.
  *
+ * @category Services
  * @param {string} country - Country name or code
  * @returns {string}
- * @category Services
  */
 export function getCountryCode(country: string): string {
   if (countryCodes[country]) return countryCodes[country];
@@ -167,6 +170,7 @@ export function getTeaDetails(teas: TeaInstance[], id: string) {
 /**
  * Derives countdown finish time from session and starting date.
  *
+ * @category Services
  * @param {SessionInstance} session - Brewing session instance
  * @param {number} start - Starting date in milliseconds
  * @returns {number}
@@ -183,6 +187,7 @@ export function getEndDate(start: number, session: SessionInstance) {
 /**
  * Returns true if a clock has expired.
  *
+ * @category Services
  * @param {Clock} clock - Clock object
  * @param {SessionInstance} session - Related session instance
  * @returns {boolean}
@@ -193,4 +198,42 @@ export function isClockExpired(clock: Clock, session: SessionInstance) {
     if (date < Date.now()) return true;
   }
   return false;
+}
+
+/**
+ * Builds a SessionModel object out of a tea instance.
+ *
+ * @category Services
+ * @param {TeaModel} teaData - Tea object
+ * @param {"gongfu_brewing"|"western_brewing"} brewingType - Brewing type
+ * @returns {SessionModel}
+ */
+export function sessionFromTea(
+  teaData: TeaModel,
+  brewingType: "gongfu_brewing" | "western_brewing"
+): SessionModel {
+  let session = {} as SessionModel;
+
+  let brewing: BrewingModel = {};
+
+  if (teaData[brewingType]?.temperature)
+    brewing["temperature"] = teaData[brewingType]?.temperature;
+
+  if (teaData[brewingType]?.weight)
+    brewing["weight"] = teaData[brewingType]?.weight;
+
+  brewing["initial"] = teaData[brewingType]?.initial
+    ? teaData[brewingType]?.initial
+    : "00:00:00";
+  brewing["increments"] = teaData[brewingType]?.increments
+    ? teaData[brewingType]?.increments
+    : "00:00:00";
+
+  session["brewing"] = brewing;
+
+  session["name"] = teaData.name;
+  session["current_infusion"] = 1;
+  session["is_completed"] = false;
+
+  return session;
 }

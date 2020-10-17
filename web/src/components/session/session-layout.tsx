@@ -26,6 +26,7 @@ import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
 import { SessionsState } from "../statecontainers/session-context";
+import InfusionAutocomplete from "../input/desktop/infusion-autocomplete";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,6 +71,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
     marginRight: theme.spacing(2),
     padding: theme.spacing(2),
+  },
+  infusionBox: {
+    marginTop: theme.spacing(4),
+    marginRight: theme.spacing(2),
+    padding: theme.spacing(2),
+    width: "150px",
   },
   infusion: {
     fontSize: theme.spacing(6),
@@ -311,7 +318,7 @@ function SessionLayout({
             </Box>
           )}
         </Box>
-        {isMobile && (
+        {isMobile ? (
           <Button
             variant="outlined"
             className={classes.infusionButton}
@@ -323,6 +330,10 @@ function SessionLayout({
               {session.current_infusion}
             </Typography>
           </Button>
+        ) : (
+          <Box className={classes.infusionBox}>
+            <InfusionAutocomplete session={session} removeClock={removeClock} />
+          </Box>
         )}
       </Box>
       <Box className={classes.clockBox}>

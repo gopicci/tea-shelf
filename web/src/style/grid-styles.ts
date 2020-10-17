@@ -60,6 +60,9 @@ export const gridStyles = makeStyles({
       duration: theme.transitions.duration.complex,
     }),
   },
+  sessionGrid: {
+    marginTop: theme.spacing(6),
+  },
   sortByBox: {
     display: "flex",
     flexGrow: 1,

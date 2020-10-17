@@ -125,6 +125,9 @@ export const desktopDetailsStyles = makeStyles({
     top: "50%",
     transform: "translateY(-50%)",
   },
+  brewingButton: {
+    marginTop: theme.spacing(3),
+  },
   smallTitle: {
     margin: "auto",
     display: "flex",

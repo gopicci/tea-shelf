@@ -1,6 +1,7 @@
 import React, { ReactElement, useContext, useState } from "react";
 import {
   Box,
+  Button,
   FormControlLabel,
   FormGroup,
   Icon,
@@ -14,13 +15,19 @@ import { CreditCard, FitnessCenter, Star } from "@material-ui/icons";
 import InputBrewing from "../../input/mobile/input-brewing";
 import {
   cropToNoZeroes,
-  getSubcategoryName,
-} from "../../../services/parsing-services";
+  getSubcategoryName, sessionFromTea,
+} from '../../../services/parsing-services';
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
 import emptyImage from "../../../media/empty.png";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { SettingsState } from "../../statecontainers/settings-context";
-import { TeaInstance, TeaRequest } from "../../../services/models";
+import {
+  BrewingModel,
+  SessionModel,
+  TeaInstance,
+  TeaRequest,
+} from "../../../services/models";
+import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
 
 /**
  * DetailsBoxMain props.
@@ -46,6 +53,8 @@ function DetailsBoxMain({ teaData, handleTeaEdit }: Props): ReactElement {
 
   const settings = useContext(SettingsState);
   const categories = useContext(CategoriesState);
+
+  const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
   const [gongfu, setGongfu] = useState(settings.gongfu);
   const [rating, setRating] = useState(teaData.rating);
@@ -78,6 +87,15 @@ function DetailsBoxMain({ teaData, handleTeaEdit }: Props): ReactElement {
   /** Updates brewing switch state. */
   function handleSwitch(): void {
     setGongfu(!gongfu);
+  }
+
+  /** Starts a brewing session */
+  function handleStartSession(): void {
+    const session = sessionFromTea(
+      teaData,
+      gongfu ? "gongfu_brewing" : "western_brewing"
+    );
+    handleSessionEdit(session);
   }
 
   return (
@@ -188,6 +206,13 @@ function DetailsBoxMain({ teaData, handleTeaEdit }: Props): ReactElement {
                 teaData={teaData}
               />
             </Box>
+            <Button
+              color="secondary"
+              className={classes.brewingButton}
+              onClick={handleStartSession}
+            >
+              Start Brewing
+            </Button>
           </Box>
         </Box>
       </Box>

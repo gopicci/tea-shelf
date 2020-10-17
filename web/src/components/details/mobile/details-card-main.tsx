@@ -17,6 +17,7 @@ import {
   cropToNoZeroes,
   getCategoryName,
   getSubcategoryName,
+  sessionFromTea,
 } from "../../../services/parsing-services";
 import InputBrewing from "../../input/mobile/input-brewing";
 import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
@@ -80,34 +81,13 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
     setGongfu(!gongfu);
   }
 
+  /** Starts a brewing session */
   function handleStartSession(): void {
-    let data = {} as SessionModel;
-
-    let brewing: BrewingModel = {};
-
-    const brewingType = gongfu ? "gongfu_brewing" : "western_brewing";
-
-    if (teaData[brewingType]?.temperature)
-      brewing["temperature"] = teaData[brewingType]?.temperature;
-
-    if (teaData[brewingType]?.weight)
-      brewing["weight"] = teaData[brewingType]?.weight;
-
-    brewing["initial"] = teaData[brewingType]?.initial
-      ? teaData[brewingType]?.initial
-      : "00:00:00";
-    brewing["increments"] = teaData[brewingType]?.increments
-      ? teaData[brewingType]?.increments
-      : "00:00:00";
-
-    data["brewing"] = brewing;
-
-    data["name"] = teaData.name;
-    data["current_infusion"] = 1;
-    data["is_completed"] = false;
-
-    handleSessionEdit(data, undefined, "Brewing session successfully created.");
-    //setRoute({ route: "SESSIONS" });
+    const session = sessionFromTea(
+      teaData,
+      gongfu ? "gongfu_brewing" : "western_brewing"
+    );
+    handleSessionEdit(session);
   }
 
   return (
@@ -183,7 +163,11 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
           />
         </Box>
       </Box>
-      <Button className={classes.brewingButton} onClick={handleStartSession}>
+      <Button
+        color="secondary"
+        className={classes.brewingButton}
+        onClick={handleStartSession}
+      >
         Start brewing
       </Button>
       {!!(teaData.weight_left || teaData.price) && (
