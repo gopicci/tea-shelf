@@ -23,7 +23,7 @@ type Props = {
   /** Input name */
   name: string;
   /** Reroutes to input layout */
-  handleBackToLayout: () => void;
+  handleBack: () => void;
   /** Defines name of title action */
   actionName?: string;
   /** Defines presence and name of save button */
@@ -43,7 +43,7 @@ type Props = {
  */
 function InputAppBar({
   name,
-  handleBackToLayout,
+  handleBack,
   actionName = "Edit",
   saveName,
   disableSave = true,
@@ -56,7 +56,7 @@ function InputAppBar({
       <GenericAppBar>
         <Toolbar>
           <IconButton
-            onClick={handleBackToLayout}
+            onClick={handleBack}
             edge="start"
             className={classes.menuButton}
             aria-label="back"
