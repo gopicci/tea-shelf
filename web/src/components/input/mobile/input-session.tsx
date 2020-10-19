@@ -9,10 +9,10 @@ import {
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import GenericAppBar from "../../generics/generic-app-bar";
-import { Route } from "../../../app";
 import EditTime from "./edit-time";
 import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
 import { BrewingModel, SessionModel } from "../../../services/models";
+import { Route } from "../../../app";
 
 const useStyles = makeStyles((theme) => ({
   back: {
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Editing state type for routing purposes.
+ * Editing state type for local routing purposes.
  *
  * @memberOf InputSession
  */
@@ -67,10 +67,10 @@ type Props = {
 };
 
 /**
- * Mobile custom session creation input layout.
+ * Mobile custom session creation input layout component.
  *
  * @component
- * @subcategory Session
+ * @subcategory Mobile input
  */
 function InputSession({ setRoute }: Props): ReactElement {
   const classes = useStyles();

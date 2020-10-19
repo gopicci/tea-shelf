@@ -18,15 +18,15 @@ import { ArrowBack, FitnessCenter } from "@material-ui/icons";
 import localforage from "localforage";
 import clsx from "clsx";
 import GenericAppBar from "../generics/generic-app-bar";
-import SessionClock from "./session-clock";
+import SessionCountdown from "./session-countdown";
 import EditInfusion from "../input/mobile/edit-infusion";
+import InfusionAutocomplete from "../input/desktop/infusion-autocomplete";
 import { celsiusToFahrenheit } from "../../services/parsing-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
+import { SessionsState } from "../statecontainers/session-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
-import { SessionsState } from "../statecontainers/session-context";
-import InfusionAutocomplete from "../input/desktop/infusion-autocomplete";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -84,18 +84,19 @@ const useStyles = makeStyles((theme) => ({
   endButton: {
     width: "100%",
   },
-  clockBox: {
+  countdownBox: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     flexGrow: 1,
+    margin: theme.spacing(2),
   },
-  clock: {
+  countdown: {
     lineHeight: 1,
     marginBottom: theme.spacing(2),
-    fontSize: 200,
+    fontSize: 160,
     [theme.breakpoints.down("sm")]: {
-      fontSize: "30vw",
+      fontSize: "28vw",
     },
   },
 }));
@@ -237,6 +238,7 @@ function SessionLayout({
     }
   }, [clock, handleSessionEdit, removeClock, session]);
 
+  /** Deletes clock and set session as complete. */
   async function handleEndSession(): Promise<void> {
     try {
       await removeClock();
@@ -251,6 +253,7 @@ function SessionLayout({
     else setRoute({ route: "SESSIONS" });
   }
 
+  /** Set session as not complete. */
   async function handleResumeSession(): Promise<void> {
     try {
       await handleSessionEdit(
@@ -262,11 +265,13 @@ function SessionLayout({
     }
   }
 
+  /** Deletes clock and cancel infusion editing. */
   async function handleBackToLayout(): Promise<void> {
     await removeClock();
     setEditInfusion(false);
   }
 
+  /** Routes back to sessions. */
   function handleBack(): void {
     setRoute({ route: "SESSIONS" });
   }
@@ -336,9 +341,9 @@ function SessionLayout({
           </Box>
         )}
       </Box>
-      <Box className={classes.clockBox}>
-        <Typography className={classes.clock}>
-          <SessionClock
+      <Box className={classes.countdownBox}>
+        <Typography className={classes.countdown}>
+          <SessionCountdown
             session={session}
             clock={clock}
             handleComplete={handleComplete}

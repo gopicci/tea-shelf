@@ -1,6 +1,6 @@
-import React, { FocusEvent, ReactElement } from "react";
-import { TeaRequest } from "../../../services/models";
+import React, { ReactElement } from "react";
 import EditTime from "./edit-time";
+import { TeaRequest } from "../../../services/models";
 
 /**
  * EditTeaTime props.
@@ -47,15 +47,6 @@ function EditTeaTime({
         },
       });
     else setTeaData({ ...teaData, [route]: time });
-  }
-
-  /**
-   * Select text on focus.
-   *
-   * @param {FocusEvent<HTMLInputElement>} event - Focus event
-   */
-  function handleFocus(event: FocusEvent<HTMLInputElement>): void {
-    event.target.select();
   }
 
   return (

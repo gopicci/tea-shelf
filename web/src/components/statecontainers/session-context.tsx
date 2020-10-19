@@ -30,16 +30,20 @@ function SessionContext({ children }: Props): ReactElement {
   const [state, dispatch] = useReducer(genericReducer, []);
 
   useEffect(() => {
+    /**
+     * On mount tries to upload offline brewing session entries
+     * and sync brewing sessions state.
+     *
+     * @memberOf TeaContext
+     */
     async function syncSessions() {
       try {
-        // Try to upload offline brewing session entries
         await uploadOffline("session");
       } catch (e) {
         console.error(e);
       }
 
       try {
-        // Update brewing sessions state
         await syncInstances("session", dispatch);
       } catch (e) {
         console.error(e);

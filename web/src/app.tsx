@@ -16,7 +16,7 @@ import MobileDetailsLayout from "./components/details/mobile/mobile-details-layo
 import MobileInput from "./components/input/mobile/mobile-input";
 import Settings from "./components/settings";
 import SessionLayout from "./components/session/session-layout";
-import InputSession from './components/input/mobile/input-session';
+import InputSession from "./components/input/mobile/input-session";
 import { getUser } from "./services/auth-services";
 import { mainTheme as theme, mainTheme } from "./style/main-theme";
 import { Confirmation, SessionInstance, TeaInstance } from "./services/models";
@@ -67,8 +67,7 @@ function App(): ReactElement {
   const [route, setRoute] = useState<Route>({ route: "MAIN" });
 
   /**
-   * Returns component based on route name, passing optional route payload
-   * or callback.
+   * Returns component based on route name and mobile status.
    *
    * @param {Route} route - Route data
    * @returns {ReactElement}

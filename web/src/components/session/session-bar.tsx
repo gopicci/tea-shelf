@@ -20,7 +20,9 @@ type Props = {
  * @subcategory Brewing session
  */
 function SessionBar({ setRoute }: Props): ReactElement {
-  /** Sets main route to filter */
+  /**
+   * Sets main route to session create
+   */
   function handleButtonClick(): void {
     setRoute({ route: "CREATE_SESSION" });
   }

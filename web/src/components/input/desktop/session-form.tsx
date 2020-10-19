@@ -56,7 +56,7 @@ function SessionForm({ setRoute }: Props): ReactElement {
     data["current_infusion"] = values.current_infusion;
     data["is_completed"] = values.is_completed;
 
-    handleSessionEdit(data, undefined, "Brewing session successfully created.");
+    handleSessionEdit(data);
     setRoute({ route: "SESSIONS" });
   }
 

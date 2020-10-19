@@ -24,12 +24,7 @@ import { mobileDetailsStyles } from "../../../style/mobile-details-styles";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { SettingsState } from "../../statecontainers/settings-context";
 import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
-import {
-  BrewingModel,
-  SessionModel,
-  TeaInstance,
-  TeaRequest,
-} from "../../../services/models";
+import { TeaInstance, TeaRequest } from "../../../services/models";
 import emptyImage from "../../../media/empty.png";
 
 /**
@@ -81,7 +76,7 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
     setGongfu(!gongfu);
   }
 
-  /** Starts a brewing session */
+  /** Starts a brewing session. */
   function handleStartSession(): void {
     const session = sessionFromTea(
       teaData,

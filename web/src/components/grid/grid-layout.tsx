@@ -35,7 +35,7 @@ type Props = {
  * global filter state.
  *
  * @component
- * @subcategory Main
+ * @subcategory Grid
  */
 function GridLayout({ route, setRoute, isMobile }: Props): ReactElement {
   const classes = gridStyles();

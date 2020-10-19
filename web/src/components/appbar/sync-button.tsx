@@ -67,6 +67,7 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
     }
 
     try {
+      // Update tea instances
       await syncInstances("tea", teaDispatch);
     } catch (e) {
       console.error(e);
@@ -74,6 +75,7 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
     }
 
     try {
+      // Update session instances
       await syncInstances("session", sessionDispatch);
     } catch (e) {
       console.error(e);
@@ -96,6 +98,7 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
     }
 
     try {
+      // Update subcategory instances
       await syncInstances("subcategory", subcategoriesDispatch);
     } catch (e) {
       console.error(e);
@@ -103,6 +106,7 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
     }
 
     try {
+      // Update vendor instances
       await syncInstances("vendor", vendorDispatch);
     } catch (e) {
       console.error(e);
@@ -118,7 +122,7 @@ function SyncButton({ route, setRoute }: Props): ReactElement {
       syncDispatch({ type: "SET_SYNCED" });
     }
 
-    // Get out of instance routes
+    // Get out of instance details routes
     if (["TEA_DETAILS", "EDIT_TEA", "EDIT_NOTES"].includes(route.route))
       setRoute({ route: "MAIN" });
     if (route.route === "SESSION_DETAILS") setRoute({ route: "SESSIONS" });

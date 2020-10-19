@@ -1,4 +1,4 @@
-import React, {ReactElement, useRef} from 'react';
+import React, { ReactElement, useRef } from "react";
 import Countdown from "react-countdown";
 import { getEndDate } from "../../services/parsing-services";
 import { Clock, SessionInstance } from "../../services/models";
@@ -6,17 +6,18 @@ import { Clock, SessionInstance } from "../../services/models";
 /**
  * Countdown props.
  *
- * @memberOf SessionClock
+ * @memberOf SessionCountdown
  */
 type CountdownProps = {
+  hours: number;
   minutes: number;
   seconds: number;
 };
 
 /**
- * SessionClock props.
+ * SessionCountdown props.
  *
- * @memberOf SessionClock
+ * @memberOf SessionCountdown
  */
 type Props = {
   /** Brewing session state */
@@ -28,12 +29,13 @@ type Props = {
 };
 
 /**
- * Brewing session countdown clock.
+ * Brewing session countdown. Uses Clock prop starting time if any, otherwise Date.now().
+ * Shows time in H:MM:SS format with optional hours.
  *
  * @component
  * @subcategory Brewing session
  */
-function SessionClock({
+function SessionCountdown({
   session,
   clock,
   handleComplete,
@@ -46,9 +48,10 @@ function SessionClock({
       date={getEndDate(clock ? clock.starting_time : Date.now(), session)}
       ref={clockRef}
       autoStart={!!clock}
-      renderer={({ minutes, seconds }: CountdownProps): ReactElement => {
+      renderer={({ hours, minutes, seconds }: CountdownProps): ReactElement => {
         return (
           <span>
+            {hours > 0 && String(hours) + ":"}
             {String(minutes).padStart(2, "0")}:
             {String(seconds).padStart(2, "0")}
           </span>
@@ -59,4 +62,4 @@ function SessionClock({
   );
 }
 
-export default SessionClock;
+export default SessionCountdown;

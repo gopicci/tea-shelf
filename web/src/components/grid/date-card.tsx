@@ -6,7 +6,6 @@ import { gridStyles } from "../../style/grid-styles";
  * DateCard props.
  *
  * @memberOf DateCard
- * @subcategory Main
  */
 type Props = {
   /** Date object */
@@ -19,7 +18,7 @@ type Props = {
  * Card component visualizing a date as month and year.
  *
  * @component
- * @subcategory Main
+ * @subcategory Grid
  */
 function DateCard({ date, gridView }: Props): ReactElement {
   const classes = gridStyles();

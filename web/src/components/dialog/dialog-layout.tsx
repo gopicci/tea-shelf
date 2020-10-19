@@ -6,9 +6,9 @@ import DesktopDetailsLayout from "../details/desktop/desktop-details-layout";
 import Settings from "../settings";
 import ConfirmationLayout from "./confirmation-layout";
 import SessionForm from "../input/desktop/session-form";
+import SessionLayout from "../session/session-layout";
 import { Route } from "../../app";
 import { Confirmation } from "../../services/models";
-import SessionLayout from "../session/session-layout";
 
 /**
  * DialogLayout props.

@@ -14,13 +14,13 @@ import {
 } from "@material-ui/core";
 import dateFormat from "dateformat";
 import localforage from "localforage";
+import SessionCountdown from "../session/session-countdown";
 import { isClockExpired } from "../../services/parsing-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { Route } from "../../app";
 import { Clock, SessionInstance } from "../../services/models";
 import { gridStyles } from "../../style/grid-styles";
-import SessionClock from "../session/session-clock";
 
 /**
  * SessionCard props.
@@ -38,10 +38,10 @@ type Props = {
 };
 
 /**
- * Card component visualizing a single tea instance.
+ * Card component visualizing a single session instance.
  *
  * @component
- * @subcategory Main
+ * @subcategory Grid
  */
 function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   const classes = gridStyles();
@@ -53,6 +53,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
 
   const [clock, setClock] = useState<Clock | undefined>();
 
+  /** Sets clock state */
   useEffect(() => {
     const match =
       clocks && clocks.find((c) => c.offline_id === session.offline_id);
@@ -108,6 +109,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   }, [clock, handleSessionEdit, removeClock, session]);
 
   useEffect(() => {
+    /** Updates session on expired clock */
     async function update() {
       if (clock && session) {
         if (isClockExpired(clock, session)) {
@@ -160,7 +162,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
             </Typography>
             <Typography variant="caption">
               {session && (
-                <SessionClock
+                <SessionCountdown
                   session={session}
                   clock={clock}
                   handleComplete={handleComplete}

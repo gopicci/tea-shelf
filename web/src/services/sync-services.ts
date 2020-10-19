@@ -101,8 +101,6 @@ export async function uploadInstance(
 ): Promise<Response> {
   const endpoint = "category" in data ? "tea" : "brewing_session";
 
-  console.log("uploadInstance", id);
-
   // String UUID means API generated, instance has been previously uploaded
   if (id) {
     let request = JSON.parse(JSON.stringify({ ...data, id: id }));
@@ -124,8 +122,6 @@ export async function uploadInstance(
 export async function uploadOffline(type: "tea" | "session"): Promise<void> {
   // Storage name
   const storage = "offline-" + type + "s";
-
-  console.log("uploadOffline", type);
 
   const offline = await localforage.getItem<TeaInstance | SessionInstance[]>(
     storage
@@ -218,7 +214,6 @@ export async function syncInstances(
   dispatch: Dispatch<GenericAction>
 ): Promise<void> {
   // Define storage name and API endpoint
-  console.log("syncInstances", type);
   const storage = type === "subcategory" ? "subcategories" : type + "s";
   const endpoint = type === "session" ? "brewing_session" : type;
 
@@ -227,8 +222,6 @@ export async function syncInstances(
     "offline-" + storage
   );
   if (!offline) offline = [];
-
-  console.log("offline", offline)
 
   // Get cached API instances if ID not already on offline ones,
   // meaning they've been modified but not uploaded yet

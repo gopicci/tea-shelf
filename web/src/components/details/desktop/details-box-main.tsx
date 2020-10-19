@@ -15,19 +15,15 @@ import { CreditCard, FitnessCenter, Star } from "@material-ui/icons";
 import InputBrewing from "../../input/mobile/input-brewing";
 import {
   cropToNoZeroes,
-  getSubcategoryName, sessionFromTea,
-} from '../../../services/parsing-services';
+  getSubcategoryName,
+  sessionFromTea,
+} from "../../../services/parsing-services";
 import { desktopDetailsStyles } from "../../../style/desktop-details-styles";
-import emptyImage from "../../../media/empty.png";
 import { CategoriesState } from "../../statecontainers/categories-context";
 import { SettingsState } from "../../statecontainers/settings-context";
-import {
-  BrewingModel,
-  SessionModel,
-  TeaInstance,
-  TeaRequest,
-} from "../../../services/models";
+import { TeaInstance, TeaRequest } from "../../../services/models";
 import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
+import emptyImage from "../../../media/empty.png";
 
 /**
  * DetailsBoxMain props.

@@ -23,8 +23,7 @@ import emptyImage from "../../media/empty.png";
 /**
  * TeaCard props.
  *
- * @memberOf TeaCard
- * @subcategory Main
+ * @memberOf Grid
  */
 type Props = {
   /** Tea instance data */
@@ -39,7 +38,7 @@ type Props = {
  * Card component visualizing a single tea instance.
  *
  * @component
- * @subcategory Main
+ * @subcategory Cards
  */
 function TeaCard({ teaData, gridView, setRoute }: Props): ReactElement {
   const classes = gridStyles();

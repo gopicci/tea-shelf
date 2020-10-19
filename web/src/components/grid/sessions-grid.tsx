@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext } from "react";
-import {Box, Grid} from '@material-ui/core';
+import { Grid } from "@material-ui/core";
 import SessionCard from "./session-card";
 import DateCard from "./date-card";
 import { gridStyles } from "../../style/grid-styles";
@@ -32,11 +32,10 @@ type Props = {
 };
 
 /**
- * Grid component containing tea cards. Filters tea cards based on
- * global filter state.
+ * Grid component containing session cards. Groups them by month with DateCards.
  *
  * @component
- * @subcategory Main
+ * @subcategory Grid
  */
 function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
   const classes = gridStyles();

@@ -32,20 +32,18 @@ function TeaContext({ children }: Props): ReactElement {
 
   useEffect(() => {
     /**
-     * Updates the state cache first on state changes.
+     * On mount tries to upload offline tea entries and sync teas state.
      *
      * @memberOf TeaContext
      */
     async function syncTeas(): Promise<void> {
       try {
-        // Try to upload offline tea entries
         await uploadOffline("tea");
       } catch (e) {
         console.error(e);
       }
 
       try {
-        // Update teas state
         await syncInstances("tea", dispatch);
       } catch (e) {
         console.error(e);

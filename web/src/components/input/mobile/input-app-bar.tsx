@@ -35,8 +35,7 @@ type Props = {
 };
 
 /**
- * Mobile tea editing appbar component. Used in a few
- * components related to the tea creation/editing process.
+ * Generic mobile editing appbar component.
  *
  * @component
  * @subcategory Mobile input

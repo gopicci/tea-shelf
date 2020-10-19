@@ -10,7 +10,6 @@ import {
   getOfflineSessions,
   uploadInstance,
 } from "../services/sync-services";
-import { SnackbarDispatch } from "./statecontainers/snackbar-context";
 import {
   SessionDispatch,
   SessionsState,
@@ -41,8 +40,6 @@ export type HandleSessionEdit = (
   data: SessionModel,
   /** Optional ID for editing request. */
   offline_id?: number,
-  /** Optional snackbar success message */
-  message?: string
 ) => void;
 
 export const SessionEditorContext = createContext({} as HandleSessionEdit);
@@ -54,7 +51,6 @@ export const SessionEditorContext = createContext({} as HandleSessionEdit);
  * @subcategory Main
  */
 function EditSession({ setRoute, children }: Props): ReactElement {
-  const snackbarDispatch = useContext(SnackbarDispatch);
   const sessions = useContext(SessionsState);
   const sessionDispatch = useContext(SessionDispatch);
   const syncDispatch = useContext(SyncDispatch);
@@ -67,8 +63,7 @@ function EditSession({ setRoute, children }: Props): ReactElement {
    */
   const handleSessionEdit: HandleSessionEdit = async (
     data,
-    offline_id,
-    message
+    offline_id
   ): Promise<void> => {
     let id = offline_id;
 
@@ -131,25 +126,12 @@ function EditSession({ setRoute, children }: Props): ReactElement {
         "offline-sessions",
         offlineSessions
       );
-      
+
       // Update sync status
       syncDispatch({ type: "SET_SYNCED" });
 
-      // Notify on success
-      if (message)
-        snackbarDispatch({
-          type: "SUCCESS",
-          data: message,
-        });
     } catch (e) {
-      if (e.message === "Bad Request")
-        snackbarDispatch({ type: "ERROR", data: "Error: " + e.message });
-      else {
-        snackbarDispatch({
-          type: "WARNING",
-          data: "Session saved locally.",
-        });
-      }
+      console.error(e);
     }
   };
 
