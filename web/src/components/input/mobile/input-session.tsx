@@ -1,21 +1,16 @@
-import React, { ReactElement, useContext, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import {
-  Box, Button,
-  FormControlLabel,
-  FormGroup,
-  IconButton, List,
-  Switch,
+  Box,
+  Button,
+  IconButton,
   Toolbar,
   Typography,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import GenericAppBar from '../../generics/generic-app-bar';
-import {SettingsDispatch, SettingsState} from '../../statecontainers/settings-context';
-import {getUser} from '../../../services/auth-services';
-import PasswordResetForm from '../../auth/password-reset-form';
-import {Route} from '../../../app';
-import InputItem from './input-item';
+import GenericAppBar from "../../generics/generic-app-bar";
+import { Route } from "../../../app";
+import EditTime from "./edit-time";
 
 const useStyles = makeStyles((theme) => ({
   back: {
@@ -47,12 +42,17 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     borderTop: `solid 1px ${theme.palette.divider}`,
   },
-  passwordTitle: {
-    margin: "auto",
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+  startButton: {
+    marginTop: theme.spacing(3),
   },
 }));
+
+/**
+ * Editing state type for routing purposes.
+ *
+ * @memberOf InputSession
+ */
+type Editing = "INITIAL" | "INCREMENTS" | undefined;
 
 /**
  * InputSession props.
@@ -75,53 +75,59 @@ type Props = {
 function InputSession({ setRoute, isMobile }: Props): ReactElement {
   const classes = useStyles();
 
+  const [editing, setEditing] = useState<Editing>();
 
+  function handleUpdate(time: string): void {}
 
   /** Routes back to main */
   function handleBack(): void {
     setRoute({ route: "MAIN" });
   }
 
-  return (
+  return editing === "INITIAL" ? (
+    <EditTime
+      name={"first infusion time"}
+      handleUpdate={handleUpdate}
+      handleBack={handleBack}
+    />
+  ) : editing === "INCREMENTS" ? (
+    <EditTime
+      name={"increments"}
+      handleUpdate={handleUpdate}
+      handleBack={handleBack}
+    />
+  ) : (
     <>
-      {isMobile && (
-        <>
-          <GenericAppBar>
-            <Toolbar>
-              <IconButton
-                onClick={handleBack}
-                edge="start"
-                className={classes.back}
-                aria-label="back"
-              >
-                <ArrowBack />
-              </IconButton>
-              <Typography variant="h5">Start Custom Brewing</Typography>
-            </Toolbar>
-          </GenericAppBar>
-          <Toolbar />
-        </>
-      )}
+      <GenericAppBar>
+        <Toolbar>
+          <IconButton
+            onClick={handleBack}
+            edge="start"
+            className={classes.back}
+            aria-label="back"
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h5">Start Custom Brewing</Typography>
+        </Toolbar>
+      </GenericAppBar>
+      <Toolbar />
       <Box className={classes.root}>
-        <Box className={classes.row}>
-          <InputItem
-            key="infusion"
-            name="first infusion"
-            value={"00:00:00"}
-            handleClick={() => {}}
-          />
+        <Box className={classes.row} onClick={() => setEditing("INITIAL")}>
+          <Typography variant="h5">First infusion</Typography>
+          <Typography variant="h5">00:00:00</Typography>
         </Box>
         <Box className={classes.divider} />
-        <Box className={classes.row}>
-          <InputItem
-            key="increments"
-            name="increments"
-            value={"00:00:00"}
-            handleClick={() => {}}
-          />
+        <Box className={classes.row} onClick={() => setEditing("INCREMENTS")}>
+          <Typography variant="h5">Increments</Typography>
+          <Typography variant="h5">00:00:00</Typography>
         </Box>
         <Box className={classes.divider} />
-        <Button variant="contained" color="secondary">
+        <Button
+          variant="contained"
+          color="secondary"
+          className={classes.startButton}
+        >
           Start brewing
         </Button>
       </Box>

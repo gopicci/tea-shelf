@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputAppBar from "./input-app-bar";
-import { TeaRequest } from "../../../services/models";
 import { parseSecondsToHMS } from "../../../services/parsing-services";
 
 const useStyles = makeStyles((theme) => ({
@@ -30,34 +29,29 @@ const useStyles = makeStyles((theme) => ({
  * @memberOf EditTime
  */
 type Props = {
-  /** Tea input data state  */
-  teaData: TeaRequest;
-  /** Sets tea data state */
-  setTeaData: (data: TeaRequest) => void;
-  /** Reroutes to input layout */
-  handleBackToLayout: () => void;
-  /** Edit route name state */
-  route: string;
+  /** Name of object to edit for appbar display */
+  name: string;
+  /** Updates state with time in HH:MM:SS format */
+  handleUpdate: (time: string) => void;
+  /** Reroutes to previous */
+  handleBack: () => void;
 };
 
 /**
- * Mobile tea creation brewing time list input component.
+ * Mobile brewing time input component.
  *
  * @component
  * @subcategory Mobile input
  */
 function EditTime({
-  teaData,
-  setTeaData,
-  handleBackToLayout,
-  route,
+  name,
+  handleUpdate,
+  handleBack,
 }: Props): ReactElement {
   const classes = useStyles();
 
   const [text, setText] = useState("");
   const [inputType, setInputType] = useState("seconds");
-
-  const fields = route.split("_");
 
   /**
    * Updates local state on input text change.
@@ -79,26 +73,15 @@ function EditTime({
   }
 
   /**
-   * Converts time to HH:MM:SS format, updates input state and
-   * returns to input layout.
+   * Converts time to HH:MM:SS format and calls parent update callback.
    */
   function handleSave(): void {
     let timeInSeconds = parseInt(text);
     if (inputType === "minutes") timeInSeconds = timeInSeconds * 60;
     if (inputType === "hours") timeInSeconds = timeInSeconds * 3600;
 
-    const timeInHMS = parseSecondsToHMS(timeInSeconds);
-
-    if (fields[0] === "gongfu" || fields[0] === "western")
-      setTeaData({
-        ...teaData,
-        [fields[0] + "_brewing"]: {
-          ...teaData[fields[0] + "_brewing"],
-          [fields[1]]: timeInHMS,
-        },
-      });
-    else setTeaData({ ...teaData, [route]: timeInHMS });
-    handleBackToLayout();
+    handleUpdate(parseSecondsToHMS(timeInSeconds));
+    handleBack();
   }
 
   /**
@@ -113,8 +96,8 @@ function EditTime({
   return (
     <>
       <InputAppBar
-        handleBackToLayout={handleBackToLayout}
-        name={fields[1] ? fields[1] : fields[0]}
+        handleBack={handleBack}
+        name={name}
         saveName="Save"
         disableSave={!text}
         handleSave={handleSave}
