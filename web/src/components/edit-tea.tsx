@@ -144,6 +144,11 @@ function EditTea({ children }: Props): ReactElement {
       // Update global state
       teaDispatch({ type: "EDIT", data: { ...body, offline_id: id } });
 
+      // Update local cache
+      const local = await localforage.getItem<TeaInstance[]>("teas");
+      local.push({ ...body, offline_id: id });
+      await localforage.setItem<TeaInstance[]>("teas", local);
+
       // Delete offline entry
       for (const tea of offlineTeas)
         if (tea.offline_id === id)

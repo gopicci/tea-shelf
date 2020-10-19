@@ -118,6 +118,11 @@ function EditSession({ setRoute, children }: Props): ReactElement {
       // Update global state
       sessionDispatch({ type: "EDIT", data: { ...body, offline_id: id } });
 
+      // Update local cache
+      const local = await localforage.getItem<SessionInstance[]>("sessions");
+      local.push({ ...body, offline_id: id })
+      await localforage.setItem<SessionInstance[]>("sessions", local);
+
       // Delete offline entry
       for (const session of offlineSessions)
         if (session.offline_id === id)
@@ -126,7 +131,7 @@ function EditSession({ setRoute, children }: Props): ReactElement {
         "offline-sessions",
         offlineSessions
       );
-
+      
       // Update sync status
       syncDispatch({ type: "SET_SYNCED" });
 
