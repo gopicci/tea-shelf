@@ -9,7 +9,7 @@ import EditVendor from "./edit-vendor";
 import EditTemperature from "./edit-temperature";
 import EditWeightList from "./edit-weight-list";
 import EditWeightInput from "./edit-weight-input";
-import EditTime from "./edit-time";
+import EditTeaTime from "./edit-tea-time";
 import EditPrice from "./edit-price";
 import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
@@ -180,7 +180,7 @@ function MobileInput({
       case "gongfu_increments":
       case "western_initial":
       case "western_increments":
-        return <EditTime {...inputProps} route={editRoute} />;
+        return <EditTeaTime {...inputProps} route={editRoute} />;
       case "weight":
         return <EditWeightInput {...inputProps} />;
       case "price":

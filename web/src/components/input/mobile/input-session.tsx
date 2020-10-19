@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -11,6 +11,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import GenericAppBar from "../../generics/generic-app-bar";
 import { Route } from "../../../app";
 import EditTime from "./edit-time";
+import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
+import { BrewingModel, SessionModel } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
   back: {
@@ -62,8 +64,6 @@ type Editing = "INITIAL" | "INCREMENTS" | undefined;
 type Props = {
   /** Set app's main route */
   setRoute: (route: Route) => void;
-  /** Mobile mode or desktop */
-  isMobile: boolean;
 };
 
 /**
@@ -72,12 +72,34 @@ type Props = {
  * @component
  * @subcategory Session
  */
-function InputSession({ setRoute, isMobile }: Props): ReactElement {
+function InputSession({ setRoute }: Props): ReactElement {
   const classes = useStyles();
 
-  const [editing, setEditing] = useState<Editing>();
+  const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
 
-  function handleUpdate(time: string): void {}
+  const [editing, setEditing] = useState<Editing>();
+  const [initial, setInitial] = useState("00:00:20");
+  const [increments, setIncrements] = useState("00:00:05");
+
+  /** Starts a brewing session from time states */
+  function handleStart(): void {
+    const brewing: BrewingModel = {
+      initial: initial,
+      increments: increments,
+    };
+
+    const now = new Date().toISOString();
+
+    const session: SessionModel = {
+      brewing: brewing,
+      current_infusion: 1,
+      is_completed: false,
+      created_on: now,
+      last_brewed_on: now,
+    };
+
+    handleSessionEdit(session);
+  }
 
   /** Routes back to main */
   function handleBack(): void {
@@ -87,14 +109,14 @@ function InputSession({ setRoute, isMobile }: Props): ReactElement {
   return editing === "INITIAL" ? (
     <EditTime
       name={"first infusion time"}
-      handleUpdate={handleUpdate}
-      handleBack={handleBack}
+      handleUpdate={(time) => setInitial(time)}
+      handleBack={() => setEditing(undefined)}
     />
   ) : editing === "INCREMENTS" ? (
     <EditTime
       name={"increments"}
-      handleUpdate={handleUpdate}
-      handleBack={handleBack}
+      handleUpdate={(time) => setIncrements(time)}
+      handleBack={() => setEditing(undefined)}
     />
   ) : (
     <>
@@ -115,18 +137,20 @@ function InputSession({ setRoute, isMobile }: Props): ReactElement {
       <Box className={classes.root}>
         <Box className={classes.row} onClick={() => setEditing("INITIAL")}>
           <Typography variant="h5">First infusion</Typography>
-          <Typography variant="h5">00:00:00</Typography>
+          <Typography variant="h5">{initial}</Typography>
         </Box>
         <Box className={classes.divider} />
         <Box className={classes.row} onClick={() => setEditing("INCREMENTS")}>
           <Typography variant="h5">Increments</Typography>
-          <Typography variant="h5">00:00:00</Typography>
+          <Typography variant="h5">{increments}</Typography>
         </Box>
         <Box className={classes.divider} />
         <Button
           variant="contained"
           color="secondary"
           className={classes.startButton}
+          disabled={initial === "00:00:00"}
+          onClick={handleStart}
         >
           Start brewing
         </Button>

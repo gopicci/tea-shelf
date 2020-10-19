@@ -96,7 +96,7 @@ function EditTime({
   return (
     <>
       <InputAppBar
-        handleBack={handleBack}
+        handleBackToLayout={handleBack}
         name={name}
         saveName="Save"
         disableSave={!text}
