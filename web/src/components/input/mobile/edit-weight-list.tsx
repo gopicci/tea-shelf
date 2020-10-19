@@ -38,6 +38,8 @@ function EditWeightList({
 }: Props): ReactElement {
   const formListClasses = formListStyles();
 
+  const fields = route.split("_");
+
   const crop = settings.increment < 1 ? 1 : 0;
   const list = [...Array(settings.max / settings.increment + 1)]
     .map((_, b) => String((b * settings.increment).toFixed(crop)))
@@ -72,7 +74,10 @@ function EditWeightList({
 
   return (
     <>
-      <InputAppBar handleBackToLayout={handleBackToLayout} name={route} />
+      <InputAppBar
+        handleBackToLayout={handleBackToLayout}
+        name={fields[1] ? fields[1] : fields[0]}
+      />
       <List className={formListClasses.list}>
         {list.map((w) => (
           <InputItem
