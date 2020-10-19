@@ -47,18 +47,26 @@ const useStyles = makeStyles((theme) => ({
   spaceBetween: {
     justifyContent: "space-between",
   },
+  name: {
+    [theme.breakpoints.up("md")]: {
+      marginTop: theme.spacing(4),
+    },
+    marginBottom: theme.spacing(2),
+  },
   suggestions: {
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     marginLeft: theme.spacing(2),
-    paddingTop: theme.spacing(4),
+  },
+  spaceTop: {
+    marginTop: theme.spacing(1),
   },
   icon: {
-    color: theme.palette.text.secondary,
-    width: theme.spacing(4),
-    height: theme.spacing(4),
+    color: theme.palette.primary.main,
+    width: theme.spacing(3),
+    height: theme.spacing(3),
     marginRight: theme.spacing(1),
   },
   infusionButton: {
@@ -75,8 +83,7 @@ const useStyles = makeStyles((theme) => ({
   infusionBox: {
     marginTop: theme.spacing(4),
     marginRight: theme.spacing(2),
-    padding: theme.spacing(2),
-    width: "150px",
+    width: "120px",
   },
   infusion: {
     fontSize: theme.spacing(6),
@@ -294,28 +301,28 @@ function SessionLayout({
           <Toolbar />
         </>
       )}
-      <Typography variant="h1">{session.name}</Typography>
+      <Typography variant="h1" className={classes.name}>
+        {session.name}
+      </Typography>
       <Box className={clsx(classes.row, classes.spaceBetween)}>
         <Box className={classes.suggestions}>
           {!!(
             session.brewing.temperature && session.brewing.temperature > 0
           ) && (
-            <Box className={classes.row}>
+            <Box className={clsx(classes.row, classes.spaceTop)}>
               <SvgIcon className={classes.icon} viewBox="0 0 24 24">
                 <path d="M15 13V5a3 3 0 0 0-6 0v8a5 5 0 1 0 6 0m-3-9a1 1 0 0 1 1 1v3h-2V5a1 1 0 0 1 1-1z" />
               </SvgIcon>
               <Box>
                 <Typography variant="h4">
-                  {session.brewing.temperature}°c
-                </Typography>
-                <Typography variant="h4">
+                  {session.brewing.temperature}°c -{" "}
                   {celsiusToFahrenheit(session.brewing.temperature)}F
                 </Typography>
               </Box>
             </Box>
           )}
           {!!(session.brewing.weight && session.brewing.weight > 0) && (
-            <Box className={classes.row}>
+            <Box className={clsx(classes.row, classes.spaceTop)}>
               <FitnessCenter className={classes.icon} />
               <Typography variant="h4">
                 {session.brewing.weight}g/100ml

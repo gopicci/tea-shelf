@@ -1,13 +1,14 @@
 import React, { ChangeEvent, ReactElement, useContext, useState } from "react";
 import { Autocomplete } from "@material-ui/lab";
 import { TextField } from "@material-ui/core";
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 import { HandleSessionEdit, SessionEditorContext } from "../../edit-session";
 import { SessionInstance } from "../../../services/models";
 
 const useStyles = makeStyles((theme) => ({
-  infusionText:{
+  infusionText: {
     fontSize: 80,
+    textAlign: "center",
   },
 }));
 
@@ -24,7 +25,7 @@ type Props = {
 };
 
 /**
- * Desktop tea editing form year autocomplete component.
+ * Desktop session infusion autocomplete component.
  *
  * @component
  * @subcategory Desktop input
@@ -43,14 +44,15 @@ function InfusionAutocomplete({ session, removeClock }: Props): ReactElement {
 
   const [error, setError] = useState("");
 
+  /** Updates infusion state on input change. */
   async function handleOnChange(
     event: ChangeEvent<any>,
     value: string | null
   ): Promise<void> {
     if (event && value) {
       const numbers = value.replace(/[^0-9]/g, "");
-      setInfusion(numbers);
       if (options.includes(numbers)) {
+        setInfusion(numbers);
         await removeClock();
         await handleSessionEdit(
           { ...session, current_infusion: parseInt(numbers) },
