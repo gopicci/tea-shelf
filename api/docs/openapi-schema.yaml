@@ -5,7 +5,7 @@ info:
   description: |
     # Introduction
 
-    Tea Shelf is a **progressive web app** built with the intent of helping users keeping track of their collection of teas.
+    Tea Shelf is a **progressive web app** built with the intent of helping users manage their tea collection.
     This documentation offers an overview on the REST API that serves the backend, which is written in **Python** with
     **Django REST framework**.
 
@@ -13,9 +13,11 @@ info:
     entities models have views that are reachable from the API operations, however some remain hidden as they are for
     staff purposes or are placeholders for future development.
 
-    The API offers token authentication and mostly CRUD operations revolving around the central model of Tea, which
-    contains personal data a user might want to keep about a tea as well as some inherited from entries of other types
-    (information on categories, origin, vendor, brewing).
+    The API offers token authentication and revolves mostly around the central models of Tea and Session.
+    Tea contains personal data a user might want to keep about a tea as well as some inherited from entries of other types
+    (information on categories, origin, vendor, brewing). Session represents a brewing session with constructs to help the
+    user keep track of infusion times and brewing instructions.
+
     On top of that, to help streamline the creation process, the **vision parser** service extracts text from an image with
     the help of Google Vision API and uses it to pull out relevant tea data, such as category, subcategory and vendor,
     and to build a name for the instance. Far from being exact the algorithm often saves the user a lot of time entering
@@ -33,6 +35,7 @@ info:
     | Tag | Description |
     | ------------ |  -------------- |
     | [Tea](#tag--Tea) | Operations revolving around tea model |
+    | [Session](#tag--Session) | Operations revolving around session model |
     | [Categories](#tag--Categories) | Groups category and subcategory models operations |
     | [Origin](#tag--Origin) | The origin model represents a geographical location |
     | [Vendor](#tag--Vendor) | A tea vendor or brand |
@@ -56,6 +59,12 @@ tags:
 
       Apart from standard CRUD operations, this section offers access to vision parser, a service that extract tea
       related data from a picture containing it (a package or label).
+  - name: Session
+    description: |
+      Operations revolving around the session model.
+
+      A session instance is user specific and contains information about a brewing session such as current infusion number
+      and time, completion status and brewing instruction (based on brewing model).
   - name: Categories
     description: |
       Operations revolving around the category and subcategory models.
@@ -2478,6 +2487,437 @@ paths:
           in: path
           required: true
           description: A unique integer value in UUID format identifying the tea instance.
+          schema:
+            type: integer
+            format: uuid
+      responses:
+        "204":
+          description: "No content"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
+  /api/brewing_session/:
+    get:
+      tags:
+        - Session
+      summary: List brewing sessions
+      operationId: listSessions
+      description: |
+        Returns a list of user's brewing sessions. A session instance contains information about a brewing session such
+        as current infusion number and time, completion status and brewing instruction (based on brewing model).
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    user:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    brewing:
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        temperature:
+                          type: integer
+                          maximum: 100
+                          nullable: true
+                          minimum: 0
+                        weight:
+                          type: number
+                          nullable: true
+                          minimum: 0
+                        initial:
+                          type: string
+                          nullable: true
+                        increments:
+                          type: string
+                          nullable: true
+                      type: object
+                      nullable: true
+                    is_completed:
+                      type: boolean
+                      nullable: true
+                    name:
+                      type: string
+                      maxLength: 50
+                      nullable: true
+                    current_infusion:
+                      type: integer
+                      minimum: 1
+                      nullable: true
+                    created_on:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    last_brewed_on:
+                      type: string
+                      format: date-time
+                      nullable: true
+                    tea:
+                      type: string
+                      format: uuid
+                      nullable: true
+          description: ""
+        "401":
+          description: "Unauthorized"
+    post:
+      tags:
+        - Session
+      summary: Create a session
+      operationId: createSession
+      description: |
+        A session instance contains information about a brewing session such as current infusion number and time,
+        completion status and brewing instruction (based on brewing model).
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: &id016
+              properties:
+                brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                is_completed:
+                  type: boolean
+                  nullable: true
+                name:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                last_brewed_on:
+                  type: string
+                  format: date-time
+                  nullable: true
+                tea:
+                  type: string
+                  format: uuid
+                  nullable: true
+          application/x-www-form-urlencoded:
+            schema: *id016
+          multipart/form-data:
+            schema: *id016
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  user:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  is_completed:
+                    type: boolean
+                    nullable: true
+                  name:
+                    type: string
+                    maxLength: 50
+                    nullable: true
+                  current_infusion:
+                    type: integer
+                    minimum: 1
+                    nullable: true
+                  created_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  last_brewed_on:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  tea:
+                    type: string
+                    format: uuid
+                    nullable: true
+          description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
+  /api/brewing_session/{id}/:
+    get:
+      tags:
+        - Session
+      summary: Find brewing session by ID
+      operationId: retrieveSession
+      description: |
+        Returns a single session instance.
+
+        A session instance contains information about a brewing session such as current infusion number and time,
+        completion status and brewing instruction (based on brewing model).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value in UUID format identifying the session instance.
+          schema:
+            type: integer
+            format: uuid
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  user:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  is_completed:
+                    type: boolean
+                    nullable: true
+                  name:
+                    type: string
+                    maxLength: 50
+                    nullable: true
+                  current_infusion:
+                    type: integer
+                    minimum: 1
+                    nullable: true
+                  created_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  last_brewed_on:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  tea:
+                    type: string
+                    format: uuid
+                    nullable: true
+          description: ""
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
+    put:
+      tags:
+        - Session
+      summary: Update an existing brewing session
+      operationId: updateSession
+      description: |
+        A session instance contains information about a brewing session such as current infusion number and time,
+        completion status and brewing instruction (based on brewing model).
+      parameters:
+        - name: id
+          in: path
+          description: A unique integer value in UUID format identifying the session instance.
+          schema:
+            type: integer
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema: &id017
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  readOnly: true
+                brewing:
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    temperature:
+                      type: integer
+                      maximum: 100
+                      nullable: true
+                      minimum: 0
+                    weight:
+                      type: number
+                      nullable: true
+                      minimum: 0
+                    initial:
+                      type: string
+                      nullable: true
+                    increments:
+                      type: string
+                      nullable: true
+                  type: object
+                  nullable: true
+                is_completed:
+                  type: boolean
+                  nullable: true
+                name:
+                  type: string
+                  maxLength: 50
+                current_infusion:
+                  type: integer
+                  minimum: 1
+                  nullable: true
+                last_brewed_on:
+                  type: string
+                  format: date-time
+                  nullable: true
+                tea:
+                  type: string
+                  format: uuid
+                  nullable: true
+          application/x-www-form-urlencoded:
+            schema: *id017
+          multipart/form-data:
+            schema: *id017
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  user:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  brewing:
+                    properties:
+                      id:
+                        type: integer
+                        readOnly: true
+                      temperature:
+                        type: integer
+                        maximum: 100
+                        nullable: true
+                        minimum: 0
+                      weight:
+                        type: number
+                        nullable: true
+                        minimum: 0
+                      initial:
+                        type: string
+                        nullable: true
+                      increments:
+                        type: string
+                        nullable: true
+                    type: object
+                    nullable: true
+                  is_completed:
+                    type: boolean
+                    nullable: true
+                  name:
+                    type: string
+                    maxLength: 50
+                    nullable: true
+                  current_infusion:
+                    type: integer
+                    minimum: 1
+                    nullable: true
+                  created_on:
+                    type: string
+                    format: date-time
+                    readOnly: true
+                  last_brewed_on:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  tea:
+                    type: string
+                    format: uuid
+                    nullable: true
+          description: ""
+        "400":
+          description: "Bad request"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not found"
+    delete:
+      tags:
+        - Session
+      summary: Delete a session
+      operationId: destroySession
+      description: Remove a session instance.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: A unique integer value in UUID format identifying the session instance.
           schema:
             type: integer
             format: uuid
