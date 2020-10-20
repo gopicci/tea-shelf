@@ -1,5 +1,5 @@
 Tea Shelf is a **progressive web app** built with the intent of helping users
-manage their teas collection and brewing sessions. The documentation
+manage their tea collection and brewing sessions. The documentation
 [here](https://teashelf.app/docs/web/) offers an overview on the frontend,
 a one page app written with a mobile first approach in **Typescript** with
 **React web framework**.
@@ -11,7 +11,7 @@ component, which keeps a state with the current route and optional payload data.
 
 Certain sections require more specific routing which is usually managed by the
 parent component. One exception is [MobileInput](https://teashelf.app/docs/web/MobileInput.html)
-which has it's own sub router given the fair complexity.
+which has its own sub router given its fair complexity.
 
 ###### Global state
 Global state is provided using React context with reducers in components
@@ -36,11 +36,9 @@ with data from the backend API, which is then saved on *IndexedDB* and kept in
 sync on successive logins or manual user refreshes.
 
 The app uses mostly cached data to work, and only syncs with the backend when a
-network connection is available.
-
-It does so, aside from saving all needed user and public data locally, by saving
-new or modified instances in offline database entries called *offline-instances*,
-which it then empties gradually when requests fulfill.
+network connection is available. It does so, aside from saving all needed
+user and public data locally, by saving new or modified instances in offline
+database entries which it then empties gradually when requests fulfill.
 
 The offline database is structure to mimic global state and API models as
 follows:
