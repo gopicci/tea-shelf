@@ -1,4 +1,10 @@
-import React, { ChangeEvent, ReactElement, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  ReactElement,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Autocomplete } from "@material-ui/lab";
 import { TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -41,6 +47,10 @@ function InfusionAutocomplete({ session, removeClock }: Props): ReactElement {
   const [infusion, setInfusion] = useState(
     session.current_infusion ? String(session.current_infusion) : "1"
   );
+
+  useEffect(() => {
+    setInfusion(String(session.current_infusion));
+  }, [session.current_infusion]);
 
   const [error, setError] = useState("");
 

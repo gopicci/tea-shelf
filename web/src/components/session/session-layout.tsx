@@ -22,6 +22,10 @@ import SessionCountdown from "./session-countdown";
 import EditInfusion from "../input/mobile/edit-infusion";
 import InfusionAutocomplete from "../input/desktop/infusion-autocomplete";
 import { celsiusToFahrenheit } from "../../services/parsing-services";
+import {
+  handleSessionComplete,
+  removeClock,
+} from "../../services/sync-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { SessionsState } from "../statecontainers/session-context";
@@ -33,10 +37,14 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "100vh",
     display: "flex",
+    flexShrink: 1,
     margin: 0,
     flexDirection: "column",
     alignItems: "center",
     paddingBottom: theme.spacing(2),
+    [theme.breakpoints.up("md")]: {
+      minHeight: `calc(100% - ${theme.spacing(8)}px)`,
+    },
   },
   row: {
     display: "flex",
@@ -181,12 +189,13 @@ function SessionLayout({
    * Adds counting clock to global state and cache.
    */
   async function addClock(): Promise<void> {
+    const now = Date.now();
+    const newClock = {
+      offline_id: session.offline_id,
+      starting_time: now,
+    };
     try {
-      setStartDate(Date.now());
-      const newClock = {
-        offline_id: session.offline_id,
-        starting_time: Date.now(),
-      };
+      setStartDate(now);
       clockDispatch({
         type: "ADD",
         data: newClock,
@@ -197,58 +206,46 @@ function SessionLayout({
       await localforage.setItem<Clock[]>("clocks", cachedClocks);
     } catch (e) {
       console.error(e);
-      await removeClock();
+      await removeClock(newClock, clockDispatch);
     }
   }
 
   /**
-   * Deletes session clock instance from global
-   * state and cache.
+   * Wrapper around removeClock callback that prioritizes clock state
+   * over session and start date.
    */
-  const removeClock = useCallback(async (): Promise<void> => {
-    try {
-      let cachedClocks = await localforage.getItem<Clock[]>("clocks");
-      if (cachedClocks)
-        await localforage.setItem<Clock[]>(
-          "clocks",
-          cachedClocks.filter((c) => c.offline_id !== session.offline_id)
-        );
-      await clockDispatch({
-        type: "DELETE",
-        data: {
-          offline_id: session.offline_id,
-          starting_time: startDate,
-        },
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  }, [clockDispatch, session.offline_id, startDate]);
+  async function handleRemoveClock(): Promise<void> {
+    await removeClock(
+      clock
+        ? clock
+        : { offline_id: session.offline_id, starting_time: startDate },
+      clockDispatch
+    );
+  }
 
   /**
-   * On countdown completion removes clock from global state
-   * and cache, then updates brewing session.
+   * Wrapper around handleSessionComplete callback that checks for clock
+   * state.
    */
-  const handleComplete = useCallback(async (): Promise<void> => {
+  async function handleComplete(): Promise<void> {
     if (clock) {
       try {
-        const newSession = {
-          ...session,
-          current_infusion: session.current_infusion + 1,
-          last_brewed_on: new Date(clock.starting_time).toISOString(),
-        };
-        await removeClock();
-        await handleSessionEdit(newSession, session.offline_id);
+        await handleSessionComplete(
+          clock,
+          session,
+          clockDispatch,
+          handleSessionEdit
+        );
       } catch (e) {
         console.error(e);
       }
     }
-  }, [clock, handleSessionEdit, removeClock, session]);
+  }
 
   /** Deletes clock and set session as complete. */
   async function handleEndSession(): Promise<void> {
     try {
-      await removeClock();
+      await handleRemoveClock();
       await handleSessionEdit(
         { ...session, is_completed: true },
         session.offline_id
@@ -274,7 +271,7 @@ function SessionLayout({
 
   /** Deletes clock and cancel infusion editing. */
   async function handleBackToLayout(): Promise<void> {
-    await removeClock();
+    await handleRemoveClock();
     setEditInfusion(false);
   }
 
@@ -344,7 +341,10 @@ function SessionLayout({
           </Button>
         ) : (
           <Box className={classes.infusionBox}>
-            <InfusionAutocomplete session={session} removeClock={removeClock} />
+            <InfusionAutocomplete
+              session={session}
+              removeClock={handleRemoveClock}
+            />
           </Box>
         )}
       </Box>
@@ -360,13 +360,17 @@ function SessionLayout({
           variant="contained"
           color="secondary"
           disabled={session.is_completed}
-          onClick={clock ? removeClock : addClock}
+          onClick={clock ? handleRemoveClock : addClock}
         >
           {clock ? "Cancel" : "Start"}
         </Button>
       </Box>
       {session.is_completed ? (
-        <Button className={classes.endButton} onClick={handleResumeSession}>
+        <Button
+          color="secondary"
+          className={classes.endButton}
+          onClick={handleResumeSession}
+        >
           Resume session
         </Button>
       ) : (

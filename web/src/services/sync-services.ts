@@ -2,6 +2,7 @@ import { Dispatch } from "react";
 import localforage from "localforage";
 import { APIRequest } from "./auth-services";
 import { getEndDate } from "./parsing-services";
+import { HandleSessionEdit } from "../components/edit-session";
 import {
   TeaInstance,
   SessionInstance,
@@ -325,4 +326,60 @@ export async function syncInstances(
 
   // Update the cache
   await localforage.setItem<GenericModels[]>(storage, online);
+}
+
+/**
+ * On countdown completion removes clock from global state
+ * and cache, then updates brewing session.
+ *
+ * @category Services
+ * @param {Clock} clock - Expired clock
+ * @param {SessionInstance} session - Session instance with expired clock
+ * @param {Dispatch<GenericAction>} clockDispatch - Clock context dispatch
+ * @param {HandleSessionEdit} handleSessionEdit - Session editor callback
+ */
+export async function handleSessionComplete(
+  clock: Clock,
+  session: SessionInstance,
+  clockDispatch: Dispatch<GenericAction>,
+  handleSessionEdit: HandleSessionEdit
+) {
+  // Remove clock
+  await removeClock(clock, clockDispatch);
+
+  // Update session
+  await handleSessionEdit(
+    {
+      ...session,
+      current_infusion: session.current_infusion + 1,
+      last_brewed_on: new Date(clock.starting_time).toISOString(),
+    },
+    session.offline_id
+  );
+
+  window.navigator.vibrate([200, 200, 200]);
+}
+
+/**
+ * Deletes session clock instance from global
+ * state and cache.
+ *
+ * @category Services
+ * @param {Clock} clock - Clock instance to remove
+ * @param {Dispatch<GenericAction>} clockDispatch - Clock context dispatch
+ */
+export async function removeClock(
+  clock: Clock,
+  clockDispatch: Dispatch<GenericAction>
+) {
+  let cachedClocks = await localforage.getItem<Clock[]>("clocks");
+  if (cachedClocks)
+    await localforage.setItem<Clock[]>(
+      "clocks",
+      cachedClocks.filter((c) => c.offline_id !== clock.offline_id)
+    );
+  await clockDispatch({
+    type: "DELETE",
+    data: clock,
+  });
 }

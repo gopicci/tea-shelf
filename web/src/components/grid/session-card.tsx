@@ -13,9 +13,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import dateFormat from "dateformat";
-import localforage from "localforage";
 import SessionCountdown from "../session/session-countdown";
 import { isClockExpired } from "../../services/parsing-services";
+import { handleSessionComplete } from "../../services/sync-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { Route } from "../../app";
@@ -62,51 +62,23 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   }, [clocks, session.offline_id]);
 
   /**
-   * Deletes session clock instance from global
-   * state and cache.
-   */
-  const removeClock = useCallback(async (): Promise<void> => {
-    try {
-      if (clock) {
-        await clockDispatch({
-          type: "DELETE",
-          data: clock,
-        });
-
-        let cached = await localforage.getItem<Clock[]>("clocks");
-        if (cached.length) {
-          await localforage.setItem<Clock[]>(
-            "clocks",
-            cached.filter((c) => c.offline_id !== clock.offline_id)
-          );
-        }
-
-        setClock(undefined);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [clock, clockDispatch]);
-
-  /**
-   * On countdown completion removes clock from global state
-   * and cache, then updates brewing session.
+   * Wrapper around handleSessionComplete callback that checks for clock
+   * state.
    */
   const handleComplete = useCallback(async (): Promise<void> => {
     if (clock) {
       try {
-        const newSession = {
-          ...session,
-          current_infusion: session.current_infusion + 1,
-          last_brewed_on: new Date(clock.starting_time).toISOString(),
-        };
-        await removeClock();
-        await handleSessionEdit(newSession, session.offline_id);
+        await handleSessionComplete(
+          clock,
+          session,
+          clockDispatch,
+          handleSessionEdit
+        );
       } catch (e) {
         console.error(e);
       }
     }
-  }, [clock, handleSessionEdit, removeClock, session]);
+  }, [clock, clockDispatch, handleSessionEdit, session]);
 
   useEffect(() => {
     /** Updates session on expired clock */
