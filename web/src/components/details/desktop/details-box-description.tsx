@@ -47,32 +47,34 @@ function DetailsBoxDescription({ teaData }: Props): ReactElement {
   }
 
   return (
-    <Box className={classes.descriptionRow}>
-      <Box className={classes.aboutBox}>
-        <MenuBook className={classes.icon} />
-        <Typography variant="h3">About {descriptionName}</Typography>
+    <>
+      <Box className={classes.descriptionRow}>
+        <Box className={classes.aboutBox}>
+          <MenuBook className={classes.icon} />
+          <Typography variant="h3">About {descriptionName}</Typography>
+        </Box>
+        <Box>
+          {description.split("\n").map((s, key) => (
+            <Typography variant="body2" className={classes.rowCenter} key={key}>
+              {s}
+            </Typography>
+          ))}
+        </Box>
       </Box>
-      <Box>
-        {description.split("\n").map((s, key) => (
-          <Typography variant="body2" className={classes.rowCenter} key={key}>
-            {s}
-          </Typography>
-        ))}
-        {descriptionSource && (
-          <Typography className={classes.sourceLink}>
-            <Link
-              href="#"
-              onClick={() =>
-                window.open("https://" + descriptionSource, "_blank")
-              }
-              variant="body2"
-            >
-              View source
-            </Link>
-          </Typography>
-        )}
-      </Box>
-    </Box>
+      {descriptionSource && (
+        <Typography className={classes.sourceLink}>
+          <Link
+            href="#"
+            onClick={() =>
+              window.open("https://" + descriptionSource, "_blank")
+            }
+            variant="body2"
+          >
+            View source
+          </Link>
+        </Typography>
+      )}
+    </>
   );
 }
 

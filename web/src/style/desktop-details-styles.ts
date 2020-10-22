@@ -160,8 +160,8 @@ export const desktopDetailsStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    justifyContent: "center",
     flexShrink: 0,
-    paddingTop: theme.spacing(2),
     paddingRight: theme.spacing(4),
   },
   halfCenterBox: {
