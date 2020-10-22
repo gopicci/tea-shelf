@@ -56,10 +56,14 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   name: {
+    textAlign: "center",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
     [theme.breakpoints.up("md")]: {
       marginTop: theme.spacing(4),
     },
-    marginBottom: theme.spacing(2),
   },
   suggestions: {
     display: "flex",
