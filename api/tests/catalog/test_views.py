@@ -352,7 +352,9 @@ def test_users_cannot_view_others_brewing_sessions(client, token):
     assert resp.status_code == 200
     assert len(resp.data) > 0
     _id = resp.data[0]["id"]
-    resp = client.get(f"/api/brewing_session/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}")
+    resp = client.get(
+        f"/api/brewing_session/{_id}/", HTTP_AUTHORIZATION=f"Bearer {token}"
+    )
     assert resp.status_code == 200
 
     resp = client.post(

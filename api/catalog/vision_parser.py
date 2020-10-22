@@ -65,9 +65,12 @@ class VisionParser:
         self.subcategories_names = SubcategoryName.objects.all()
         self.vendors = Vendor.objects.filter(is_public=True)
 
-    def get_tea_data(self):
+    def get_tea_data(self, max_name_length=None):
         """
         Main parsing method, finds matches and returns extracted tea data if any.
+
+        Args:
+            max_name_length: Optional; Max length of tea name string.
 
         Returns:
             Dictionary containing all found tea data as well as a reduced
@@ -169,7 +172,7 @@ class VisionParser:
             self.tea_data["year"] = year
 
         # Build a name
-        name = self.find_name()
+        name = self.find_name(max_name_length)
         if name:
             self.tea_data["name"] = name
 
@@ -552,11 +555,14 @@ class VisionParser:
             name,
         )
 
-    def find_name(self):
+    def find_name(self, max_name_length=None):
         """
         Guesses tea name. Based on biggest elements remaining in the
         text detection after eliminating other known data with a
         certain confidence ratio.
+
+        Args:
+            max_name_length: Optional; Max length of tea name string.
 
         Returns:
             Guessed name as string.
@@ -605,9 +611,20 @@ class VisionParser:
                         None, word.lower(), sub_name.lower()
                     )
                     if matcher.ratio() > 0.8:
-                        return self.title(name.replace(word, sub_name))
+                        name = name.replace(word, sub_name)
 
-        return self.title(name)
+        # Crop name if too long
+        if max_name_length and len(name) > max_name_length:
+            words = name.split(" ")
+            name = ""
+            for word in words:
+                longer_name = name + " " + word
+                if len(longer_name) > max_name_length:
+                    break
+                else:
+                    name = longer_name
+
+        return self.title(name.strip())
 
     def get_en_zh_ratio(self):
         """

@@ -232,7 +232,7 @@ class VisionParserView(APIView):
             if not image_data:
                 raise ValueError
             parser = VisionParser(image_data)
-            tea_data = parser.get_tea_data()
+            tea_data = parser.get_tea_data(max_name_length=50)
             return Response(tea_data)
         except (ValueError, IndexError):
             return Response(
