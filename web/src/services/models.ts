@@ -321,6 +321,8 @@ export interface Settings {
   metric?: boolean;
   /** Gongfu brewing or western */
   gongfu?: boolean;
+  /** Vibrate on timer completion on mobile */
+  vibration?: boolean;
 }
 
 /**

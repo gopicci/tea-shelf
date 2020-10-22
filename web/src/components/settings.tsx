@@ -118,7 +118,7 @@ function Settings({ setRoute, isMobile }: Props): ReactElement {
           <FormGroup>
             <FormControlLabel
               checked={!settings.gongfu}
-              control={<Switch size="small" />}
+              control={<Switch size="small" color="default" />}
               label={
                 <Typography variant="h5">
                   {settings.gongfu ? "Gongfu" : "Western"}
@@ -135,7 +135,7 @@ function Settings({ setRoute, isMobile }: Props): ReactElement {
           <FormGroup>
             <FormControlLabel
               checked={!settings.metric}
-              control={<Switch size="small" />}
+              control={<Switch size="small" color="default" />}
               label={
                 <Typography variant="h5">
                   {settings.metric ? "Metric" : "Imperial"}
@@ -146,6 +146,29 @@ function Settings({ setRoute, isMobile }: Props): ReactElement {
             />
           </FormGroup>
         </Box>
+        {isMobile && (
+          <>
+            <Box className={classes.divider} />
+            <Box className={classes.row}>
+              <Typography variant="h5">Timer vibration</Typography>
+              <FormGroup>
+                <FormControlLabel
+                  checked={settings.vibration}
+                  control={<Switch size="small" />}
+                  label={
+                    <Typography variant="h5">
+                      {settings.vibration ? "On" : "Off"}
+                    </Typography>
+                  }
+                  labelPlacement="start"
+                  onChange={() =>
+                    settingsDispatch({ type: "SWITCH_VIBRATION" })
+                  }
+                />
+              </FormGroup>
+            </Box>
+          </>
+        )}
         <Box className={classes.divider} />
         <Box className={classes.passwordTitle}>
           <Typography variant="h4">Change Password</Typography>

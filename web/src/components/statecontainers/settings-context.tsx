@@ -16,7 +16,7 @@ import localforage from "localforage";
  */
 type Action = {
   /** Action type */
-  type: "SWITCH_VIEW" | "SWITCH_UNITS" | "SWITCH_BREWING";
+  type: "SWITCH_VIEW" | "SWITCH_UNITS" | "SWITCH_BREWING" | "SWITCH_VIBRATION";
 };
 
 function reducer(state: Settings, action: Action): Settings {
@@ -27,6 +27,8 @@ function reducer(state: Settings, action: Action): Settings {
       return { ...state, metric: !state.metric };
     case "SWITCH_BREWING":
       return { ...state, gongfu: !state.gongfu };
+    case "SWITCH_VIBRATION":
+      return { ...state, vibration: !state.vibration };
     default:
       return state;
   }
@@ -36,6 +38,7 @@ const initialState: Settings = {
   gridView: true,
   metric: true,
   gongfu: true,
+  vibration: true,
 };
 
 export const SettingsState = createContext<Settings>(initialState);
@@ -66,6 +69,7 @@ function SettingsContext({ children }: Props): ReactElement {
         if (!settings.gridView) dispatch({ type: "SWITCH_VIEW" });
         if (!settings.metric) dispatch({ type: "SWITCH_UNITS" });
         if (!settings.gongfu) dispatch({ type: "SWITCH_BREWING" });
+        if (!settings.vibration) dispatch({ type: "SWITCH_VIBRATION" });
       }
     }
     loadSettings();

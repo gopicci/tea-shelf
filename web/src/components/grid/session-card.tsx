@@ -18,6 +18,7 @@ import { isClockExpired } from "../../services/parsing-services";
 import { handleSessionComplete } from "../../services/sync-services";
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
+import { SettingsState } from "../statecontainers/settings-context";
 import { Route } from "../../app";
 import { Clock, SessionInstance } from "../../services/models";
 import { gridStyles } from "../../style/grid-styles";
@@ -47,6 +48,7 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
   const classes = gridStyles();
 
   const handleSessionEdit: HandleSessionEdit = useContext(SessionEditorContext);
+  const settings = useContext(SettingsState);
 
   const clocks = useContext(ClocksState);
   const clockDispatch = useContext(ClockDispatch);
@@ -72,13 +74,14 @@ function SessionCard({ session, gridView, setRoute }: Props): ReactElement {
           clock,
           session,
           clockDispatch,
-          handleSessionEdit
+          handleSessionEdit,
+          settings.vibration
         );
       } catch (e) {
         console.error(e);
       }
     }
-  }, [clock, clockDispatch, handleSessionEdit, session]);
+  }, [clock, clockDispatch, handleSessionEdit, session, settings.vibration]);
 
   useEffect(() => {
     /** Updates session on expired clock */

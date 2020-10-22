@@ -29,6 +29,7 @@ import {
 import { HandleSessionEdit, SessionEditorContext } from "../edit-session";
 import { ClockDispatch, ClocksState } from "../statecontainers/clock-context";
 import { SessionsState } from "../statecontainers/session-context";
+import { SettingsState } from "../statecontainers/settings-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
 
@@ -150,6 +151,7 @@ function SessionLayout({
 }: Props): ReactElement {
   const classes = useStyles();
 
+  const settings = useContext(SettingsState);
   const sessions = useContext(SessionsState);
   const clocks = useContext(ClocksState);
   const clockDispatch = useContext(ClockDispatch);
@@ -238,7 +240,8 @@ function SessionLayout({
           clock,
           session,
           clockDispatch,
-          handleSessionEdit
+          handleSessionEdit,
+          settings.vibration
         );
       } catch (e) {
         console.error(e);

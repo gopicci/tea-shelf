@@ -337,12 +337,14 @@ export async function syncInstances(
  * @param {SessionInstance} session - Session instance with expired clock
  * @param {Dispatch<GenericAction>} clockDispatch - Clock context dispatch
  * @param {HandleSessionEdit} handleSessionEdit - Session editor callback
+ * @param {boolean} [vibrate] - Optional vibration on complete
  */
 export async function handleSessionComplete(
   clock: Clock,
   session: SessionInstance,
   clockDispatch: Dispatch<GenericAction>,
-  handleSessionEdit: HandleSessionEdit
+  handleSessionEdit: HandleSessionEdit,
+  vibrate?: boolean,
 ) {
   // Remove clock
   await removeClock(clock, clockDispatch);
@@ -357,7 +359,8 @@ export async function handleSessionComplete(
     session.offline_id
   );
 
-  window.navigator.vibrate([200, 200, 200]);
+  if (vibrate)
+    window.navigator.vibrate([200, 200, 200]);
 }
 
 /**
