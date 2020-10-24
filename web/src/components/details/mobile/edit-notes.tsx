@@ -9,10 +9,9 @@ import {
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import GenericAppBar from "../../generics/generic-app-bar";
+import GenericAppBar from '../../generics/generic-app-bar';
 import { TeaInstance, TeaRequest } from "../../../services/models";
 import { Route } from "../../../app";
-import { backButton } from "../../../services/routing-services";
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -79,12 +78,6 @@ function EditNotes({ teaData, setRoute, handleTeaEdit }: Props): ReactElement {
   function handlePrevious(): void {
     setRoute({ route: "TEA_DETAILS", teaPayload: teaData });
   }
-
-  /** Applies custom behavior on browser history pop event. */
-  useEffect(
-    backButton(() => setRoute({ route: "TEA_DETAILS", teaPayload: teaData })),
-    [setRoute]
-  );
 
   return (
     <>

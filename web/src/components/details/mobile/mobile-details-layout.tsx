@@ -12,7 +12,6 @@ import { TeasState } from "../../statecontainers/tea-context";
 import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { TeaInstance } from "../../../services/models";
-import { backButton } from "../../../services/routing-services";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,11 +64,29 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
     );
   }, [route.teaPayload, teas]);
 
-  /** Applies custom behavior on browser history pop event. */
-  useEffect(
-    backButton(() => setRoute({ route: "MAIN" })),
-    [setRoute]
-  );
+  useEffect(() => {
+    /**
+     * Applies custom behavior on browser history pop event.
+     *
+     * @param {PopStateEvent} event - Popstate event
+     * @memberOf MobileDetailsLayout
+     */
+    function onBackButtonEvent(event: PopStateEvent): void {
+      event.preventDefault();
+      setRoute(
+        route.route === "EDIT_NOTES"
+          ? { route: "TEA_DETAILS", teaPayload: teaData }
+          : { route: "MAIN" }
+      );
+    }
+
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", onBackButtonEvent);
+
+    return () => {
+      window.removeEventListener("popstate", onBackButtonEvent);
+    };
+  }, [route.route, setRoute, teaData]);
 
   return (
     <>

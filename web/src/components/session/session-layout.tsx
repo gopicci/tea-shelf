@@ -32,7 +32,6 @@ import { SessionsState } from "../statecontainers/session-context";
 import { SettingsState } from "../statecontainers/settings-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
-import { backButton } from "../../services/routing-services";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -288,11 +287,25 @@ function SessionLayout({
     setRoute({ route: "SESSIONS" });
   }
 
-  /** Applies custom behavior on browser history pop event. */
-  useEffect(
-    backButton(() => setRoute({ route: "SESSIONS" })),
-    [setRoute]
-  );
+  useEffect(() => {
+    /**
+     * Applies custom behavior on browser history pop event.
+     *
+     * @param {PopStateEvent} event - Popstate event
+     * @memberOf SessionLayout
+     */
+    function onBackButtonEvent(event: PopStateEvent): void {
+      event.preventDefault();
+      setRoute({ route: "SESSIONS" });
+    }
+
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", onBackButtonEvent);
+
+    return () => {
+      window.removeEventListener("popstate", onBackButtonEvent);
+    };
+  }, [setRoute]);
 
   return editInfusion ? (
     <EditInfusion session={session} handleBackToLayout={handleBackToLayout} />
