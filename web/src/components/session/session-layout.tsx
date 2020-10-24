@@ -32,6 +32,7 @@ import { SessionsState } from "../statecontainers/session-context";
 import { SettingsState } from "../statecontainers/settings-context";
 import { Clock, SessionInstance } from "../../services/models";
 import { Route } from "../../app";
+import { backButton } from "../../services/routing-services";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -286,6 +287,12 @@ function SessionLayout({
   function handleBack(): void {
     setRoute({ route: "SESSIONS" });
   }
+
+  /** Applies custom behavior on browser history pop event. */
+  useEffect(
+    backButton(() => setRoute({ route: "SESSIONS" })),
+    [setRoute]
+  );
 
   return editInfusion ? (
     <EditInfusion session={session} handleBackToLayout={handleBackToLayout} />

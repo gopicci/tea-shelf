@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext, useEffect, useState } from "react";
-import {Box, Toolbar} from '@material-ui/core';
+import { Box, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DetailsAppBar from "./details-app-bar";
 import DetailsCardMain from "./details-card-main";
@@ -12,6 +12,7 @@ import { TeasState } from "../../statecontainers/tea-context";
 import { TeaEditorContext, HandleTeaEdit } from "../../edit-tea";
 import { Route } from "../../../app";
 import { TeaInstance } from "../../../services/models";
+import { backButton } from "../../../services/routing-services";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,28 +58,18 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
   const [teaData, setTeaData] = useState<TeaInstance | undefined>();
 
   useEffect(() => {
-    setTeaData(Object.values(teas).find((tea) => tea.offline_id === route.teaPayload?.offline_id));
+    setTeaData(
+      Object.values(teas).find(
+        (tea) => tea.offline_id === route.teaPayload?.offline_id
+      )
+    );
   }, [route.teaPayload, teas]);
 
-  useEffect(() => {
-    /**
-     * Applies custom behavior on browser history pop event.
-     *
-     * @param {PopStateEvent} event - Popstate event
-     * @memberOf MobileDetailsLayout
-     */
-    function onBackButtonEvent(event: PopStateEvent): void {
-      event.preventDefault();
-      setRoute({ route: "MAIN" });
-    }
-
-    window.history.pushState(null, "", window.location.pathname);
-    window.addEventListener("popstate", onBackButtonEvent);
-
-    return () => {
-      window.removeEventListener("popstate", onBackButtonEvent);
-    };
-  }, [setRoute]);
+  /** Applies custom behavior on browser history pop event. */
+  useEffect(
+    backButton(() => setRoute({ route: "MAIN" })),
+    [setRoute]
+  );
 
   return (
     <>
@@ -94,7 +85,10 @@ function MobileDetailsLayout({ route, setRoute }: Props): ReactElement {
             <DetailsAppBar setRoute={setRoute} teaData={teaData} />
             <Toolbar />
             <Box className={classes.page}>
-              <DetailsCardMain teaData={teaData} handleTeaEdit={handleTeaEdit} />
+              <DetailsCardMain
+                teaData={teaData}
+                handleTeaEdit={handleTeaEdit}
+              />
               <DetailsCardNotes setRoute={setRoute} teaData={teaData} />
               {teaData.vendor && <DetailsCardVendor vendor={teaData.vendor} />}
               {teaData.origin && <DetailsCardOrigin origin={teaData.origin} />}

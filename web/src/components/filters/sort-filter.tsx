@@ -9,10 +9,11 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { ArrowBack } from "@material-ui/icons";
 import FilterList from "./filter-list";
-import GenericAppBar from '../generics/generic-app-bar';
+import GenericAppBar from "../generics/generic-app-bar";
 import { FilterDispatch, FilterState } from "../statecontainers/filter-context";
 import { Route } from "../../app";
 import { Filters } from "../../services/models";
+import { backButton } from "../../services/routing-services";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,25 +54,11 @@ function SortFilter({ setRoute }: Props): ReactElement {
   const state = useContext(FilterState);
   const dispatch = useContext(FilterDispatch);
 
-  useEffect(() => {
-    /**
-     * Applies custom behavior on browser history pop event.
-     *
-     * @param {PopStateEvent} event - Popstate event
-     * @memberOf SortFilter
-     */
-    function onBackButtonEvent(event: PopStateEvent): void {
-      event.preventDefault();
-      setRoute({ route: "MAIN" });
-    }
-
-    window.history.pushState(null, "", window.location.pathname);
-    window.addEventListener("popstate", onBackButtonEvent);
-
-    return () => {
-      window.removeEventListener("popstate", onBackButtonEvent);
-    };
-  }, [setRoute]);
+  /** Applies custom behavior on browser history pop event. */
+  useEffect(
+    backButton(() => setRoute({ route: "MAIN" })),
+    [setRoute]
+  );
 
   /** Sets route to main */
   function handleClose(): void {
