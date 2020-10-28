@@ -191,7 +191,7 @@ function DetailsCardMain({ teaData, handleTeaEdit }: Props): ReactElement {
                   <Typography variant="caption">
                     Price:{" "}
                     {settings.metric
-                      ? cropToNoZeroes(teaData.price) + "/g"
+                      ? cropToNoZeroes(teaData.price, 1) + "/g"
                       : cropToNoZeroes(teaData.price * 28.35, 1) + "/oz"}
                   </Typography>
                 </Box>
