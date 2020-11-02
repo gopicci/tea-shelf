@@ -66,27 +66,11 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
     <Grid container justify="center" className={classes.sessionGrid}>
       {data &&
         Object.entries(data).map(([year, months]) => {
-          return Object.entries(months).map(([month, sessions]) => {
-            let cards: ReactElement[] = [];
+          return Object.entries(months)
+            .reverse()
+            .map(([month, sessions]) => {
+              let cards: ReactElement[] = [];
 
-            cards.push(
-              <Grid
-                item
-                className={
-                  settings.gridView && !isMobile
-                    ? classes.gridItem
-                    : classes.listItem
-                }
-                key={year + month}
-              >
-                <DateCard
-                  date={new Date(parseInt(year), parseInt(month))}
-                  gridView={!!(settings.gridView && !isMobile)}
-                />
-              </Grid>
-            );
-
-            sessions.map((session) =>
               cards.push(
                 <Grid
                   item
@@ -95,19 +79,37 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
                       ? classes.gridItem
                       : classes.listItem
                   }
-                  key={session.offline_id}
+                  key={year + month}
                 >
-                  <SessionCard
-                    session={session}
+                  <DateCard
+                    date={new Date(parseInt(year), parseInt(month))}
                     gridView={!!(settings.gridView && !isMobile)}
-                    setRoute={setRoute}
                   />
                 </Grid>
-              )
-            );
+              );
 
-            return cards;
-          });
+              sessions.map((session) =>
+                cards.push(
+                  <Grid
+                    item
+                    className={
+                      settings.gridView && !isMobile
+                        ? classes.gridItem
+                        : classes.listItem
+                    }
+                    key={session.offline_id}
+                  >
+                    <SessionCard
+                      session={session}
+                      gridView={!!(settings.gridView && !isMobile)}
+                      setRoute={setRoute}
+                    />
+                  </Grid>
+                )
+              );
+
+              return cards;
+            });
         })}
     </Grid>
   );
