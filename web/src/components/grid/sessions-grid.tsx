@@ -65,7 +65,7 @@ function SessionsGrid({ setRoute, isMobile }: Props): ReactElement {
   return (
     <Grid container justify="center" className={classes.sessionGrid}>
       {data &&
-        Object.entries(data).map(([year, months]) => {
+        Object.entries(data).reverse().map(([year, months]) => {
           return Object.entries(months)
             .reverse()
             .map(([month, sessions]) => {
